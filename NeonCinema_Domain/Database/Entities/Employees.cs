@@ -19,5 +19,8 @@ namespace NeonCinema_Domain.Database.Entities
         public DateTime DateOrBriht { get; set; }
         public string Position { get; set; }
         public DateTime CreateDate { get; set; }
+        //
+        public virtual ICollection<BillDetail>? BillDetail { get; set; }
+        public virtual ICollection<WorkShift>?  WorkShifts { get; set; }
     }
 }

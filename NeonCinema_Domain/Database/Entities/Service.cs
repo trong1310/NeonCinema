@@ -15,5 +15,8 @@ namespace NeonCinema_Domain.Database.Entities
         public decimal Price { get; set; }
         public EntityStatus Status { get; set; }
         public string Description { get; set; }
+
+        // 
+        public virtual ICollection<ServiceOder> ServiceOders { get; set; }   
     }
 }

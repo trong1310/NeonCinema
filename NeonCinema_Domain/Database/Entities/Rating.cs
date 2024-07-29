@@ -15,6 +15,12 @@ namespace NeonCinema_Domain.Database.Entities
         public string Comment { get; set; }
         public DateTime RatingDate { get; set; }
         public EntityStatus Status { get; set; }
+        public Guid TicketID { get; set; }
+        public Guid CustomerID { get; set; }
+
+        // 
+        public virtual Customers? Customers { get; set; }
+        public virtual Ticket? Ticket { get; set; }
 
     }
 }

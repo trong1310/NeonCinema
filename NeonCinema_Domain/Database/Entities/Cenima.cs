@@ -17,5 +17,8 @@ namespace NeonCinema_Domain.Database.Entities
         public string OpeningHours { get; set; }
         public string ClosingHours { get; set; }
         public int RoomNumber { get; set; }
+        //
+
+        public virtual ICollection<Room> Rooms { get; set; }
     }
 }

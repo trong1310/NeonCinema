@@ -23,8 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Database\AppDbContext\" />
-    <Folder Include="Database\Configuration\" />
     <Folder Include="Extention\AutoMapperProfile\" />
     <Folder Include="Implement\" />
   </ItemGroup>

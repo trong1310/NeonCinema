@@ -11,5 +11,8 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid LenguageID { get; set; }
         public string LenguageName { get; set; }
+
+        //
+        public virtual ICollection< MovieDetail>? MovieDetails { get; set; }
     }
 }
