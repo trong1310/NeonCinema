@@ -19,6 +19,12 @@ namespace NeonCinema_Domain.Database.Entities
         public string proviso { get; set; }
         public string Discount { get; set; }
         public EntityStatus Status { get; set; }
+        public Guid PromotionTypeID { get; set; }
+        //
+        public virtual ICollection<BillDetail>? BillDetail { get; set; }
+        public virtual ICollection<PromotionCustomer>? PromotionCustomers { get; set; }
+        public virtual PromotionType? PromotionType { get; set; }
+
 
     }
 }

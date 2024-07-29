@@ -15,5 +15,8 @@ namespace NeonCinema_Domain.Database.Entities
         public DateTime TimeStar { get; set; }
         public DateTime TimeEnd { get; set; }
         public EntityStatus Status { get; set; }
+        public Guid EmployeesID { get; set; }
+        public virtual Employees? Employees { get; set; }
+        public virtual ICollection<ShiftChange>? ShiftChanges { get; set; }
     }
 }

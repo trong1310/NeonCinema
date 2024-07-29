@@ -11,6 +11,7 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid MovieTypeID { get; set; }
         public string MovieTypeName { get; set; }
-
+        //
+        public virtual ICollection<MovieDetail> MovieDetails { get; set; }
     }
 }

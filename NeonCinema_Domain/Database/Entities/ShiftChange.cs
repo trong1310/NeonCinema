@@ -15,5 +15,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string NewShift {  get; set; }
         public DateTime RequetDate { get; set; }
         public EntityStatus Status { get; set; }
+        public Guid WorkShiftID { get; set; }
+        public virtual WorkShift? WorkShift { get; set; }
     }
 }

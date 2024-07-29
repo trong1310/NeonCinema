@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Database.Entities
 {
-    public class Bill : EntityBase
+    public class PaymentMethod : EntityBase
     {
-        public Guid BillID { get; set; }
-        public DateTime SoldDate { get; set; } = DateTime.Now;
-        public decimal TotalMoney { get; set; }
-        public EntityStatus Status { get; set; } 
-       
+        public Guid PaymentID { get; set; }
+        public string Name  { get; set; }
+        public string? QRCode { get; set; }
+        public EntityStatus Status { get; set; }
+        ///
         public virtual ICollection<BillDetail> BillDetail { get; set; }
-
     }
 }
