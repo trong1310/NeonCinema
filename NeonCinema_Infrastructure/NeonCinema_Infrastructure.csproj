@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="Extention\AutoMapperProfile\" />
-    <Folder Include="Implement\" />
   </ItemGroup>
 
 </Project>

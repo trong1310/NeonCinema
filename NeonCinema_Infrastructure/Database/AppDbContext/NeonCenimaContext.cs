@@ -59,5 +59,159 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         }
+        private void FakeData(ModelBuilder modelBuilder)
+        {
+            #region fakedata
+            var actorData = new List<Actor>()
+            {
+                new Actor{ActorID =Guid.Parse( "f20a48bc-c550-4c09-9fe0-0b24f2bec9f6"),
+                    FullName = "Nguyễn Quang Dũng",
+                    StageName ="Nguyễn Quang Dũng",
+                    BirthDate = DateTime.Parse("12-18-1978"),
+                    Address = " huyện Chợ Mới, tỉnh An Giang",
+                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất" +
+                    " giải Cánh diều 2007, Đạo diễn triển vọng Liên hoan phim Việt Nam lần thứ 17, Đạo diễn phim xuất" +
+                    " sắc nhất Ngôi Sao Xanh 2020.",
+                    Biography = "Nguyễn Quang Dũng, đạo diễn và nhà sản xuất nổi tiếng, xuất thân trong một gia đình" +
+                    " nghệ thuật có cha là nhà văn Nguyễn Quang Sáng. Từ khi còn nhỏ," +
+                    " anh đã được tiếp xúc với nhiều nhân vật nổi tiếng như nhạc sĩ Trịnh Công Sơn," +
+                    " nhạc sĩ Văn Cao và nhà thơ Nguyễn Duy.",
+                    Images = new List<string>()
+                    {
+                        "image1.jpg","image2.jpg"
+                    },
+                    Nationality = "Việt Nam"
+                },
+                 new Actor{ActorID =Guid.Parse( "a6c64cd9-f8ee-4465-a238-daa3426d87f9"),
+                    FullName = "Vũ Ngọc Đãng",
+                    StageName ="Vũ Ngọc Đãng",
+                    BirthDate = DateTime.Parse("1974"),
+                    Address = "Thành phố Hồ Chí Minh",
+                    Awards = "giải nhì Cuộc thi phim ngắn toàn quốc, Bông sen bạc Liên hoan phim toàn quốc lần thứ 14," +
+                    " Đạo diễn xuất sắc Liên hoan phim Việt Nam 2011 và 2017," +
+                    " Bông sen bạc tại Liên hoan phim Việt Nam lần thứ 22, Cánh diều vàng Việt Nam cho Phim điện ảnh xuất sắc nhất…",
+                    Biography = "Vũ Ngọc Đãng là đạo diễn, nhà biên kịch, nhà sản xuất phim nổi tiếng. Anh tốt nghiệp thủ khoa Đạo" +
+                    " diễn của Trường Sân khấu – Điện ảnh TP. HCM với bộ phim Vợ chồng chuột.\r\n\r\nCác phim của anh phần lớn do " +
+                    "chính anh viết kịch bản và đạo diễn. Năm 2003, anh giành giải nhì trong cuộc thi Phim ngắn toàn quốc với tác phẩm " +
+                    "Niềm tin.",
+                    Images = new List<string>()
+                    {
+                        "image1.jpg","image2.jpg"
+                    },
+                    Nationality = "Việt Nam"
+                }
+            };
+            modelBuilder.Entity<Actor>(x => { x.HasData(actorData); });
+            var direcTorData = new List<Director>()
+            {
+                new Director{DirectorID =Guid.Parse( "6b174569-9f4b-46d1-905c-15fbd33dc271"),
+                    FullName = "Nguyễn Quang Dũng",
+                    StageName ="Nguyễn Quang Dũng",
+                    BirthDate = DateTime.Parse("12-18-1978"),
+                    Address = " huyện Chợ Mới, tỉnh An Giang",
+                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất" +
+                    " giải Cánh diều 2007, Đạo diễn triển vọng Liên hoan phim Việt Nam lần thứ 17, Đạo diễn phim xuất" +
+                    " sắc nhất Ngôi Sao Xanh 2020.",
+                    Biography = "Nguyễn Quang Dũng, đạo diễn và nhà sản xuất nổi tiếng, xuất thân trong một gia đình" +
+                    " nghệ thuật có cha là nhà văn Nguyễn Quang Sáng. Từ khi còn nhỏ," +
+                    " anh đã được tiếp xúc với nhiều nhân vật nổi tiếng như nhạc sĩ Trịnh Công Sơn," +
+                    " nhạc sĩ Văn Cao và nhà thơ Nguyễn Duy.",
+                    Images = new List<string>()
+                    {
+                        "image1.jpg","image2.jpg"
+                    },
+                    Nationality = "Việt Nam"
+                },
+                 new Director{DirectorID =Guid.Parse( "4f029623-3495-42fd-88ec-fc16e624abec"),
+                    FullName = "Vũ Ngọc Đãng",
+                    StageName ="Vũ Ngọc Đãng",
+                    BirthDate = DateTime.Parse("1974"),
+                    Address = "Thành phố Hồ Chí Minh",
+                    Awards = "giải nhì Cuộc thi phim ngắn toàn quốc, Bông sen bạc Liên hoan phim toàn quốc lần thứ 14," +
+                    " Đạo diễn xuất sắc Liên hoan phim Việt Nam 2011 và 2017," +
+                    " Bông sen bạc tại Liên hoan phim Việt Nam lần thứ 22, Cánh diều vàng Việt Nam cho Phim điện ảnh xuất sắc nhất…",
+                    Biography = "Vũ Ngọc Đãng là đạo diễn, nhà biên kịch, nhà sản xuất phim nổi tiếng. Anh tốt nghiệp thủ khoa Đạo" +
+                    " diễn của Trường Sân khấu – Điện ảnh TP. HCM với bộ phim Vợ chồng chuột.\r\n\r\nCác phim của anh phần lớn do " +
+                    "chính anh viết kịch bản và đạo diễn. Năm 2003, anh giành giải nhì trong cuộc thi Phim ngắn toàn quốc với tác phẩm " +
+                    "Niềm tin.",
+                    Images = new List<string>()
+                    {
+                        "image1.jpg","image2.jpg"
+                    },
+                    Nationality = "Việt Nam"
+                }
+            };
+            modelBuilder.Entity<Director>(x => { x.HasData(direcTorData); });
+            var genreData = new List<Genre>()
+            {
+                new Genre()
+                {
+                    GenreID = Guid.Parse("b954a76c-08c0-4399-8a7a-1556029b1d62"),
+                    GenreName = "Phim Hành Động",
+                },
+                new Genre()
+                {
+                    GenreID = Guid.Parse("36c7532c-775e-4ad0-a524-1a99f6cb7edc"),
+                    GenreName = "Kinh Dị",
+                },
+                new Genre()
+                {
+                    GenreID = Guid.Parse("975c468d-89db-497d-98d7-138798731b49"),
+                    GenreName = "Phim Hoạt Hình",
+                },
+                new Genre()
+                {
+                    GenreID = Guid.Parse("47b628b5-2389-4eda-9b2a-0eafa2832b8b"),
+                    GenreName = "Phim Tình Cảm",
+                }
+            };
+            modelBuilder.Entity<Genre>(x => { x.HasData(genreData); });
+            var lenguageData = new List<Lenguage>()
+            {
+                new Lenguage()
+                {
+                    LenguageID = Guid.Parse("b954a76c-08c0-4399-8a7a-1556029b1d62"),
+                    LenguageName = "Tiếng Anh",
+                },
+                new Lenguage()
+                {
+                    LenguageID = Guid.Parse("36c7532c-775e-4ad0-a524-1a99f6cb7edc"),
+                    LenguageName = "Tiếng Việt",
+                },
+                new Lenguage()
+                {
+                    LenguageID = Guid.Parse("975c468d-89db-497d-98d7-138798731b49"),
+                    LenguageName = "Thái Lan",
+                },
+                new Lenguage()
+                {
+                    LenguageID = Guid.Parse("47b628b5-2389-4eda-9b2a-0eafa2832b8b"),
+                    LenguageName = "Hàn Quốc",
+                }
+            };
+            modelBuilder.Entity<Lenguage>(x => { x.HasData(lenguageData); });
+            var movieTypeData = new List<MovieType>()
+            {
+                new MovieType()
+                {
+                    MovieTypeID = Guid.Parse("b954a76c-08c0-4399-8a7a-1556029b1d62"),
+                    MovieTypeName = "Phim 2D",
+                },
+                new MovieType()
+                {
+                    MovieTypeID = Guid.Parse("36c7532c-775e-4ad0-a524-1a99f6cb7edc"),
+                    MovieTypeName = "Phim 3D",
+                },
+                new MovieType()
+                {
+                    MovieTypeID = Guid.Parse("975c468d-89db-497d-98d7-138798731b49"),
+                    MovieTypeName = "Phim VietSub",
+                },
+               
+            };
+            modelBuilder.Entity<MovieType>(x => { x.HasData(movieTypeData); });
+
+            #endregion
+        }
     }
 }
