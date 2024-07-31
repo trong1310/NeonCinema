@@ -11,12 +11,12 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid DirectorID { get; set; }
         public string FullName { get; set; }
-        public string StageName { get; set; }
+        public string? StageName { get; set; }
         public DateTime BirthDate { get; set; }
         public string Address { get; set; }
         public string Nationality { get; set; }
-        public string Biography { get; set; }
-        public string Awards { get; set; }
+        public string? Biography { get; set; }
+        public string? Awards { get; set; }
         public List<string> Images { get; set; }
 
         //
