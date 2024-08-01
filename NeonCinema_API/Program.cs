@@ -1,11 +1,13 @@
+using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile;
+using NeonCinema_Infrastructure.Implement.Promotions;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
