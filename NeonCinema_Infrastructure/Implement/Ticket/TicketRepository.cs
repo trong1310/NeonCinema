@@ -19,7 +19,7 @@ namespace NeonCinema_Infrastructure.Implement.Ticket
         public TicketRepository(IMapper mapper)
         {
             _context = new NeonCenimaContext();
-            _mapper = mapper;   
+            _mapper = mapper;
         }
         public Task<bool> CreateTicket(NeonCinema_Domain.Database.Entities.Ticket ticket, CancellationToken cancellationToken)
         {
@@ -33,15 +33,10 @@ namespace NeonCinema_Infrastructure.Implement.Ticket
 
         public async Task<List<TicketDTO>> GetAllTicket(CancellationToken cancellationToken)
         {
-            try
-            {
-                var lst = await _context.Ticket.ToListAsync(cancellationToken);
-                return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+            var lst = await _context.Ticket.ToListAsync(cancellationToken);
+            return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
+
         }
 
         public Task<TicketDTO> GetTicketById(Guid id, CancellationToken cancellationToken)
