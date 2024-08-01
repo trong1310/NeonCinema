@@ -57,7 +57,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
+           FakeData(modelBuilder);
         }
         private void FakeData(ModelBuilder modelBuilder)
         {
@@ -67,15 +67,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 new Actor{ActorID =Guid.Parse( "f20a48bc-c550-4c09-9fe0-0b24f2bec9f6"),
                     FullName = "Nguyễn Quang Dũng",
                     StageName ="Nguyễn Quang Dũng",
-                    BirthDate = DateTime.Parse("12-18-1978"),
+                    BirthDate = DateTime.Parse("12-1-1978"),
                     Address = " huyện Chợ Mới, tỉnh An Giang",
-                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất" +
-                    " giải Cánh diều 2007, Đạo diễn triển vọng Liên hoan phim Việt Nam lần thứ 17, Đạo diễn phim xuất" +
-                    " sắc nhất Ngôi Sao Xanh 2020.",
+                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất",
                     Biography = "Nguyễn Quang Dũng, đạo diễn và nhà sản xuất nổi tiếng, xuất thân trong một gia đình" +
-                    " nghệ thuật có cha là nhà văn Nguyễn Quang Sáng. Từ khi còn nhỏ," +
-                    " anh đã được tiếp xúc với nhiều nhân vật nổi tiếng như nhạc sĩ Trịnh Công Sơn," +
-                    " nhạc sĩ Văn Cao và nhà thơ Nguyễn Duy.",
+                    " nghệ thuật có cha là nhà văn Nguyễn Quang Sáng. Từ khi còn nhỏ," 
+                  ,
                     Images = new List<string>()
                     {
                         "image1.jpg","image2.jpg"
@@ -85,15 +82,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                  new Actor{ActorID =Guid.Parse( "a6c64cd9-f8ee-4465-a238-daa3426d87f9"),
                     FullName = "Vũ Ngọc Đãng",
                     StageName ="Vũ Ngọc Đãng",
-                    BirthDate = DateTime.Parse("1974"),
+                    BirthDate = DateTime.Parse("10-10-1974"),
                     Address = "Thành phố Hồ Chí Minh",
-                    Awards = "giải nhì Cuộc thi phim ngắn toàn quốc, Bông sen bạc Liên hoan phim toàn quốc lần thứ 14," +
-                    " Đạo diễn xuất sắc Liên hoan phim Việt Nam 2011 và 2017," +
-                    " Bông sen bạc tại Liên hoan phim Việt Nam lần thứ 22, Cánh diều vàng Việt Nam cho Phim điện ảnh xuất sắc nhất…",
-                    Biography = "Vũ Ngọc Đãng là đạo diễn, nhà biên kịch, nhà sản xuất phim nổi tiếng. Anh tốt nghiệp thủ khoa Đạo" +
-                    " diễn của Trường Sân khấu – Điện ảnh TP. HCM với bộ phim Vợ chồng chuột.\r\n\r\nCác phim của anh phần lớn do " +
-                    "chính anh viết kịch bản và đạo diễn. Năm 2003, anh giành giải nhì trong cuộc thi Phim ngắn toàn quốc với tác phẩm " +
-                    "Niềm tin.",
+                    Awards = "giải nhì Cuộc thi phim ngắn toàn quốc, Bông sen bạc Liên hoan phim toàn quốc lần thứ 14," ,
+                    
+                    Biography = "Vũ Ngọc Đãng là đạo diễn, nhà biên kịch, nhà sản xuất phim nổi tiếng. Anh tốt nghiệp thủ khoa Đạo",
                     Images = new List<string>()
                     {
                         "image1.jpg","image2.jpg"
@@ -107,15 +100,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 new Director{DirectorID =Guid.Parse( "6b174569-9f4b-46d1-905c-15fbd33dc271"),
                     FullName = "Nguyễn Quang Dũng",
                     StageName ="Nguyễn Quang Dũng",
-                    BirthDate = DateTime.Parse("12-18-1978"),
+                    BirthDate = DateTime.Parse("12-11-1978"),
                     Address = " huyện Chợ Mới, tỉnh An Giang",
-                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất" +
-                    " giải Cánh diều 2007, Đạo diễn triển vọng Liên hoan phim Việt Nam lần thứ 17, Đạo diễn phim xuất" +
-                    " sắc nhất Ngôi Sao Xanh 2020.",
-                    Biography = "Nguyễn Quang Dũng, đạo diễn và nhà sản xuất nổi tiếng, xuất thân trong một gia đình" +
-                    " nghệ thuật có cha là nhà văn Nguyễn Quang Sáng. Từ khi còn nhỏ," +
-                    " anh đã được tiếp xúc với nhiều nhân vật nổi tiếng như nhạc sĩ Trịnh Công Sơn," +
-                    " nhạc sĩ Văn Cao và nhà thơ Nguyễn Duy.",
+                    Awards = "Bằng khen Văn học nghệ thuật TP. Hồ Chí Minh, Biên kịch phim truyện nhựa xuất sắc nhất",
+                    Biography = "Nguyễn Quang Dũng, đạo diễn và nhà sản xuất nổi tiếng, xuất thân trong một gia đình" 
+                    ,
                     Images = new List<string>()
                     {
                         "image1.jpg","image2.jpg"
@@ -125,15 +114,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                  new Director{DirectorID =Guid.Parse( "4f029623-3495-42fd-88ec-fc16e624abec"),
                     FullName = "Vũ Ngọc Đãng",
                     StageName ="Vũ Ngọc Đãng",
-                    BirthDate = DateTime.Parse("1974"),
+                    BirthDate = DateTime.Parse("4-4-1974"),
                     Address = "Thành phố Hồ Chí Minh",
                     Awards = "giải nhì Cuộc thi phim ngắn toàn quốc, Bông sen bạc Liên hoan phim toàn quốc lần thứ 14," +
-                    " Đạo diễn xuất sắc Liên hoan phim Việt Nam 2011 và 2017," +
-                    " Bông sen bạc tại Liên hoan phim Việt Nam lần thứ 22, Cánh diều vàng Việt Nam cho Phim điện ảnh xuất sắc nhất…",
+                    " Đạo diễn xuất sắc Liên hoan phim Việt Nam 2011 và 2017," 
+                  ,
                     Biography = "Vũ Ngọc Đãng là đạo diễn, nhà biên kịch, nhà sản xuất phim nổi tiếng. Anh tốt nghiệp thủ khoa Đạo" +
-                    " diễn của Trường Sân khấu – Điện ảnh TP. HCM với bộ phim Vợ chồng chuột.\r\n\r\nCác phim của anh phần lớn do " +
-                    "chính anh viết kịch bản và đạo diễn. Năm 2003, anh giành giải nhì trong cuộc thi Phim ngắn toàn quốc với tác phẩm " +
-                    "Niềm tin.",
+                    " diễn của Trường Sân khấu – Điện ảnh",
                     Images = new List<string>()
                     {
                         "image1.jpg","image2.jpg"

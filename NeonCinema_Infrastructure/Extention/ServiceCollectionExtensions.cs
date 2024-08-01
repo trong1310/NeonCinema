@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NeonCinema_Application.Interface;
+using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Implement.Movie;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +16,13 @@ namespace NeonCinema_Infrastructure.Extention
     {
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
-           
+            services.AddDbContext<NeonCenimaContext>(options =>
+            {
+
+                // Configure your DbContext options here
+                options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
+            });
+            services.AddTransient<IMovieRepository, MovieRepoitory>();
             return services;
         }
     }
