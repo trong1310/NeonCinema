@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace NeonCinema_Application.Interface
 {
     public interface IMovieRepository
     {
-         Task<bool> CreateMovie(Movies movies,CancellationToken cancellationToken);
-         Task<bool> UpdateMovie(Movies movies,CancellationToken cancellationToken);
-         Task<bool> DeleteMovie(Guid id, CancellationToken cancellationToken);
-         Task<List<MovieDTO>> GetAllMovies(CancellationToken cancellationToken);
-         Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken);
+         Task<HttpResponseMessage> CreateMovie(Movies movies,CancellationToken cancellationToken);
+         Task<HttpResponseMessage> UpdateMovie(Movies movies,CancellationToken cancellationToken);
+         Task<HttpResponseMessage> DeleteMovie(Movies movies, CancellationToken cancellationToken);
+         Task<PaginationResponse<MovieDTO>> GetAllMovies(MovieViewRequets requets ,CancellationToken cancellationToken);
+       //  Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken);
 
     }
 }
