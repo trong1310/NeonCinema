@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Ticket
 {
-    public interface TicketDeleteRequests
+    public class TicketDeleteRequests
     {
         public Guid MovieID { get; set; }
         public Guid DeletedBy { get; set; }

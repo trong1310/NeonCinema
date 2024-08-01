@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NeonCinema_Application.Pagination;
 
 namespace NeonCinema_Application.DataTransferObject.Ticket
 {
-    public interface TicketViewRequests
+    public class TicketViewRequests : PaginationRequest
     {
-        public decimal Price { get; set; }
-        public string BarCode { get; set; }
-        public string SeatNumber { get; set; }
-        public DateTime StarTime { get; set; }
-        public DateTime ScreeningDate { get; set; }
-        public string RoomName { get; set; }
-
-
+        public Guid TicketID { get; set; }
     }
 }

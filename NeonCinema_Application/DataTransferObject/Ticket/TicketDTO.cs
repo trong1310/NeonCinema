@@ -9,7 +9,6 @@ namespace NeonCinema_Application.DataTransferObject.Ticket
 {
     public class TicketDTO
     {
-        public Guid TicketID { get; set; }
         public decimal Price { get; set; }
         public string BarCode { get; set; }
         public EntityStatus Status { get; set; }

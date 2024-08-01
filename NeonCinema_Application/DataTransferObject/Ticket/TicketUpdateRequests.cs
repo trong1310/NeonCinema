@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Ticket
 {
-    public interface TicketUpdateRequests
+    public class TicketUpdateRequests
     {
         public Guid TicketID { get; set; }
         public EntityStatus Status { get; set; }

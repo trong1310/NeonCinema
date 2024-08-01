@@ -17,7 +17,6 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
             CreateMap<TicketCreateRequests, Ticket>();
             CreateMap<TicketUpdateRequests, Ticket>();
             CreateMap<TicketDeleteRequests, Ticket>();
-
         }
     }
 }
