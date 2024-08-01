@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Movie
 {
-    public class MovieViewRequets
+    public class MovieViewRequets : PaginationRequest
     {
-        public string MovieName { get; set; }
+        public string? MovieName { get; set; }
 
     }
 }

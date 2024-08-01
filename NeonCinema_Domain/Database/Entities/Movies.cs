@@ -13,7 +13,7 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid MovieID { get; set; }
         public string MovieName { get; set; }
         public string Description { get; set; }
-        public MovieStatus Status { get; set; }
+        public MovieStatus Status { get; set; } = MovieStatus.PendingForApproval;
          //
         public virtual ICollection< MovieDetail>? MovieDetails { get; set; }
         public virtual ICollection< Screening>? Screenings { get; set; }

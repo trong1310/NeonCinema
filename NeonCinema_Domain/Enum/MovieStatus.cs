@@ -8,6 +8,9 @@ namespace NeonCinema_Domain.Enum
 {
     public enum MovieStatus
     {
-        Active = 0,
+        Active = 0, 
+        PendingForApproval = 1,
+        InActive = 2,
+        StopShowing = 3,
     }
 }
