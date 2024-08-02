@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class CenimaConfiguration : IEntityTypeConfiguration<Cenima>
+    public class CenimaConfiguration : IEntityTypeConfiguration<Cinema>
     {
-        public void Configure(EntityTypeBuilder<Cenima> builder)
+        public void Configure(EntityTypeBuilder<Cinema> builder)
         {
             builder.ToTable("Cenima");
             builder.HasKey(x=>x.CenimaID);

@@ -24,7 +24,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<BillDetail> BillDetails { get; set; }
-        public DbSet<Cenima> Cenima { get; set; }
+        public DbSet<Cinema> Cinema { get; set; }
         public DbSet<Customers> Customers { get; set; }
         public DbSet<Director> Directors { get; set; }
         public DbSet<Employees> Employees { get; set; } 
@@ -309,9 +309,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<BillDetail>().HasData(billDetailData);
 
             // Cenima
-            var cenimaData = new List<Cenima>
+            var cenimaData = new List<Cinema>
         {
-            new Cenima
+            new Cinema
             {
                 CenimaID = Guid.NewGuid(),
                 Name = "CineWorld",
@@ -323,7 +323,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 RoomNumber = 5
             }
         };
-            modelBuilder.Entity<Cenima>().HasData(cenimaData);
+            modelBuilder.Entity<Cinema>().HasData(cenimaData);
 
             // Customers
             var customerData = new List<Customers>
@@ -427,7 +427,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 RoomID = Guid.NewGuid(),
                 Name = "Room 1",
                 SeatingCapacity = 100,
-                CenimaID = cenimaData[0].CenimaID
+                CinemaID = cenimaData[0].CenimaID
             }
         };
             modelBuilder.Entity<Room>().HasData(roomData);
