@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Database.Entities
 {
-    public class Cenima : EntityBase
+    public class Cinema : EntityBase
     {
-        public Guid CenimaID { get; set; }
+        public Guid CinemaID { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
         public string PhoneNumber { get; set; }
