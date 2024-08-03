@@ -2,8 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement.Movie;
+using NeonCinema_Infrastructure.Implement.Promotions;
+using NeonCinema_Infrastructure.Implement.Tickets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +21,12 @@ namespace NeonCinema_Infrastructure.Extention
         {
             services.AddDbContext<NeonCenimaContext>(options =>
             {
-
                 // Configure your DbContext options here
-                options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
+                options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
             });
             services.AddTransient<IMovieRepository, MovieRepoitory>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
             return services;
         }
     }
