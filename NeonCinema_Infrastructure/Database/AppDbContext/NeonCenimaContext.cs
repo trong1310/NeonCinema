@@ -313,7 +313,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             new Cinema
             {
-                CenimaID = Guid.NewGuid(),
+                CinemaID = Guid.NewGuid(),
                 Name = "CineWorld",
                 Location = "123 Cinema Street",
                 PhoneNumber = "123-456-7890",
@@ -427,7 +427,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 RoomID = Guid.NewGuid(),
                 Name = "Room 1",
                 SeatingCapacity = 100,
-                CinemaID = cenimaData[0].CenimaID
+                CinemaID = cenimaData[0].CinemaID
             }
         };
             modelBuilder.Entity<Room>().HasData(roomData);

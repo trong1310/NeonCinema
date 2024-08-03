@@ -9,7 +9,7 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Cinema : EntityBase
     {
-        public Guid CenimaID { get; set; }
+        public Guid CinemaID { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
         public string PhoneNumber { get; set; }
