@@ -43,5 +43,32 @@ namespace NeonCinema_API.Controllers
             }
         }
 
+        [HttpPut("update-ticket")]
+        public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateRequests request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _repos.UpdateTicket(_mapper.Map<Ticket>(request), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpDelete("delete-ticket")]
+        public async Task<IActionResult> DeleteTicket([FromBody] TicketDeleteRequests requests, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _repos.DeleteTicket(_mapper.Map<Ticket>(requests), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

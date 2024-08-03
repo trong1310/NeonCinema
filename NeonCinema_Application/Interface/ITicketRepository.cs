@@ -13,7 +13,7 @@ namespace NeonCinema_Application.Interface
     {
         Task<HttpResponseMessage> CreateTicket(Ticket ticket, CancellationToken cancellationToken);
         Task<HttpResponseMessage> UpdateTicket(Ticket ticket, CancellationToken cancellationToken);
-        Task<HttpResponseMessage> DeleteTicket(Guid id, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> DeleteTicket(Ticket ticket, CancellationToken cancellationToken);
         Task<List<TicketDTO>> GetAllTicket(CancellationToken cancellationToken);
         Task<TicketDTO> GetTicketById(Guid id, CancellationToken cancellationToken);
     }
