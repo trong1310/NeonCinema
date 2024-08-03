@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class CenimaConfiguration : IEntityTypeConfiguration<Cenima>
+    public class CenimaConfiguration : IEntityTypeConfiguration<Cinema>
     {
-        public void Configure(EntityTypeBuilder<Cenima> builder)
+        public void Configure(EntityTypeBuilder<Cinema> builder)
         {
-            builder.ToTable("Cenima");
-            builder.HasKey(x=>x.CenimaID);
+            builder.ToTable("Cinema");
+            builder.HasKey(x=>x.CinemaID);
             builder.Property(x => x.Name).HasMaxLength(50).IsFixedLength().IsUnicode(true);
             builder.Property(x => x.Location).HasMaxLength(256).IsFixedLength().IsUnicode(true);
             builder.Property(x=>x.PhoneNumber).HasMaxLength(10).IsRequired();

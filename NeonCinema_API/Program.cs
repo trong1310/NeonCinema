@@ -1,6 +1,9 @@
+using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Promotions;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile;
+using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Promotions;
 
 

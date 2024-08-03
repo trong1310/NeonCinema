@@ -12,12 +12,12 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid RoomID { get; set; }
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
-        public Guid CenimaID { get; set; }
+        public Guid CinemaID { get; set; }
 
         // 
         public virtual ICollection<Screening>? Screenings { get; set; }
         public virtual ICollection<Seat>? Seats { get; set; }
         //
-        public virtual Cenima? Cenima { get; set; }
+        public virtual Cinema? Cinema { get; set; }
     }
 }
