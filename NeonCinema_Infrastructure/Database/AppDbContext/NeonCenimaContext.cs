@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Bill> Bills { get; set; }
         public DbSet<BillDetail> BillDetails { get; set; }
-        public DbSet<Cenima> Cenima { get; set; }
+        public DbSet<Cinema> Cinema { get; set; }
         public DbSet<Customers> Customers { get; set; }
         public DbSet<Director> Directors { get; set; }
         public DbSet<Employees> Employees { get; set; } 
@@ -51,7 +52,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=vantrong\\SQLEXPRESS;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -197,8 +198,358 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                
             };
             modelBuilder.Entity<MovieType>(x => { x.HasData(movieTypeData); });
+            var promotionTypeData = new List<PromotionType>
+        {
+            new PromotionType
+            {
+                PromotionTypeID = Guid.Parse("f20a48bc-c550-4c09-9fe0-0b24f2bec9f6"),
+                PromotionName = "Khuyến mãi mùa hè",
+                Status = EntityStatus.Active
+            },
+            new PromotionType
+            {
+                PromotionTypeID = Guid.Parse("a6c64cd9-f8ee-4465-a238-daa3426d87f9"),
+                PromotionName = "Khuyến mãi mùa đông",
+                Status = EntityStatus.Active
+            }
+        };
 
-            #endregion
+            var promotionData = new List<Promotion>
+        {
+            new Promotion
+            {
+                PromotionID = Guid.Parse("e20a48bc-c550-4c09-9fe0-0b24f2bec9f7"),
+                PromotionCode = "SUMMER2024",
+                Description = "Giảm giá 20% cho tất cả các sản phẩm trong mùa hè.",
+                StarDate = DateTime.Parse("2024-06-01"),
+                EndDate = DateTime.Parse("2024-08-31"),
+                Quantity = 100,
+                proviso = "Áp dụng cho hóa đơn trên 1 triệu đồng.",
+                Discount = "20%",
+                Status = EntityStatus.Active,
+                PromotionTypeID = Guid.Parse("f20a48bc-c550-4c09-9fe0-0b24f2bec9f6")
+            },
+            new Promotion
+            {
+                PromotionID = Guid.Parse("b7a64cd9-f8ee-4465-a238-daa3426d87f8"),
+                PromotionCode = "WINTER2024",
+                Description = "Giảm giá 30% cho tất cả các sản phẩm trong mùa đông.",
+                StarDate = DateTime.Parse("2024-12-01"),
+                EndDate = DateTime.Parse("2025-02-28"),
+                Quantity = 150,
+                proviso = "Áp dụng cho hóa đơn trên 1.5 triệu đồng.",
+                Discount = "30%",
+                Status = EntityStatus.Active,
+                PromotionTypeID = Guid.Parse("a6c64cd9-f8ee-4465-a238-daa3426d87f9")
+            }
+        };
+
+            var promotionCustomerData = new List<PromotionCustomer>
+        {
+            new PromotionCustomer
+            {
+                PromotionId = Guid.Parse("e20a48bc-c550-4c09-9fe0-0b24f2bec9f7"),
+                ID = Guid.Parse("1f64cd9f-f8ee-4465-a238-daa3426d87a1"),
+                Status = EntityStatus.Active
+            },
+            new PromotionCustomer
+            {
+                PromotionId = Guid.Parse("b7a64cd9-f8ee-4465-a238-daa3426d87f8"),
+                ID = Guid.Parse("2f64cd9f-f8ee-4465-a238-daa3426d87a2"),
+                Status = EntityStatus.Active
+            }
+        };
+
+            // Add data to your DbContext
+            using (var context = new NeonCenimaContext())
+            {
+                context.PromotionTypes.AddRange(promotionTypeData);
+                context.Promotion.AddRange(promotionData);
+                context.PromotionCustomers.AddRange(promotionCustomerData);
+
+                context.SaveChanges();
+            }
+            var billData = new List<Bill>
+        {
+            new Bill
+            {
+                BillID = Guid.NewGuid(),
+                SoldDate = DateTime.Now,
+                TotalMoney = 150.75m,
+                Status = EntityStatus.Active
+            },
+            new Bill
+            {
+                BillID = Guid.NewGuid(),
+                SoldDate = DateTime.Now.AddDays(-1),
+                TotalMoney = 200.50m,
+                Status = EntityStatus.Active
+            }
+        };
+            modelBuilder.Entity<Bill>().HasData(billData);
+
+            // BillDetail
+            var billDetailData = new List<BillDetail>
+        {
+            new BillDetail
+            {
+                BillDetailID = Guid.NewGuid(),
+                BillID = billData[0].BillID,
+                CustomerID = Guid.NewGuid(),
+                TicketID = Guid.NewGuid(),
+                PaymentID = Guid.NewGuid(),
+                ServiceOderID = Guid.NewGuid(),
+                EmployeeID = Guid.NewGuid(),
+                PromotionID = Guid.NewGuid(),
+                Price = 50.00m,
+                NumberOfProduct = 2,
+                Status = EntityStatus.Active
+            }
+        };
+            modelBuilder.Entity<BillDetail>().HasData(billDetailData);
+
+            // Cenima
+            var cenimaData = new List<Cinema>
+        {
+            new Cinema
+            {
+                CinemaID = Guid.NewGuid(),
+                Name = "CineWorld",
+                Location = "123 Cinema Street",
+                PhoneNumber = "123-456-7890",
+                WebSite = "www.cineworld.com",
+                OpeningHours = "09:00 AM",
+                ClosingHours = "11:00 PM",
+                RoomNumber = 5
+            }
+        };
+            modelBuilder.Entity<Cinema>().HasData(cenimaData);
+
+            // Customers
+            var customerData = new List<Customers>
+        {
+            new Customers
+            {
+                CustomerID = Guid.NewGuid(),
+                CustomerName = "John Doe",
+                PassWord = "password123",
+                PhoneNumber = "987-654-3210",
+                Email = "john.doe@example.com",
+                Sex = "Male",
+                Images = new List<string> { "image1.jpg", "image2.jpg" },
+                DateOrBriht = new DateTime(1990, 1, 1),
+                ConfirmCode = "ABC123"
+            }
+        };
+            modelBuilder.Entity<Customers>().HasData(customerData);
+
+            // Employees
+            var employeeData = new List<Employees>
+        {
+            new Employees
+            {
+                EmployeesID = Guid.NewGuid(),
+                EmployeesName = "Jane Smith",
+                PassWord = "password456",
+                PhoneNumber = "555-555-5555",
+                Email = "jane.smith@example.com",
+                Sex = "Female",
+                Images = new List<string> { "profile1.jpg" },
+                DateOrBriht = new DateTime(1985, 5, 15),
+                Position = "Manager",
+                CreateDate = DateTime.Now
+            }
+        };
+            modelBuilder.Entity<Employees>().HasData(employeeData);
+
+            // MemberShip
+            var memberShipData = new List<MemberShip>
+        {
+            new MemberShip
+            {
+                MemberShipID = Guid.NewGuid(),
+                Rank = "Gold",
+                Endow = "10% discount",
+                CustomerID = customerData[0].CustomerID,
+                Status = EntityStatus.Active,
+                StarDate = DateTime.Now.AddMonths(-6)
+            }
+        };
+            modelBuilder.Entity<MemberShip>().HasData(memberShipData);
+
+            // PaymentMethod
+            var paymentMethodData = new List<PaymentMethod>
+        {
+            new PaymentMethod
+            {
+                PaymentID = Guid.NewGuid(),
+                Name = "Credit Card",
+                QRCode = null,
+                Status = EntityStatus.Active
+            }
+        };
+            modelBuilder.Entity<PaymentMethod>().HasData(paymentMethodData);
+
+            // Point
+            var pointData = new List<Point>
+        {
+            new Point
+            {
+                PointID = Guid.NewGuid(),
+                TotalPoint = 500,
+                DateEarned = DateTime.Now.AddMonths(-1),
+                CustomerID = customerData[0].CustomerID
+            }
+        };
+            modelBuilder.Entity<Point>().HasData(pointData);
+
+            // Rating
+            var ratingData = new List<Rating>
+        {
+            new Rating
+            {
+                RatingID = Guid.NewGuid(),
+                Ratings = 4,
+                Comment = "Great movie!",
+                RatingDate = DateTime.Now,
+                Status = EntityStatus.Active,
+                TicketID = Guid.NewGuid(),
+                CustomerID = customerData[0].CustomerID
+            }
+        };
+            modelBuilder.Entity<Rating>().HasData(ratingData);
+
+            // Room
+            var roomData = new List<Room>
+        {
+            new Room
+            {
+                RoomID = Guid.NewGuid(),
+                Name = "Room 1",
+                SeatingCapacity = 100,
+                CinemaID = cenimaData[0].CinemaID
+            }
+        };
+            modelBuilder.Entity<Room>().HasData(roomData);
+
+            // Screening
+            var screeningData = new List<Screening>
+        {
+            new Screening
+            {
+                ScreeningID = Guid.NewGuid(),
+                StarTime = DateTime.Now.AddHours(1),
+                EndTime = DateTime.Now.AddHours(3),
+                Price = 12.50m,
+                Status = EntityStatus.Active,
+                ScreeningDate = DateTime.Now.Date,
+                MovieID = Guid.NewGuid(),
+                RoomID = roomData[0].RoomID
+            }
+        };
+            modelBuilder.Entity<Screening>().HasData(screeningData);
+
+            // Seat
+            var seatData = new List<Seat>
+        {
+            new Seat
+            {
+                SeatID = Guid.NewGuid(),
+                SeatNumber = "A1",
+                SeatTypeID = Guid.NewGuid(),
+                RoomID = roomData[0].RoomID
+            }
+        };
+            modelBuilder.Entity<Seat>().HasData(seatData);
+
+            // SeatType
+            var seatTypeData = new List<SeatType>
+        {
+            new SeatType
+            {
+                SeatTypeID = Guid.NewGuid(),
+                SeatTypeName = "Standard",
+                Price = 10.00m
+            }
+        };
+            modelBuilder.Entity<SeatType>().HasData(seatTypeData);
+
+            // Service
+            var serviceData = new List<Service>
+        {
+            new Service
+            {
+                ServiceID = Guid.NewGuid(),
+                ServiceName = "Popcorn",
+                Price = 5.00m,
+                Status = EntityStatus.Active,
+                Description = "Large popcorn"
+            }
+        };
+            modelBuilder.Entity<Service>().HasData(serviceData);
+
+            // ServiceOder
+            var serviceOderData = new List<ServiceOder>
+        {
+            new ServiceOder
+            {
+                ServiceOderID = Guid.NewGuid(),
+                Quantity = 2,
+                TotalPrice = 10.00m,
+                ServiceID = serviceData[0].ServiceID
+            }
+        };
+            modelBuilder.Entity<ServiceOder>().HasData(serviceOderData);
+
+            // ShiftChange
+            var shiftChangeData = new List<ShiftChange>
+        {
+            new ShiftChange
+            {
+                ShiftChangeID = Guid.NewGuid(),
+                ShiftName = "Morning",
+                NewShift = "Afternoon",
+                RequetDate = DateTime.Now,
+                Status = EntityStatus.Active,
+                WorkShiftID = Guid.NewGuid()
+            }
+        };
+            modelBuilder.Entity<ShiftChange>().HasData(shiftChangeData);
+
+            // Ticket
+            var ticketData = new List<Ticket>
+        {
+            new Ticket
+            {
+                TicketID = Guid.NewGuid(),
+                Price = 12.50m,
+                BarCode = "ABC123456",
+                Status = EntityStatus.Active,
+                PurchaseDate = DateTime.Now,
+                CustomerID = customerData[0].CustomerID,
+                SeatID = seatData[0].SeatID,
+                ScreeningID = screeningData[0].ScreeningID
+            }
+        };
+            modelBuilder.Entity<Ticket>().HasData(ticketData);
+
+            // WorkShift
+            var workShiftData = new List<WorkShift>
+        {
+            new WorkShift
+            {
+                WorkShiftID = Guid.NewGuid(),
+                WorkDate = DateTime.Now.Date,
+                TimeStar = DateTime.Now.AddHours(-4),
+                TimeEnd = DateTime.Now,
+                Status = EntityStatus.Active,
+                EmployeesID = employeeData[0].EmployeesID
+            }
+        };
+            modelBuilder.Entity<WorkShift>().HasData(workShiftData);
         }
     }
+    #endregion
 }
+    
+
