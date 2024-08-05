@@ -53,7 +53,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
 
         }
 
