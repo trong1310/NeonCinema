@@ -52,7 +52,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
