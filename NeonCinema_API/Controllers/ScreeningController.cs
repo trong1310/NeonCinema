@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Screenings;
+using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Implement.Screenings;
 
@@ -11,9 +12,9 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class ScreeningController : ControllerBase
     {
-        private readonly ScreeningRepository _repos;
+        private readonly IScreeningRepository _repos;
         private readonly IMapper _mapper;
-        public ScreeningController(ScreeningRepository repos, IMapper mapper)
+        public ScreeningController(IScreeningRepository repos, IMapper mapper)
         {
             _repos = repos;
             _mapper = mapper;
