@@ -8,6 +8,7 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Movie;
 using NeonCinema_Infrastructure.Implement.MovieDetails;
+using NeonCinema_Infrastructure.Implement.MovieType;
 using NeonCinema_Infrastructure.Implement.Promotions;
 using NeonCinema_Infrastructure.Implement.Tickets;
 using System;
@@ -27,6 +28,7 @@ namespace NeonCinema_Infrastructure.Extention
                 // Configure your DbContext options here
                 options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
             });
+            services.AddTransient<IMovieTypeRepository, MovieTypeRepository>();
             services.AddTransient<IMovieDetailRepository,MovieDetailRepository>();
             services.AddTransient<IMovieRepository, MovieRepoitory>();
             services.AddTransient<IPromotionRepository, PromotionRepository>();
