@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.PromotionTypes;
 using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Application.Pagination;
-using NeonCinema_Infrastructure.Implement.Promotions;
+using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Infrastructure.Implement.PromotionTypes;
 
 namespace NeonCinema_API.Controllers
 {
@@ -12,50 +13,70 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class PromotionTypeController : ControllerBase
     {
-        private readonly IPromotionTypeRepository _repo;
+        private readonly IPromotionTypeRepository _repository;
         private readonly IMapper _mapper;
 
-        public PromotionTypeController(IPromotionTypeRepository repo, IMapper mapper)
+        public PromotionTypeController(IPromotionTypeRepository repository, IMapper mapper)
         {
-            _repo = repo;
+            _repository = repository;
             _mapper = mapper;
         }
-        [HttpGet("get-all")]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationRequest paginationParams, CancellationToken cancellationToken)
+
+        [HttpGet ("get-all")]
+        public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request, CancellationToken cancellationToken)
         {
-            var promotionTypes = await _repo.GetAllAsync(paginationParams, cancellationToken);
-            return Ok(promotionTypes);
+            var result = await _repository.GetAllAsync(request, cancellationToken);
+            return Ok(result);
         }
 
         [HttpGet("get-by-id")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var promotionType = await _repo.GetByIdAsync(id, cancellationToken);
-            if (promotionType == null) return NotFound();
-            return Ok(promotionType);
+            var entity = await _repository.GetByIdAsync(id, cancellationToken);
+            if (entity == null)
+                return NotFound();
+
+            var dto = _mapper.Map<PromotionTypeViewRequest>(entity);
+            return Ok(dto);
         }
 
-        [HttpPost("create-protype")]
-        public async Task<IActionResult> Create(PromotionTypeCreateRequest request, CancellationToken cancellationToken)
+        [HttpPost("create-promo")]
+        public async Task<IActionResult> Create([FromBody] PromotionTypeCreateRequest request, CancellationToken cancellationToken)
         {
-            var promotionType = await _repo.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(GetById), new { id = promotionType.ID }, promotionType);
+           
+            try
+            {
+                var entity = _mapper.Map<PromotionType>(request);
+                var response = await _repository.AddAsync(entity, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+               return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPut("update-protype")]
-        public async Task<IActionResult> Update(Guid id, PromotionTypeCreateRequest request, CancellationToken cancellationToken)
+        [HttpPut("Update-promo")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] PromotionTypeViewRequest request, CancellationToken cancellationToken)
         {
-            var promotionType = await _repo.UpdateAsync(id, request, cancellationToken);
-            if (promotionType == null) return NotFound();
-            return Ok(promotionType);
+            if (id != request.PromotionTypeID)
+                return BadRequest();
+
+            var entity = await _repository.GetByIdAsync(id, cancellationToken);
+            if (entity == null)
+                return NotFound();
+
+            _mapper.Map(request, entity);
+            var response = await _repository.UpdateAsync(entity, cancellationToken);
+            return StatusCode((int)response.StatusCode);
         }
 
-        [HttpDelete("delete-protype")]
+        [HttpDelete("delete-pro")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var deleted = await _repo.DeleteAsync(id, cancellationToken);
-            if (!deleted) return NotFound();
-            return NoContent();
+            var response = await _repository.DeleteAsync(id, cancellationToken);
+            return StatusCode((int)response.StatusCode);
         }
     }
 }

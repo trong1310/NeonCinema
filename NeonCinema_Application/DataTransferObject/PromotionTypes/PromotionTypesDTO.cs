@@ -9,8 +9,8 @@ namespace NeonCinema_Application.DataTransferObject.PromotionTypes
 {
     public class PromotionTypesDTO
     {
-        public Guid PromotionId { get; set; }
-        public Guid ID { get; set; }
+        public Guid PromotionTypeID { get; set; }
+        public string PromotionName { get; set; }
         public EntityStatus Status { get; set; }
     }
 }

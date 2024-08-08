@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Application.DataTransferObject.PromotionTypes
+namespace NeonCinema_Application.DataTransferObject.PromotionCustomers
 {
-    public class PromotionTypeCreateRequest
+    public class CreatePromotionCustomerRequest
     {
-        public string PromotionName { get; set; }
+        public Guid PromotionId { get; set; }
+        public Guid ID { get; set; }
         public EntityStatus Status { get; set; }
     }
 }

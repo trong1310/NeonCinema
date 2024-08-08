@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.PromotionTypes
 {
-    public class PromotionTypeCreateRequest
+    public class UpdatePromotionTypeRequest
     {
         public string PromotionName { get; set; }
         public EntityStatus Status { get; set; }

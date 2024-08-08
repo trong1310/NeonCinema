@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Promotions
 {
-    public class CreatePromotionRequest
+    public class PromotionViewRequest
     {
+        public Guid PromotionID { get; set; }
         public string PromotionCode { get; set; }
         public string Description { get; set; }
         public DateTime StartDate { get; set; }
