@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Application.Interface
+namespace NeonCinema_Application.Interface.Moviess
 {
     public interface IMovieDetailRepository
     {
         Task<HttpResponseMessage> Create(MovieDetail movies, CancellationToken cancellationToken);
         Task<HttpResponseMessage> Update(MovieDetail movies, CancellationToken cancellationToken);
         Task<HttpResponseMessage> Delete(MovieDetail movies, CancellationToken cancellationToken);
-        Task<PaginationResponse<MovieDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken);
+        Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken);
     }
 }

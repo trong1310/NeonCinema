@@ -1,16 +1,21 @@
 ﻿using AutoMapper;
+using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.MovieDetail;
-using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.Moviess;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Extention;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NeonCinema_Infrastructure.Implement.MovieDetails
 {
@@ -88,19 +93,129 @@ namespace NeonCinema_Infrastructure.Implement.MovieDetails
             }
         }
 
-        public Task<HttpResponseMessage> Delete(MovieDetail movies, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(MovieDetail movies, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var objDele = _context.MoviesDetails.FindAsync(movies.MovieDetailID, cancellationToken);
+                if (objDele == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("MovieDetail not found")
+                    };
+                }
+                movies.Deleted = true;
+                _context.MoviesDetails.Update(movies);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Successfully")
+                };
+            }
+            catch (Exception ex) 
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
         }
 
-        public Task<PaginationResponse<MovieDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+           var query = _context.MoviesDetails.Include(x => x.Movies).AsNoTracking();
+            if (!String.IsNullOrWhiteSpace(requets.ActorID.ToString()))
+            {
+                query = query.Where(x => x.ActorID.ToString().Contains(requets.ActorID.ToString()));
+            }
+            else if (!String.IsNullOrWhiteSpace(requets.DirectorName))
+            {
+                query = query.Where(x => x.Director.FullName.Contains(requets.DirectorName));
+            }
+            else if (!String.IsNullOrWhiteSpace(requets.Lenguage))
+            {
+                query = query.Where(x => x.Lenguage.LenguageName.Contains(requets.Lenguage));
+            }
+            else if (!String.IsNullOrWhiteSpace(requets.Genre))
+            {
+                query = query.Where(x => x.Genre.GenreName.Contains(requets.Genre));
+            }
+            else if (!String.IsNullOrWhiteSpace(requets.MovieTypeName))
+            {
+                query = query.Where(x => x.MovieType.MovieTypeName.Contains(requets.MovieTypeName));
+            }
+            else if (requets.AgeAllowed.HasValue)
+            {
+                query = query.Where(x => x.AgeAllowed >= requets.AgeAllowed);
+            }
+            var result =await query.PaginateAsync<MovieDetail,MovieDetailDTO> (requets,_mapper,cancellationToken);
+                result.Data = (from a in result.Data
+                               join b in query on 
+                               a.MovieDetailID equals b.MovieDetailID
+                               select new MovieDetailDTO
+                               { 
+                                   ActorID = b.ActorID,
+                                   DirectorID = b.DirectorID,
+                                   MovieDetailID = b.MovieDetailID,
+                                   AgeAllowed = b.AgeAllowed,
+                                   Duration = b.Duration,
+                                   EndTime = b.EndTime,
+                                   GenreID = b.GenreID,
+                                   Images = b.Images,
+                                   LenguageID = b.LenguageID,
+                                   MovieID = b.MovieID,
+                                   MovieTypeID = b.MovieTypeID,
+                                   StarTime = b.StarTime
+                                 
+                               } 
+                               ).ToList();
+            return new PaginationResponse<MovieDetailDTO>
+            {
+                HasNext = result.HasNext,
+                Data = result.Data,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+            };
         }
 
-        public Task<HttpResponseMessage> Update(NeonCinema_Domain.Database.Entities.MovieDetail movies, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(MovieDetail movies, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var objMovieDetail = await _context.MoviesDetails.FirstOrDefaultAsync(x => x.MovieDetailID == movies.MovieDetailID);
+                if (objMovieDetail == null) 
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotFound)
+                    {
+                        Content = new StringContent("MovieDetail Not Found")
+                    };
+                }
+                objMovieDetail.ActorID = movies.ActorID;
+                objMovieDetail.AgeAllowed   = movies.AgeAllowed;
+                objMovieDetail.DirectorID = movies.DirectorID;
+                objMovieDetail.Duration = movies.Duration;
+                objMovieDetail.StarTime = movies.StarTime;
+                objMovieDetail.EndTime = movies.EndTime;
+                objMovieDetail.GenreID = movies.GenreID;
+                objMovieDetail.LenguageID = movies.LenguageID;
+                objMovieDetail.MovieTypeID = movies.MovieTypeID;
+                objMovieDetail.Images = movies.Images;
+                _context.Update(objMovieDetail);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Updated Successfully")
+                };
+            }
+            catch (Exception ex) 
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
         }
+
     }
 }

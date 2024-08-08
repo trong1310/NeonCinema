@@ -18,7 +18,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x=>x.Name).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.SeatingCapacity).HasDefaultValue(50).IsRequired();
 
-            builder.HasOne(x=>x.Cenima).WithMany(x=>x.Rooms).HasForeignKey(x=>x.CenimaID);
+            builder.HasOne(x=>x.Cinema).WithMany(x=>x.Rooms).HasForeignKey(x=>x.CinemaID);
 
         }
     }
