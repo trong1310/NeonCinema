@@ -10,7 +10,8 @@ namespace NeonCinema_Application.DataTransferObject.MovieDetail
     public class MovieDetailViewRequets : PaginationRequest
     {
         public int? AgeAllowed { get; set; }
-        public string? ActorName { get; set; }
+
+        public Guid? ActorID { get; set; }
         public string? DirectorName { get; set; }
         public string? MovieTypeName { get; set; }
         public string? Lenguage { get; set; }

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Movie;
-using NeonCinema_Application.Interface;
-using NeonCinema_Domain.Database.Entities;  
+using NeonCinema_Application.Interface.Moviess;
+using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_API.Controllers
 {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
-using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.Moviess;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;

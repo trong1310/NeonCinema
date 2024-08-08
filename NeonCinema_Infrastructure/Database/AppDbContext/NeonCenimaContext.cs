@@ -53,10 +53,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-
-            //optionsBuilder.UseSqlServer("Server=MRG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
-            optionsBuilder.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
-
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
         }
 
@@ -552,9 +549,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             }
         };
             modelBuilder.Entity<WorkShift>().HasData(workShiftData);
-        }
+        } 
+        #endregion
     }
-    #endregion
+   
 }
     
 
