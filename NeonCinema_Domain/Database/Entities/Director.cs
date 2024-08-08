@@ -17,7 +17,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Nationality { get; set; }
         public string? Biography { get; set; }
         public string? Awards { get; set; }
-        public List<string> Images { get; set; }
+        public string Images { get; set; }
 
         //
 
