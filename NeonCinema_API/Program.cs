@@ -4,6 +4,7 @@ using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile;
 using NeonCinema_Infrastructure.Implement.Employees;
+using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChanges;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 

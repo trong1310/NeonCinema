@@ -6,6 +6,7 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
+using NeonCinema_Infrastructure.Implement.Bills;
 using NeonCinema_Infrastructure.Implement.Employees;
 using NeonCinema_Infrastructure.Implement.Movie;
 using NeonCinema_Infrastructure.Implement.PromotionCustomer;
@@ -29,8 +30,10 @@ namespace NeonCinema_Infrastructure.Extention
         {
             services.AddDbContext<NeonCenimaContext>(options =>
             {
+
                 //options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
             options.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+
             });
             services.AddTransient<IEmployeesRepository, EmployeesRepository>();
             services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
@@ -39,6 +42,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IPromotionRepository, PromotionRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
+            services.AddScoped<IBillRepository, BillRepository>();
             services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
             services.AddTransient<IPromotionCustomerRepository, PromotionCustomerRepository>();
             return services;

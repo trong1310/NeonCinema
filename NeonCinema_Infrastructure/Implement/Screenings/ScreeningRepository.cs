@@ -119,7 +119,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             var lst = await _context.Screening
                 .Include(x => x.Movies)
                 .Include(x => x.Room)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return lst.Select(scr => _mapper.Map<ScreeningDTO>(scr)).ToList();
         }
