@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Employees;
 using NeonCinema_Infrastructure.Implement.Movie;
-using NeonCinema_Infrastructure.Implement.Promotions;
+using NeonCinema_Infrastructure.Implement.PromotionCustomer;
+using NeonCinema_Infrastructure.Implement.PromotionTypes;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChanges;
 using NeonCinema_Infrastructure.Implement.Tickets;
@@ -27,7 +29,8 @@ namespace NeonCinema_Infrastructure.Extention
         {
             services.AddDbContext<NeonCenimaContext>(options =>
             {
-                options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
+                //options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
+            options.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
             });
             services.AddTransient<IEmployeesRepository, EmployeesRepository>();
             services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
@@ -37,6 +40,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
+            services.AddTransient<IPromotionCustomerRepository, PromotionCustomerRepository>();
             return services;
         }
     }

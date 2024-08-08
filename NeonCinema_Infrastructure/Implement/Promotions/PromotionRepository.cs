@@ -3,11 +3,13 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,97 +18,79 @@ namespace NeonCinema_Infrastructure.Implement
     public class PromotionRepository : IPromotionRepository
     {
         private readonly NeonCenimaContext _context;
-        private readonly IMapper _mapper;
 
-        public PromotionRepository(NeonCenimaContext context, IMapper mapper)
+        public PromotionRepository(NeonCenimaContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<bool> AddPromotionAsync(Promotion promotion, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<Promotion>> GetAllAsync(PaginationRequest request, CancellationToken cancellationToken)
         {
-            try
+            var query = _context.Promotion.AsQueryable();
+
+            var totalItems = await query.CountAsync(cancellationToken);
+            var items = await query.Skip((request.PageNumber - 1) * request.PageSize)
+                                    .Take(request.PageSize)
+                                    .ToListAsync(cancellationToken);
+
+            return new PaginationResponse<Promotion>
             {
-                promotion.PromotionID = Guid.NewGuid();
-                promotion.CreatedTime = DateTime.UtcNow;
-                promotion.ModifiedTime = DateTime.UtcNow;
-              
-                await _context.Promotion.AddAsync(promotion, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
-                return true;
-            }
-            catch (Exception)
-            {
-                // Log the exception if necessary
-                return false;
-            }
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                HasNext = totalItems > request.PageNumber * request.PageSize,
+                Data = items
+            };
         }
 
-        public async Task<bool> DeletePromotionAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Promotion> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            try
+            return await _context.Promotion.FindAsync(new object[] { id }, cancellationToken);
+        }
+
+        public async Task<HttpResponseMessage> AddAsync(Promotion promotion, CancellationToken cancellationToken)
+        {
+            await _context.Promotion.AddAsync(promotion, cancellationToken);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+            return result > 0 ? new HttpResponseMessage(HttpStatusCode.Created) : new HttpResponseMessage(HttpStatusCode.BadRequest);
+        }
+
+        public async Task<HttpResponseMessage> UpdateAsync(Promotion request, CancellationToken cancellationToken)
+        {
+            var pro = await _context.Promotion.FirstOrDefaultAsync(x => x.PromotionID == request.PromotionID);
+            if (pro == null)
             {
-                var promotion = await _context.Promotion.FindAsync(id);
-                if (promotion != null)
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    _context.Promotion.Remove(promotion);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return true;
-                }
-                return false;
+                    Content = new StringContent("Movie not found")
+                };
             }
-            catch (Exception)
+            pro.Status = request.Status;
+            pro.StarDate = request.StarDate;
+            pro.proviso = request.proviso;
+            pro.PromotionCustomers = request.PromotionCustomers;
+            pro.PromotionID = request.PromotionID;  
+            pro.PromotionCode   = request.PromotionCode;
+            pro.BillDetail = request.BillDetail;
+            pro.Description = request.Description;
+            pro.Discount = request.Discount;
+            _context.Promotion.Update(pro);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
-                // Log the exception if necessary
-                return false;
-            }
+                Content = new StringContent("Updated successfully")
+            };
         }
 
-        public async Task<List<PromotionDTO>> GetAllPromotionsAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Promotion
-                .Where(x => x.CreatedBy == id && x.DeletedTime == null) // Fetch only active promotions
-                .ProjectTo<PromotionDTO>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<PromotionDTO> GetPromotionByIdAsync(Guid id, CancellationToken cancellationToken)
-        {
-            return await _context.Promotion
-                .Where(x => x.PromotionID == id && x.DeletedTime == null) // Fetch only active promotions
-                .ProjectTo<PromotionDTO>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
-
-        public async Task<bool> UpdatePromotionAsync(Promotion promotion, CancellationToken cancellationToken)
-        {
-            try
+            var entity = await _context.Promotion.FindAsync(id, cancellationToken);
+            if (entity != null)
             {
-                var existingPromotion = await _context.Promotion.FindAsync(promotion.PromotionID);
-                if (existingPromotion == null)
-                {
-                    return false;
-                }
-
-                existingPromotion.Quantity = promotion.Quantity;
-                existingPromotion.Status = promotion.Status;
-                existingPromotion.Discount = promotion.Discount;
-                existingPromotion.StarDate = promotion.StarDate;
-                existingPromotion.EndDate = promotion.EndDate;
-                existingPromotion.Description = promotion.Description;
-                existingPromotion.proviso = promotion.proviso;
-                existingPromotion.ModifiedTime = DateTime.UtcNow;
-
-                _context.Promotion.Update(existingPromotion);
-                await _context.SaveChangesAsync(cancellationToken);
-                return true;
+                _context.Promotion.Remove(entity);
+                var result = await _context.SaveChangesAsync(cancellationToken);
+                return result > 0 ? new HttpResponseMessage(HttpStatusCode.NoContent) : new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-            catch (Exception)
-            {
-                // Log the exception if necessary
-                return false;
-            }
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
     }
 }
