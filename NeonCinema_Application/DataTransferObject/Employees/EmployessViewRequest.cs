@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NeonCinema_Application.DataTransferObject.Employees
+{
+    public class EmployessViewRequest
+    {
+        public string EmployeesName { get; set; }
+        
+    }
+}

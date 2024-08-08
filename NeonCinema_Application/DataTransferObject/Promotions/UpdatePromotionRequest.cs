@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeonCinema_Domain.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
         public int Quantity { get; set; }
         public string Proviso { get; set; }
         public string Discount { get; set; }
-        public Guid PromotionTypeID { get; set; } 
+        public EntityStatus Status { get; set; }
+        public Guid PromotionTypeID { get; set; }
     }
 }

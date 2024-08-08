@@ -1,5 +1,6 @@
 ﻿using NeonCinema_Application.DataTransferObject.PromotionTypes;
 using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,11 @@ namespace NeonCinema_Application.Interface.Promotions
 {
     public interface IPromotionTypeRepository
     {
-        Task<IEnumerable<PromotionTypesDTO>> GetAllAsync(PaginationRequest paginationParams, CancellationToken cancellationToken);
-        Task<PromotionTypesDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<PromotionTypesDTO> CreateAsync(PromotionTypeCreateRequest request, CancellationToken cancellationToken);
-        Task<PromotionTypesDTO> UpdateAsync(Guid id, PromotionTypeCreateRequest request, CancellationToken cancellationToken);
-        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
+
+        Task<PaginationResponse<PromotionType>> GetAllAsync(PaginationRequest request, CancellationToken cancellationToken);
+        Task<PromotionType> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> AddAsync(PromotionType promotionType, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> UpdateAsync(PromotionType promotionType, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> DeleteAsync(Guid id, CancellationToken cancellationToken);
     }
 }

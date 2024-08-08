@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Threading;
@@ -13,106 +14,64 @@ namespace NeonCinema_API.Controllers.PromotionController
     [ApiController]
     public class PromotionController : ControllerBase
     {
-        private readonly IPromotionRepository _repo;
+
+        private readonly IPromotionRepository _repository;
         private readonly IMapper _mapper;
 
-        public PromotionController(IPromotionRepository repo, IMapper mapper)
+        public PromotionController(IPromotionRepository repository, IMapper mapper)
         {
-            _repo = repo;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        [HttpGet("get-all-promotion")]
-        public async Task<IActionResult> GetAllPromotions(Guid id, CancellationToken cancellationToken)
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var promotions = await _repo.GetAllPromotionsAsync(id, cancellationToken);
-                return Ok(promotions);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            var result = await _repository.GetAllAsync(request, cancellationToken);
+            return Ok(result);
         }
 
-        [HttpGet("get-by-id/{id}")]
-        public async Task<IActionResult> GetPromotionById(Guid id, CancellationToken cancellationToken)
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var promotion = await _repo.GetPromotionByIdAsync(id, cancellationToken);
-                if (promotion == null)
-                {
-                    return NotFound("Promotion not found");
-                }
-                return Ok(promotion);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            var entity = await _repository.GetByIdAsync(id, cancellationToken);
+            if (entity == null)
+                return NotFound();
+
+            var dto = _mapper.Map<PromotionViewRequest>(entity);
+            return Ok(dto);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreatePromotion([FromBody] CreatePromotionRequest request, CancellationToken cancellationToken)
+        [HttpPost("create-promotion")]
+        public async Task<IActionResult> Create([FromBody] CreatePromotionRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var promotion = _mapper.Map<Promotion>(request);
-                var result = await _repo.AddPromotionAsync(promotion, cancellationToken);
-                if (result)
-                {
-                    return CreatedAtAction(nameof(GetPromotionById), new { id = promotion.PromotionID }, promotion);
-                }
-                return BadRequest("Unable to create promotion");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            var entity = _mapper.Map<Promotion>(request);
+            var response = await _repository.AddAsync(entity, cancellationToken);
+            return StatusCode((int)response.StatusCode);
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdatePromotion([FromBody] UpdatePromotionRequest request, CancellationToken cancellationToken)
+        [HttpPut("Update-promotion")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePromotionRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var promotion = _mapper.Map<Promotion>(request);
-                var result = await _repo.UpdatePromotionAsync(promotion, cancellationToken);
-                if (result)
-                {
-                    return Ok("Promotion updated successfully");
-                }
-                return NotFound("Promotion not found");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            if (id != request.PromotionID)
+                return BadRequest();
+
+            var entity = await _repository.GetByIdAsync(id, cancellationToken);
+            if (entity == null)
+                return NotFound();
+
+            _mapper.Map(request, entity);
+            var response = await _repository.UpdateAsync(entity, cancellationToken);
+            return StatusCode((int)response.StatusCode);
         }
 
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeletePromotion(Guid id, CancellationToken cancellationToken)
+        [HttpDelete("Delete-promo")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = await _repo.DeletePromotionAsync(id, cancellationToken);
-                if (result)
-                {
-                    return Ok("Promotion deleted successfully");
-                }
-                return NotFound("Promotion not found");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            var response = await _repository.DeleteAsync(id, cancellationToken);
+            return StatusCode((int)response.StatusCode);
         }
     }
+
 }
+

@@ -9,7 +9,6 @@ namespace NeonCinema_Application.DataTransferObject.PromotionTypes
 {
     public class PromotionTypeCreateRequest
     {
-        public Guid PromotionTypeID { get; set; }
         public string PromotionName { get; set; }
         public EntityStatus Status { get; set; }
     }

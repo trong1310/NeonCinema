@@ -12,8 +12,11 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     public class PromotionTypeProfile: Profile
     {
         public PromotionTypeProfile() {
-            CreateMap<PromotionType, PromotionTypesDTO>();
-            CreateMap<PromotionTypeCreateRequest, PromotionType>();
+            CreateMap<PromotionType, PromotionTypesDTO>().ReverseMap();
+         
+            CreateMap<PromotionType, PromotionTypeCreateRequest>().ReverseMap();
+            CreateMap<PromotionType, UpdatePromotionTypeRequest>().ReverseMap();
+            CreateMap<PromotionType, PromotionTypeViewRequest>().ReverseMap();
         }
        
     }
