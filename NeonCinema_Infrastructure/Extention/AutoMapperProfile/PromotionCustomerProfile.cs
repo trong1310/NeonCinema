@@ -11,7 +11,8 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
 {
     public class PromotionCustomerProfile : Profile
     {
-        public PromotionCustomerProfile() {
+        public PromotionCustomerProfile()
+        {
 
             CreateMap<PromotionCustomer, CreatePromotionCustomerRequest>().ReverseMap();
             CreateMap<PromotionCustomer, UpdatePromotionCustomerRequest>().ReverseMap();

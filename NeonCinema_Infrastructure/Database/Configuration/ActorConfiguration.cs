@@ -25,7 +25,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x=>x.Awards).HasMaxLength(256).IsFixedLength();
             builder.Property(x => x.Images).HasConversion(
                     c => JsonConvert.SerializeObject(c),
-                    c => JsonConvert.DeserializeObject<List<string>>(c));
+                    c => JsonConvert.DeserializeObject<string>(c));
 
 
 
