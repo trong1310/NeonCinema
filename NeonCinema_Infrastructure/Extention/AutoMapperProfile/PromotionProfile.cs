@@ -15,11 +15,12 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     {
         public PromotionProfile() {
 
-            CreateMap<Promotion, PromotionDTO>();
-            CreateMap<CreatePromotionRequest, Promotion>();
-            CreateMap<UpdatePromotionRequest, Promotion>();
+            CreateMap<Promotion, PromotionDTO>().ReverseMap();
+            CreateMap<CreatePromotionRequest, Promotion>().ReverseMap();
+            CreateMap<UpdatePromotionRequest, Promotion>().ReverseMap();
 
-            CreateMap<PromotionType, PromotionTypesDTO>();
+            CreateMap<PromotionType, PromotionTypesDTO>().ReverseMap();
+            CreateMap<Promotion ,PromotionViewRequest>().ReverseMap();
 
             CreateMap<PromotionCustomer, PromotionCustomersDTO>();
 

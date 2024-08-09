@@ -10,8 +10,9 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class PromotionCustomer :  EntityBase
     {
-        public Guid PromotionId { get; set; }
         public Guid ID { get; set; }
+        public Guid PromotionId { get; set; }
+   
         public EntityStatus Status { get; set; }
         //
         public virtual Promotion? Promotion { get; set; }

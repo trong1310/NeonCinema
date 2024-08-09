@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement
 
         public async Task<Promotion> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Promotion.FindAsync(new object[] { id }, cancellationToken);
+            return await _context.Promotion.FirstOrDefaultAsync(x => x.PromotionID == id, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> AddAsync(Promotion promotion, CancellationToken cancellationToken)

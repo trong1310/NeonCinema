@@ -9,8 +9,9 @@ namespace NeonCinema_Application.DataTransferObject.PromotionCustomers
 {
     public class UpdatePromotionCustomerRequest
     {
-        public Guid PromotionId { get; set; }
         public Guid ID { get; set; }
+        public Guid PromotionId { get; set; }
+        
         public EntityStatus Status { get; set; }
     }
 }
