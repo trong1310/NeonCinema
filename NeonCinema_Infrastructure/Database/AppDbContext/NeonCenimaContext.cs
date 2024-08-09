@@ -64,17 +64,17 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             FakeData(modelBuilder);
         }
-        private void FakeData(ModelBuilder modelBuilder)
+        protected void FakeData(ModelBuilder modelBuilder)
         {
 
             #region seendingdata
             var actorFaker = new Faker<Actor>("vi")
                 .RuleFor(at => at.ActorID, x => Guid.NewGuid())
-                .RuleFor(at => at.FullName, x => x.Movies().ActorName())
+                .RuleFor(at => at.FullName, x => x.Name.FullName())
                 .RuleFor(at => at.Address, x => x.Address.FullAddress())
                 .RuleFor(at => at.StageName, x => x.Name.LastName())
-                .RuleFor(at => at.Awards, x => x.Lorem.Paragraph())
-                .RuleFor(at => at.Biography, x => x.Lorem.Paragraphs())
+                .RuleFor(at => at.Awards, x => x.Lorem.Sentence(400, 100))
+                .RuleFor(at => at.Biography, x => x.Lorem.Sentence(400,100))
                 .RuleFor(at => at.BirthDate, x => x.Date.Past(65, DateTime.Now.AddYears(-16)))
                 .RuleFor(at => at.Images, x => x.Image.PicsumUrl(400, 300))
                 .RuleFor(at => at.Nationality, x => x.Address.City());
@@ -83,20 +83,20 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             //
             var directorFaker = new Faker<Director>("vi")
                .RuleFor(at => at.DirectorID, x => Guid.NewGuid())
-               .RuleFor(at => at.FullName, x => x.Movies().ActorName())
+               .RuleFor(at => at.FullName, x => x.Name.FullName())
                .RuleFor(at => at.Address, x => x.Address.FullAddress())
                .RuleFor(at => at.StageName, x => x.Name.LastName())
-               .RuleFor(at => at.Awards, x => x.Lorem.Paragraph())
-               .RuleFor(at => at.Biography, x => x.Lorem.Paragraphs())
+               .RuleFor(at => at.Awards, x => x.Lorem.Sentence(400,100))
+               .RuleFor(at => at.Biography, x => x.Lorem.Sentence(400,100))
                .RuleFor(at => at.BirthDate, x => x.Date.Past(65, DateTime.Now.AddYears(-16)))
                .RuleFor(at => at.Images, x => x.Image.PicsumUrl(400, 300))
                .RuleFor(at => at.Nationality, x => x.Address.City());
             var directors = directorFaker.Generate(20);
-            modelBuilder.Entity<Actor>().HasData(directors);
+            modelBuilder.Entity<Director>().HasData(directors);
             //
             var genreFaker = new Faker<Genre>("vi")
                  .RuleFor(at => at.GenreID, x => Guid.NewGuid())
-               .RuleFor(at => at.GenreName, x => x.Movies().MovieTitle());
+               .RuleFor(at => at.GenreName, x => x.Internet.DomainName());
             var genres = genreFaker.Generate(50);
             modelBuilder.Entity<Genre>().HasData(genres);
             //
@@ -121,21 +121,22 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 .RuleFor(at => at.LenguageID, x => Guid.NewGuid())
               .RuleFor(at => at.LenguageName, x => x.PickRandom(langs));
             var lenguages = lenguageFaker.Generate(50);
-            modelBuilder.Entity<Genre>().HasData(lenguages);
+            modelBuilder.Entity<Lenguage>().HasData(lenguages);
             //
             var movieTypeFaker = new Faker<MovieType>("vi")
                .RuleFor(at => at.MovieTypeID, x => Guid.NewGuid())
-             .RuleFor(at => at.MovieTypeName, x => x.Movies().MovieTitle());
+             .RuleFor(at => at.MovieTypeName, x => x.Internet.DomainName());
             var movieTypes = movieTypeFaker.Generate(50);
-            modelBuilder.Entity<Genre>().HasData(movieTypes);
+            modelBuilder.Entity<MovieType>().HasData(movieTypes);
             //
 
             var movieFaker = new Faker<Movies>("vi")
            .RuleFor(at => at.MovieID, x => Guid.NewGuid())
+             .RuleFor(at => at.MovieName, x => x.Internet.DomainName())
              .RuleFor(at => at.Description, x => x.Lorem.Text())
              .RuleFor(at => at.Status, x => x.PickRandom(MovieStatus.Active));
             var movies = movieFaker.Generate(200);
-            modelBuilder.Entity<Genre>().HasData(movies);
+            modelBuilder.Entity<Movies>().HasData(movies);
             //
          //   var movieDetailFaker = new Faker<MovieDetail>("vi")
          //.RuleFor(at => at.MovieDetailID, x => Guid.NewGuid())
