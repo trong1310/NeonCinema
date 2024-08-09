@@ -16,9 +16,9 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.ToTable("Cinema");
             builder.HasKey(x=>x.CinemaID);
             builder.Property(x => x.Name).HasMaxLength(50).IsFixedLength().IsUnicode(true);
-            builder.Property(x => x.Location).HasMaxLength(256).IsFixedLength().IsUnicode(true);
+            builder.Property(x => x.Location);
             builder.Property(x=>x.PhoneNumber).HasMaxLength(10).IsRequired();
-            builder.Property(x => x.WebSite).HasMaxLength(256).IsFixedLength().IsUnicode(true);
+            builder.Property(x => x.WebSite);
             builder.Property(x=>x.RoomNumber).HasDefaultValue(0).IsRequired();
         }
     }

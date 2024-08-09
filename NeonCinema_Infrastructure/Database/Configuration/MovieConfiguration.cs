@@ -16,8 +16,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.ToTable("Movie");
             builder.HasKey(x => x.MovieID);
             builder.Property(x => x.MovieName).HasMaxLength(50).IsFixedLength();
-            builder.Property(x=>x.Description).HasMaxLength(256).IsFixedLength();
-
+            builder.Property(x => x.Description);
         }
     }
 }
