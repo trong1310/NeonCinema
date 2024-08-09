@@ -15,7 +15,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Genre");
             builder.HasKey(x => x.GenreID);
-            builder.Property(x => x.GenreName).HasMaxLength(50).IsFixedLength();
+          
         }
     }
 }
