@@ -15,7 +15,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("SeatType");
             builder.HasKey(x=>x.SeatTypeID);
-            builder.Property(x=>x.SeatTypeName).HasMaxLength(256).IsFixedLength();
+            builder.Property(x=>x.SeatTypeName);
             builder.Property(x=>x.Price).HasDefaultValue(0).IsRequired();
         }
     }

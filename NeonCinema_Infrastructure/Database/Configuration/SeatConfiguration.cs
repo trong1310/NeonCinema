@@ -15,7 +15,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Seat");
             builder.HasKey(x=>x.SeatID);
-            builder.Property(x=>x.SeatNumber).HasMaxLength(256).IsFixedLength().IsUnicode(true);
+            builder.Property(x=>x.SeatNumber);
 
             builder.HasOne(x=>x.SeatType).WithMany(x=>x.Seats).HasForeignKey(x=>x.SeatTypeID);
             builder.HasOne(x=>x.Room).WithMany(x=>x.Seats).HasForeignKey(x=>x.RoomID);    

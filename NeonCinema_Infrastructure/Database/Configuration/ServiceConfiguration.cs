@@ -17,7 +17,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.HasKey(x=>x.ServiceID);
             builder.Property(x=>x.ServiceName).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.Price).HasDefaultValue(0).IsRequired();
-            builder.Property(x=> x.Description).HasMaxLength(256).IsFixedLength();
+            builder.Property(x=> x.Description);
         }
     }
 }

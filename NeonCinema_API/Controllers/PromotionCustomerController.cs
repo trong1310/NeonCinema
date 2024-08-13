@@ -29,9 +29,9 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpGet("get-by-id")]
-        public async Task<IActionResult> GetById(Guid promotionId, Guid customerId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById(Guid promotionId, CancellationToken cancellationToken)
         {
-            var entity = await _repository.GetByIdAsync(promotionId, customerId, cancellationToken);
+            var entity = await _repository.GetByIdAsync(promotionId, cancellationToken);
             if (entity == null)
                 return NotFound();
 
@@ -53,7 +53,7 @@ namespace NeonCinema_API.Controllers
             if (promotionId != request.PromotionId || customerId != request.ID)
                 return BadRequest();
 
-            var entity = await _repository.GetByIdAsync(promotionId, customerId, cancellationToken);
+            var entity = await _repository.GetByIdAsync(promotionId, cancellationToken);
             if (entity == null)
                 return NotFound();
 

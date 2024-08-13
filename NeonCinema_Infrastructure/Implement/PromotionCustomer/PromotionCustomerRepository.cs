@@ -22,7 +22,7 @@ namespace NeonCinema_Infrastructure.Implement.PromotionCustomer
 
         public async Task<HttpResponseMessage> AddAsync(NeonCinema_Domain.Database.Entities.PromotionCustomer promotionCustomer, CancellationToken cancellationToken)
         {
-            promotionCustomer.PromotionId = Guid.NewGuid();
+            promotionCustomer.ID = Guid.NewGuid();
             await _context.PromotionCustomers.AddAsync(promotionCustomer, cancellationToken);
             var result = await _context.SaveChangesAsync(cancellationToken);
             return result > 0 ? new HttpResponseMessage(HttpStatusCode.Created) : new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -31,7 +31,7 @@ namespace NeonCinema_Infrastructure.Implement.PromotionCustomer
         public async Task<HttpResponseMessage> DeleteAsync(Guid promotionId, Guid customerId, CancellationToken cancellationToken)
         {
             var entity = await _context.PromotionCustomers
-            .FirstOrDefaultAsync(pc => pc.PromotionId == promotionId && pc.ID == customerId, cancellationToken);
+            .FirstOrDefaultAsync(pc => pc.ID == promotionId && pc.ID == customerId, cancellationToken);
             if (entity != null)
             {
                 _context.PromotionCustomers.Remove(entity);
@@ -60,10 +60,10 @@ namespace NeonCinema_Infrastructure.Implement.PromotionCustomer
             };
         }
 
-        public async Task<NeonCinema_Domain.Database.Entities.PromotionCustomer> GetByIdAsync(Guid promotionId, Guid customerId, CancellationToken cancellationToken)
+        public async Task<NeonCinema_Domain.Database.Entities.PromotionCustomer> GetByIdAsync(Guid promotionId, CancellationToken cancellationToken)
         {
             return await _context.PromotionCustomers
-            .FirstOrDefaultAsync(pc => pc.PromotionId == promotionId && pc.ID == customerId, cancellationToken);
+            .FirstOrDefaultAsync(pc => pc.ID == promotionId, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> UpdateAsync(NeonCinema_Domain.Database.Entities.PromotionCustomer promotionCustomer, CancellationToken cancellationToken)

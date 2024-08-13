@@ -12,7 +12,7 @@ namespace NeonCinema_Application.Interface.Promotions
     public interface IPromotionCustomerRepository
     {
         Task<PaginationResponse<PromotionCustomer>> GetAllAsync(PaginationRequest request, CancellationToken cancellationToken);
-        Task<PromotionCustomer> GetByIdAsync(Guid promotionId, Guid customerId, CancellationToken cancellationToken);
+        Task<PromotionCustomer> GetByIdAsync(Guid promotionId, CancellationToken cancellationToken);
         Task<HttpResponseMessage> AddAsync(PromotionCustomer promotionCustomer, CancellationToken cancellationToken);
         Task<HttpResponseMessage> UpdateAsync(PromotionCustomer promotionCustomer, CancellationToken cancellationToken);
         Task<HttpResponseMessage> DeleteAsync(Guid promotionId, Guid customerId, CancellationToken cancellationToken);

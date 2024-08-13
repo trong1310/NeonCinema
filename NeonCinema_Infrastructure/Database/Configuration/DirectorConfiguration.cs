@@ -18,7 +18,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.HasKey(x=>x.DirectorID);
             builder.Property(x => x.FullName).HasMaxLength(50).IsFixedLength();
             builder.Property(x => x.StageName).HasMaxLength(50).IsFixedLength();
-            builder.Property(x => x.Address).HasMaxLength(256).IsFixedLength();
+            builder.Property(x => x.Address);
             builder.Property(x => x.Nationality).HasMaxLength(256).IsFixedLength();
             builder.Property(x => x.Biography);
             builder.Property(x => x.Awards);

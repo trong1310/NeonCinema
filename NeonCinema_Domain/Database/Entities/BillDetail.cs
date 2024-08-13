@@ -20,10 +20,12 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid PromotionID { get; set; }
         public decimal Price { get; set; }
         public int NumberOfProduct { get; set; }
+        public DateTime SoldDate { get; set; } = DateTime.Now;
+        public decimal TotalMoney { get; set; }
         public EntityStatus Status { get; set; }
         ///
 
-        public virtual Bill? Bill { get; set; }
+     
         public virtual Customers? Customers { get; set; }
         public virtual Ticket? Ticket { get; set; }
         public virtual PaymentMethod? PaymentMethod { get; set; }
