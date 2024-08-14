@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using NeonCinema_Application.DataTransferObject.Bills;
+using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
 {
-    public class BillProfile : Profile
+    public class SeatProfile : Profile
     {
-        public BillProfile()
-        {
-            CreateMap<BillDTO, Bill>().ReverseMap();
-             
+        public SeatProfile() 
+        { 
+            CreateMap<SeatDTO, Seat>().ReverseMap();
+            CreateMap<SeatDeleteRequest, Seat>();
         }
     }
 }
