@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Moviess;
 using NeonCinema_Application.Interface.Promotions;
+using NeonCinema_Application.Interface.Utilities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
-using NeonCinema_Infrastructure.Implement.Bills;
 using NeonCinema_Infrastructure.Implement.Employees;
 using NeonCinema_Infrastructure.Implement.Movie;
 
@@ -20,6 +20,7 @@ using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChanges;
 
 using NeonCinema_Infrastructure.Implement.Tickets;
+using NeonCinema_Infrastructure.Implement.Utilities;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 
 using System;
@@ -50,7 +51,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IPromotionRepository, PromotionRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
-            services.AddScoped<IBillRepository, BillRepository>();
+            services.AddTransient<IUtilitiesRepository, UtilitiesRespository>();
             services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
             services.AddTransient<IPromotionCustomerRepository, PromotionCustomerRepository>();
             return services;

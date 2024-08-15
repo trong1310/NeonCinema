@@ -3,6 +3,7 @@ using Bogus.Hollywood;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Extention;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         }
         #region DbSet
         public DbSet<Actor> Actors { get; set; }
-        public DbSet<Bill> Bills { get; set; }
+        //public DbSet<Bill> Bills { get; set; }
         public DbSet<BillDetail> BillDetails { get; set; }
         public DbSet<Cinema> Cinema { get; set; }
         public DbSet<Customers> Customers { get; set; }
@@ -55,7 +56,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
         }
 
@@ -137,18 +138,43 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
              .RuleFor(at => at.Status, x => x.PickRandom(MovieStatus.Active));
             var movies = movieFaker.Generate(200);
             modelBuilder.Entity<Movies>().HasData(movies);
-            //
-         //   var movieDetailFaker = new Faker<MovieDetail>("vi")
-         //.RuleFor(at => at.MovieDetailID, x => Guid.NewGuid())
-         //  .RuleFor(at => at.AgeAllowed, x => x.Random.Int(15, 60))
-         //  .RuleFor(at => at.Duration, x => x.Random.Float(50, 120))
-         //  .RuleFor(at => at.StarTime, x => x.Date.Past(1))
-         //  .RuleFor(at => at.EndTime, x => x.Date.Soon(2))
-         //  .RuleFor(at => at.Images, x => x.Image
-         
-         //   var movieDetail = movieDetailFaker.Generate(200);
-         //   modelBuilder.Entity<Genre>().HasData(movies);
-            #endregion
+
+            //   var movieDetailFaker = new Faker<MovieDetail>("vi")
+            //.RuleFor(at => at.MovieDetailID, x => Guid.NewGuid())
+            //.RuleFor(at => at.AgeAllowed, x => x.Random.Int(15, 60))
+            //.RuleFor(at => at.Duration, x => x.Random.Float(50, 120))
+            //.RuleFor(at => at.StarTime, x => x.Date.Past(1))
+            //.RuleFor(at => at.EndTime, x => x.Date.Soon(2))
+            //.RuleFor(at => at.Images,  )
+
+
+            // var movieDetail = movieDetailFaker.Generate(200);
+            // modelBuilder.Entity<Genre>().HasData(movies);
+
+
+            //var customer = new List<Customers>()
+            //{
+            //    new Customers()
+            //    {
+            //        CustomerID = Guid.NewGuid(),
+            //        CustomerName = "Nguyen Van Trong",
+            //        Email = "trongnvph35790@fpt.edu.vn",
+            //        PassWord = Hash.Encrypt("123456789"),
+            //        Images = new List<string>()
+            //        {
+            //            "image3.jpg","image4.jpg"
+            //        },
+            //        PhoneNumber = ("0334583920"),
+            //        Sex = "Nam",
+            //        DateOrBriht = DateTime.Parse("13-10-2004"),
+            //        CreatedBy = Guid.NewGuid(),
+
+            //    }
+            //};
+            //modelBuilder.Entity<Customers>(
+            //        x=>x.HasData(customer)
+            //    );
+                #endregion
         }
     }
 
