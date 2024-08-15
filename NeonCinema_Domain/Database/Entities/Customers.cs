@@ -18,6 +18,7 @@ namespace NeonCinema_Domain.Database.Entities
         public List<string>? Images { get; set; }
         public DateTime DateOrBriht { get; set; }
         public string? ConfirmCode { get; set; }
+        public DateTimeOffset? SeenTime { get; set; }   
 
 
         //
