@@ -25,7 +25,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         }
         #region DbSet
         public DbSet<Actor> Actors { get; set; }
-        //public DbSet<Bill> Bills { get; set; }
         public DbSet<BillDetail> BillDetails { get; set; }
         public DbSet<Cinema> Cinema { get; set; }
         public DbSet<Customers> Customers { get; set; }
@@ -58,12 +57,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
             optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            FakeData(modelBuilder);
+            //FakeData(modelBuilder);
         }
         protected void FakeData(ModelBuilder modelBuilder)
         {

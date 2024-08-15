@@ -35,7 +35,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                    ticket.SeatID == null ||
                    ticket.ScreeningID == null)
                 {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
                     {
                         Content = new StringContent("Please enter enough")
                     };
@@ -45,7 +45,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
 
                 if(findSeatByid != null)
                 {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
                     {
                         Content = new StringContent("Seat already exists")
                     };

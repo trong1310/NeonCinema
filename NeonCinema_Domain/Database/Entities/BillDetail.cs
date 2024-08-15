@@ -11,7 +11,6 @@ namespace NeonCinema_Domain.Database.Entities
     public class BillDetail : EntityBase
     {
         public Guid BillDetailID { get; set; }
-        public Guid BillID { get; set; }
         public Guid CustomerID { get; set; }
         public Guid TicketID { get; set; }
         public Guid PaymentID { get; set; }

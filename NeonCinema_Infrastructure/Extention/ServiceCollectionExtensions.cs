@@ -8,6 +8,8 @@ using NeonCinema_Application.Interface.Promotions;
 using NeonCinema_Application.Interface.Utilities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
+
+using NeonCinema_Infrastructure.Implement.BillDetails;
 using NeonCinema_Infrastructure.Implement.Employees;
 using NeonCinema_Infrastructure.Implement.Movie;
 
@@ -52,8 +54,10 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddTransient<IUtilitiesRepository, UtilitiesRespository>();
+            services.AddScoped<IBillDetailsRepository, BillDetailsRepository>();
             services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
             services.AddTransient<IPromotionCustomerRepository, PromotionCustomerRepository>();
+            
             return services;
         }
     }
