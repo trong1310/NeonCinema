@@ -23,8 +23,14 @@ namespace NeonCinema_API.Controllers
             
             return Ok(result);
         }
-       
-   
+        [HttpGet("vi-du")]
+        public async Task<IActionResult> Ditmetrong([FromQuery] MovieViewRequets requets, CancellationToken cancellationToken)
+        {
+            var result = await _repo.GetAllMovies(requets, cancellationToken);
+
+            return Ok(result);
+        }
+
 
     }
 }
