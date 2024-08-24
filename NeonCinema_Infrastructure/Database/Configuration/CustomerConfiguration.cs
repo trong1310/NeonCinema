@@ -24,6 +24,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x => x.Images).HasConversion(
                    c => JsonConvert.SerializeObject(c),
                    c => JsonConvert.DeserializeObject<List<string>>(c));
+            builder.HasOne(x => x.BookTickets).WithMany(x => x.Customers).HasForeignKey(x => x.CustomerID).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

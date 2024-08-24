@@ -18,7 +18,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x=>x.Price).HasDefaultValue(0).IsRequired();
             //
 
-            builder.HasOne(x=>x.Movies).WithMany(x=>x.Screenings).HasForeignKey(x=>x.MovieID);
+            builder.HasOne(x=>x.MoviesDetails).WithMany(x=>x.Screenings).HasForeignKey(x=>x.MovieDetailsID);
             builder.HasOne(x=>x.Room).WithMany(x=>x.Screenings).HasPrincipalKey(x=>x.RoomID);
         }
     }

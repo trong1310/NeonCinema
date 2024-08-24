@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Domain.Database.Base;
+using NeonCinema_Infrastructure.Database.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,5 +29,6 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual ICollection<Point>? Points { get; set; }
         public virtual ICollection<PromotionCustomer>? PromotionCustomers { get; set; }
         public virtual ICollection<Rating>? Rating { get; set; }
+        public virtual BookTickets BookTickets { get; set; }
     }
 }

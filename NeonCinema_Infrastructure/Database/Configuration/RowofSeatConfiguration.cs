@@ -9,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class MovieConfiguration : IEntityTypeConfiguration<Movies>
+    public class RowofSeatConfiguration : IEntityTypeConfiguration<RowofSeat>
     {
-        public void Configure(EntityTypeBuilder<Movies> builder)
+        public void Configure(EntityTypeBuilder<RowofSeat> builder)
         {
-            builder.ToTable("Movie");
-            builder.HasKey(x => x.MovieID);
-            builder.Property(x => x.MovieName).HasMaxLength(50).IsFixedLength();
-            builder.Property(x => x.Description);
+            builder.HasKey(x => x.RowofSeatID);
+            builder.HasOne(x => x.Seat).WithMany(x => x.RowofSeats).HasForeignKey(x => x.RowofSeatID);
         }
     }
 }

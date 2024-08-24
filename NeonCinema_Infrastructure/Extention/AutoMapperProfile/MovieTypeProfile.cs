@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using NeonCinema_Application.DataTransferObject.Movie;
+
 using NeonCinema_Application.DataTransferObject.MovieType;
 using NeonCinema_Domain.Database.Entities;
 using System;

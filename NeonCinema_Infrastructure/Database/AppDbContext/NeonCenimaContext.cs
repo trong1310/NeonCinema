@@ -3,6 +3,7 @@ using Bogus.Hollywood;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Extention;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Lenguage> Lenguages { get; set; }
         public DbSet<MemberShip> Memberships { get; set; }
         public DbSet<MovieDetail> MoviesDetails { get; set; }
-        public DbSet<Movies> Movies { get; set; }
+        public DbSet<Roles> Roles { get; set; }
+        public DbSet<Countrys> Country { get; set; }
+        public DbSet<ShowTime> ShowTimes { get; set; }
+        public DbSet<BookTickets> BookTickets { get; set; }
         public DbSet<MovieType> MoviesType { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Point> Points { get; set; }
@@ -43,6 +47,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<PromotionType> PromotionTypes { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Room> Room { get; set; }
+        public DbSet<RowofSeat> RowofSeats { get; set; }
+        public DbSet<Surcharges> Surcharges { get; set; }
         public DbSet<Screening> Screening { get; set; }
         public DbSet<Seat> Seat { get; set; }
         public DbSet<SeatType> SeatTypes { get; set; }
@@ -55,7 +61,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinema;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCenima;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
         }
@@ -131,13 +137,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<MovieType>().HasData(movieTypes);
             //
 
-            var movieFaker = new Faker<Movies>("vi")
-           .RuleFor(at => at.MovieID, x => Guid.NewGuid())
-             .RuleFor(at => at.MovieName, x => x.Internet.DomainName())
-             .RuleFor(at => at.Description, x => x.Lorem.Text())
-             .RuleFor(at => at.Status, x => x.PickRandom(MovieStatus.Active));
-            var movies = movieFaker.Generate(200);
-            modelBuilder.Entity<Movies>().HasData(movies);
+          
 
             //   var movieDetailFaker = new Faker<MovieDetail>("vi")
             //.RuleFor(at => at.MovieDetailID, x => Guid.NewGuid())
