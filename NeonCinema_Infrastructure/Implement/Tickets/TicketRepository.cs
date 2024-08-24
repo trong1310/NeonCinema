@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                    ticket.BarCode == null ||
                    ticket.CustomerID == null ||
                    ticket.SeatID == null ||
-                   ticket.ScreeningID == null)
+                   ticket.Screening == null)
                 {
                     return new HttpResponseMessage(HttpStatusCode.BadRequest)
                     {
@@ -60,7 +60,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                     PurchaseDate = DateTime.Now,
                     CustomerID = ticket.CustomerID,
                     SeatID = ticket.SeatID,
-                    ScreeningID = ticket.ScreeningID,
+                    Screening = ticket.Screening,
                 };
                 await _context.Ticket.AddAsync(tk);
                 await _context.SaveChangesAsync(cancellationToken);
@@ -115,7 +115,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
             var lst = await _context.Ticket
                 .Include(s => s.Seats)
                 .Include(s => s.Customers)
-                .Include(s => s.Screenings)
+                .Include(s => s.Screening)
                 .ToListAsync(cancellationToken);
             return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
         }
@@ -154,7 +154,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                 tk.Status = ticket.Status;
                 tk.BarCode = ticket.BarCode;
                 tk.CustomerID = ticket.CustomerID;
-                tk.ScreeningID = ticket.ScreeningID;
+                tk.Screening = ticket.Screening;
                 tk.SeatID = ticket.SeatID;
 
                 _context.Ticket.Update(tk);

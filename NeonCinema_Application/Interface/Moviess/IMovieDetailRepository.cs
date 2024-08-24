@@ -1,4 +1,4 @@
-﻿using NeonCinema_Application.DataTransferObject.Movie;
+﻿
 using NeonCinema_Application.DataTransferObject.MovieDetail;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;

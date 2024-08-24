@@ -17,10 +17,13 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.ToTable("MovieDetail");
             builder.HasKey(x=>x.MovieDetailID);
             builder.HasOne(x=>x.MovieType).WithMany(x=>x.MovieDetails).HasForeignKey(x=>x.MovieTypeID);
-            builder.HasOne(x=>x.Movies).WithMany(x=>x.MovieDetails).HasForeignKey(x=>x.MovieID);
+          
             builder.HasOne(x=>x.Actor).WithMany(x=>x.MovieDetails).HasForeignKey(x=>x.ActorID);
+            builder.HasOne(x=>x.Employees).WithMany(x=>x.MovieDetails).HasForeignKey(x=>x.MovieDetailID);
             builder.HasOne(x=>x.Director).WithMany(x=>x.MovieDetails).HasForeignKey(x=>x.DirectorID);
             builder.HasOne(x => x.Lenguage).WithMany(x => x.MovieDetails).HasForeignKey(x => x.LenguageID);
+            builder.HasOne(x => x.Countrys).WithMany(x => x.Moviesdetail).HasForeignKey(x => x.CountryID);
+            
             builder.HasOne(x => x.Genre).WithMany(x => x.MovieDetails).HasForeignKey(x => x.GenreID);
 
             builder.Property(x => x.Duration).HasDefaultValue(0);
