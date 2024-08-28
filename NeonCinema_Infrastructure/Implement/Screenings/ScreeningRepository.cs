@@ -38,29 +38,17 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                     };
                 }
 
-                foreach (var item in lstScr.Result)
-                {
-                    if(item.ScreeningDate == screening.ScreeningDate)
-                    {
-                        if(screening.StarTime <= item.EndTime || screening.EndTime >= item.StarTime)
-                        {
-                            return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                            {
-                                Content = new StringContent("Showtime or end time clashes with other showtimes")
-                            };
-                        }
-                    }
-                }
+                
 
                 var scr = new Screening
                 {
                     ScreeningID = Guid.NewGuid(),
-                    StarTime = screening.StarTime,
-                    EndTime = screening.EndTime,
+                    ShowTimeID = screening.ShowTimeID,
+                
                     ScreeningDate = screening.ScreeningDate,
                     Price = screening.Price,
                     Status = EntityStatus.PendingForApproval,
-                    MovieID = screening.MovieID,
+                    
                     RoomID = screening.RoomID
                 };
 
@@ -117,7 +105,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         public async Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken)
         {
             var lst = await _context.Screening
-                .Include(x => x.Movies)
+               
                 .Include(x => x.Room)
                 .ToListAsync(cancellationToken);
 
@@ -159,19 +147,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 
                 var lstScr = GetAllScreening(cancellationToken);
 
-                foreach (var item in lstScr.Result)
-                {
-                    if (item.ScreeningDate == screening.ScreeningDate)
-                    {
-                        if (screening.StarTime <= item.EndTime || screening.EndTime >= item.StarTime)
-                        {
-                            return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                            {
-                                Content = new StringContent("Showtime or end time clashes with other showtimes")
-                            };
-                        }
-                    }
-                }
+                
 
                 if (screening.ScreeningDate < DateTime.Now)
                 {
@@ -181,12 +157,12 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                     };
                 }
 
-                scr.StarTime = screening.StarTime;
-                  scr.EndTime = screening.EndTime;
+          
+                  scr.ShowTimeID = screening.ShowTimeID;
                   scr.ScreeningDate = screening.ScreeningDate;
                   scr.Price = screening.Price;
                   scr.Status = EntityStatus.PendingForApproval;
-                  scr.MovieID = screening.MovieID;
+            
                   scr.RoomID = screening.RoomID;
 
                 _context.Screening.Update(scr);

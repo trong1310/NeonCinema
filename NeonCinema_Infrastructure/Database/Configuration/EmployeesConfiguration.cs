@@ -16,6 +16,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Employees");
             builder.HasKey(x=>x.EmployeesID);
+          
             builder.Property(x => x.EmployeesName).HasMaxLength(50);
             builder.Property(x => x.Email).HasMaxLength(50).IsFixedLength();
             builder.Property(x => x.PassWord).HasMaxLength(50).IsFixedLength();

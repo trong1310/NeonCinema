@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Movie;
+
 using NeonCinema_Application.DataTransferObject.ShiftChanges;
 using NeonCinema_Application.DataTransferObject.WorkShift;
 using NeonCinema_Application.Interface;

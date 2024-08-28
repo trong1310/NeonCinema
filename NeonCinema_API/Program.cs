@@ -21,7 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
-builder.Services.AddAutoMapper(typeof(MovieProfile));
+
 builder.Services.AddApplication(); //use automapper
 builder.Services.AddEventBus(builder.Configuration);
 var app = builder.Build();

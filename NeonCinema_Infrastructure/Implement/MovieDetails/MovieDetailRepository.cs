@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Movie;
+
 using NeonCinema_Application.DataTransferObject.MovieDetail;
 using NeonCinema_Application.Interface.Moviess;
 using NeonCinema_Application.Pagination;
@@ -65,7 +65,7 @@ namespace NeonCinema_Infrastructure.Implement.MovieDetails
                 {
                     MovieDetailID = Guid.NewGuid(),
                     ActorID = requets.ActorID,
-                    MovieID = requets.MovieID,
+            
                     AgeAllowed = requets.AgeAllowed,
                     StarTime = requets.StarTime,
                     DirectorID = requets.DirectorID,
@@ -122,62 +122,67 @@ namespace NeonCinema_Infrastructure.Implement.MovieDetails
             }
         }
 
-        public async Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken)
+        public Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken)
         {
-           var query = _context.MoviesDetails.Include(x => x.Movies).AsNoTracking();
-            if (!String.IsNullOrWhiteSpace(requets.ActorID.ToString()))
-            {
-                query = query.Where(x => x.ActorID.ToString().Contains(requets.ActorID.ToString()));
-            }
-            else if (!String.IsNullOrWhiteSpace(requets.DirectorName))
-            {
-                query = query.Where(x => x.Director.FullName.Contains(requets.DirectorName));
-            }
-            else if (!String.IsNullOrWhiteSpace(requets.Lenguage))
-            {
-                query = query.Where(x => x.Lenguage.LenguageName.Contains(requets.Lenguage));
-            }
-            else if (!String.IsNullOrWhiteSpace(requets.Genre))
-            {
-                query = query.Where(x => x.Genre.GenreName.Contains(requets.Genre));
-            }
-            else if (!String.IsNullOrWhiteSpace(requets.MovieTypeName))
-            {
-                query = query.Where(x => x.MovieType.MovieTypeName.Contains(requets.MovieTypeName));
-            }
-            else if (requets.AgeAllowed.HasValue)
-            {
-                query = query.Where(x => x.AgeAllowed >= requets.AgeAllowed);
-            }
-            var result =await query.PaginateAsync<MovieDetail,MovieDetailDTO> (requets,_mapper,cancellationToken);
-                result.Data = (from a in result.Data
-                               join b in query on 
-                               a.MovieDetailID equals b.MovieDetailID
-                               select new MovieDetailDTO
-                               { 
-                                   ActorID = b.ActorID,
-                                   DirectorID = b.DirectorID,
-                                   MovieDetailID = b.MovieDetailID,
-                                   AgeAllowed = b.AgeAllowed,
-                                   Duration = b.Duration,
-                                   EndTime = b.EndTime,
-                                   GenreID = b.GenreID,
-                                   Images = b.Images,
-                                   LenguageID = b.LenguageID,
-                                   MovieID = b.MovieID,
-                                   MovieTypeID = b.MovieTypeID,
-                                   StarTime = b.StarTime
-                                 
-                               } 
-                               ).ToList();
-            return new PaginationResponse<MovieDetailDTO>
-            {
-                HasNext = result.HasNext,
-                Data = result.Data,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize,
-            };
+            throw new NotImplementedException();
         }
+
+        //public async Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken)
+        //{
+        //   var query = _context.MoviesDetails.Include(x => x.Movies).AsNoTracking();
+        //    if (!String.IsNullOrWhiteSpace(requets.ActorID.ToString()))
+        //    {
+        //        query = query.Where(x => x.ActorID.ToString().Contains(requets.ActorID.ToString()));
+        //    }
+        //    else if (!String.IsNullOrWhiteSpace(requets.DirectorName))
+        //    {
+        //        query = query.Where(x => x.Director.FullName.Contains(requets.DirectorName));
+        //    }
+        //    else if (!String.IsNullOrWhiteSpace(requets.Lenguage))
+        //    {
+        //        query = query.Where(x => x.Lenguage.LenguageName.Contains(requets.Lenguage));
+        //    }
+        //    else if (!String.IsNullOrWhiteSpace(requets.Genre))
+        //    {
+        //        query = query.Where(x => x.Genre.GenreName.Contains(requets.Genre));
+        //    }
+        //    else if (!String.IsNullOrWhiteSpace(requets.MovieTypeName))
+        //    {
+        //        query = query.Where(x => x.MovieType.MovieTypeName.Contains(requets.MovieTypeName));
+        //    }
+        //    else if (requets.AgeAllowed.HasValue)
+        //    {
+        //        query = query.Where(x => x.AgeAllowed >= requets.AgeAllowed);
+        //    }
+        //    var result =await query.PaginateAsync<MovieDetail,MovieDetailDTO> (requets,_mapper,cancellationToken);
+        //        result.Data = (from a in result.Data
+        //                       join b in query on 
+        //                       a.MovieDetailID equals b.MovieDetailID
+        //                       select new MovieDetailDTO
+        //                       { 
+        //                           ActorID = b.ActorID,
+        //                           DirectorID = b.DirectorID,
+        //                           MovieDetailID = b.MovieDetailID,
+        //                           AgeAllowed = b.AgeAllowed,
+        //                           Duration = b.Duration,
+        //                           EndTime = b.EndTime,
+        //                           GenreID = b.GenreID,
+        //                           Images = b.Images,
+        //                           LenguageID = b.LenguageID,
+        //                           MovieID = b.MovieID,
+        //                           MovieTypeID = b.MovieTypeID,
+        //                           StarTime = b.StarTime
+
+        //                       } 
+        //                       ).ToList();
+        //    return new PaginationResponse<MovieDetailDTO>
+        //    {
+        //        HasNext = result.HasNext,
+        //        Data = result.Data,
+        //        PageNumber = result.PageNumber,
+        //        PageSize = result.PageSize,
+        //    };
+        //}
 
         public async Task<HttpResponseMessage> Update(MovieDetail movies, CancellationToken cancellationToken)
         {

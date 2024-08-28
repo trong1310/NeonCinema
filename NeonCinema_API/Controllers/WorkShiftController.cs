@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.Movie;
+
 using NeonCinema_Application.DataTransferObject.WorkShift;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;

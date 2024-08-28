@@ -20,15 +20,21 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid MovieTypeID { get; set; }
         public Guid LenguageID { get; set; }
         public Guid GenreID { get; set; }
-        public Guid MovieID { get; set; }
-
-        //
+        public Guid ScreeningID { get; set; }
+        public Guid CountryID { get; set; }
+     
+       
         public virtual Actor? Actor { get; set; }
+        public virtual Employees? Employees { get; set; }
         public virtual Director? Director { get; set; }
         public virtual MovieType? MovieType { get; set; }
         public virtual Lenguage? Lenguage { get; set; }
         public virtual Genre? Genre { get; set; }
-        public virtual Movies? Movies { get; set; }
-
+        public virtual Countrys Countrys { get; set; }
+       
+   
+        public virtual ICollection<Screening>? Screenings { get; set; }
+       
+        //
     }
 }
