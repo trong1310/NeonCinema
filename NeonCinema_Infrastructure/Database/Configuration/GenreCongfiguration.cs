@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Genre> builder)
         {
             builder.ToTable("Genre");
-            builder.HasKey(x => x.GenreID);
+            builder.HasKey(x => x.ID);
           
         }
     }

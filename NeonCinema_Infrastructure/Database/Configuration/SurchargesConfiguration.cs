@@ -13,8 +13,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<Surcharges> builder)
         {
-            builder.HasKey(x => x.surchargeID);
-            builder.HasOne(x => x.Ticket).WithMany(x => x.Surcharges).HasForeignKey(x => x.surchargeID);
+            builder.HasKey(x => x.ID);
+           
         }
     }
 }

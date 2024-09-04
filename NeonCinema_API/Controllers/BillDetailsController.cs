@@ -32,7 +32,7 @@ namespace NeonCinema_API.Controllers
         {
             try
             {
-                var result = await _repos.Create(_mapper.Map<BillDetail>(request), cancellationToken);
+                var result = await _repos.Create(_mapper.Map<Bill>(request), cancellationToken);
 
                 return Ok(result);
             }

@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<PaymentMethod> builder)
         {
             builder.ToTable("PaymentMethod");
-            builder.HasKey(x=>x.PaymentID);
+            builder.HasKey(x=>x.ID);
             builder.Property(x => x.Name).HasMaxLength(50).IsFixedLength();
             
         }

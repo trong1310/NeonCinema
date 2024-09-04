@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<MovieType> builder)
         {
             builder.ToTable("MovieType");
-            builder.HasKey(x=>x.MovieTypeID);
+            builder.HasKey(x=>x.ID);
             builder.Property(x => x.MovieTypeName).HasMaxLength(50).IsFixedLength();
         }
     }

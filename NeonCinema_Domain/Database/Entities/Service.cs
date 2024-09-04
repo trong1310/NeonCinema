@@ -10,13 +10,14 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Service : EntityBase
     {
-        public Guid ServiceID { get; set; }
+        public Guid ID { get; set; }
         public string ServiceName { get; set; }
         public decimal Price { get; set; }
         public EntityStatus Status { get; set; }
         public string Description { get; set; }
+        public List<string> Images { get; set; }
 
         // 
-        public virtual ICollection<ServiceOder> ServiceOders { get; set; }   
+        public virtual ICollection<FoodCombo> ServiceOders { get; set; }   
     }
 }

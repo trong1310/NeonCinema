@@ -13,8 +13,8 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     {
         public BillDetailsProfile() 
         {
-            CreateMap<BillDetailsDTO, BillDetail > ().ReverseMap();
-            CreateMap<BillDetailsCreateRequest, BillDetail>();
+            CreateMap<BillDetailsDTO, Bill > ().ReverseMap();
+            CreateMap<BillDetailsCreateRequest, Bill>();
         }
     }
 }

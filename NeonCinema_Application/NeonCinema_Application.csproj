@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NeonCinema_Domain\NeonCinema_Domain.csproj" />
+    <Compile Remove="Interface\using NeonCinema_Application.DataTransferObject.Movie%3b\**" />
+    <EmbeddedResource Remove="Interface\using NeonCinema_Application.DataTransferObject.Movie%3b\**" />
+    <None Remove="Interface\using NeonCinema_Application.DataTransferObject.Movie%3b\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interface\using NeonCinema_Application.DataTransferObject.Movie%3b\" />
+    <ProjectReference Include="..\NeonCinema_Domain\NeonCinema_Domain.csproj" />
   </ItemGroup>
 
 </Project>

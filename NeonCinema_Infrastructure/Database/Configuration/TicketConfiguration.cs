@@ -14,15 +14,15 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Ticket> builder)
         {
             builder.ToTable("Ticket");
-            builder.HasKey(x=>x.TicketID);
+            builder.HasKey(x=>x.ID);
             builder.Property(x => x.Price).HasDefaultValue(0).IsRequired();
-            builder.Property(x => x.BarCode).HasDefaultValue(123).IsRequired();
+            builder.Property(x => x.QrCode).HasDefaultValue(123).IsRequired();
             //
-            builder.HasOne(x=>x.Customers).WithMany(x=>x.Ticket).HasForeignKey(x=>x.CustomerID);
-            builder.HasOne(x => x.Seats).WithMany(x => x.Ticket).HasForeignKey(x=>x.SeatID).OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.Screening).WithMany(x => x.Tickets).HasForeignKey(x => x.TicketID);
-            builder.HasOne(x => x.BookTickets).WithMany(x => x.Tickets).HasForeignKey(x => x.TicketID);
-
+            builder.HasOne(x=>x.Customers).WithMany(x=>x.Ticket).HasForeignKey(x=>x.CustomerID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Seat).WithMany(x => x.Ticket).HasForeignKey(x=>x.SeatID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Screening).WithMany(x => x.Ticket).HasForeignKey(x => x.ScreeningID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Surcharges).WithMany(x => x.Ticket).HasForeignKey(x => x.SurchargeID).OnDelete(DeleteBehavior.NoAction);
+          
 
         }
     }

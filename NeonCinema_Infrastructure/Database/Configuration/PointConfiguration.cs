@@ -14,9 +14,9 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Point> builder)
         {
             builder.ToTable("Point");
-            builder.HasKey(x=>x.PointID);
+            builder.HasKey(x=>x.ID);
             builder.Property(x=>x.TotalPoint).HasDefaultValue(0).IsFixedLength();
-            builder.HasOne(x=>x.Customers).WithMany(x=>x.Points).HasForeignKey(x=>x.CustomerID);
+            builder.HasOne(x=>x.Users).WithMany(x=>x.Points).HasForeignKey(x=>x.UserID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

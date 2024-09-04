@@ -12,9 +12,9 @@ namespace NeonCinema_Application.Interface.Moviess
 {
     public interface IMovieDetailRepository
     {
-        Task<HttpResponseMessage> Create(MovieDetail movies, CancellationToken cancellationToken);
-        Task<HttpResponseMessage> Update(MovieDetail movies, CancellationToken cancellationToken);
-        Task<HttpResponseMessage> Delete(MovieDetail movies, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> Create(Movies movies, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> Update(Movies movies, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> Delete(Movies movies, CancellationToken cancellationToken);
         Task<PaginationResponse<MovieDetailDTO>> GetAllMovieDetail(MovieDetailViewRequets requets, CancellationToken cancellationToken);
     }
 }

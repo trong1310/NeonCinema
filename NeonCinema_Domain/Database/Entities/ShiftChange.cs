@@ -10,7 +10,7 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class ShiftChange : EntityBase
     {
-        public Guid ShiftChangeID { get; set; }
+        public Guid ID { get; set; }
         public string ShiftName { get; set; }
         public string NewShift {  get; set; }
         public DateTime RequetDate { get; set; }

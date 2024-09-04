@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Implement\PromotionCustomer\PromotionCustomerRepo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="7.0.1" />
     <PackageReference Include="Bogus" Version="35.6.0" />
     <PackageReference Include="Bogus.Hollywood" Version="35.6.0" />

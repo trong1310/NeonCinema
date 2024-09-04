@@ -10,9 +10,9 @@ namespace NeonCinema_Domain.Database.Entities
     public class Countrys
     {
         [Key]
-        public Guid CountryID { get; set; }
+        public Guid ID { get; set; }
         public string CountryName { get; set; }
-
-        public virtual ICollection<MovieDetail> Moviesdetail { get; set; }
+        public Guid MovieID { get; set; }
+        public virtual Movies? Movies { get; set; }
     }
 }

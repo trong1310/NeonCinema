@@ -10,12 +10,11 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class ShowTime
     {
-        public Guid ShowTimeID { get; set; }
+        public Guid ID { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public EntityStatus Status { get; set; }
-
-        public virtual Screening Screening { get; set; }
-        public virtual Ticket Ticket { get; set; }
+        public Guid ScreeningID { get; set; }
+        public virtual Screening? Screening { get; set; }
     }
 }

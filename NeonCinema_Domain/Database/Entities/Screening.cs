@@ -10,19 +10,20 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Screening : EntityBase
     { 
-        public Guid ScreeningID { get; set; }
-        public Guid ShowTimeID { get; set; }
+        public Guid ID { get; set; }
       
         public decimal Price { get; set; }
         public EntityStatus Status { get; set; }
         public DateTime ScreeningDate { get; set; }
-        public Guid MovieDetailsID { get; set; }
-        public Guid RoomID { get; set; }
+        public Guid  MovieID { get; set; }
+        public Guid  RoomID { get; set; }
+
         //
-         public virtual ICollection<ShowTime> ShowTimes { get; set; }    
-         public virtual ICollection<Ticket> Tickets{ get; set; }    
+         public virtual ICollection<ShowTime>? ShowTimes { get; set; }     
+         public virtual ICollection<ShowDate>? ShowDates { get; set; }     
         //
-        public virtual MovieDetail? MoviesDetails { get; set; }
-        public virtual Room? Room {  get; set; } 
-    }
+        public virtual  Movies? Movies { get; set; }
+		public virtual Room? Rooms { get; set; }
+		public virtual ICollection<Ticket>? Ticket { get; set; }
+	}
 }

@@ -13,8 +13,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<Roles> builder)
         {
-          builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.Employees).WithOne(x => x.Roles).HasForeignKey<Employees>(x => x.RoleID);
+          builder.HasKey(x => x.ID);
+           
 
         }
     }

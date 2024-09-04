@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Lenguage> builder)
         {
             builder.ToTable("Lenguage");
-            builder.HasKey(x => x.LenguageID);
+            builder.HasKey(x => x.ID);
             builder.Property(x => x.LenguageName).HasMaxLength(50).IsFixedLength();
         }
     }
