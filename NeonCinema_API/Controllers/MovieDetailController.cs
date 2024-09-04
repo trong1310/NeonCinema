@@ -27,19 +27,19 @@ namespace NeonCinema_API.Controllers
         [HttpPost("Create-MovieDetail")]
         public async Task<IActionResult> Create([FromBody]MovieDetailCreateRequets createRequets , CancellationToken cancellationToken)
         {
-            var result = await _reps.Create(_mapper.Map<MovieDetail>(createRequets),cancellationToken);
+            var result = await _reps.Create(_mapper.Map<Movies>(createRequets),cancellationToken);
             return Ok(result);
         }
         [HttpPut("Update-MovieDetail")]
         public async Task<IActionResult> Update([FromBody] MovieDetailUpdateRequets updateRequets , CancellationToken cancellationToken)
         {
-            var result = await _reps.Update(_mapper.Map<MovieDetail>(updateRequets), cancellationToken);
+            var result = await _reps.Update(_mapper.Map<Movies>(updateRequets), cancellationToken);
             return Ok(result);
         }
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] MovieDetailDeleteRequets deleteRequets , CancellationToken cancellationToken)
         {
-            var result = await _reps.Delete(_mapper.Map<MovieDetail>(deleteRequets), cancellationToken);
+            var result = await _reps.Delete(_mapper.Map<Movies>(deleteRequets), cancellationToken);
             return Ok(result);
         }
 

@@ -9,9 +9,10 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class RowofSeat
     {
-        public Guid RowofSeatID { get; set; }
+        public Guid ID { get; set; }
         public string RowofSeatName { get; set; }
         public EntityStatus Status { get; set; }
-        public virtual Seat Seat { get; set; }
+        public Guid SeatID { get; set; }
+        public virtual Seat? Seat { get; set; }
     }
 }

@@ -9,12 +9,12 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Surcharges
     {
-        public Guid surchargeID {  get; set; }
+        public Guid ID {  get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
         public EntityStatus status { get; set; }
-        public virtual Ticket  Ticket {  get; set; } 
+        public virtual ICollection< Ticket>?  Ticket {  get; set; } 
     }
 }

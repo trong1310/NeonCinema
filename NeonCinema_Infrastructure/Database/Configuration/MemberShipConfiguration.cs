@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class MemberShipConfiguration : IEntityTypeConfiguration<MemberShip>
+    public class MemberShipConfiguration : IEntityTypeConfiguration<RankMember>
     {
-        public void Configure(EntityTypeBuilder<MemberShip> builder)
+        public void Configure(EntityTypeBuilder<RankMember> builder)
         {
             builder.ToTable("Membership");
-            builder.HasKey(x=>x.CustomerID);
-            builder.HasOne(x => x.Customers).WithOne(x => x.MemberShips).HasForeignKey<Customers>(x => x.CreatedBy).IsRequired();
+            builder.HasKey(x=>x.ID);
+          
             
             builder.Property(x=>x.Rank).HasDefaultValue(0).IsRequired();
-            builder.Property(x=>x.Endow).HasDefaultValue(0).IsRequired();
+            builder.Property(x=>x.MinPoint).HasDefaultValue(0).IsRequired();
         }
     }
 }

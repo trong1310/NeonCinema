@@ -14,11 +14,11 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     {
         public MovieDetailProfile()
         {
-            CreateMap<MovieDetail, MovieDetailDTO>().ReverseMap();
-            CreateMap<MovieDetail, MovieDetailUpdateRequets>();
-            CreateMap<MovieDetail, MovieDetailCreateRequets>();
-            CreateMap<MovieDetail,MovieDetailDeleteRequets>();
-            CreateMap<MovieDetail,MovieDetailViewRequets>();
+            CreateMap<Movies, MovieDetailDTO>().ReverseMap();
+            CreateMap<Movies, MovieDetailUpdateRequets>();
+            CreateMap<Movies, MovieDetailCreateRequets>();
+            CreateMap<Movies,MovieDetailDeleteRequets>();
+            CreateMap<Movies,MovieDetailViewRequets>();
 
         }
     }

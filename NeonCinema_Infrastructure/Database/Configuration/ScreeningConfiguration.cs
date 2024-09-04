@@ -14,12 +14,12 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Screening> builder)
         {
             builder.ToTable("Screening");
-            builder.HasKey(x=>x.ScreeningID);
+            builder.HasKey(x=>x.ID);
             builder.Property(x=>x.Price).HasDefaultValue(0).IsRequired();
             //
-
-            builder.HasOne(x=>x.MoviesDetails).WithMany(x=>x.Screenings).HasForeignKey(x=>x.MovieDetailsID);
-            builder.HasOne(x=>x.Room).WithMany(x=>x.Screenings).HasPrincipalKey(x=>x.RoomID);
+            builder.HasOne(x=>x.Movies).WithMany(x=>x.Screening).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x=>x.Rooms).WithMany(x=>x.Screenings).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);
+            
         }
     }
 }

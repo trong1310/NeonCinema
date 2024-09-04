@@ -11,27 +11,18 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Ticket : EntityBase
     {
-        public Guid TicketID { get; set; }
-        public decimal Price { get; set; }
-        public string BarCode {  get; set; }
-        public EntityStatus Status { get; set; }
-        public DateTime PurchaseDate { get; set; }
+        public Guid ID { get; set; }
         public Guid CustomerID { get; set; }
         public Guid SeatID { get; set; }
-        
-       public Guid SurchargesID { get; set; }
-        public Guid ShowtimeID { get; set; }
-
-
-        //
-        public virtual Customers? Customers { get; set; }
-        public virtual Seat? Seats { get; set; }
-       public virtual BookTickets BookTickets { get; set; }
-       public virtual Screening Screening { get; set; }
-        public virtual ICollection<ShowTime>? ShowTimes { get; set; }
-        public virtual ICollection<Surcharges>? Surcharges { get; set; }
-        public virtual ICollection<BillDetail> BillDetail { get; set; }
-        public virtual ICollection<Rating>? Rating { get; set; }
+        public Guid ScreeningID { get; set; }
+        public Guid SurchargeID { get; set; }
+        public decimal Price { get; set; }
+        public string QrCode { get; set; }
+        public virtual  ICollection<BookTickets>? BookTickets { get; set; }
+		public virtual Users? Customers { get; set; }
+        public virtual Seat? Seat { get; set; }
+        public virtual Screening? Screening { get; set; }
+        public virtual Surcharges? Surcharges { get; set; }
 
     }
 }

@@ -13,9 +13,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<ShowTime> builder)
         {
-            builder.HasKey(x => x.ShowTimeID);
-            builder.HasOne(x => x.Ticket).WithMany(x => x.ShowTimes).HasForeignKey(x => x.ShowTimeID).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.Screening).WithMany(x => x.ShowTimes).HasForeignKey(x => x.ShowTimeID).OnDelete(DeleteBehavior.Restrict);
+            builder.HasKey(x => x.ID);
+            builder.HasOne(x => x.Screening).WithMany(x => x.ShowTimes).HasForeignKey(x => x.ScreeningID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

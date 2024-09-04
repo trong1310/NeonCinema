@@ -1,0 +1,27 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NeonCinema_Domain.Database.Entities;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NeonCinema_Infrastructure.Database.Configuration
+{
+    public class MoviesConfiguration : IEntityTypeConfiguration<Movies>
+    {
+        public void Configure(EntityTypeBuilder<Movies> builder)
+        {
+            builder.ToTable("MovieDetail");
+            builder.HasKey(x=>x.ID);
+            builder.Property(x => x.Duration).HasDefaultValue(0);
+            builder.Property(x => x.Images).HasConversion(
+                    c => JsonConvert.SerializeObject(c),
+                    c => JsonConvert.DeserializeObject<List<string>>(c));
+            builder.Property(x => x.AgeAllowed).HasDefaultValue(0);
+
+        }
+    }
+}

@@ -14,8 +14,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<ShiftChange> builder)
         {
             builder.ToTable("ShiftChange");
-            builder.HasKey(x=>x.ShiftChangeID);
-            builder.HasOne(x=>x.WorkShift).WithMany(x=>x.ShiftChanges).HasForeignKey(x=>x.WorkShiftID);
+            builder.HasKey(x=>x.ID);
+            builder.HasOne(x=>x.WorkShift).WithMany(x=>x.ShiftChanges).HasForeignKey(x=>x.WorkShiftID).OnDelete(DeleteBehavior.NoAction);
             builder.Property(x=>x.ShiftName).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.NewShift).HasMaxLength(50).IsFixedLength();
         }

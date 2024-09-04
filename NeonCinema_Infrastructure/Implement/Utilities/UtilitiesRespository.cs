@@ -34,14 +34,14 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
         {
             try
             {
-                var objChangePass = await _context.Customers.AsNoTracking().FirstOrDefaultAsync(x => x.PassWord == requets.Password);
+                var objChangePass = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.PassWord == requets.Password);
                 if (objChangePass != null)
                 {
                  
                     if (Hash.Decrypt(objChangePass.PassWord) == requets.Password)
                     {
                         objChangePass.PassWord = Hash.Encrypt(objChangePass.PassWord);
-                        _context.Customers.Update(objChangePass);
+                        _context.Users.Update(objChangePass);
                         await _context.SaveChangesAsync();
                         return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                         {
@@ -70,7 +70,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
 
             try
             {
-                var obj = await _context.Customers.FirstOrDefaultAsync(x => x.CustomerID == requets.Id);
+                var obj = await _context.Users.FirstOrDefaultAsync(x => x.ID == requets.Id);
                 if ((obj!.ConfirmCode == requets.Code) && (DateTime.UtcNow.AddMinutes(-5) < obj.SeenTime))
                 {
                     return true;
@@ -87,7 +87,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
         {
             try
             {
-                var obj = await _context.Customers.FirstOrDefaultAsync(x => x.CustomerID == requets.Id);
+                var obj = await _context.Users.FirstOrDefaultAsync(x => x.ID == requets.Id);
                 if (requets.ConfirmPassWord != requets.PassWord)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
@@ -96,7 +96,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
                     };
                 }
                 obj.PassWord = Hash.Encrypt(requets.PassWord);
-                _context.Customers.Update(obj);
+                _context.Users.Update(obj);
                 await _context.SaveChangesAsync();
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
@@ -140,11 +140,11 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
         {
             try
             {
-                var create = new List<Customers>()
+                var create = new List<Users>()
                 {
                    
                 };
-                var obj = _context.Customers.AsNoTracking().FirstOrDefault(x => x.CustomerID == request.Id);
+                var obj = _context.Users.AsNoTracking().FirstOrDefault(x => x.ID == request.Id);
                 var email = "vantrongvt1310@gmail.com";
                 var resetUrl = $"https://yourdomain.com/reset-password?token={token}";
                 var message = new MimeMessage();
@@ -153,7 +153,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
                 message.To.Add(new MailboxAddress("Tới", request.Email));
                 message.Subject = "Xác nhận Reset mật khẩu";
                 bodyBuilder.HtmlBody = $@"
-                     <p>Xin chào, {obj.CustomerName}</p>
+                     <p>Xin chào, {obj.FullName}</p>
                     <p>Yêu cầu đặt lại mật khẩu của bạn đã được xử lý, vui lòng bấm vào nút dưới đây để đổi lại mật khẩu của mình </p>
                      <a href=""{resetUrl}"">
                       <p> Email này chỉ có hiệu lực trong vòng 10 phút. Bạn lòng không chia sẻ đường link cho ai khác để bảo vệ tài khoản của mình</p> ";

@@ -15,17 +15,14 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Actor> builder)
         {
             builder.ToTable("Actor");
-            builder.HasKey(x=>x.ActorID);
-
+            builder.HasKey(x=>x.ID);
             builder.Property(x=>x.FullName).HasMaxLength(50).IsFixedLength();
-            builder.Property(x=>x.StageName).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.Address);
             builder.Property(x=>x.Nationality).HasMaxLength(256).IsFixedLength();
             builder.Property(x => x.Biography);
-            builder.Property(x => x.Awards);
             builder.Property(x => x.Images).HasConversion(
                     c => JsonConvert.SerializeObject(c),
-                    c => JsonConvert.DeserializeObject<string>(c));
+                    c => JsonConvert.DeserializeObject<List<string>>(c));
 
 
 

@@ -14,11 +14,11 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<Room> builder)
         {
             builder.ToTable("Room");
-            builder.HasKey(x => x.RoomID);
+            builder.HasKey(x => x.ID);
             builder.Property(x=>x.Name).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.SeatingCapacity).HasDefaultValue(50).IsRequired();
 
-            builder.HasOne(x=>x.Cinema).WithMany(x=>x.Rooms).HasForeignKey(x=>x.CinemaID);
+            builder.HasOne(x=>x.Cinemas).WithMany(x=>x.Rooms).HasForeignKey(x=>x.CinemasID).OnDelete(DeleteBehavior.NoAction);
 
         }
     }

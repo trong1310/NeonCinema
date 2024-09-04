@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Domain.Database.Base;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,19 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Seat : EntityBase
     {
-        public Guid SeatID { get; set; }
+        public Guid ID { get; set; }
         public string SeatNumber { get; set; }
-        
-        public Guid SeatTypeID { get; set; }
+        public string Column {  get; set; }
+        public string Row { get; set; } 
+        public EntityStatus Status { get; set; }
         public Guid RoomID { get; set; }
-        public Guid RowofSeatID { get; set; }
         ///
-        public virtual ICollection<Ticket>? Ticket { get; set; }
+        
         public virtual ICollection<RowofSeat>? RowofSeats { get; set; }
-        public virtual SeatType? SeatType { get; set; }
+        public virtual ICollection<Seat_ShowTime_Status>? Seat_ShowTime_Status { get; set; }
+		public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
+		public virtual ICollection<Ticket>? Ticket { get; set; }
+		public virtual ICollection<SeatType>? SeatType { get; set; }
         public virtual Room? Room { get; set; }
 
     }

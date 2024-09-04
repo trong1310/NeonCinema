@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Screenings;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Infrastructure.Implement.Screenings;
 
 namespace NeonCinema_API.Controllers
 {

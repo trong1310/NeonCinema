@@ -11,13 +11,13 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 {
     public class BookTickets
     {
-        [Key]
-        public Guid BookTicketId { get; set; }
+      
+        public Guid ID { get; set; }
         public Guid CustomerID { get; set; }
         public Guid TicketID { get; set; }
         public EntityStatus Status { get; set; }
 
-        public virtual ICollection<Customers> Customers { get; set; }
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual Users? Customers { get; set; }
+        public virtual Ticket? Tickets { get; set; }
     }
 }

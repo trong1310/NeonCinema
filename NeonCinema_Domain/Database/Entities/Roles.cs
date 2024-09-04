@@ -9,11 +9,11 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Roles
     {
-        public Guid Id { get; set; }
+        public Guid ID { get; set; }
         public string RoleName { get; set; }
         public EntityStatus Status { get; set; }
 
-        public virtual Employees Employees { get; set; }
+        public virtual ICollection<Users>? Users { get; set; }
 
     }
 }

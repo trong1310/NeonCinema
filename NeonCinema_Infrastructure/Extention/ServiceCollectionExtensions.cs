@@ -4,20 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Moviess;
-using NeonCinema_Application.Interface.Promotions;
+
 using NeonCinema_Application.Interface.Utilities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 
 using NeonCinema_Infrastructure.Implement.BillDetails;
-using NeonCinema_Infrastructure.Implement.Employees;
 
 
 using NeonCinema_Infrastructure.Implement.MovieDetails;
 using NeonCinema_Infrastructure.Implement.MovieType;
 
-using NeonCinema_Infrastructure.Implement.PromotionCustomer;
-using NeonCinema_Infrastructure.Implement.PromotionTypes;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChanges;
 
@@ -46,18 +43,14 @@ namespace NeonCinema_Infrastructure.Extention
             });
            
  
-            services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-            services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
-            services.AddTransient<IShiftChangeRepository, ShiftChangesRepository>();
-            services.AddTransient<IMovieDetailRepository, MovieDetailRepository>();
-        
-            services.AddTransient<IPromotionRepository, PromotionRepository>();
-            services.AddScoped<ITicketRepository, TicketRepository>();
-            services.AddScoped<IScreeningRepository, ScreeningRepository>();
-            services.AddTransient<IUtilitiesRepository, UtilitiesRespository>();
-            services.AddScoped<IBillDetailsRepository, BillDetailsRepository>();
-            services.AddTransient<IPromotionTypeRepository, PromotionTypeRepository>();
-            services.AddTransient<IPromotionCustomerRepository, PromotionCustomerRepository>();
+            //services.AddTransient<IEmployeesRepository, EmployeesRepository>();
+            //services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
+            //services.AddTransient<IShiftChangeRepository, ShiftChangesRepository>();
+            //services.AddTransient<IMovieDetailRepository, MovieDetailRepository>();
+            //services.AddScoped<ITicketRepository, TicketRepository>();
+            //services.AddScoped<IScreeningRepository, ScreeningRepository>();
+            //services.AddTransient<IUtilitiesRepository, UtilitiesRespository>();
+            //services.AddScoped<IBillDetailsRepository, BillDetailsRepository>();
             
             return services;
         }

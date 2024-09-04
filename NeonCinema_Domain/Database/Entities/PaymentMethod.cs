@@ -10,11 +10,11 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class PaymentMethod : EntityBase
     {
-        public Guid PaymentID { get; set; }
+        public Guid ID { get; set; }
         public string Name  { get; set; }
         public string? QRCode { get; set; }
         public EntityStatus Status { get; set; }
         ///
-        public virtual ICollection<BillDetail> BillDetail { get; set; }
+        public virtual ICollection<Bill> BillDetail { get; set; }
     }
 }

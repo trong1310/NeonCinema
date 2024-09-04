@@ -9,9 +9,10 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Genre : EntityBase
     {
-        public Guid GenreID { get; set; }
+        public Guid ID { get; set; }
         public string GenreName { get; set; }
+        public Guid MovieID { get; set; }
         //
-        public virtual ICollection< MovieDetail>? MovieDetails { get; set; }   
+        public virtual  Movies? Movies { get; set; }   
     }
 }

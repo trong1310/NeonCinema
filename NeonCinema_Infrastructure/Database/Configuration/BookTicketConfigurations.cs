@@ -12,7 +12,10 @@ namespace NeonCinema_Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<BookTickets> builder)
         {
-            builder.HasKey(x => x.BookTicketId);
+			builder.ToTable("BookTicket");
+			builder.HasKey(x => x.ID);
+            builder.HasOne(x=>x.Tickets).WithMany(x=>x.BookTickets).HasForeignKey(x=>x.TicketID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x=>x.Customers).WithMany(x=>x.BookTickets).HasForeignKey(x=>x.CustomerID).OnDelete(DeleteBehavior.NoAction);
           
         }
     }

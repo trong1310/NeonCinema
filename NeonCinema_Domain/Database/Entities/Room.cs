@@ -9,15 +9,17 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Room : EntityBase
     {
-        public Guid RoomID { get; set; }
+        public Guid ID { get; set; }
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
-        public Guid CinemaID { get; set; }
+        
+        public Guid CinemasID { get; set; }
 
         // 
+        public virtual Cinemas? Cinemas { get; set; }
         public virtual ICollection<Screening>? Screenings { get; set; }
-        public virtual ICollection<Seat>? Seats { get; set; }
-        //
-        public virtual Cinema? Cinema { get; set; }
+		public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
+		public virtual ICollection<Seat>? Seats { get; set; }
+		public virtual ICollection<Show_release>? Show_Releases { get; set; }
     }
 }

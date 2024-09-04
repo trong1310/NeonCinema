@@ -14,8 +14,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         public void Configure(EntityTypeBuilder<WorkShift> builder)
         {
             builder.ToTable("WorkShift");
-            builder.HasKey(x=>x.WorkShiftID);
-            builder.HasOne(x=>x.Employees).WithMany(x=>x.WorkShifts).HasForeignKey(x=>x.EmployeesID);
+            builder.HasKey(x=>x.ID);
+            builder.HasOne(x=>x.Users).WithMany(x=>x.Workshifts).HasForeignKey(x=>x.UserID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
