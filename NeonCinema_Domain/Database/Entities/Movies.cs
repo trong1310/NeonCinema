@@ -19,6 +19,10 @@ namespace NeonCinema_Domain.Database.Entities
         public int AgeAllowed { get; set; }
         public List<string> Images { get; set; }
         public MovieStatus Status { get; set; } = MovieStatus.Active;
+        public Guid GenreID { get; set; }
+        public Guid LenguageID { get; set; }
+        public Guid CountryID { get; set; }
+        public Guid DirectorID { get; set; }
        
         //
         public virtual ICollection<Screening>? Screening { get; set; }
@@ -26,11 +30,11 @@ namespace NeonCinema_Domain.Database.Entities
 
 		public virtual ICollection<Show_release>? Show_Releases { get; set; }
         public virtual ICollection<ActorMovie>? ActorMovies { get; set; }
-        public virtual ICollection<Director>? Director { get; set; }
+        public virtual Director? Director { get; set; }
         public virtual ICollection<CategoryMovies>? CategoryMovies { get; set; }
-        public virtual ICollection<Lenguage>? Lenguage { get; set; }
-        public virtual ICollection<Genre>? Genre { get; set; }
-        public virtual ICollection<Countrys>? Countrys { get; set; }
+        public virtual Lenguage? Lenguage { get; set; }
+        public virtual Genre? Genre { get; set; }
+        public virtual Countrys? Countrys { get; set; }
        
         //
     }

@@ -21,7 +21,9 @@ namespace NeonCinema_Infrastructure.Database.Configuration
                     c => JsonConvert.SerializeObject(c),
                     c => JsonConvert.DeserializeObject<List<string>>(c));
             builder.Property(x => x.AgeAllowed).HasDefaultValue(0);
-
-        }
+			builder.HasOne(x => x.Countrys).WithMany(x => x.Movies).HasForeignKey(x => x.CountryID).OnDelete(DeleteBehavior.NoAction);
+			builder.HasOne(x => x.Genre).WithMany(x => x.Movies).HasForeignKey(x => x.GenreID).OnDelete(DeleteBehavior.NoAction);
+			builder.HasOne(x => x.Lenguage).WithMany(x => x.Movies).HasForeignKey(x => x.LenguageID).OnDelete(DeleteBehavior.NoAction);
+		}
     }
 }

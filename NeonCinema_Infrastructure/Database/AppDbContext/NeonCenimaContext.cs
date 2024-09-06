@@ -41,7 +41,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<MovieType> MoviesType { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Room> Room { get; set; }
-        public DbSet<RowofSeat> RowofSeats { get; set; }
         public DbSet<Surcharges> Surcharges { get; set; }
         public DbSet<Screening> Screening { get; set; }
         public DbSet<Seat> Seat { get; set; }
@@ -63,7 +62,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCenima;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
         }
