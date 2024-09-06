@@ -12,7 +12,7 @@ namespace NeonCinema_Domain.Database.Entities
         [Key]
         public Guid ID { get; set; }
         public string CountryName { get; set; }
-        public Guid MovieID { get; set; }
-        public virtual Movies? Movies { get; set; }
-    }
+		//
+		public virtual ICollection<Movies>? Movies { get; set; }
+	}
 }

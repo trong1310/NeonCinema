@@ -15,7 +15,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 		{
 			builder.ToTable(nameof(Countrys));
 			builder.HasKey(x=>x.ID);
-			builder.HasOne(x=>x.Movies).WithMany(x=>x.Countrys).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.NoAction);
+			
 		}
 	}
 }
