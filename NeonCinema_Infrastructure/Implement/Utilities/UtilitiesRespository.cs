@@ -121,7 +121,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
 
             var claim = new[] // tạo ra 1 mảng claim
             {
-                new Claim(JwtRegisteredClaimNames.Sub,requets.Id.ToString()), // chuy.ển đối kiểu dữ liệu của id sang string để gán giá trị cho claim
+                new Claim(JwtRegisteredClaimNames.Sub,requets.Id.ToString()), // chuyển đối kiểu dữ liệu của id sang string để gán giá trị cho claim
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()), // 
 
             };

@@ -9,12 +9,12 @@ namespace NeonCinema_Domain.Database.Base
     public class EntityBase : ICreateBase , IDeleteBase ,IModifiedBase
     {
         public Guid? CreatedBy { get; set; }
-        public DateTimeOffset ModifiedTime { get; set; }
+        public DateTimeOffset? ModifiedTime { get; set; }
         public Guid? ModifiedBy { get; set; }
-        public bool Deleted { get; set; }
+        public bool? Deleted { get; set; }
         public Guid? DeletedBy { get; set; }
-        public DateTimeOffset DeletedTime { get; set; }
-        public DateTimeOffset CreatedTime { get; set; } 
+        public DateTimeOffset? DeletedTime { get; set; }
+        public DateTimeOffset? CreatedTime { get; set; } 
 
     }
 }
