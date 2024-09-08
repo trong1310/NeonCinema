@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.AppDbContext
 {
-    public class NeonCenimaContext : DbContext
+    public class NeonCinemasContext : DbContext
     {
-        public NeonCenimaContext()
+        public NeonCinemasContext()
         {
 
         }
-        public NeonCenimaContext(DbContextOptions<NeonCenimaContext> options) : base(options)
+        public NeonCinemasContext(DbContextOptions<NeonCinemasContext> options) : base(options)
         {
 
         }
