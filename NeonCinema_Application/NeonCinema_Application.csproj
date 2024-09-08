@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataTransferObject\" />
     <Folder Include="Interface\" />
   </ItemGroup>
 

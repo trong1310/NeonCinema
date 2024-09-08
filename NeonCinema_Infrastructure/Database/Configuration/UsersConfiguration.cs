@@ -22,9 +22,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x => x.Email).HasMaxLength(50).IsFixedLength();
             builder.Property(x => x.PassWord).HasMaxLength(50).IsFixedLength();
             builder.Property(x=>x.Gender).HasMaxLength(50).IsFixedLength();
-            builder.Property(x => x.Images).HasConversion(
-                   c => JsonConvert.SerializeObject(c),
-                   c => JsonConvert.DeserializeObject<List<string>>(c));
+        
             
         }
     }

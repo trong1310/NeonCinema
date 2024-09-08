@@ -11,7 +11,7 @@ namespace NeonCinema_Infrastructure.Extention
     public class Hash
     {
         private const string key = "h4mX#u2Dv@9s8FHg";
-
+        // ma hoa pass
         public static string Encrypt(string password)
         {
             using (var aes = new AesManaged())
@@ -31,6 +31,7 @@ namespace NeonCinema_Infrastructure.Extention
             }
 
         }
+        // giai ma pas
         public static string Decrypt(string encryptedPassword)
         {
             using (var aes = new AesManaged())

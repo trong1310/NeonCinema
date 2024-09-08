@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using NeonCinema_Domain.Database.Base;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Database.Entities
 {
-    public class Roles
+    public class Roles : EntityBase
     {
         public Guid ID { get; set; }
         public string RoleName { get; set; }
