@@ -6,6 +6,7 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Moviess;
 
 using NeonCinema_Application.Interface.Utilities;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 
@@ -41,16 +42,17 @@ namespace NeonCinema_Infrastructure.Extention
             options.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
 
             });
-           
- 
+
+
             //services.AddTransient<IEmployeesRepository, EmployeesRepository>();
             //services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
             //services.AddTransient<IShiftChangeRepository, ShiftChangesRepository>();
             //services.AddTransient<IMovieDetailRepository, MovieDetailRepository>();
             //services.AddScoped<ITicketRepository, TicketRepository>();
-            //services.AddScoped<IScreeningRepository, ScreeningRepository>();
+            services.AddScoped<IScreeningRepository, ScreeningRepository>();
             //services.AddTransient<IUtilitiesRepository, UtilitiesRespository>();
             //services.AddScoped<IBillDetailsRepository, BillDetailsRepository>();
+            services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
             
             return services;
         }

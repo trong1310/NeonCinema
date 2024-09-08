@@ -15,172 +15,172 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.Screenings
 {
-    //public class ScreeningRepository : IScreeningRepository
-    //{
-    //    private readonly NeonCenimaContext _context;
-    //    private readonly IMapper _mapper;
-        
-    //    public ScreeningRepository(NeonCenimaContext context, IMapper mapper)
-    //    {
-    //        _context = context; 
-    //        _mapper = mapper;
-    //    }
-    //    public async Task<HttpResponseMessage> CreateScreening(Screening screening, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var lstScr = GetAllScreening(cancellationToken);
-    //            if (screening.ScreeningDate < DateTime.Now)
-    //            {
-    //                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Invalid show date")
-    //                };
-    //            }
+    public class ScreeningRepository : IScreeningRepository
+    {
+        private readonly NeonCenimaContext _context;
+        private readonly IMapper _mapper;
 
-                
+        public ScreeningRepository(NeonCenimaContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+        public async Task<HttpResponseMessage> CreateScreening(Screening screening, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var lstScr = GetAllScreening(cancellationToken);
+                if (screening.ScreeningDate < DateTime.Now)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Invalid show date")
+                    };
+                }
 
-    //            var scr = new Screening
-    //            {
-    //                ScreeningID = Guid.NewGuid(),
-    //                ShowTimeID = screening.ShowTimeID,
-                
-    //                ScreeningDate = screening.ScreeningDate,
-    //                Price = screening.Price,
-    //                Status = EntityStatus.PendingForApproval,
-                    
-    //                RoomID = screening.RoomID
-    //            };
 
-    //            _context.Screening.Add(scr);
 
-    //            await _context.SaveChangesAsync(cancellationToken);
+                var scr = new Screening
+                {
+                    ID = Guid.NewGuid(),
 
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Add screening complete")
-    //            };
-    //        }
-    //        catch(Exception ex)
-    //        {
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
-    //    }
+                    ScreeningDate = screening.ScreeningDate,
+                    Price = screening.Price,
+                    Status = EntityStatus.PendingForApproval,
 
-    //    public async Task<HttpResponseMessage> DeleteScreening(Screening screening, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var scr = await _context.Screening.FindAsync(screening.ScreeningID);
+                    RoomID = screening.RoomID,
+                    MovieID = screening.MovieID,
+                };
 
-    //            if(scr == null)
-    //            {
-    //                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Screening is not found")
-    //                };
-    //            }
+                _context.Screening.Add(scr);
 
-    //            _context.Screening.Remove(scr);
-    //            await _context.SaveChangesAsync(cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
 
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Delete screening complete")
-    //            };
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Add screening complete")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+        }
 
-    //    }
+        public async Task<HttpResponseMessage> DeleteScreening(Screening screening, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var scr = await _context.Screening.FindAsync(screening.ID);
 
-    //    public async Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken)
-    //    {
-    //        var lst = await _context.Screening
-               
-    //         //   .Include(x => x.Room)
-    //            .ToListAsync(cancellationToken);
+                if (scr == null)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Screening is not found")
+                    };
+                }
 
-    //        return lst.Select(scr => _mapper.Map<ScreeningDTO>(scr)).ToList();
-    //    }
+                _context.Screening.Remove(scr);
+                await _context.SaveChangesAsync(cancellationToken);
 
-    //    public async Task<ScreeningDTO> GetScreeningById(Guid id, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var scr = await _context.Screening.FindAsync(id);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Delete screening complete")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
 
-    //            if (scr == null)
-    //            {
-    //                throw new Exception("Screening is not found");
-    //            }
+        }
 
-    //            return _mapper.Map<ScreeningDTO>(scr);
-    //        }
-    //        catch (Exception ex) 
-    //        {
-    //            throw new Exception(ex.Message);
-    //        }
-    //    }
+        public async Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken)
+        {
+            var lst = await _context.Screening
 
-    //    public async Task<HttpResponseMessage> UpdateScreening(Screening screening, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var scr = await _context.Screening.FindAsync(screening.ScreeningID);
+                //   .Include(x => x.Room)
+                .ToListAsync(cancellationToken);
 
-    //            if(scr == null)
-    //            {
-    //                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Screening is not found")
-    //                };
-    //            }
+            return lst.Select(scr => _mapper.Map<ScreeningDTO>(scr)).ToList();
+        }
 
-    //            var lstScr = GetAllScreening(cancellationToken);
+        public async Task<ScreeningDTO> GetScreeningById(Guid id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var scr = await _context.Screening.FindAsync(id);
 
-                
+                if (scr == null)
+                {
+                    throw new Exception("Screening is not found");
+                }
 
-    //            if (screening.ScreeningDate < DateTime.Now)
-    //            {
-    //                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Invalid show date")
-    //                };
-    //            }
+                return _mapper.Map<ScreeningDTO>(scr);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
-          
-    //              scr.ShowTimeID = screening.ShowTimeID;
-    //              scr.ScreeningDate = screening.ScreeningDate;
-    //              scr.Price = screening.Price;
-    //              scr.Status = EntityStatus.PendingForApproval;
-            
-    //              scr.RoomID = screening.RoomID;
+        public async Task<HttpResponseMessage> UpdateScreening(Screening screening, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var scr = await _context.Screening.FindAsync(screening.ID);
 
-    //            _context.Screening.Update(scr);
+                if (scr == null)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Screening is not found")
+                    };
+                }
 
-    //            await _context.SaveChangesAsync(cancellationToken);
+                var lstScr = GetAllScreening(cancellationToken);
 
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Update screening complete")
-    //            };
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
-    //    }
-    //}
+
+
+                if (screening.ScreeningDate < DateTime.Now)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Invalid show date")
+                    };
+                }
+
+
+                scr.ScreeningDate = screening.ScreeningDate;
+                scr.Price = screening.Price;
+                scr.Status = EntityStatus.PendingForApproval;
+
+                scr.RoomID = screening.RoomID;
+                scr.MovieID = screening.MovieID;
+
+                _context.Screening.Update(scr);
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Update screening complete")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+        }
+    }
 }
