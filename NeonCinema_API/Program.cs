@@ -3,17 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
-using NeonCinema_Infrastructure.Extention.AutoMapperProfile;
 using System.Text;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-//builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-//builder.Services.AddTransient<IWorkShiftRepository, WorkShiftRepository>();
-//builder.Services.AddTransient<IShiftChangeRepository, ShiftChangesRepository>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

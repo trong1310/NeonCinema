@@ -16,6 +16,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Users");
             builder.HasKey(x=>x.ID);
+            builder.HasOne(x=>x.Roles).WithMany(x=>x.Users).HasForeignKey(x=>x.RoleID).OnDelete(DeleteBehavior.NoAction);
             builder.Property(x => x.FullName).HasMaxLength(50).IsFixedLength().IsUnicode(true);
             builder.Property(x => x.PhoneNumber).HasMaxLength(10).IsFixedLength();
             builder.Property(x => x.Email).HasMaxLength(50).IsFixedLength();
