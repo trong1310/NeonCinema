@@ -140,10 +140,7 @@ namespace NeonCinema_Infrastructure.Implement.Utilities
         {
             try
             {
-                var create = new List<Users>()
-                {
-                   
-                };
+              
                 var obj = _context.Users.AsNoTracking().FirstOrDefault(x => x.ID == request.Id);
                 var email = "vantrongvt1310@gmail.com";
                 var resetUrl = $"https://yourdomain.com/reset-password?token={token}";
