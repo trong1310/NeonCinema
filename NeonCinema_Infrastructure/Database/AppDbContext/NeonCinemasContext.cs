@@ -70,8 +70,54 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            //FakeData(modelBuilder);
+            SeenDingData(modelBuilder);
         }
+        private void SeenDingData(ModelBuilder modelBuilder)
+        {
+            var roleData = new List<Roles>()
+            {
+                new Roles
+                {
+                    ID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+
+                     CreatedTime = DateTimeOffset.Now,
+                    Status = EntityStatus.Active,
+                    RoleName = "Admin",
+                },
+                new Roles
+                {
+                    ID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                    CreatedTime = DateTimeOffset.Now,
+                    Status = EntityStatus.Active,
+                    RoleName = "Client",
+                },  new Roles
+                {
+                    ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
+                    CreatedTime = DateTimeOffset.Now,
+                    Status = EntityStatus.Active,
+                    RoleName = "Staff",
+                },
+            };
+            modelBuilder.Entity<Roles>(b => { b.HasData(roleData); });
+            var userData = new List<Users>()
+            {
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTimeOffset.Now,
+                    FullName = "Nguyễn Văn Trọng",
+                    Email = "trongnvph35790@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334583920",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+				},
+            };
+			modelBuilder.Entity<Users>(b => { b.HasData(userData); });
+		}
     
     }
 

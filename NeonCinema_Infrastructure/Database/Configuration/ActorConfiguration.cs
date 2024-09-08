@@ -20,11 +20,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.Property(x=>x.Address);
             builder.Property(x=>x.Nationality).HasMaxLength(256).IsFixedLength();
             builder.Property(x => x.Biography);
-            builder.Property(x => x.Images).HasConversion(
-                    c => JsonConvert.SerializeObject(c),
-                    c => JsonConvert.DeserializeObject<List<string>>(c));
-
-
+           
 
         }
     }
