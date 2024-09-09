@@ -26,4 +26,9 @@
     <ProjectReference Include="..\NeonCinema_Domain\NeonCinema_Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extention\AutoMapperProfile\" />
+    <Folder Include="Implement\" />
+  </ItemGroup>
+
 </Project>

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Utilities
 {
-    public class SendMaillRequest
-    {
-        public  Guid Id { get; set; }
-        public bool Status { get; set; }
-        public string Email { get; set; }
-    }
+	public class LoginDTO
+	{
+		public string FullName { get; set; }
+		public string Email { get; set; }
+		public string RoleName { get; set; }
+		public Guid ID { get; set; }
+	}
 }
