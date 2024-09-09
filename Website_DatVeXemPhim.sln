@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeonCinema_Infrastructure",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{C1ADC087-B0BE-49DF-B1D3-5A5D4EB59B52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonCinema_Client", "NeonCinema_Client\NeonCinema_Client.csproj", "{211615FE-9EC6-4CB6-B5D9-EBAA5C535198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeonCinema_Client", "NeonCinema_Client\NeonCinema_Client.csproj", "{211615FE-9EC6-4CB6-B5D9-EBAA5C535198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

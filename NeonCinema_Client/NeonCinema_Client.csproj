@@ -9,13 +9,12 @@
   <ItemGroup>
     <Folder Include="IServices\" />
     <Folder Include="Pages\Admin\" />
-    <Folder Include="Pages\Employees\" />
-    <Folder Include="Pages\Customer\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
