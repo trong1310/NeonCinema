@@ -42,7 +42,7 @@ namespace NeonCinema_API.Controllers
 		}
 		private string GenerateJwtToken(LoginDTO user)
 		{
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 			var claims = new[]
