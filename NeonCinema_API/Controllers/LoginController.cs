@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NeonCinema_Application.DataTransferObject.Utilities;
+using NeonCinema_Application.Interface.Utilities;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
@@ -19,12 +20,12 @@ namespace NeonCinema_API.Controllers
 	{
 		private readonly IConfiguration _configuration;
 		private readonly NeonCinemasContext _context;
-		
-        public LoginController(IConfiguration configuration)
+		private readonly IReCapchaRepositories _captcha;
+        public LoginController(IConfiguration configuration, IReCapchaRepositories captcha)
         {
 			_configuration = configuration;
 			_context = new NeonCinemasContext();
-            
+            _captcha = captcha;
         }
 		private async Task<LoginDTO> GetUser(string emailOrPhone, string password)
 		{
@@ -64,24 +65,31 @@ namespace NeonCinema_API.Controllers
 		[HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequest request)
 		{
-			//try
-			//{
+			try
+			{
+				
 				if (String.IsNullOrEmpty(request.EmailOrPhone) || String.IsNullOrEmpty(request.Password))
 				{
 					return BadRequest("Vui lòng nhập Email/Số điện thoại và mật khẩu.");
 				}
-				var userLogin = await GetUser(request.EmailOrPhone,request.Password);
+                //var captchaClient = request.ReCaptcha;
+                //var checkCaptcha = await _captcha.VerifyToken(captchaClient);
+                //if (!checkCaptcha)
+                //{
+                //    return ("Captcha không đúng vui lòng thử lại");
+                //}
+                var userLogin = await GetUser(request.EmailOrPhone,request.Password);
 				if (userLogin == null )
 				{
 					return Unauthorized();
 				}
 				var token = GenerateJwtToken(userLogin);
 				return Ok( token);
-			//}
-			//catch (Exception ex)
-			//{
-			//	return BadRequest(ex.Message);
-			//}
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 
 		}
     }

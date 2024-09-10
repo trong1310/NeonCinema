@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+
 using NeonCinema_Application.Interface;
+
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Implement;
@@ -12,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+// Capcha Login
+
+builder.Services.Configure<ReCapchaRequest>(builder.Configuration.GetSection("RecaptchaSettings"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

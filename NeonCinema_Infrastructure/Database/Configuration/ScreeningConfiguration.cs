@@ -15,10 +15,11 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Screening");
             builder.HasKey(x=>x.ID);
-            builder.Property(x=>x.Price).HasDefaultValue(0).IsRequired();
-            //
+        
             builder.HasOne(x=>x.Movies).WithMany(x=>x.Screening).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(x=>x.Rooms).WithMany(x=>x.Screenings).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x=>x.ShowTime).WithMany(x=>x.Screening).HasForeignKey(x=>x.ShowTimeID).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x=>x.ShowDate).WithMany(x=>x.Screening).HasForeignKey(x=>x.ShowDateID).OnDelete(DeleteBehavior.NoAction);
             
         }
     }

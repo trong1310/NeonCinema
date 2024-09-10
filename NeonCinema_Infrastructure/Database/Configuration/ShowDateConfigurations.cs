@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 		public void Configure(EntityTypeBuilder<ShowDate> builder)
 		{
 			builder.HasKey(x => x.ID);
-			builder.HasOne(x => x.Screening).WithMany(x => x.ShowDates).HasForeignKey(x => x.ScreeningID).OnDelete(DeleteBehavior.NoAction);
+		
 		}
 	}
 }
