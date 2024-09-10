@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
+using NeonCinema_Infrastructure.Implement;
 using System.Text;
 
 
@@ -26,7 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 		}
     );
 builder.Services.AddAuthorization();
-
+builder.Services.AddScoped<ISeatTypeRepository,SeatTypeRepository>();
 builder.Services.AddApplication(); //use automapper
 builder.Services.AddEventBus(builder.Configuration);
 builder.Services.AddCors(options =>////
