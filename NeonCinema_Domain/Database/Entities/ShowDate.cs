@@ -12,8 +12,7 @@ namespace NeonCinema_Domain.Database.Entities
 	{
 		public Guid ID { get; set; }
 		public DateTime StarDate {  get; set; }
-		public Guid ScreeningID { get; set; }
 		public EntityStatus Status { get; set; }
-		public virtual Screening? Screening { get; set; }
+		public virtual ICollection<Screening>? Screening { get; set; }
 	}
 }

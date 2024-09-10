@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Utilities
 {
-	public class LoginRequest
-	{
-		
-		public string EmailOrPhone { get; set; }
-		public string Password { get; set; }
-		//public string ReCaptcha {  get; set; }
-		
-	}
+    public class ReCapchaRequest
+    {
+        public string SiteKey { get; set; }
+        public string SecretKey { get; set; }
+    }
 }
