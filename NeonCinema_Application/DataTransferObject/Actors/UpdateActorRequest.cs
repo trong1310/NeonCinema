@@ -9,6 +9,7 @@ namespace NeonCinema_Application.DataTransferObject.Actors
 {
     public class UpdateActorRequest
     {
+        
         public string FullName { get; set; }
         public string Gender { get; set; }
         public DateTime BirthDate { get; set; }
