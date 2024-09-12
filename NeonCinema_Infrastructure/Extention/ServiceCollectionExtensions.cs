@@ -3,10 +3,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NeonCinema_Application.Interface;
+
 using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Actors;
+
+using NeonCinema_Application.Interface.Genre;
+using NeonCinema_Application.Interface.Point;
+using NeonCinema_Application.Interface.RannkMember;
+using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Implement;
+using NeonCinema_Infrastructure.Implement.Genres;
+using NeonCinema_Infrastructure.Implement.Points;
+using NeonCinema_Infrastructure.Implement.RankMembers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +35,10 @@ namespace NeonCinema_Infrastructure.Extention
             
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
             services.AddTransient<IActorRepositories, ActorRepositories>();
+            services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
+            services.AddTransient<IPointRepositories, PointRepositories>();
+            services.AddTransient<IRankMemberRepository, RankMemberRepositories>();
+            services.AddTransient<IGenreRepositories, GenreRepositories>();
             return services;
         }
     }

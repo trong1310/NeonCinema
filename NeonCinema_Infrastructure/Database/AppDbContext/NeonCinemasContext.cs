@@ -57,12 +57,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
         public DbSet<ShowDate> ShowDate { get; set; }
+        public DbSet<Point> Points { get; set; }
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
+
             optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
