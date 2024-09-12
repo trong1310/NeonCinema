@@ -38,7 +38,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Capcha Login
 
-builder.Services.Configure<ReCapchaRequest>(builder.Configuration.GetSection("RecaptchaSettings"));
+// builder.Services.Configure<ReCapchaRequest>(builder.Configuration.GetSection("RecaptchaSettings"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -65,7 +65,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 		}
     );
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<ISeatTypeRepository,SeatTypeRepository>();
 builder.Services.AddApplication(); //use automapper
 builder.Services.AddEventBus(builder.Configuration);
 builder.Services.AddCors(options =>////
