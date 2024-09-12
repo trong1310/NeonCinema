@@ -47,7 +47,7 @@ namespace NeonCinema_Infrastructure.Implement.Cinemas
                 OpeningHours = request.OpeningHours,
                 ClosingHours = request.ClosingHours,
                 RoomNumber = request.RoomNumber,
-                CinemasTypeID = request.CinemasTypeID
+                //CinemasTypeID = request.CinemasTypeID
             };
 
             _context.Cinema.Add(cinema);
@@ -69,7 +69,7 @@ namespace NeonCinema_Infrastructure.Implement.Cinemas
                     OpeningHours = c.OpeningHours,
                     ClosingHours = c.ClosingHours,
                     RoomNumber = c.RoomNumber,
-                    CinemasTypeID = c.CinemasTypeID
+                    //CinemasTypeID = c.CinemasTypeID
                 })
                 .ToListAsync(cancellationToken);
 
@@ -90,7 +90,7 @@ namespace NeonCinema_Infrastructure.Implement.Cinemas
                    OpeningHours = c.OpeningHours,
                    ClosingHours = c.ClosingHours,
                    RoomNumber = c.RoomNumber,
-                   CinemasTypeID = c.CinemasTypeID
+                  // CinemasTypeID = c.CinemasTypeID
                })
                .FirstOrDefaultAsync(cancellationToken);
 
@@ -132,7 +132,7 @@ namespace NeonCinema_Infrastructure.Implement.Cinemas
             cinema.OpeningHours = request.OpeningHours;
             cinema.ClosingHours = request.ClosingHours;
             cinema.RoomNumber = request.RoomNumber;
-            cinema.CinemasTypeID = request.CinemasTypeID;
+            //cinema.CinemasTypeID = request.CinemasTypeID;
 
             _context.Cinema.Update(cinema);
             await _context.SaveChangesAsync(cancellationToken);
