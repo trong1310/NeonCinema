@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Database.Entities
 {
-    public class Lenguage : EntityBase
+    public class Language : EntityBase
     {
         public Guid ID { get; set; }
-        public string LenguageName { get; set; }
+        public string LanguageName { get; set; }
        
         //
         public virtual ICollection<Movies>? Movies { get; set; }

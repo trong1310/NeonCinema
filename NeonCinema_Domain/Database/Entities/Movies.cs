@@ -32,7 +32,7 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual ICollection<ActorMovie>? ActorMovies { get; set; }
         public virtual Director? Director { get; set; }
         public virtual ICollection<CategoryMovies>? CategoryMovies { get; set; }
-        public virtual Lenguage? Lenguage { get; set; }
+        public virtual Language? Lenguage { get; set; }
         public virtual Genre? Genre { get; set; }
         public virtual Countrys? Countrys { get; set; }
        

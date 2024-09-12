@@ -11,6 +11,7 @@ namespace NeonCinema_Application.DataTransferObject.Utilities
 		
 		public string EmailOrPhone { get; set; }
 		public string Password { get; set; }
+		//public string ReCaptcha {  get; set; }
 		
 	}
 }
