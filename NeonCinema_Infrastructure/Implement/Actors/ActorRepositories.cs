@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -14,38 +15,128 @@ namespace NeonCinema_Infrastructure.Implement.Actors
 {
     public class ActorRepositories : IActorRepositories
     {
-        NeonCinemasContext _context;
-        IMapper _map;
+       private readonly  NeonCinemasContext _context;
+       private readonly IMapper _map;
         public ActorRepositories(IMapper map)
         {
             _map = map;
             _context = new NeonCinemasContext();
         }
-        public Task<HttpResponseMessage> CreateActor(Actor actor, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateActor(Actor actor, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+
+            try
+            {
+                actor.ID = Guid.NewGuid();
+                actor.CreatedTime = DateTime.UtcNow;
+                actor.Status = EntityStatus.Active;
+                await _context.Actors.AddAsync(actor);
+                await _context.SaveChangesAsync();
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Them Thanh Cong")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Co Loi xay ra" +ex.Message)
+                };
+            }
         }
 
-        public Task<HttpResponseMessage> DeleteActor(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteActor(Actor actor, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var obj = await GetActorByID(actor.ID,cancellationToken);
+                if (obj == null)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy Đạo diễn")
+                    };
+                }
+                else
+                {
+                    obj.DeletedTime = DateTime.UtcNow;
+                    obj.Deleted = true;
+                    _context.Actors.Update(obj);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Sửa thành công")
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("Có lỗi" + ex.Message)
+                };
+            }
+
         }
 
-        public async Task<ActorDTO> GetActorByID(Guid id, CancellationToken cancellationToken)
+        private async Task<Actor> GetActorByID(Guid id, CancellationToken cancellationToken)
         {
-           var actor =await _context.Actors.FirstAsync(x=>x.ID == id);
-            return _map.Map<ActorDTO>(actor);
+           var actor =await _context.Actors.FirstOrDefaultAsync(x=>x.ID == id);
+            return actor;
         }
 
-        public async Task<List<ActorDTO>> GetAllActor(CancellationToken cancellationToken)
+        public async Task<List<ActorDTO>> GetAllActor(ViewActorRequest request,  CancellationToken cancellationToken)
         {
-           var actor = await _context.Actors.ToListAsync(cancellationToken);
-            return _map.Map<List<ActorDTO>>(actor);
+            var query = _context.Actors.AsNoTracking();
+            if (!String.IsNullOrWhiteSpace(request.SearchName))
+            {
+                query = query.Where(x=>x.FullName.Contains(request.SearchName.ToLower()));
+            }
+
+            var actor = await _context.Actors.ToListAsync(cancellationToken);
+            return _map.Map<List<ActorDTO>>(actor.Where(x=>x.Deleted == null));
         }
 
-        public Task<HttpResponseMessage> UpdateActor(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> UpdateActor(Actor actor, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var obj = await GetActorByID(actor.ID,cancellationToken);
+
+                if (obj == null)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy Đạo diễn")
+                    };
+                }
+                else
+                {
+                    actor.ModifiedTime = DateTime.UtcNow;
+                    obj.Status = actor.Status;
+                    obj.FullName = actor.FullName;
+                    obj.Address = actor.Address;
+                    obj.Gender = actor.Gender;
+                    obj.Biography = actor.Biography;
+                    obj.Images = actor.Images;
+                    obj.Nationality = actor.Nationality;
+                    
+                    _context.Actors.Update(obj);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Sửa thành công")
+                    };
+                }
+            }
+            catch (Exception ex) 
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("Có lỗi" + ex.Message)
+                };
+            }
         }
     }
 }

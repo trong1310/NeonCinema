@@ -14,9 +14,9 @@ namespace NeonCinema_Infrastructure.Implement
     public class SeatTypeRepository : ISeatTypeRepository
     {
        private readonly NeonCinemasContext _context;
-        public SeatTypeRepository(NeonCinemasContext context)
+        public SeatTypeRepository( )
         {
-                _context = context;
+                _context = new NeonCinemasContext();
         }
         public async Task AddAsync(SeatType seatType)
         {
