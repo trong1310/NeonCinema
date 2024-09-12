@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeonCinema_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class neons : Migration
+    public partial class PP : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -257,6 +257,40 @@ namespace NeonCinema_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Service", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShowDate",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StarDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShowDate", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShowTimes",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShowTimes", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -606,9 +640,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    ScreeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ShowTimeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ShowDateID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -631,6 +665,16 @@ namespace NeonCinema_Infrastructure.Migrations
                         name: "FK_Screening_Room_RoomID",
                         column: x => x.RoomID,
                         principalTable: "Room",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Screening_ShowDate_ShowDateID",
+                        column: x => x.ShowDateID,
+                        principalTable: "ShowDate",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Screening_ShowTimes_ShowTimeID",
+                        column: x => x.ShowTimeID,
+                        principalTable: "ShowTimes",
                         principalColumn: "ID");
                 });
 
@@ -759,52 +803,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         name: "FK_ShiftChange_WorkShift_WorkShiftID",
                         column: x => x.WorkShiftID,
                         principalTable: "WorkShift",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShowDate",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StarDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ScreeningID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShowDate", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ShowDate_Screening_ScreeningID",
-                        column: x => x.ScreeningID,
-                        principalTable: "Screening",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShowTimes",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ScreeningID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShowTimes", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ShowTimes_Screening_ScreeningID",
-                        column: x => x.ScreeningID,
-                        principalTable: "Screening",
                         principalColumn: "ID");
                 });
 
@@ -970,15 +968,15 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTimeOffset(new DateTime(2024, 9, 9, 19, 58, 54, 357, DateTimeKind.Unspecified).AddTicks(2851), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Admin", 1 },
-                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTimeOffset(new DateTime(2024, 9, 9, 19, 58, 54, 357, DateTimeKind.Unspecified).AddTicks(2930), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Staff", 1 },
-                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTimeOffset(new DateTime(2024, 9, 9, 19, 58, 54, 357, DateTimeKind.Unspecified).AddTicks(2923), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Client", 1 }
+                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5456), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Admin", 1 },
+                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5510), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Staff", 1 },
+                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5504), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Client", 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "ID", "Adderss", "ConfirmCode", "CreatedBy", "CreatedTime", "DateOrBriht", "Deleted", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "SeenTime", "Status" },
-                values: new object[] { new Guid("3763638a-a7b5-4d06-b581-e461e38d7440"), "Ba Vi", null, null, new DateTimeOffset(new DateTime(2024, 9, 9, 19, 58, 54, 357, DateTimeKind.Unspecified).AddTicks(3161), new TimeSpan(0, 7, 0, 0, 0)), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "trongnvph35790@fpt.edu.vn", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, 1 });
+                values: new object[] { new Guid("5cc77b09-17a9-4bbe-a9e2-c4978677587a"), "Ba Vi", null, null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5628), new TimeSpan(0, 7, 0, 0, 0)), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "trongnvph35790@fpt.edu.vn", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActorMovies_ActorID",
@@ -1086,6 +1084,16 @@ namespace NeonCinema_Infrastructure.Migrations
                 column: "RoomID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Screening_ShowDateID",
+                table: "Screening",
+                column: "ShowDateID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Screening_ShowTimeID",
+                table: "Screening",
+                column: "ShowTimeID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Seat_RoomID",
                 table: "Seat",
                 column: "RoomID");
@@ -1114,16 +1122,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "IX_Show_release_RoomID",
                 table: "Show_release",
                 column: "RoomID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShowDate_ScreeningID",
-                table: "ShowDate",
-                column: "ScreeningID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShowTimes_ScreeningID",
-                table: "ShowTimes",
-                column: "ScreeningID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_CustomerID",
@@ -1216,12 +1214,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "ShiftChange");
 
             migrationBuilder.DropTable(
-                name: "ShowDate");
-
-            migrationBuilder.DropTable(
-                name: "ShowTimes");
-
-            migrationBuilder.DropTable(
                 name: "TicketSeat");
 
             migrationBuilder.DropTable(
@@ -1268,6 +1260,12 @@ namespace NeonCinema_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "MovieDetail");
+
+            migrationBuilder.DropTable(
+                name: "ShowDate");
+
+            migrationBuilder.DropTable(
+                name: "ShowTimes");
 
             migrationBuilder.DropTable(
                 name: "Roles");
