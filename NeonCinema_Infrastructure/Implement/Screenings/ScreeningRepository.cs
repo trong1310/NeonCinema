@@ -17,10 +17,10 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 {
     public class ScreeningRepository : IScreeningRepository
     {
-        private readonly NeonCenimaContext _context;
+        private readonly NeonCinemasContext _context;
         private readonly IMapper _mapper;
 
-        public ScreeningRepository(NeonCenimaContext context, IMapper mapper)
+        public ScreeningRepository(NeonCinemasContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -29,23 +29,13 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
-                var lstScr = GetAllScreening(cancellationToken);
-                if (screening.ScreeningDate < DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Invalid show date")
-                    };
-                }
-
-
 
                 var scr = new Screening
                 {
                     ID = Guid.NewGuid(),
 
-                    ScreeningDate = screening.ScreeningDate,
-                    Price = screening.Price,
+                    ShowDateID = screening.ShowDateID,
+                    ShowTimeID = screening.ShowTimeID,
                     Status = EntityStatus.PendingForApproval,
 
                     RoomID = screening.RoomID,
@@ -148,18 +138,8 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                 var lstScr = GetAllScreening(cancellationToken);
 
 
-
-                if (screening.ScreeningDate < DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Invalid show date")
-                    };
-                }
-
-
-                scr.ScreeningDate = screening.ScreeningDate;
-                scr.Price = screening.Price;
+                scr.ShowDateID = screening.ShowDateID;
+                scr.ShowTimeID = screening.ShowTimeID;
                 scr.Status = EntityStatus.PendingForApproval;
 
                 scr.RoomID = screening.RoomID;

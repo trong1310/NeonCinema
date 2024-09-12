@@ -10,7 +10,7 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 
 namespace NeonCinema_Infrastructure.Migrations
 {
-    [DbContext(typeof(NeonCenimaContext))]
+    [DbContext(typeof(NeonCinemasContext))]
     partial class NeonCenimaContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

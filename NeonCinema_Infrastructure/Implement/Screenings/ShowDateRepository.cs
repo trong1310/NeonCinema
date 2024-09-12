@@ -14,9 +14,9 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 {
     public class ShowDateRepository : IEntityRepository<ShowDate>
     {
-        NeonCenimaContext _context;
+        NeonCinemasContext _context;
         IMapper _mapper;
-        public ShowDateRepository(IMapper mapper, NeonCenimaContext context) 
+        public ShowDateRepository(IMapper mapper, NeonCinemasContext context) 
         {
             _context = context;
             _mapper = mapper;
@@ -29,7 +29,6 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                 {
                     ID = Guid.NewGuid(),
                     StarDate = entity.StarDate,
-                    ScreeningID = entity.ScreeningID,
                     Status = EntityStatus.PendingForConfirmation
                 };
 
@@ -123,7 +122,6 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                 }
 
                 sd.StarDate = entity.StarDate;
-                sd.ScreeningID = entity.ScreeningID;
                 sd.Status = entity.Status;
 
                 _context.ShowDate.Update(sd);

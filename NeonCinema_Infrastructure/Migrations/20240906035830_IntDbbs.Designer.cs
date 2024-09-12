@@ -11,7 +11,7 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 
 namespace NeonCinema_Infrastructure.Migrations
 {
-    [DbContext(typeof(NeonCenimaContext))]
+    [DbContext(typeof(NeonCinemasContext))]
     [Migration("20240906035830_IntDbbs")]
     partial class IntDbbs
     {
