@@ -286,9 +286,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CinemasTypeID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ClosingHours")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -345,48 +342,7 @@ namespace NeonCinema_Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CinemasTypeID");
-
-                    b.ToTable("Cinema", (string)null);
-                });
-
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.CinemasType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool?>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("DeletedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("ModifiedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CinemaTypes", (string)null);
+                    b.ToTable("Cinemas", (string)null);
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Countrys", b =>
@@ -557,7 +513,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.ToTable("Genre", (string)null);
                 });
 
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Lenguage", b =>
+            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Language", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -578,7 +534,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("DeletedTime")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("LenguageName")
+                    b.Property<string>("LanguageName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nchar(50)")
@@ -903,33 +859,21 @@ namespace NeonCinema_Infrastructure.Migrations
                         new
                         {
                             ID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5456), new TimeSpan(0, 7, 0, 0, 0)),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 13, 45, 6, 474, DateTimeKind.Unspecified).AddTicks(1512), new TimeSpan(0, 7, 0, 0, 0)),
-
+                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9156), new TimeSpan(0, 7, 0, 0, 0)),
                             RoleName = "Admin",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5504), new TimeSpan(0, 7, 0, 0, 0)),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 13, 45, 6, 474, DateTimeKind.Unspecified).AddTicks(1583), new TimeSpan(0, 7, 0, 0, 0)),
-
+                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9206), new TimeSpan(0, 7, 0, 0, 0)),
                             RoleName = "Client",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5510), new TimeSpan(0, 7, 0, 0, 0)),
-
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 13, 45, 6, 474, DateTimeKind.Unspecified).AddTicks(1587), new TimeSpan(0, 7, 0, 0, 0)),
-
+                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9210), new TimeSpan(0, 7, 0, 0, 0)),
                             RoleName = "Staff",
                             Status = 1
                         });
@@ -1653,15 +1597,9 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-
-                            ID = new Guid("5cc77b09-17a9-4bbe-a9e2-c4978677587a"),
+                            ID = new Guid("9c3d73a9-eb28-4aac-a538-3c5c7b8eb669"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5628), new TimeSpan(0, 7, 0, 0, 0)),
-
-                            ID = new Guid("278e7b46-fdb4-4609-a785-f3f637b14754"),
-                            Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 11, 13, 45, 6, 474, DateTimeKind.Unspecified).AddTicks(1702), new TimeSpan(0, 7, 0, 0, 0)),
-
+                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9405), new TimeSpan(0, 7, 0, 0, 0)),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "trongnvph35790@fpt.edu.vn",
                             FullName = "Nguyễn Văn Trọng",
@@ -1808,17 +1746,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("Movies");
                 });
 
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Cinemas", b =>
-                {
-                    b.HasOne("NeonCinema_Domain.Database.Entities.CinemasType", "CinemasType")
-                        .WithMany("Cinemas")
-                        .HasForeignKey("CinemasTypeID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("CinemasType");
-                });
-
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.FoodCombo", b =>
                 {
                     b.HasOne("NeonCinema_Domain.Database.Entities.Bill", "Bills")
@@ -1858,7 +1785,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("NeonCinema_Domain.Database.Entities.Lenguage", "Lenguage")
+                    b.HasOne("NeonCinema_Domain.Database.Entities.Language", "Lenguage")
                         .WithMany("Movies")
                         .HasForeignKey("LenguageID")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2158,11 +2085,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("TicketSeats");
                 });
 
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.CinemasType", b =>
-                {
-                    b.Navigation("Cinemas");
-                });
-
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Countrys", b =>
                 {
                     b.Navigation("Movies");
@@ -2178,7 +2100,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("Movies");
                 });
 
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Lenguage", b =>
+            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Language", b =>
                 {
                     b.Navigation("Movies");
                 });

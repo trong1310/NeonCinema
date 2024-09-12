@@ -16,6 +16,6 @@ namespace NeonCinema_Application.DataTransferObject.Cinemas
         public string OpeningHours { get; set; }
         public string ClosingHours { get; set; }
         public int RoomNumber { get; set; }
-        public Guid CinemasTypeID { get; set; }
+        //public Guid CinemasTypeID { get; set; }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeonCinema_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class PP : Migration
+    public partial class FA : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,12 +61,17 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CinemaTypes",
+                name: "Cinemas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    WebSite = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OpeningHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClosingHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoomNumber = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -77,7 +82,7 @@ namespace NeonCinema_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CinemaTypes", x => x.Id);
+                    table.PrimaryKey("PK_Cinemas", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -142,7 +147,7 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LenguageName = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
+                    LanguageName = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -310,18 +315,13 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cinema",
+                name: "Room",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    WebSite = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OpeningHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ClosingHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoomNumber = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    CinemasTypeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatingCapacity = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
+                    CinemasID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -332,12 +332,12 @@ namespace NeonCinema_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cinema", x => x.ID);
+                    table.PrimaryKey("PK_Room", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Cinema_CinemaTypes_CinemasTypeID",
-                        column: x => x.CinemasTypeID,
-                        principalTable: "CinemaTypes",
-                        principalColumn: "Id");
+                        name: "FK_Room_Cinemas_CinemasID",
+                        column: x => x.CinemasID,
+                        principalTable: "Cinemas",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -427,13 +427,16 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Room",
+                name: "Seat",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
-                    SeatingCapacity = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
-                    CinemasID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Column = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Row = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SeatTypeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -444,11 +447,16 @@ namespace NeonCinema_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Room", x => x.ID);
+                    table.PrimaryKey("PK_Seat", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Room_Cinema_CinemasID",
-                        column: x => x.CinemasID,
-                        principalTable: "Cinema",
+                        name: "FK_Seat_Room_RoomID",
+                        column: x => x.RoomID,
+                        principalTable: "Room",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Seat_SeatType_SeatTypeID",
+                        column: x => x.SeatTypeID,
+                        principalTable: "SeatType",
                         principalColumn: "ID");
                 });
 
@@ -511,6 +519,82 @@ namespace NeonCinema_Infrastructure.Migrations
                         name: "FK_CategoryMovies_MovieType_MovieTypeID",
                         column: x => x.MovieTypeID,
                         principalTable: "MovieType",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Screening",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ShowTimeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ShowDateID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Screening", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Screening_MovieDetail_MovieID",
+                        column: x => x.MovieID,
+                        principalTable: "MovieDetail",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Screening_Room_RoomID",
+                        column: x => x.RoomID,
+                        principalTable: "Room",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Screening_ShowDate_ShowDateID",
+                        column: x => x.ShowDateID,
+                        principalTable: "ShowDate",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Screening_ShowTimes_ShowTimeID",
+                        column: x => x.ShowTimeID,
+                        principalTable: "ShowTimes",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Show_release",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    TimeRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Show_release", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Show_release_MovieDetail_MovieID",
+                        column: x => x.MovieID,
+                        principalTable: "MovieDetail",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Show_release_Room_RoomID",
+                        column: x => x.RoomID,
+                        principalTable: "Room",
                         principalColumn: "ID");
                 });
 
@@ -636,177 +720,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Screening",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ShowTimeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShowDateID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Screening", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Screening_MovieDetail_MovieID",
-                        column: x => x.MovieID,
-                        principalTable: "MovieDetail",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Screening_Room_RoomID",
-                        column: x => x.RoomID,
-                        principalTable: "Room",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Screening_ShowDate_ShowDateID",
-                        column: x => x.ShowDateID,
-                        principalTable: "ShowDate",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Screening_ShowTimes_ShowTimeID",
-                        column: x => x.ShowTimeID,
-                        principalTable: "ShowTimes",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Seat",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Column = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Row = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SeatTypeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Seat", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Seat_Room_RoomID",
-                        column: x => x.RoomID,
-                        principalTable: "Room",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Seat_SeatType_SeatTypeID",
-                        column: x => x.SeatTypeID,
-                        principalTable: "SeatType",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Show_release",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoomID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    TimeRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Show_release", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Show_release_MovieDetail_MovieID",
-                        column: x => x.MovieID,
-                        principalTable: "MovieDetail",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Show_release_Room_RoomID",
-                        column: x => x.RoomID,
-                        principalTable: "Room",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FoodCombo",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
-                    ServiceID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BillID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FoodCombo", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_FoodCombo_Bill_BillID",
-                        column: x => x.BillID,
-                        principalTable: "Bill",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FoodCombo_Service_ServiceID",
-                        column: x => x.ServiceID,
-                        principalTable: "Service",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShiftChange",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShiftName = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
-                    NewShift = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
-                    RequetDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    WorkShiftID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShiftChange", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ShiftChange_WorkShift_WorkShiftID",
-                        column: x => x.WorkShiftID,
-                        principalTable: "WorkShift",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Seat_ShowTime_Status",
                 columns: table => new
                 {
@@ -877,6 +790,67 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FoodCombo",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
+                    ServiceID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BillID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FoodCombo", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_FoodCombo_Bill_BillID",
+                        column: x => x.BillID,
+                        principalTable: "Bill",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FoodCombo_Service_ServiceID",
+                        column: x => x.ServiceID,
+                        principalTable: "Service",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShiftChange",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ShiftName = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
+                    NewShift = table.Column<string>(type: "nchar(50)", fixedLength: true, maxLength: 50, nullable: false),
+                    RequetDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    WorkShiftID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShiftChange", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ShiftChange_WorkShift_WorkShiftID",
+                        column: x => x.WorkShiftID,
+                        principalTable: "WorkShift",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketSeat",
                 columns: table => new
                 {
@@ -908,9 +882,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         principalTable: "Bill",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_TicketSeat_Cinema_CinemasID",
+                        name: "FK_TicketSeat_Cinemas_CinemasID",
                         column: x => x.CinemasID,
-                        principalTable: "Cinema",
+                        principalTable: "Cinemas",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TicketSeat_MovieDetail_MovieID",
@@ -968,15 +942,15 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5456), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Admin", 1 },
-                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5510), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Staff", 1 },
-                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5504), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Client", 1 }
+                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9156), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Admin", 1 },
+                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9210), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Staff", 1 },
+                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9206), new TimeSpan(0, 7, 0, 0, 0)), null, null, null, null, null, "Client", 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "ID", "Adderss", "ConfirmCode", "CreatedBy", "CreatedTime", "DateOrBriht", "Deleted", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "SeenTime", "Status" },
-                values: new object[] { new Guid("5cc77b09-17a9-4bbe-a9e2-c4978677587a"), "Ba Vi", null, null, new DateTimeOffset(new DateTime(2024, 9, 11, 11, 42, 27, 495, DateTimeKind.Unspecified).AddTicks(5628), new TimeSpan(0, 7, 0, 0, 0)), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "trongnvph35790@fpt.edu.vn", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, 1 });
+                values: new object[] { new Guid("9c3d73a9-eb28-4aac-a538-3c5c7b8eb669"), "Ba Vi", null, null, new DateTimeOffset(new DateTime(2024, 9, 12, 16, 41, 42, 106, DateTimeKind.Unspecified).AddTicks(9405), new TimeSpan(0, 7, 0, 0, 0)), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "trongnvph35790@fpt.edu.vn", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActorMovies_ActorID",
@@ -1022,11 +996,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "IX_CategoryMovies_MovieTypeID",
                 table: "CategoryMovies",
                 column: "MovieTypeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cinema_CinemasTypeID",
-                table: "Cinema",
-                column: "CinemasTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FoodCombo_BillID",
@@ -1289,10 +1258,7 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "Lenguage");
 
             migrationBuilder.DropTable(
-                name: "Cinema");
-
-            migrationBuilder.DropTable(
-                name: "CinemaTypes");
+                name: "Cinemas");
         }
     }
 }

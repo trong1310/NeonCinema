@@ -47,7 +47,7 @@ namespace NeonCinema_Infrastructure.Implement.Points
             // Nếu không tồn tại thì tạo User giả
             if (!userExists)
             {
-                var fakeUser = new Users
+                var fakeUser = new NeonCinema_Domain.Database.Entities. Users
                 {
                     ID = fixedUserId, // Sử dụng UserID cố định
                     FullName = "Fake User",
