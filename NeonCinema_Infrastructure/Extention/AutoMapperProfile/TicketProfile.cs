@@ -14,7 +14,6 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         public TicketProfile()
         {
             CreateMap<TicketDTO,Ticket>().ReverseMap();
-            CreateMap<TicketCreateRequests, Ticket>();
             CreateMap<TicketUpdateRequests, Ticket>();
             CreateMap<TicketDeleteRequests, Ticket>();
         }

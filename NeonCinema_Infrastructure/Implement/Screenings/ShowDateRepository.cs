@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -25,6 +26,13 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
+                if (entity.StarDate <= DateTime.Now)
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Time is not correct")
+                    };
+                }
                 ShowDate sd = new ShowDate
                 {
                     ID = Guid.NewGuid(),
@@ -82,7 +90,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 
         public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.Include(x => x.Screening).ToListAsync(cancellationToken);
+            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
 
             return lst;
         }
@@ -91,7 +99,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
-                var sd = await _context.FindAsync<ShowDate>(id);
+                var sd = await _context.ShowDate.FindAsync(id);
 
                 if (sd == null)
                 {
@@ -111,7 +119,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
-                var sd = await _context.FindAsync<ShowDate>(entity.ID);
+                var sd = await _context.ShowDate.FindAsync(entity.ID);
 
                 if (sd == null)
                 {

@@ -30,7 +30,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpPost("create-ticket")]
-        public async Task<IActionResult> PostTicket([FromBody] TicketCreateRequests request, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostTicket([FromBody] TicketDTO request, CancellationToken cancellationToken)
         {
             try
             {

@@ -15,166 +15,168 @@ using NeonCinema_Domain.Enum;
 namespace NeonCinema_Infrastructure.Implement.Tickets
 
 {
-    //public class TicketRepository : ITicketRepository
-    //{
-    //    private readonly NeonCenimaContext _context;
-    //    private readonly IMapper _mapper;
+    public class TicketRepository : ITicketRepository
+    {
+        private readonly NeonCinemasContext _context;
+        private readonly IMapper _mapper;
 
-    //    public TicketRepository(IMapper mapper)
-    //    {
-    //        _context = new NeonCenimaContext();
-    //        _mapper = mapper;
-    //    }
-    //    public async Task<HttpResponseMessage> CreateTicket(Ticket ticket, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            if(ticket.Price == null ||
-    //               ticket.BarCode == null ||
-    //               ticket.CustomerID == null ||
-    //               ticket.SeatID == null ||
-    //               ticket.Screening == null)
-    //            {
-    //                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Please enter enough")
-    //                };
-    //            }
+        public TicketRepository(IMapper mapper)
+        {
+            _context = new NeonCinemasContext();
+            _mapper = mapper;
+        }
+        public async Task<HttpResponseMessage> CreateTicket(Ticket ticket, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (ticket.Price == null ||
+                   ticket.QrCode == null ||
+                   ticket.CustomerID == null ||
+                   ticket.SeatID == null ||
+                   ticket.SurchargeID == null ||
+                   ticket.ScreeningID == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Please enter enough")
+                    };
+                }
 
-    //            var findSeatByid = await _context.Seat.FindAsync(ticket.SeatID);
+                var findSeatByid = await _context.Seat.FindAsync(ticket.SeatID);
 
-    //            if(findSeatByid != null)
-    //            {
-    //                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Seat already exists")
-    //                };
-    //            }
+                if (findSeatByid != null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Seat already exists")
+                    };
+                }
 
-    //            Ticket tk = new Ticket()
-    //            {
-    //                TicketID = Guid.NewGuid(),
-    //                Price = ticket.Price,
-    //                BarCode = ticket.BarCode,
-    //                Status = EntityStatus.PendingForApproval,
-    //                PurchaseDate = DateTime.Now,
-    //                CustomerID = ticket.CustomerID,
-    //                SeatID = ticket.SeatID,
-    //                Screening = ticket.Screening,
-    //            };
-    //            await _context.Ticket.AddAsync(tk);
-    //            await _context.SaveChangesAsync(cancellationToken);
-    //            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Created successfully")
-    //            };
+                Ticket tk = new Ticket()
+                {
+                    ID = Guid.NewGuid(),
+                    Price = ticket.Price,
+                    QrCode = ticket.QrCode,
+                    CustomerID = ticket.CustomerID,
+                    SeatID = ticket.SeatID,
+                    SurchargeID = ticket.SurchargeID,
+                    ScreeningID = ticket.ScreeningID,
+                };
+                await _context.Ticket.AddAsync(tk);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Created successfully")
+                };
 
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            return new HttpResponseMessage(HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
-    //    }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+        }
 
-    //    public async Task<HttpResponseMessage> DeleteTicket(Ticket ticket, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var tk = await _context.Ticket.FindAsync(ticket.TicketID, cancellationToken);
+        public async Task<HttpResponseMessage> DeleteTicket(Ticket ticket, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var tk = await _context.Ticket.FindAsync(ticket.ID, cancellationToken);
 
-    //            if(tk == null)
-    //            {
-    //                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Ticket is not found")
-    //                };
-    //            }
+                if (tk == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Ticket is not found")
+                    };
+                }
 
-    //            _context.Ticket.Remove(tk);
-    //            await _context.SaveChangesAsync(cancellationToken);
+                _context.Ticket.Remove(tk);
+                await _context.SaveChangesAsync(cancellationToken);
 
-    //            return new HttpResponseMessage(HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Delete ticket complete")
-    //            };
-    //        }
-    //        catch(Exception ex) 
-    //        {
-    //            return new HttpResponseMessage(HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
-    //    }
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Delete ticket complete")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+        }
 
-    //    public async Task<List<TicketDTO>> GetAllTicket(CancellationToken cancellationToken)
-    //    {
-    //        var lst = await _context.Ticket
-    //            .Include(s => s.Seats)
-    //            .Include(s => s.Customers)
-    //            .Include(s => s.Screening)
-    //            .ToListAsync(cancellationToken);
-    //        return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
-    //    }
+        public async Task<List<TicketDTO>> GetAllTicket(CancellationToken cancellationToken)
+        {
+            var lst = await _context.Ticket
+                .Include(s => s.Seat)
+                .Include(s => s.Customers)
+                .Include(s => s.Screening)
+                .Include(s => s.Surcharges)
+                .ToListAsync(cancellationToken);
+            return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
+        }
 
-    //    public async Task<TicketDTO> GetTicketById(Guid id, CancellationToken cancellationToken)
-    //    {
-    //        if(id != null)
-    //        {
-    //            var tk = await _context.Ticket.FindAsync(id);
+        public async Task<TicketDTO> GetTicketById(Guid id, CancellationToken cancellationToken)
+        {
+            if (id != null)
+            {
+                var tk = await _context.Ticket.FindAsync(id);
 
-    //            if(tk == null)
-    //            {
-    //                throw new Exception("Ticket is not found");
-    //            }
+                if (tk == null)
+                {
+                    throw new Exception("Ticket is not found");
+                }
 
-    //            return  _mapper.Map<TicketDTO>(tk);
-    //        }
-            
-    //        throw new NotImplementedException();       
-    //    }
+                return _mapper.Map<TicketDTO>(tk);
+            }
 
-    //    public async Task<HttpResponseMessage> UpdateTicket(Ticket ticket, CancellationToken cancellationToken)
-    //    {
-    //        try
-    //        {
-    //            var tk = await _context.Ticket.FindAsync(ticket.TicketID);
-    //            if(tk == null)
-    //            {
-    //                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-    //                {
-    //                    Content = new StringContent("Ticket is not found")
-    //                };
-    //            }
+            throw new NotImplementedException();
+        }
 
-    //            tk.Price = ticket.Price;
-    //            tk.Status = ticket.Status;
-    //            tk.BarCode = ticket.BarCode;
-    //            tk.CustomerID = ticket.CustomerID;
-    //            tk.Screening = ticket.Screening;
-    //            tk.SeatID = ticket.SeatID;
+        public async Task<HttpResponseMessage> UpdateTicket(Ticket ticket, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var tk = await _context.Ticket.FindAsync(ticket.ID);
+                if (tk == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Ticket is not found")
+                    };
+                }
 
-    //            _context.Ticket.Update(tk);
+                tk.Price = ticket.Price;
+                tk.CustomerID = ticket.CustomerID;
+                tk.QrCode = ticket.QrCode;
+                tk.CustomerID = ticket.CustomerID;
+                tk.ScreeningID = ticket.ScreeningID;
+                tk.SurchargeID = ticket.SurchargeID;
+                tk.SeatID = ticket.SeatID;
 
-    //            await _context.SaveChangesAsync(cancellationToken);
+                _context.Ticket.Update(tk);
 
-    //            return new HttpResponseMessage(HttpStatusCode.OK)
-    //            {
-    //                Content = new StringContent("Update ticket complete")
-    //            };
+                await _context.SaveChangesAsync(cancellationToken);
 
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            return new HttpResponseMessage(HttpStatusCode.InternalServerError)
-    //            {
-    //                Content = new StringContent(ex.Message)
-    //            };
-    //        }
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Update ticket complete")
+                };
 
-    //    }
-    //}
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+
+        }
+    }
 }
