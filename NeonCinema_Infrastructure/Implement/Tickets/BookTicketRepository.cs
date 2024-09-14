@@ -3,44 +3,36 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Database.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.Tickets
 {
-    public class ShowTimeRepository : IEntityRepository<ShowTime>
+    public class BookTicketRepository : IEntityRepository<BookTickets>
     {
         NeonCinemasContext _context;
-
-        public ShowTimeRepository(NeonCinemasContext context)
+        public BookTicketRepository(NeonCinemasContext context)
         {
-                _context = context;
+            _context = context;
         }
-        public async Task<HttpResponseMessage> Create(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(BookTickets entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.EndTime <= entity.StartTime || entity.StartTime <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
 
-
-                ShowTime st = new ShowTime
+                BookTickets bt = new BookTickets
                 {
                     ID = Guid.NewGuid(),
-                    StartTime = entity.StartTime,
-                    EndTime = entity.EndTime,
+                    CustomerID = entity.CustomerID,
+                    TicketID = entity.TicketID,
                     Status = EntityStatus.PendingForConfirmation
                 };
 
-                _context.ShowTimes.Add(st);
+                _context.BookTickets.Add(bt);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +49,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(BookTickets entity, CancellationToken cancellationToken)
         {
             try
             {
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
+                var bt = await _context.BookTickets.FindAsync(entity.ID);
 
-                if (st == null)
+                if (bt == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowTime is not found")
+                        Content = new StringContent("BookTicket is not found")
                     };
                 }
 
-                _context.ShowTimes.Remove(st);
+                _context.BookTickets.Remove(bt);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,22 +80,25 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowTime>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<BookTickets>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowTimes.ToListAsync(cancellationToken);
+            var lst = await _context.BookTickets
+                .Include(x => x.Customers)
+                .Include(x => x.Tickets)
+                .ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowTime> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<BookTickets> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var st = await _context.ShowTimes.FindAsync(id);
+                var st = await _context.BookTickets.FindAsync(id);
 
                 if (st == null)
                 {
-                    throw new Exception("ShowTime is not found");
+                    throw new Exception("BookTicket is not found");
                 }
 
 
@@ -115,33 +110,25 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(BookTickets entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.EndTime <= entity.StartTime || entity.StartTime <= DateTime.Now)
+                var bt = await _context.BookTickets.FindAsync(entity.ID);
+
+                if (bt == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("Time is not correct")
+                        Content = new StringContent("BookTicket is not found")
                     };
                 }
 
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
+                bt.CustomerID = entity.CustomerID;
+                bt.TicketID = entity.TicketID;
+                bt.Status = entity.Status;
 
-                if (st == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("ShowDate is not found")
-                    };
-                }
-
-                st.StartTime = entity.StartTime;
-                st.EndTime = entity.EndTime;
-                st.Status = entity.Status;
-
-                _context.ShowTimes.Update(st);
+                _context.BookTickets.Update(bt);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

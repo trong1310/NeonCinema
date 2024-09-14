@@ -23,6 +23,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Tickets;
+using NeonCinema_Infrastructure.Database.Configuration;
+using NeonCinema_Infrastructure.Implement.Surcharge;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -50,6 +52,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
             services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
+            services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();
             return services;
         }
     }

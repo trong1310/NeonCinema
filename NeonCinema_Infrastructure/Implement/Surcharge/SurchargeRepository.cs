@@ -9,17 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.Surcharge
 {
-    public class ShowTimeRepository : IEntityRepository<ShowTime>
+    public class SurchargeRepository : IEntityRepository<Surcharges>
     {
         NeonCinemasContext _context;
-
-        public ShowTimeRepository(NeonCinemasContext context)
+        public SurchargeRepository(NeonCinemasContext context)
         {
-                _context = context;
+            _context = context;
         }
-        public async Task<HttpResponseMessage> Create(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(Surcharges entity, CancellationToken cancellationToken)
         {
             try
             {
@@ -32,15 +31,17 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                 }
 
 
-                ShowTime st = new ShowTime
+                Surcharges sc = new Surcharges
                 {
                     ID = Guid.NewGuid(),
                     StartTime = entity.StartTime,
                     EndTime = entity.EndTime,
-                    Status = EntityStatus.PendingForConfirmation
+                    Price = entity.Price,
+                    Description = entity.Description,
+                    status = EntityStatus.PendingForConfirmation
                 };
 
-                _context.ShowTimes.Add(st);
+                _context.Surcharges.Add(sc);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +58,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(Surcharges entity, CancellationToken cancellationToken)
         {
             try
             {
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
+                var sc = await _context.Surcharges.FindAsync(entity.ID);
 
-                if (st == null)
+                if (sc == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowTime is not found")
+                        Content = new StringContent("Surcharge is not found")
                     };
                 }
 
-                _context.ShowTimes.Remove(st);
+                _context.Surcharges.Remove(sc);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,26 +89,26 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowTime>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<Surcharges>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowTimes.ToListAsync(cancellationToken);
+            var lst = await _context.Surcharges.ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowTime> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<Surcharges> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var st = await _context.ShowTimes.FindAsync(id);
+                var sc = await _context.Surcharges.FindAsync(id);
 
-                if (st == null)
+                if (sc == null)
                 {
-                    throw new Exception("ShowTime is not found");
+                    throw new Exception("Surcharge is not found");
                 }
 
 
-                return st;
+                return sc;
             }
             catch (Exception ex)
             {
@@ -115,7 +116,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(Surcharges entity, CancellationToken cancellationToken)
         {
             try
             {
@@ -127,21 +128,23 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
                     };
                 }
 
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
+                var sc = await _context.Surcharges.FindAsync(entity.ID);
 
-                if (st == null)
+                if (sc == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Surcharge is not found")
                     };
                 }
 
-                st.StartTime = entity.StartTime;
-                st.EndTime = entity.EndTime;
-                st.Status = entity.Status;
+                sc.StartTime = entity.StartTime;
+                sc.EndTime = entity.EndTime;
+                sc.Price = entity.Price;
+                sc.Description = entity.Description;
+                sc.status = entity.status;
 
-                _context.ShowTimes.Update(st);
+                _context.Surcharges.Update(sc);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

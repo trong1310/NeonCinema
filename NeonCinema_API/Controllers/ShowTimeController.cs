@@ -29,7 +29,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpPost("create-showtime")]
-        public async Task<IActionResult> PostTicket([FromBody] ShowTimeDTO request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Post([FromBody] ShowTimeDTO request, CancellationToken cancellationToken)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpPut("update-showtime")]
-        public async Task<IActionResult> UpdateTicket([FromBody] ShowTimeUpdateRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update([FromBody] ShowTimeUpdateRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpDelete("delete-showtime")]
-        public async Task<IActionResult> DeleteTicket([FromBody] ShowTimeDeleteRequest requests, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete([FromBody] ShowTimeDeleteRequest requests, CancellationToken cancellationToken)
         {
             try
             {
