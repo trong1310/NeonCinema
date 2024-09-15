@@ -31,8 +31,10 @@ namespace NeonCinema_Infrastructure.Extention
     {
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<NeonCinemasContext>(options =>
-    options.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"));
+            services.AddDbContext<NeonCinemasContext>(options => {
+                options.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
+            });
 
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
             services.AddTransient<IPointRepositories, PointRepositories>();
