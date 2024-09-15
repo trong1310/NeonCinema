@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NeonCinema_Application.Interface.Directors;
+using NeonCinema_Infrastructure.Implement.Directors;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -39,6 +41,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IPointRepositories, PointRepositories>();
             services.AddTransient<IRankMemberRepository, RankMemberRepositories>();
             services.AddTransient<IGenreRepositories, GenreRepositories>();
+            services.AddTransient<IDirectorRepositories, DirectorRepositories>();
             return services;
         }
     }

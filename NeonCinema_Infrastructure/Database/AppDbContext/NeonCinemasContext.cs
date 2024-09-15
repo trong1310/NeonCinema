@@ -81,7 +81,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 {
                     ID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
 
-                     CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTimeOffset.Now,
                     Status = EntityStatus.Active,
                     RoleName = "Admin",
                 },
