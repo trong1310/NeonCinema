@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
-using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.SeatType;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 

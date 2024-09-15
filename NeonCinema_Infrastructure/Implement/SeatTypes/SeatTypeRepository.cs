@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.SeatType;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -9,14 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement
+namespace NeonCinema_Infrastructure.Implement.Seat
 {
     public class SeatTypeRepository : ISeatTypeRepository
     {
-       private readonly NeonCinemasContext _context;
+        private readonly NeonCinemasContext _context;
         public SeatTypeRepository(NeonCinemasContext context)
         {
-                _context = context;
+            _context = context;
         }
         public async Task AddAsync(SeatType seatType)
         {
@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement
                 .ToListAsync();
 
             // Tính HasNext dựa trên tổng số phần tử và trang hiện tại
-            var hasNext = (request.PageNumber * request.PageSize) < totalItems;
+            var hasNext = request.PageNumber * request.PageSize < totalItems;
 
             // Tạo đối tượng PaginationResponse
             var response = new PaginationResponse<SeatType>

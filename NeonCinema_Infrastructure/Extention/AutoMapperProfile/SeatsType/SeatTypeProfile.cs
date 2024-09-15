@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
+namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Seats
 {
     public class SeatTypeProfile : Profile
     {
