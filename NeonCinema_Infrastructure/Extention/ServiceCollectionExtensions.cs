@@ -21,10 +21,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using NeonCinema_Application.Interface.Directors;
+using NeonCinema_Infrastructure.Implement.Directors;
+
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Tickets;
 using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Implement.Surcharge;
+
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -48,12 +53,15 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IPointRepositories, PointRepositories>();
             services.AddTransient<IRankMemberRepository, RankMemberRepositories>();
             services.AddTransient<IGenreRepositories, GenreRepositories>();
+            services.AddTransient<IDirectorRepositories, DirectorRepositories>();
+
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
             services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
             services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();
+
             return services;
         }
     }
