@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class LenguageConfiguration : IEntityTypeConfiguration<Lenguage>
+    public class LenguageConfiguration : IEntityTypeConfiguration<Language>
     {
-        public void Configure(EntityTypeBuilder<Lenguage> builder)
+        public void Configure(EntityTypeBuilder<Language> builder)
         {
             builder.ToTable("Lenguage");
             builder.HasKey(x => x.ID);
