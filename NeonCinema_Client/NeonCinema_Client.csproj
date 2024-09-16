@@ -29,6 +29,7 @@
 
     <Folder Include="Pages\Admin\" />
     <Folder Include="Pages\Img\" />
+    <Folder Include="Pages\abc\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
