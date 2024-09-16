@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -11,36 +9,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.Bills
 {
-    public class ShowDateRepository : IEntityRepository<ShowDate>
+    public class BillRepository : IEntityRepository<Bill>
     {
         NeonCinemasContext _context;
-        IMapper _mapper;
-        public ShowDateRepository(IMapper mapper, NeonCinemasContext context) 
+        public BillRepository(NeonCinemasContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> Create(ShowDate entity, CancellationToken cancellationToken)
+
+        public async Task<HttpResponseMessage> Create(Bill entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.StarDate <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-                ShowDate sd = new ShowDate
+                Bill bill = new Bill
                 {
                     ID = Guid.NewGuid(),
-                    StarDate = entity.StarDate,
-                    Status = EntityStatus.PendingForConfirmation
+                    CheckinID = entity.CheckinID,
+                    UserID = entity.UserID,
+                    TotalPrice = entity.TotalPrice,
+                    QrCode = entity.QrCode,
+                    Status = EntityStatus.Active
                 };
 
-                _context.ShowDate.Add(sd);
+                _context.BillDetails.Add(bill);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +50,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(Bill entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var bill = await _context.BillDetails.FindAsync(entity.ID);
 
-                if(sd == null)
+                if (bill == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Bill is not found")
                     };
                 }
 
-                _context.ShowDate.Remove(sd);
+                _context.BillDetails.Remove(bill);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,26 +81,29 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<Bill>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
+            var lst = await _context.BillDetails
+                .Include(x => x.Users)
+                .Include(x => x.Checkins)
+                .ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<Bill> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(id);
+                var bill = await _context.BillDetails.FindAsync(id);
 
-                if (sd == null)
+                if (bill == null)
                 {
-                    throw new Exception("ShowDate is not found");
+                    throw new Exception("Bill is not found");
                 }
 
 
-                return sd;
+                return bill;
             }
             catch (Exception ex)
             {
@@ -115,24 +111,27 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(Bill entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var bill = await _context.BillDetails.FindAsync(entity.ID);
 
-                if (sd == null)
+                if (bill == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Bill is not found")
                     };
                 }
 
-                sd.StarDate = entity.StarDate;
-                sd.Status = entity.Status;
+                bill.UserID = entity.UserID;
+                bill.CheckinID = entity.CheckinID;
+                bill.TotalPrice = entity.TotalPrice;
+                bill.QrCode = entity.QrCode;
+                bill.Status = entity.Status;
 
-                _context.ShowDate.Update(sd);
+                _context.BillDetails.Update(bill);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

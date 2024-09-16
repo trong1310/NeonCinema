@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -11,36 +9,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.Checkin_R
 {
-    public class ShowDateRepository : IEntityRepository<ShowDate>
+    public class CheckinRepository : IEntityRepository<Checkin>
     {
         NeonCinemasContext _context;
-        IMapper _mapper;
-        public ShowDateRepository(IMapper mapper, NeonCinemasContext context) 
+        public CheckinRepository(NeonCinemasContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> Create(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(Checkin entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.StarDate <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-                ShowDate sd = new ShowDate
+                Checkin e = new Checkin
                 {
                     ID = Guid.NewGuid(),
-                    StarDate = entity.StarDate,
-                    Status = EntityStatus.PendingForConfirmation
+                    Code = entity.Code,
+                    Type = entity.Type,
+                    Name = entity.Name
                 };
 
-                _context.ShowDate.Add(sd);
+                _context.Checkin.Add(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +47,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(Checkin entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.Checkin.FindAsync(entity.ID);
 
-                if(sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Checkin is not found")
                     };
                 }
 
-                _context.ShowDate.Remove(sd);
+                _context.Checkin.Remove(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,26 +78,26 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<Checkin>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
+            var lst = await _context.Checkin.ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<Checkin> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(id);
+                var e = await _context.Checkin.FindAsync(id);
 
-                if (sd == null)
+                if (e == null)
                 {
-                    throw new Exception("ShowDate is not found");
+                    throw new Exception("Checkin is not found");
                 }
 
 
-                return sd;
+                return e;
             }
             catch (Exception ex)
             {
@@ -115,24 +105,25 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(Checkin entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.Checkin.FindAsync(entity.ID);
 
-                if (sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Checkin is not found")
                     };
                 }
 
-                sd.StarDate = entity.StarDate;
-                sd.Status = entity.Status;
+                e.Code = entity.Code;
+                e.Type = entity.Type;
+                e.Name = entity.Name;
 
-                _context.ShowDate.Update(sd);
+                _context.Checkin.Update(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

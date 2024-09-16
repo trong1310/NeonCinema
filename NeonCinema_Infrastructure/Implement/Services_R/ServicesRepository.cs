@@ -1,6 +1,5 @@
-﻿using AutoMapper;
+﻿using Bogus.DataSets;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -11,36 +10,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.Services_R
 {
-    public class ShowDateRepository : IEntityRepository<ShowDate>
+    public class ServicesRepository : IEntityRepository<Service>
     {
         NeonCinemasContext _context;
-        IMapper _mapper;
-        public ShowDateRepository(IMapper mapper, NeonCinemasContext context) 
+        public ServicesRepository(NeonCinemasContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> Create(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(Service entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.StarDate <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-                ShowDate sd = new ShowDate
+                Service e = new Service
                 {
                     ID = Guid.NewGuid(),
-                    StarDate = entity.StarDate,
-                    Status = EntityStatus.PendingForConfirmation
+                    ServiceName = entity.ServiceName,
+                    Price = entity.Price,
+                    Status = EntityStatus.Active,
+                    Description = entity.Description,
+                    Images = entity.Images
                 };
 
-                _context.ShowDate.Add(sd);
+                _context.Service.Add(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +50,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(Service entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.Service.FindAsync(entity.ID);
 
-                if(sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Service is not found")
                     };
                 }
 
-                _context.ShowDate.Remove(sd);
+                _context.Service.Remove(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,26 +81,27 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<Service>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
+            var lst = await _context.Service
+                .ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<Service> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(id);
+                var e = await _context.Service.FindAsync(id);
 
-                if (sd == null)
+                if (e == null)
                 {
-                    throw new Exception("ShowDate is not found");
+                    throw new Exception("Service is not found");
                 }
 
 
-                return sd;
+                return e;
             }
             catch (Exception ex)
             {
@@ -115,24 +109,27 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(Service entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.Service.FindAsync(entity.ID);
 
-                if (sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("Service is not found")
                     };
                 }
 
-                sd.StarDate = entity.StarDate;
-                sd.Status = entity.Status;
+                e.ServiceName = entity.ServiceName;
+                e.Price = entity.Price;
+                e.Status = EntityStatus.Active;
+                e.Description = entity.Description;
+                e.Images = entity.Images;
 
-                _context.ShowDate.Update(sd);
+                _context.Service.Update(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
