@@ -35,6 +35,14 @@ using NeonCinema_Infrastructure.Implement.Checkin_R;
 using NeonCinema_Infrastructure.Implement.FoodCombo_R;
 using NeonCinema_Infrastructure.Implement.Services_R;
 using NeonCinema_Application.DataTransferObject.Utilities;
+using NeonCinema_Application.Interface.Seats;
+using NeonCinema_Application.Interface.SeatShowTimeStatus;
+using NeonCinema_Application.Interface.ShowReleases;
+using NeonCinema_Application.Interface.TicketSeats;
+using NeonCinema_Infrastructure.Implement.Seats;
+using NeonCinema_Infrastructure.Implement.TicketSeats;
+using NeonCinema_Infrastructure.Implement.SeatShowTimeStatus;
+using NeonCinema_Infrastructure.Implement.Show_release;
 
 
 namespace NeonCinema_Infrastructure.Extention
@@ -47,7 +55,7 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 //options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
-                options.UseSqlServer("Server=vantrong\\SQLEXPRESSvantrong\\SQLEXPRESS;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+                options.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
     
              });
 
@@ -71,7 +79,11 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IEntityRepository<Checkin>, CheckinRepository>();
             services.AddScoped<IEntityRepository<FoodCombo>, FoodComboRepository>();
             services.AddScoped<IEntityRepository<Service>, ServicesRepository>();
-         
+            services.AddScoped<ISeatRepository, SeatRepository>();
+            services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
+            services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
+            services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
+
             return services;
         }
     }
