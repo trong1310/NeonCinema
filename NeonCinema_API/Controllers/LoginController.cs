@@ -84,7 +84,7 @@ namespace NeonCinema_API.Controllers
 					return Unauthorized();
 				}
 				var token = GenerateJwtToken(userLogin);
-				return Ok( token);
+				return Ok(token);
 			}
 			catch (Exception ex)
 			{

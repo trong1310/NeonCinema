@@ -69,6 +69,6 @@
         await _localStorage.SetItemAsync("role", role.Trim());
         await _localStorage.SetItemAsync("email", email.Trim());
         await _localStorage.SetItemAsync("phone", phone.Trim());
-        _navi.NavigateTo("/");
+        _navi.NavigateTo("/fetchdata");
     }
 }
