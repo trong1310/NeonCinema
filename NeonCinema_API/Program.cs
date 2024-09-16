@@ -6,6 +6,8 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Cinemas;
 
 using NeonCinema_Application.Interface.Countrys;
+using NeonCinema_Application.Interface.Point;
+using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Application.Interface.ShiftChange;
@@ -18,6 +20,8 @@ using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Cinemas;
 
 using NeonCinema_Infrastructure.Implement.Countrys;
+using NeonCinema_Infrastructure.Implement.Points;
+using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Infrastructure.Implement.Roles;
 using NeonCinema_Infrastructure.Implement.Room;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
@@ -48,9 +52,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRolesRepository, RoleRepository>();
 builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
-
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
+builder.Services.AddScoped<IPointRepositories, PointRepositories>();
+builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
         option => option.TokenValidationParameters = new TokenValidationParameters()

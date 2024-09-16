@@ -55,7 +55,7 @@ namespace NeonCinema_Infrastructure.Implement.Actors
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("Không tìm thấy Đạo diễn")
+                        Content = new StringContent("Không tìm thấy diễn viên")
                     };
                 }
                 else
@@ -94,7 +94,7 @@ namespace NeonCinema_Infrastructure.Implement.Actors
                 query = query.Where(x=>x.FullName.Contains(request.SearchName.ToLower()));
             }
 
-            var actor = await _context.Actors.ToListAsync(cancellationToken);
+            var actor = await query.ToListAsync();
             return _map.Map<List<ActorDTO>>(actor.Where(x=>x.Deleted == null));
         }
 
@@ -108,7 +108,7 @@ namespace NeonCinema_Infrastructure.Implement.Actors
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("Không tìm thấy Đạo diễn")
+                        Content = new StringContent("Không tìm thấy diễn viên")
                     };
                 }
                 else

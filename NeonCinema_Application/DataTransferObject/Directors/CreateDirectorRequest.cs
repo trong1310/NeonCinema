@@ -1,15 +1,13 @@
-﻿using NeonCinema_Domain.Enum;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Application.DataTransferObject.Actors
+namespace NeonCinema_Application.DataTransferObject.Directors
 {
-    public class CreateActorRequest
+    public class CreateDirectorRequest
     {
-         
         public string FullName { get; set; }
         public string Gender { get; set; }
         public DateTime BirthDate { get; set; }
@@ -19,3 +17,4 @@ namespace NeonCinema_Application.DataTransferObject.Actors
         public string? Biography { get; set; }
     }
 }
+
