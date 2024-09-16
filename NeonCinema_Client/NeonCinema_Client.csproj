@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="IServices\" />
+    <Content Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IService\" />
     <Folder Include="Pages\Admin\" />
     <Folder Include="Services\" />
   </ItemGroup>
@@ -21,6 +25,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NeonCinema_Application\NeonCinema_Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Users.razor" />
   </ItemGroup>
 
 </Project>
