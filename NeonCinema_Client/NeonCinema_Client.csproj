@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+
     <Content Remove="Pages\Users.razor" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IService\" />
+    
+
+    <Folder Include="IServices\" />
+    <Folder Include="Pages\Employees\" />
+    <Folder Include="Pages\Customer\" />
+
     <Folder Include="Pages\Admin\" />
     <Folder Include="Services\" />
   </ItemGroup>
