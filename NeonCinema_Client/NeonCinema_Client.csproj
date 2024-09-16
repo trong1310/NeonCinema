@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,7 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Customer\**" />
+    <Compile Remove="Pages\Employees\**" />
+    <Content Remove="Pages\Customer\**" />
+    <Content Remove="Pages\Employees\**" />
+    <EmbeddedResource Remove="Pages\Customer\**" />
+    <EmbeddedResource Remove="Pages\Employees\**" />
+    <None Remove="Pages\Customer\**" />
+    <None Remove="Pages\Employees\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <Content Remove="Pages\Register.razor" />
+
+    <Content Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="IServices\" />
+
     <Folder Include="Pages\Admin\" />
     <Folder Include="Pages\Img\" />
     <Folder Include="Pages\abc\" />
@@ -23,6 +42,24 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NeonCinema_Application\NeonCinema_Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Register.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Register.razor" />
+    <None Include="Pages\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Register.razor" />
   </ItemGroup>
 
 </Project>
