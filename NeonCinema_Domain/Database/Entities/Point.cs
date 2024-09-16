@@ -13,8 +13,6 @@ namespace NeonCinema_Domain.Database.Entities
         public int TotalPoint   { get; set; }
         public DateTime DateEarned { get; set; }
         public Guid UserID { get; set; }
-
-        //
         public virtual Users? Users { get; set; }
 
 

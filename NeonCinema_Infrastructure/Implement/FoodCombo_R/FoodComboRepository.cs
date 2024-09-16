@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -11,36 +8,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Screenings
+namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
 {
-    public class ShowDateRepository : IEntityRepository<ShowDate>
+    public class FoodComboRepository : IEntityRepository<FoodCombo>
     {
         NeonCinemasContext _context;
-        IMapper _mapper;
-        public ShowDateRepository(IMapper mapper, NeonCinemasContext context) 
+        public FoodComboRepository(NeonCinemasContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> Create(ShowDate entity, CancellationToken cancellationToken)
+
+        public async Task<HttpResponseMessage> Create(FoodCombo entity, CancellationToken cancellationToken)
         {
             try
             {
-                if (entity.StarDate <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-                ShowDate sd = new ShowDate
+                FoodCombo e = new FoodCombo
                 {
                     ID = Guid.NewGuid(),
-                    StarDate = entity.StarDate,
-                    Status = EntityStatus.PendingForConfirmation
+                    Quantity = entity.Quantity,
+                    TotalPrice = entity.TotalPrice,
+                    ServiceID = entity.ServiceID,
+                    BillID = entity.BillID,
                 };
 
-                _context.ShowDate.Add(sd);
+                _context.FoodCombos.Add(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -57,21 +48,21 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(FoodCombo entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.FoodCombos.FindAsync(entity.ID);
 
-                if(sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("FoodCombo is not found")
                     };
                 }
 
-                _context.ShowDate.Remove(sd);
+                _context.FoodCombos.Remove(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -88,26 +79,29 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<FoodCombo>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
+            var lst = await _context.FoodCombos
+                .Include(x => x.Bills)
+                .Include(x => x.Service)
+                .ToListAsync(cancellationToken);
 
             return lst;
         }
 
-        public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<FoodCombo> GetById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(id);
+                var e = await _context.FoodCombos.FindAsync(id);
 
-                if (sd == null)
+                if (e == null)
                 {
-                    throw new Exception("ShowDate is not found");
+                    throw new Exception("FoodCombo is not found");
                 }
 
 
-                return sd;
+                return e;
             }
             catch (Exception ex)
             {
@@ -115,24 +109,26 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             }
         }
 
-        public async Task<HttpResponseMessage> Update(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(FoodCombo entity, CancellationToken cancellationToken)
         {
             try
             {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
+                var e = await _context.FoodCombos.FindAsync(entity.ID);
 
-                if (sd == null)
+                if (e == null)
                 {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("ShowDate is not found")
+                        Content = new StringContent("FoodCombo is not found")
                     };
                 }
 
-                sd.StarDate = entity.StarDate;
-                sd.Status = entity.Status;
+                e.Quantity = entity.Quantity;
+                e.TotalPrice = entity.TotalPrice;
+                e.ServiceID = entity.ServiceID;
+                e.BillID = entity.BillID;
 
-                _context.ShowDate.Update(sd);
+                _context.FoodCombos.Update(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
