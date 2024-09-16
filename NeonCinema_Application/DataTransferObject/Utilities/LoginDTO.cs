@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Utilities
 	{
 		public string FullName { get; set; }
 		public string Email { get; set; }
+		public string PhoneNumber { get; set; }
 		public string RoleName { get; set; }
 		public Guid ID { get; set; }
 	}

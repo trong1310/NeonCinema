@@ -63,9 +63,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
 
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+           // optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
 
@@ -118,11 +118,39 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Status = EntityStatus.Active,
                     PhoneNumber = "0862774830",
                     Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("12/25/2004"),
+                    DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
                     Gender = "Nam",
                     RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
 				},
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTimeOffset.Now,
+                    FullName = "Admin",
+                    Email = "admin@gmail.com",
+                    PassWord = Hash.Encrypt("admin123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334555555",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("25/12/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+                },
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTimeOffset.Now,
+                    FullName = "Client",
+                    Email = "client@gmail.com",
+                    PassWord = Hash.Encrypt("client123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334555555",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("25/12/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+                },
             };
 			modelBuilder.Entity<Users>(b => { b.HasData(userData); });
 		}
