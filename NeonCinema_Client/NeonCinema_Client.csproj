@@ -54,8 +54,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pages\Cinema\AppCinemas.razor" />
+    <None Include="Pages\Cinema\CinemasList.razor" />
+    <None Include="Pages\Cinema\LayoutCinemas.razor" />
     <None Include="Pages\Register.razor" />
+    <None Include="Pages\Room\RoomAdd.razor" />
+    <None Include="Pages\Room\RoomList.razor" />
+    <None Include="Pages\Room\RoomUpdate.razor" />
     <None Include="Pages\Users.razor" />
+    <None Include="Pages\Users\App.razor" />
+    <None Include="Pages\Users\LIST.razor" />
+    <None Include="Pages\Users\UserEdit.razor" />
+    <None Include="Pages\Users\UserLayout.razor" />
+    <None Include="Pages\Users\UserList.razor" />
   </ItemGroup>
 
   <ItemGroup>
