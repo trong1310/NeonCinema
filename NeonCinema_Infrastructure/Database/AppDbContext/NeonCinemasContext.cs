@@ -149,22 +149,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
                     Gender = "Nam",
-                    RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
-				 new Users {
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTimeOffset.Now,
-					FullName = "Client",
-					Email = "client@gmail.com",
-					PassWord = Hash.Encrypt("client123"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0334555555",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("25/12/2004"),
-					Images = "images.jpg",
-					Gender = "Nam",
-					RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
-				},
+				
 				  new Users {
 					ID = Guid.NewGuid(),
 					CreatedTime = DateTimeOffset.Now,
@@ -183,7 +170,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ID = Guid.NewGuid(),
 					CreatedTime = DateTimeOffset.Now,
 					FullName = "Đặng Xuân Phong",
-					Email = "vantrongvt1310@gmail.com",
+					Email = "Phongdxph35748@fpt.edu.vn",
 					PassWord = Hash.Encrypt("abc123"),
 					Status = EntityStatus.Active,
 					PhoneNumber = "0356400122",
@@ -191,7 +178,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					DateOrBriht= DateTime.Parse("13/10/2004"),
 					Images = "images.jpg",
 					Gender = "Nam",
-					RoleID = Guid.Parse("Phongdxph35748@fpt.edu.vn"),
+					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
 				},
 				new Users {
 					ID = Guid.NewGuid(),
@@ -205,7 +192,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					DateOrBriht= DateTime.Parse("13/10/2004"),
 					Images = "images.jpg",
 					Gender = "Nam",
-					RoleID = Guid.Parse("Phongdxph35748@fpt.edu.vn"),
+					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
 				},
 			};
 			modelBuilder.Entity<Users>(b => { b.HasData(userData);});
