@@ -9,6 +9,7 @@
     background-color: #1b1b1b;
     padding: 15px 50px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Đảm bảo Navbar nằm trên các phần tử khác */
 }
 
 .navbar-brand img {
@@ -22,9 +23,9 @@
     transition: color 0.3s ease;
 }
 
-    .navbar-nav .nav-item .nav-link:hover {
-        color: #32cd32;
-    }
+.navbar-nav .nav-item .nav-link:hover {
+    color: #32cd32;
+}
 
 .navbar-nav .nav-item .dropdown-menu {
     background-color: #333;
@@ -32,34 +33,43 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-    .navbar-nav .nav-item .dropdown-menu .dropdown-item {
-        color: #ddd;
-    }
+.navbar-nav .nav-item .dropdown-menu .dropdown-item {
+    color: #ddd;
+}
 
-        .navbar-nav .nav-item .dropdown-menu .dropdown-item:hover {
-            color: #fff;
-        }
+.navbar-nav .nav-item .dropdown-menu .dropdown-item:hover {
+    color: #fff;
+}
 
 .buy-ticket-btn {
     background-color: #4caf50;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 8px 20px; /* Padding bên trong nút */
+    width: 180px; /* Đặt chiều ngang cố định cho nút */
+    font-size: 17px; /* Tăng kích cỡ chữ */
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     display: flex;
-    align-items: center;
+    align-items: center; /* Căn giữa nội dung theo chiều dọc */
+    justify-content: space-between; /* Căn giữa nội dung theo chiều ngang với khoảng cách đều */
+    position: absolute;
+    bottom: 150px; /* Căn chỉnh nút nằm gần đáy của movie-card */
+    left: 50%;
+    transform: translateX(-50%); /* Căn giữa nút theo chiều ngang */
+    z-index: 2; /* Đảm bảo nút nằm trên các phần tử khác trong movie-card */
+    opacity: 0; /* Ẩn nút mặc định */
 }
 
-    .buy-ticket-btn:hover {
-        background-color: green;
-    }
+.buy-ticket-btn:hover {
+    background-color: green;
+}
 
-    .buy-ticket-btn i {
-        margin-right: 8px;
-    }
+.buy-ticket-btn i {
+    margin: 0; /* Loại bỏ khoảng cách bên trong các biểu tượng */
+    font-size: 17px; /* Tăng kích cỡ icon */
+}
 
 .user-info {
     color: white;
@@ -68,154 +78,130 @@
     margin-right: 20px;
 }
 
-    .user-info a {
-        color: #4caf50;
-        margin-left: 2px;
-        text-decoration: none;
-        font-weight: bold;
-    }
+.user-info a {
+    color: #4caf50;
+    margin-left: 2px;
+    text-decoration: none;
+    font-weight: bold;
+}
 
-        .user-info a:hover {
-            color: green;
-        }
+.user-info a:hover {
+    color: green;
+}
 
 main {
-    margin-top: -50px;
+    margin-top: 0; /* Đặt lại giá trị margin-top về 0 để không bị đẩy lên trên */
     background-color: #000;
     width: 100%; /* Chiều rộng của main bằng 100% */
+    padding-top: 30px; /* Thêm khoảng cách trên để đảm bảo nội dung không bị chồng lên Navbar */
 }
 
 /* Các kiểu dáng cho slider */
-.carousel-item img {
-    width: 100%;
-    height: auto;
-}
-
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
+    background-color: transparent; /* Loại bỏ nền */
 }
 
-.carousel {
-    margin-bottom: 0;
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%; /* Điều chỉnh kích thước của nút điều khiển */
 }
 
-.navbar + .carousel {
-    margin-top: 0;
+.carousel-control-prev i,
+.carousel-control-next i {
+    font-size: 2rem; /* Điều chỉnh kích thước của biểu tượng */
+    color: #4caf50; /* Màu sắc của biểu tượng */
 }
 
-/* Container cho danh sách phim */
-.movie-list-container {
-    color: #fff; /* Văn bản màu trắng */
-    padding: 20px;
-    width: 100%; /* Chiều rộng của movie-list-container bằng 100% */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Canh giữa theo chiều ngang */
+.carousel-control-prev:hover i,
+.carousel-control-next:hover i {
+    color: #2c6e49; /* Màu sắc khi hover */
 }
 
+.title-Movielist {
+    color: #4caf50;
+    text-align: center; /* Căn giữa văn bản theo chiều ngang */
+    margin: 5px auto 30px; /* Căn giữa phần tử theo chiều ngang */
+    border: solid 2px #4caf50; /* Thêm màu cho border để dễ nhìn thấy */
+    border-radius: 8px;
+    width: 280px;
+    height: 50px;
+    display: flex; /* Sử dụng Flexbox */
+    justify-content: center; /* Căn giữa nội dung theo chiều ngang */
+    align-items: center; /* Căn giữa nội dung theo chiều dọc */
+    font-size: 24px; /* Thay đổi kích thước chữ */
+}
+
+/* Đảm bảo rằng movie-card có không gian đủ lớn */
 .movie-card {
-    background-color: #1c1c1c;
-    color: #fff;
-    border: 1px solid #333;
-    width: 230px;
-    height: 520px;
+    background-color: white;
     border-radius: 10px;
     overflow: hidden;
-    margin: 20px;
-    transition: transform 0.3s ease, z-index 0.3s ease;
-    position: relative;
-    z-index: 0;
-    transform-origin: center top;
-    margin: 5,0,5,0;
-    position: relative;
-}
-
-    .movie-card:hover {
-        transform: scale(1.05); /* Hiệu ứng zoom khi hover */
-        z-index: 10; /* Đảm bảo thẻ phim nằm trên cùng */
-    }
-
-.movie-card-container {
-    position: relative; /* Giữ cho thẻ con không bị ảnh hưởng bởi các thẻ khác */
-    overflow: visible; /* Đảm bảo phần tử chứa không cắt bỏ các phần tử bên trong */
-}
-
-.movie-icons .badge {
-    font-size: 1rem; /* Kích thước chữ */
-    margin: 10px; /* Khoảng cách giữa các badge */
-    padding: 10px,0,0,5px /* Padding cho badge */
-    display: inline-block; /* Để badge căn giữa */
-}
-
-.movie-icons {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    width: 100%; /* Đảm bảo chiều rộng bằng 100% của cột */
+    height: 100%; /* Đảm bảo chiều cao bằng 100% của cột */
+    position: relative; /* Thêm position relative để xử lý các yếu tố con */
     display: flex;
-    justify-content: center; /* Canh giữa các biểu tượng */
-    padding: 5px 0; /* Để badge căn giữa */
-}
-/* Đặt màu cho tên phim */
-.movie-title {
-    font-size: 1.3rem;
-    font-weight: bold;
-    padding: 10px, 10px,10px,5px;
-    margin-left: 15px;
-    color: #32cd32; /* Màu xanh lá cây */
-    white-space: nowrap; /* Không xuống dòng */
-    overflow: hidden; /* Ẩn phần không thể hiển thị */
-    text-overflow: ellipsis; /* Hiển thị ba dấu chấm khi quá dài */
+    flex-direction: column;
+    z-index: 1; /* Đặt z-index để đảm bảo không bị che khuất bởi các phần tử khác */
 }
 
-/* Giảm khoảng cách giữa tên phim và thể loại */
+.movie-card img {
+    width: 100%; /* Chiều rộng ảnh là 100% của movie-card */
+    height: auto; /* Đảm bảo tỷ lệ khung hình được giữ nguyên */
+    object-fit: cover; /* Đảm bảo ảnh không bị biến dạng */
+}
+
+/* Đảm bảo thông tin bên dưới ảnh có không gian và dễ đọc */
 .movie-info {
-    margin-top: 5px; /* Giảm khoảng cách trên */
-    font-size: 0.9rem;
-    margin-left: 15px;
+    padding: 10px;
+    text-align: left;
+    flex: 1; /* Đảm bảo thông tin chiếm phần còn lại của card */
+    background-color: white; /* Đảm bảo màu nền cho thông tin */
 }
 
-/* Đảm bảo các điều khiển carousel không bị tràn */
-.carousel-control-prev-icon, .carousel-control-next-icon {
-    background-color: none; /* Màu nền cho các điều khiển carousel */
-    width: 40px; /* Đặt kích thước cho các nút */
-    height: 40px;
-    border: none; /* Bỏ border */
-    opacity: 0.8; /* Độ mờ nhẹ */
-    transition: all 0.3s ease; /* Thêm hiệu ứng chuyển động */
+.movie-info h3 {
+    font-size: 18px; /* Giảm kích thước chữ tiêu đề */
+    color: #4caf50;
+    margin: 15px 0; /* Giảm khoảng cách trên và dưới */
+    white-space: nowrap; /* Ngăn chữ bị xuống dòng */
+    overflow: hidden; /* Ẩn phần chữ bị tràn */
+    text-overflow: ellipsis; /* Hiển thị ba chấm (...) nếu chữ bị cắt */
 }
 
-    /* Hiệu ứng hover */
-    .carousel-control-prev-icon:hover, .carousel-control-next-icon:hover {
-        background-color: #555; /* Đổi màu khi hover */
-        opacity: 1; /* Làm rõ hơn khi hover */
-        transform: scale(1.1); /* Phóng to một chút khi hover */
-    }
-
-.row {
-    width: 100%;
-    align-items: center;
+/* Hiệu ứng hover không làm cho card bị che khuất */
+.movie-card:hover {
+    transform: scale(1.05); /* Hiệu ứng phóng to khi hover */
+    z-index: 10; /* Đặt z-index cao hơn khi hover để nổi bật hơn */
 }
 
-.btn-buy {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 10px;
-    width: 150px;
-    font-size: 12px;
-    border-radius: 5px;
-    display: block; /* Để nút nằm trên cùng của movie-card */
-    margin: 10px auto; /* Đặt nút nằm ở giữa */
-    text-align: center; /* Căn giữa văn bản và biểu tượng trong nút */
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+.tags .badge {
+    font-size: 14px; /* Tăng kích thước chữ trong badge */
+    padding: 5px 9px; /* Tăng kích thước padding để làm badge to hơn */
+    border-radius: 10px; /* Đảm bảo góc badge tròn nếu cần */
+    margin-right: 3px;
 }
 
-    /* Hiệu ứng khi hover nút "Mua Vé Ngay" */
-    .btn-buy:hover {
-        background-color: green;
-        color: white;
-    }
+.tags .badge:last-child {
+    margin-right: 0;
+}
 
-    .btn-buy i {
-        margin-right: 8px;
-    }
+/* Đảm bảo carousel không cắt phần tử con */
+.carousel-inner {
+    overflow: visible; /* Đảm bảo các phần tử con không bị cắt */
+}
+
+.carousel-item {
+    overflow: visible; /* Đảm bảo phần tử carousel không cắt card */
+}
+
+/* Hiệu ứng khi hover vào movie-card */
+.movie-card:hover .buy-ticket-btn {
+    opacity: 1; /* Hiển thị nút khi hover */
+}
+
+/* Hiệu ứng khi hover vào movie-card làm cho ảnh mờ đi */
+.movie-card:hover img {
+    opacity: 0.7; /* Làm mờ hình ảnh khi hover */
+}
