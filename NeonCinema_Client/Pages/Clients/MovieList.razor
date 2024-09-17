@@ -1,152 +1,173 @@
 ﻿@page "/movie-list"
 @layout LayoutClient
 
-<div class="container mt-5 movie-list-container">
-    <h2 class="text-center mb-5">Phim Đang Chiếu</h2>
-
-    <div id="movieCarousel" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-            <!-- Slide 1 -->
-            <div class="carousel-item active">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim1.jpg">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
+<p class="title-Movielist">PHIM ĐANG CHIẾU</p>
+<div id="movieCarousel" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <div class="row justify-content-center">
+                <!-- Movie Card 1 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim1.jpg" class="img-fluid" alt="Làm giàu với ma">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-danger">T13</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
                             </div>
-                            <div class="movie-title">Làm giàu với ma</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
+                            <h3>LÀM GIÀU VỚI MA</h3>
+                            <p>Thể loại phim: <span class="genre">Comedy</span></p>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim2.jpg">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
-                            </div>
-                            <div class="movie-title">HANDSOME GUYS : ĐẸP TRAI THẤY SAI SAI</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim3.png">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
-                            </div>
-                            <div class="movie-title">MA DA</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim4.jpg">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
-                            </div>
-                            <div class="movie-title">Hai Muối</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
-                        </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Slide 2 -->
-            <div class="carousel-item">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim5.png" alt="Ma Da">
-                            <div class="movie-icons">
+                <!-- Movie Card 2 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim2.jpg" class="img-fluid" alt="Handsome Guys">
+                        <div class="movie-info">
+                            <div class="tags">
                                 <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
                             </div>
-                            <div class="movie-title">MA DA</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
+                            <h3>HANDSOME GUYS</h3>
+                            <p>Thể loại phim: <span class="genre">Action</span></p>
                         </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
                     </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim6.jpg" alt="Ma Da">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
+                </div>
+                <!-- Movie Card 3 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim3.png" class="img-fluid" alt="Another Movie">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-danger">T13</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
                             </div>
-                            <div class="movie-title">Làm giàu với ma</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
+                            <h3>HAI MƯƠI</h3>
+                            <p>Thể loại phim: <span class="genre">Drama</span></p>
                         </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
                     </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim7.jpg" alt="Ma Da">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
+                </div>
+                <!-- Movie Card 4 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim4.jpg" class="img-fluid" alt="200% Sói Bánh">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-danger">K</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
                             </div>
-                            <div class="movie-title">MA DA</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
+                            <h3>200% SÓI BÁNH</h3>
+                            <p>Thể loại phim: <span class="genre">Animation</span></p>
                         </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
                     </div>
-                    <div class="col-md-3">
-                        <div class="movie-card">
-                            <img src="images/phim8.jpg" alt="Ma Da">
-                            <div class="movie-icons">
-                                <span class="badge badge-danger">T16</span>
-                                <span class="badge badge-success">Phụ đề</span>
-                                <span class="badge badge-primary">2D</span>
+                </div>
+                <!-- Movie Card 5 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim5.png" class="img-fluid" alt="Crayon Shin Chan">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-danger">K</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
                             </div>
-                            <div class="movie-title">MA DA</div>
-                            <div class="movie-info">Thể loại: Horror</div>
-                            <a href="#" class="btn btn-buy">
-                                <i class="fas fa-ticket-alt"></i> Mua Vé Ngay
-                            </a>
+                            <h3>CRAYON SHIN CHAN</h3>
+                            <p>Thể loại phim: <span class="genre">Animation</span></p>
                         </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Carousel controls (prev/next) -->
-        <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#movieCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <div class="row justify-content-center">
+                <!-- Movie Card 6 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim6.jpg" class="img-fluid" alt="Little Eggs">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-primary">P</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
+                            </div>
+                            <h3>LITTLE EGGS</h3>
+                            <p>Thể loại phim: <span class="genre">Animation</span></p>
+                        </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
+                    </div>
+                </div>
+                <!-- Movie Card 7 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim7.jpg" class="img-fluid" alt="Little Eggs">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-primary">P</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
+                            </div>
+                            <h3>LITTLE EGGS</h3>
+                            <p>Thể loại phim: <span class="genre">Animation</span></p>
+                        </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
+                    </div>
+                </div>
+                <!-- Movie Card 8 -->
+                <div class="col-md-2">
+                    <div class="movie-card">
+                        <img src="/images/phim8.jpg" class="img-fluid" alt="Little Eggs">
+                        <div class="movie-info">
+                            <div class="tags">
+                                <span class="badge badge-primary">P</span>
+                                <span class="badge badge-dark">PHỤ ĐỀ</span>
+                                <span class="badge badge-success">2D</span>
+                            </div>
+                            <h3>LITTLE EGGS</h3>
+                            <p>Thể loại phim: <span class="genre">Animation</span></p>
+                        </div>
+                        <button class="buy-ticket-btn">
+                            <i class="fa-solid fa-ticket"></i>MUA VÉ NGAY
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Carousel Controls -->
+    <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#movieCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
 </div>
