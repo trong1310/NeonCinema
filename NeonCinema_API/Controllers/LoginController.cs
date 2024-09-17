@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NeonCinema_Application.DataTransferObject.Utilities;
-using NeonCinema_Application.Interface.Utilities;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
@@ -20,12 +19,12 @@ namespace NeonCinema_API.Controllers
 	{
 		private readonly IConfiguration _configuration;
 		private readonly NeonCinemasContext _context;
-		private readonly IReCapchaRepositories _captcha;
-        public LoginController(IConfiguration configuration, IReCapchaRepositories captcha)
+	//	private readonly IReCapchaRepositories _captcha;
+        public LoginController(IConfiguration configuration)
         {
 			_configuration = configuration;
 			_context = new NeonCinemasContext();
-            _captcha = captcha;
+        //    _captcha = captcha;
         }
 		private async Task<LoginDTO> GetUser(string emailOrPhone, string password)
 		{
@@ -37,8 +36,8 @@ namespace NeonCinema_API.Controllers
 				Email = user.Email,
 				FullName = user.FullName,
 				RoleName = userRole.RoleName,
+				PhoneNumber = user.PhoneNumber,
 				ID = user.ID,
-
 			};
 		}
 		private string GenerateJwtToken(LoginDTO user)
@@ -50,7 +49,8 @@ namespace NeonCinema_API.Controllers
 			{
 			new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
 			new Claim(ClaimTypes.Name, user.FullName),
-			new Claim(ClaimTypes.Role, user.RoleName)
+			new Claim(ClaimTypes.Role, user.RoleName),
+			new Claim(ClaimTypes.OtherPhone , user.PhoneNumber),
 		};
 
 			var token = new JwtSecurityToken(
@@ -84,7 +84,7 @@ namespace NeonCinema_API.Controllers
 					return Unauthorized();
 				}
 				var token = GenerateJwtToken(userLogin);
-				return Ok( token);
+				return Ok(token);
 			}
 			catch (Exception ex)
 			{

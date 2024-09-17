@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class LenguageConfiguration : IEntityTypeConfiguration<Lenguage>
+    public class LenguageConfiguration : IEntityTypeConfiguration<Language>
     {
-        public void Configure(EntityTypeBuilder<Lenguage> builder)
+        public void Configure(EntityTypeBuilder<Language> builder)
         {
             builder.ToTable("Lenguage");
             builder.HasKey(x => x.ID);
-            builder.Property(x => x.LenguageName).HasMaxLength(50).IsFixedLength();
+            builder.Property(x => x.LanguageName).HasMaxLength(50).IsFixedLength();
         }
     }
 }

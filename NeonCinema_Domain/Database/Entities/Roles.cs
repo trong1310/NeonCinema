@@ -10,7 +10,7 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class Roles : EntityBase
     {
-        public Guid ID { get; set; }
+        public Guid ID { get; set; }// Admin = 1; Nhân Viên = 2, khách hàng = 3
         public string RoleName { get; set; }
         public EntityStatus Status { get; set; }
 
