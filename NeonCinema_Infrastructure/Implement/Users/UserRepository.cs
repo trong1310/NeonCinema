@@ -2,6 +2,7 @@
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Extention;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +44,9 @@ namespace NeonCinema_Infrastructure.Implement.Users
 
             var newUser = new NeonCinema_Domain.Database.Entities.Users
             {
-                
+
                 FullName = request.FullName,
-                PassWord = request.PassWord,
+                PassWord = Hash.Encrypt(request.PassWord),
                 PhoneNumber = request.PhoneNumber,
                 Email = request.Email,
                 Gender = request.Gender,

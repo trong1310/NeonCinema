@@ -61,7 +61,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
-                var sd = await _context.FindAsync<ShowDate>(entity.ID);
+                var sd = await _context.ShowDate.FindAsync(entity.ID);
 
                 if(sd == null)
                 {
