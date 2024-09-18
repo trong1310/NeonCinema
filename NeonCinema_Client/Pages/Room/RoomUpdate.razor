@@ -1,0 +1,74 @@
+﻿<div class="container">
+    <!-- Phần Thêm Phòng Chiếu -->
+    <div class="add-room-section">
+        
+        <form class="room-form">
+            <div class="form-group">
+                <label for="roomName">Tên Phòng Chiếu</label>
+                <input type="text" id="roomName" name="roomName" placeholder="Nhập tên phòng chiếu" required>
+            </div>
+            <div class="form-group">
+                <label for="seatingCapacity">Sức Chứa</label>
+                <input type="number" id="seatingCapacity" name="seatingCapacity" placeholder="Nhập số chỗ ngồi" required>
+            </div>
+            
+            
+            <button type="submit" class="submit-btn">Cập nhật</button>
+        </form>
+    </div>
+</div>
+<style>
+    .container {
+        padding: 20px;
+        /*  background-color: blueviolet */
+    }
+
+    .add-room-section {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .room-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+            .form-group input[readonly] {
+                background-color: #f5f5f5;
+                cursor: not-allowed;
+            }
+
+    .submit-btn {
+        grid-column: span 2; /* Make the button span across two columns */
+        padding: 10px 20px;
+        border: none;
+        background-color: #dc3545;
+        color: white;
+        font-size: 13px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        max-width: 170px;
+    }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+</style>

@@ -8,5 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.MovieTypes
 {
     public class DeleteMovieTypeRequest
     {
+        public Guid ID { get; set; }
+        public Guid? DeletedBy { get; set; }
     }
 }

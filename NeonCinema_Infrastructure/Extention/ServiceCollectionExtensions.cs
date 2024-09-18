@@ -43,6 +43,8 @@ using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.TicketSeats;
 using NeonCinema_Infrastructure.Implement.SeatShowTimeStatus;
 using NeonCinema_Infrastructure.Implement.Show_release;
+using NeonCinema_Application.Interface.Movies;
+using NeonCinema_Infrastructure.Implement.Movies;
 
 
 namespace NeonCinema_Infrastructure.Extention
@@ -55,7 +57,7 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 //options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
-                options.UseSqlServer("Server=PHONGKEDAY2\\PHONGKE2004;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+                options.UseSqlServer("Server=vantrong\\SQLEXPRESS;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
     
              });
 
@@ -83,6 +85,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
+            services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
 
             return services;
         }
