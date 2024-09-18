@@ -43,8 +43,13 @@ using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.TicketSeats;
 using NeonCinema_Infrastructure.Implement.SeatShowTimeStatus;
 using NeonCinema_Infrastructure.Implement.Show_release;
+
+using NeonCinema_Application.Interface.Language;
+using NeonCinema_Infrastructure.Implement.Languages;
+
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Infrastructure.Implement.Movie;
+
 
 
 namespace NeonCinema_Infrastructure.Extention
@@ -85,9 +90,13 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
+
+            services.AddTransient<ILanguageRepositories, LanguageRepositories>();
+
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
+
 
             return services;
         }

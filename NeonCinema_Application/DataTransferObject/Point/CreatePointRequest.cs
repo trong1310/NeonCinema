@@ -11,5 +11,6 @@ namespace NeonCinema_Application.DataTransferObject.Point
         public Guid ID { get; set; }
         public int TotalPoint { get; set; }
         public DateTime DateEarned { get; set; }
+        public Guid UserID { get; set; }
     }
 }

@@ -1,7 +1,10 @@
-﻿html, body {
+﻿/* Reset margin và padding của html và body để tránh vấn đề không mong muốn */
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
 }
 
 /* Các kiểu dáng cho Navbar */
@@ -45,30 +48,42 @@
     background-color: #4caf50;
     color: white;
     border: none;
-    padding: 8px 20px; /* Padding bên trong nút */
-    width: 180px; /* Đặt chiều ngang cố định cho nút */
-    font-size: 17px; /* Tăng kích cỡ chữ */
+
+    padding: 8px 20px;
+    width: 180px;
+    font-size: 17px;
+
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     display: flex;
-    align-items: center; /* Căn giữa nội dung theo chiều dọc */
-    justify-content: space-between; /* Căn giữa nội dung theo chiều ngang với khoảng cách đều */
+
+    align-items: center;
+    justify-content: space-between;
     position: absolute;
-    bottom: 150px; /* Căn chỉnh nút nằm gần đáy của movie-card */
+    bottom: 150px;
     left: 50%;
-    transform: translateX(-50%); /* Căn giữa nút theo chiều ngang */
-    z-index: 2; /* Đảm bảo nút nằm trên các phần tử khác trong movie-card */
-    opacity: 0; /* Ẩn nút mặc định */
+    transform: translateX(-50%);
+    z-index: 2;
+    opacity: 0;
+
 }
 
 .buy-ticket-btn:hover {
     background-color: green;
 }
 
-.buy-ticket-btn i {
-    margin: 0; /* Loại bỏ khoảng cách bên trong các biểu tượng */
-    font-size: 17px; /* Tăng kích cỡ icon */
+
+    .buy-ticket-btn i {
+        margin: 0;
+        font-size: 17px;
+    }
+
+
+.user-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
 }
 
 .user-info {
@@ -89,47 +104,52 @@
     color: green;
 }
 
+/* Main */
 main {
-    margin-top: 0; /* Đặt lại giá trị margin-top về 0 để không bị đẩy lên trên */
+
+    margin: 0;
     background-color: #000;
-    width: 100%; /* Chiều rộng của main bằng 100% */
-    padding-top: 30px; /* Thêm khoảng cách trên để đảm bảo nội dung không bị chồng lên Navbar */
+    width: 100%;
+    padding-top: 0;
 }
 
-/* Các kiểu dáng cho slider */
+/* Movie List */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: transparent; /* Loại bỏ nền */
+    background-color: transparent;
+
 }
 
 .carousel-control-prev,
 .carousel-control-next {
-    width: 5%; /* Điều chỉnh kích thước của nút điều khiển */
+
+    width: 5%;
 }
 
-.carousel-control-prev i,
-.carousel-control-next i {
-    font-size: 2rem; /* Điều chỉnh kích thước của biểu tượng */
-    color: #4caf50; /* Màu sắc của biểu tượng */
-}
+    .carousel-control-prev i,
+    .carousel-control-next i {
+        font-size: 2rem;
+        color: #4caf50;
+    }
 
-.carousel-control-prev:hover i,
-.carousel-control-next:hover i {
-    color: #2c6e49; /* Màu sắc khi hover */
-}
+    .carousel-control-prev:hover i,
+    .carousel-control-next:hover i {
+        color: #2c6e49;
+    }
 
 .title-Movielist {
     color: #4caf50;
-    text-align: center; /* Căn giữa văn bản theo chiều ngang */
-    margin: 5px auto 30px; /* Căn giữa phần tử theo chiều ngang */
-    border: solid 2px #4caf50; /* Thêm màu cho border để dễ nhìn thấy */
+    text-align: center;
+    margin: 5px auto 30px;
+    border: solid 2px #4caf50;
     border-radius: 8px;
     width: 280px;
     height: 50px;
-    display: flex; /* Sử dụng Flexbox */
-    justify-content: center; /* Căn giữa nội dung theo chiều ngang */
-    align-items: center; /* Căn giữa nội dung theo chiều dọc */
-    font-size: 24px; /* Thay đổi kích thước chữ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+
 }
 
 /* Đảm bảo rằng movie-card có không gian đủ lớn */
@@ -139,69 +159,131 @@ main {
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
-    width: 100%; /* Đảm bảo chiều rộng bằng 100% của cột */
-    height: 100%; /* Đảm bảo chiều cao bằng 100% của cột */
-    position: relative; /* Thêm position relative để xử lý các yếu tố con */
+
+    width: 100%;
+    height: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
-    z-index: 1; /* Đặt z-index để đảm bảo không bị che khuất bởi các phần tử khác */
+    z-index: 1;
 }
 
-.movie-card img {
-    width: 100%; /* Chiều rộng ảnh là 100% của movie-card */
-    height: auto; /* Đảm bảo tỷ lệ khung hình được giữ nguyên */
-    object-fit: cover; /* Đảm bảo ảnh không bị biến dạng */
-}
+    .movie-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
 
 /* Đảm bảo thông tin bên dưới ảnh có không gian và dễ đọc */
 .movie-info {
     padding: 10px;
     text-align: left;
-    flex: 1; /* Đảm bảo thông tin chiếm phần còn lại của card */
-    background-color: white; /* Đảm bảo màu nền cho thông tin */
+    flex: 1;
+    background-color: white;
 }
 
-.movie-info h3 {
-    font-size: 18px; /* Giảm kích thước chữ tiêu đề */
-    color: #4caf50;
-    margin: 15px 0; /* Giảm khoảng cách trên và dưới */
-    white-space: nowrap; /* Ngăn chữ bị xuống dòng */
-    overflow: hidden; /* Ẩn phần chữ bị tràn */
-    text-overflow: ellipsis; /* Hiển thị ba chấm (...) nếu chữ bị cắt */
-}
+    .movie-info h3 {
+        font-size: 18px;
+        color: #4caf50;
+        margin: 15px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
 /* Hiệu ứng hover không làm cho card bị che khuất */
 .movie-card:hover {
-    transform: scale(1.05); /* Hiệu ứng phóng to khi hover */
-    z-index: 10; /* Đặt z-index cao hơn khi hover để nổi bật hơn */
+    transform: scale(1.05);
+    z-index: 10;
 }
 
 .tags .badge {
-    font-size: 14px; /* Tăng kích thước chữ trong badge */
-    padding: 5px 9px; /* Tăng kích thước padding để làm badge to hơn */
-    border-radius: 10px; /* Đảm bảo góc badge tròn nếu cần */
+    font-size: 14px;
+    padding: 5px 9px;
+    border-radius: 10px;
     margin-right: 3px;
 }
 
-.tags .badge:last-child {
-    margin-right: 0;
-}
+    .tags .badge:last-child {
+        margin-right: 0;
+    }
 
 /* Đảm bảo carousel không cắt phần tử con */
 .carousel-inner {
-    overflow: visible; /* Đảm bảo các phần tử con không bị cắt */
+    overflow: visible;
 }
 
 .carousel-item {
-    overflow: visible; /* Đảm bảo phần tử carousel không cắt card */
+    overflow: visible;
+
 }
 
 /* Hiệu ứng khi hover vào movie-card */
 .movie-card:hover .buy-ticket-btn {
-    opacity: 1; /* Hiển thị nút khi hover */
+
+    opacity: 1;
 }
 
 /* Hiệu ứng khi hover vào movie-card làm cho ảnh mờ đi */
 .movie-card:hover img {
-    opacity: 0.7; /* Làm mờ hình ảnh khi hover */
+    opacity: 0.7;
+}
+/* Cập nhật màu nền của toàn bộ trang */
+.profile-container {
+    background-color: #000; /* Màu nền đen */
+    color: #fff; /* Màu chữ trắng để dễ đọc trên nền đen */
+}
+
+.profile-title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #4caf50;
+}
+/* Cập nhật màu nền và border của card */
+.card {
+    background-color: #333; /* Màu nền xám đen cho card */
+    color: #fff; /* Màu chữ trắng trên card */
+    border: none; /* Loại bỏ border nếu có */
+    border-radius: 0 !important; /* Loại bỏ border-radius */
+}
+
+/* Định dạng cho các input và textarea trên nền tối */
+.form-control {
+    background-color: #555; /* Màu nền xám cho input và textarea */
+    color: #fff; /* Màu chữ trắng */
+    border: 1px solid #666; /* Màu border */
+}
+
+    .form-control:disabled {
+        background-color: #444; /* Màu nền khi input được disable */
+        color: #999; /* Màu chữ khi input được disable */
+    }
+
+    .form-control:focus {
+        background-color: #777; /* Màu nền không thay đổi khi focus */
+        color: #fff; /* Màu chữ không thay đổi khi focus */
+        border-color: 2px #4caf50; /* Màu border khi focus, có thể điều chỉnh theo nhu cầu */
+        outline: none; /* Loại bỏ outline mặc định của trình duyệt */
+    }
+/* Định dạng cho hình ảnh hồ sơ */
+.profile-img {
+    width: 250px; /* Kích thước theo nhu cầu */
+    height: 250px; /* Kích thước theo nhu cầu */
+}
+
+/* Cập nhật màu nền và border của nút chính */
+.btn-primary {
+    background-color: #007bff; /* Màu nền của nút chính */
+    border-color: #007bff; /* Màu border của nút chính */
+}
+
+/* Định dạng cho các tiêu đề và nhãn */
+label {
+    color: #fff; /* Màu chữ trắng cho nhãn */
+}
+
+.form-check {
+    margin-right: 70px;
+
 }

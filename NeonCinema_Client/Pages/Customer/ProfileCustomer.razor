@@ -1,0 +1,76 @@
+﻿@page "/customer-profile"
+@using NeonCinema_Client.Pages.Clients
+@layout LayoutClient
+
+<div class="profile-container">
+    <div class="row">
+        <div class="col-lg-12 col-md-10">
+            <div class="card p-4 shadow-sm">
+                <p class="profile-title">THÔNG TIN CÁ NHÂN</p>
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img" alt="User Image" />
+                        <button class="btn btn-light mt-4">TẢI ẢNH LÊN</button>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="FullName">Họ và tên</label>
+                                <input type="text" id="FullName" class="form-control" value="Đặng Đức Cường" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="PhoneNumber">Số điện thoại</label>
+                                <input type="text" id="PhoneNumber" class="form-control" value="0879130050"
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="Email">Email</label>
+                                <input type="email" id="Email" class="form-control" value="gnouc2000@gmail.com" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="DateOfBirth">Ngày sinh</label>
+                                <input type="text" id="DateOfBirth" class="form-control" value="16/12/2000" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Giới tính</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked />
+                                    <label class="form-check-label" for="genderMale">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" />
+                                    <label class="form-check-label" for="genderFemale">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="City">Tỉnh/Thành Phố</label>
+                                <input type="text" id="City" class="form-control" value="Hà Nội" />
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="District">Quận/Huyện</label>
+                                <input type="text" id="District" class="form-control" value="Hoài Đức" />
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="Ward">Phường/Xã</label>
+                                <input type="text" id="Ward" class="form-control" value="Thị trấn Trạm Trôi" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Address">Địa chỉ</label>
+                            <textarea id="Address" class="form-control" rows="2">Khu 7 - Thị trấn Trạm Trôi - Hoài Đức - Hà Nội</textarea>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="button" class="btn btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
