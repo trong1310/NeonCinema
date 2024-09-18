@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Application.Interface.Movies
+namespace NeonCinema_Application.Interface.Movie
 {
     public interface IMovieTypeRepositories
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Movies
+namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Movie
 {
     public class MovieTypeProfile : Profile
     {
