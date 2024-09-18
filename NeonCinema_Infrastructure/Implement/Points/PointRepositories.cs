@@ -7,6 +7,7 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,30 +39,11 @@ namespace NeonCinema_Infrastructure.Implement.Points
 
         public async Task CreatePoint(CreatePointRequest request, CancellationToken cancellationToken)
         {
-            var fixedUserId = new Guid("278e7b46-fdb4-4609-a785-f3f637b14754");
-            var fixedRoleId = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d");
+            var fixedUserId = new Guid("5D15604A-41BE-452B-89F5-127895E8A387");
+            var fixedRoleId = new Guid("BA820C64-1A81-4C44-80EA-47038C930C3B");
 
             // Kiểm tra xem User với UserID cố định có tồn tại không
-            var userExists = await _context.Users.AnyAsync(u => u.ID == fixedUserId, cancellationToken);
-
-            // Nếu không tồn tại thì tạo User giả
-            if (!userExists)
-            {
-                var fakeUser = new NeonCinema_Domain.Database.Entities. Users
-                {
-                    ID = fixedUserId, // Sử dụng UserID cố định
-                    FullName = "Fake User",
-                    Email = "fakeuser@example.com",
-                    PassWord = "password123",
-                    DateOrBriht = DateTime.Now,
-                    Adderss = "123 Fake Street",
-                    Gender = "Not Specified",
-                    RoleID = fixedRoleId // Sử dụng RoleID cố định
-                };
-
-                _context.Users.Add(fakeUser);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            
 
             // Tạo đối tượng Point từ request
             var point = _mapper.Map<Point>(request);
@@ -72,6 +54,7 @@ namespace NeonCinema_Infrastructure.Implement.Points
             // Thêm Point vào context và lưu thay đổi
             _context.Points.Add(point);
             await _context.SaveChangesAsync(cancellationToken);
+
         }
 
 
