@@ -11,7 +11,6 @@ namespace NeonCinema_Application.DataTransferObject.ShowDate
     {
         public Guid ID { get; set; }
         public DateTime StarDate { get; set; }
-        public Guid ScreeningID { get; set; }
         public EntityStatus Status { get; set; }
     }
 }
