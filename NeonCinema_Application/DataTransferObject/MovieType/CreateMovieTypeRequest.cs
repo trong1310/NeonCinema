@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.MovieTypes
 {
-    public class UpdateMovieTypeRequest
+    public class CreateMovieTypeRequest
     {
+        public string Name { get; set; }
     }
 }

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Application.DataTransferObject.ShowDate
+namespace NeonCinema_Application.DataTransferObject.CategoryMovies
 {
-    public class ShowDateUpdateRequest
+    public class CreateCategoryMovies
     {
-        public Guid ID { get; set; }
-        public DateTime StarDate { get; set; }
+        public Guid MovieID { get; set; }
+        public Guid MovieTypeID { get; set; }
         public EntityStatus Status { get; set; }
     }
 }
