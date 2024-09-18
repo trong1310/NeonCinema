@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.MovieTypes;
-using NeonCinema_Application.Interface.Movies;
+using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeonCinema_Infrastructure.Implement.Movies
+namespace NeonCinema_Infrastructure.Implement.Movie
 {
     public class MovieTypeRepositories : IMovieTypeRepositories
     {
@@ -38,7 +38,7 @@ namespace NeonCinema_Infrastructure.Implement.Movies
             catch(Exception ex) 
             {
 				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-				{
+				{	
 					Content = new StringContent("có lỗi xảy ra"+ex.Message)
 				};
 			}
@@ -51,8 +51,8 @@ namespace NeonCinema_Infrastructure.Implement.Movies
 				var obj = await _context.MoviesType.FindAsync(movieType.ID);
 				if (obj != null)
 				{
-					movieType.Deleted = true;
-					movieType.DeletedTime = DateTime.Now;
+					obj.Deleted = true;
+					obj.DeletedTime = DateTime.Now;
 
 				}
 				_context.MoviesType.Update(obj);
@@ -80,7 +80,7 @@ namespace NeonCinema_Infrastructure.Implement.Movies
 			}
 
 			var obj = await query.ToListAsync();
-			return _map.Map<List<MovieTypeDTO>>(obj.Where(x => x.Deleted == null));
+			return _map.Map<List<MovieTypeDTO>>(obj.Where(x => x.Deleted == false));
 		}
 
         public async Task<HttpResponseMessage> Update(MovieType movieType, CancellationToken cancellationToken)

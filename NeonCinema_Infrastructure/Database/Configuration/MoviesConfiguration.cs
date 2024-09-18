@@ -17,9 +17,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.ToTable("MovieDetail");
             builder.HasKey(x=>x.ID);
             builder.Property(x => x.Duration).HasDefaultValue(0);
-            builder.Property(x => x.Images).HasConversion(
-                    c => JsonConvert.SerializeObject(c),
-                    c => JsonConvert.DeserializeObject<List<string>>(c));
             builder.Property(x => x.AgeAllowed).HasDefaultValue(0);
 			builder.HasOne(x => x.Countrys).WithMany(x => x.Movies).HasForeignKey(x => x.CountryID).OnDelete(DeleteBehavior.NoAction);
 			builder.HasOne(x => x.Genre).WithMany(x => x.Movies).HasForeignKey(x => x.GenreID).OnDelete(DeleteBehavior.NoAction);

@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿	using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.MovieTypes;
-using NeonCinema_Application.Interface.Movies;
+using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
 
-namespace NeonCinema_API.Controllers.Movies
+namespace NeonCinema_API.Controllers.Movie
 {
 	[Route("api/[controller]")]
 	[ApiController]
