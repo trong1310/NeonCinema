@@ -29,7 +29,8 @@
     padding: 20px;
     border-radius: 8px;
     color: #fff;
-    width: 300px;
+    width: 650px;
+    height: 400px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
@@ -51,12 +52,13 @@
         width: 100%;
         padding: 10px;
         border: none;
+        height : 50px;
         border-radius: 4px;
         box-sizing: border-box;
     }
 
 button {
-    width: 100%;
+    width: 40%;
     padding: 10px;
     background-color: #007bff;
     border: none;
