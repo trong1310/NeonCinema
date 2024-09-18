@@ -8,5 +8,6 @@ namespace NeonCinema_Application.DataTransferObject.MovieTypes
 {
     public class CreateMovieTypeRequest
     {
+        public string Name { get; set; }
     }
 }
