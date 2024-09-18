@@ -34,6 +34,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapFallbackToPage("/_Host"); // Nếu bạn sử dụng Blazor Server
+});
+
 
 app.Run();

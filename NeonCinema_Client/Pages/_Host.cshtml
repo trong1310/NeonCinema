@@ -1,6 +1,6 @@
-﻿@page "/"
-@using Microsoft.AspNetCore.Components.Web
+﻿@page "/abc"
 @namespace NeonCinema_Client.Pages
+@using Microsoft.AspNetCore.Components.Web
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -9,16 +9,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
+    
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="NeonCinema_Client.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+
+    <!-- Thêm component cho HeadOutlet để prerender các thẻ meta, title -->
+    <component type="typeof(HeadOutlet)" render-mode="Server" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <!-- Thành phần chính của ứng dụng Blazor -->
+    <component type="typeof(App)" render-mode="Server" />
 
     <div id="blazor-error-ui">
+        <!-- Thông báo lỗi cho các môi trường khác nhau -->
         <environment include="Staging,Production">
             An error has occurred. This application may no longer respond until reloaded.
         </environment>
@@ -29,6 +34,7 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <!-- Script cho Blazor Server -->
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

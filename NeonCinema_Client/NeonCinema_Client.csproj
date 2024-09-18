@@ -13,16 +13,16 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\abc\**" />
-    <Compile Remove="Pages\Customer\**" />
+    <Compile Remove="Pages\Customers\**" />
     <Compile Remove="Pages\Employees\**" />
     <Content Remove="Pages\abc\**" />
-    <Content Remove="Pages\Customer\**" />
+    <Content Remove="Pages\Customers\**" />
     <Content Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\abc\**" />
-    <EmbeddedResource Remove="Pages\Customer\**" />
+    <EmbeddedResource Remove="Pages\Customers\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
-    <None Remove="Pages\Customer\**" />
+    <None Remove="Pages\Customers\**" />
 
     <None Remove="Pages\Employees\**" />
   </ItemGroup>
@@ -45,6 +45,7 @@
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.20" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="reCAPTCHA.AspNetCore" Version="3.0.10" />
   </ItemGroup>
@@ -67,7 +68,7 @@
     <None Include="Pages\Clients\HeaderClient.razor" />
     <None Include="Pages\Clients\LayoutClient.razor" />
     <None Include="Pages\Clients\MovieList.razor" />
-    <None Include="Pages\Customer\ProfileCustomer.razor" />
+    <None Include="Pages\Customers\ProfileCustomer.razor" />
 
     <None Include="Pages\Cinema\AppCinemas.razor" />
     <None Include="Pages\Cinema\CinemasList.razor" />
@@ -87,6 +88,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\Customers\ProfileCustomer.razor" />
   </ItemGroup>
 
 </Project>
