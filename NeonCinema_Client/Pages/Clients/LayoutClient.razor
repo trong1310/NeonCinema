@@ -1,4 +1,6 @@
+
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -16,21 +18,61 @@
 <body>
     <!-- Header -->
     <header>
-        <HeaderClient />
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="#">
+                <img src="images/Client/logo.jpg" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Phim
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Phim đang chiếu</a>
+                            <a class="dropdown-item" href="#">Phim sắp chiếu</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Hệ thống rạp</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Cửa hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Khuyến mãi/Sự kiện</a>
+                    </li>
+                </ul>
+                <div class="navbar-nav ml-auto d-flex align-items-center">
+                    <div class="nav-item user-info">
+                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="NavigateToProfile" />
+                        <span @onclick="NavigateToProfile">Đặng Đức Cường</span>
+
+                        <a href="#">/Thoát</a>
+                    </div>
+                    <button class="buy-ticket-btn">
+                        <i class="fas fa-ticket-alt"></i>
+                        MUA VÉ
+                    </button>
+                </div>
+            </div>
+        </nav>
+        
     </header>
 
     <!-- Content -->
     <main>
-        <MovieList />
+        @Body
     </main>
 
     <!-- Footer -->
     <footer>
         <p>Customer Layout Footer</p>
-        <!-- Bạn có thể thêm phần footer ở đây -->
     </footer>
 
-    <!-- Bootstrap Carousel Slider -->
    
 
     <!-- jQuery -->
@@ -43,3 +85,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+@code {
+    private void NavigateToProfile()
+    {
+        NavigationManager.NavigateTo("/customer-profile");
+    }
+}
+

@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <Compile Remove="Pages\Employees\**" />
+    <Content Remove="Pages\Employees\**" />
+    <EmbeddedResource Remove="Pages\Employees\**" />
+
     <Compile Remove="Pages\abc\**" />
     <Compile Remove="Pages\Customer\**" />
     <Compile Remove="Pages\Employees\**" />
@@ -18,6 +23,7 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
     <None Remove="Pages\Customer\**" />
+
     <None Remove="Pages\Employees\**" />
   </ItemGroup>
 
@@ -57,9 +63,16 @@
   </ItemGroup>
 
   <ItemGroup>
+
+    <None Include="Pages\Clients\HeaderClient.razor" />
+    <None Include="Pages\Clients\LayoutClient.razor" />
+    <None Include="Pages\Clients\MovieList.razor" />
+    <None Include="Pages\Customer\ProfileCustomer.razor" />
+
     <None Include="Pages\Cinema\AppCinemas.razor" />
     <None Include="Pages\Cinema\CinemasList.razor" />
     <None Include="Pages\Cinema\LayoutCinemas.razor" />
+
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Room\RoomAdd.razor" />
     <None Include="Pages\Room\RoomList.razor" />
