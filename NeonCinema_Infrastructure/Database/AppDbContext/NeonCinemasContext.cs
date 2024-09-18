@@ -77,7 +77,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            //SeenDingData(modelBuilder);
+            SeenDingData(modelBuilder);
         }
         private void SeenDingData(ModelBuilder modelBuilder)
         {
