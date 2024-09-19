@@ -1,6 +1,7 @@
 using Com.CloudRail.SI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Cinemas;
@@ -57,18 +58,58 @@ builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
 builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-        option => option.TokenValidationParameters = new TokenValidationParameters()
+var key = builder.Configuration.GetSection("Jwt:Key").Value;
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(option =>
+{
+    option.RequireHttpsMetadata = false;
+    option.SaveToken = true;
+    option.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+    };
+
+
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description =
+        "JWT Authorization header using the Bearer scheme. \r\n\r\n" +
+        "Enter 'Bearer' [space] and then your token in the text input below. \r\n\r\n" +
+        "Example: \"Bearer 12345abcdef\""
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-			ValidateIssuer = true,
-			ValidateAudience = true,
-			ValidateLifetime = true,
-			ValidateIssuerSigningKey = true,
-			ValidIssuer = builder.Configuration["JWT:Issuer"],
-			ValidAudience = builder.Configuration["JWT:Audience"],
-			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
-		}
-    );
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new List<string> {}
+        }
+    });
+});
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddApplication(); //use automapper
 builder.Services.AddEventBus(builder.Configuration);
