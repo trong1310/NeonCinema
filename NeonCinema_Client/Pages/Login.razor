@@ -3,8 +3,7 @@
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
-
-@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@inject Blazored.LocalStorage.ILocalStorageService _localstorgae
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
@@ -74,6 +73,7 @@
                 {
                     var content = await login.Content.ReadAsStringAsync();
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
+                    await _localstorgae.SetItemAsync("authToken", token);
                     _navi.NavigateTo("/");
                     
                 }
