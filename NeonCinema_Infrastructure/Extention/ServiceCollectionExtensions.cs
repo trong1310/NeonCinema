@@ -90,14 +90,10 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
-
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();
-
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
-
-
             return services;
         }
     }
