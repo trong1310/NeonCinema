@@ -11,6 +11,7 @@ namespace NeonCinema_Application.Interface.Users
 {
     public interface IUserRepository
     {
+        
         public Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken);
         public Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken);
         public Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken);

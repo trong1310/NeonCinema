@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     <PackageReference Include="Twilio" Version="7.3.0" />
     <PackageReference Include="Twilio.Api" Version="1.0.6" />
   </ItemGroup>

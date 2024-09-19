@@ -58,6 +58,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Show_release> Show_release { get; set; }
         public DbSet<ShowDate> ShowDate { get; set; }
         public DbSet<Point> Points { get; set; }
+        public DbSet<FileUpload> FileUploads { get; set; }
        
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
