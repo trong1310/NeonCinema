@@ -63,8 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <None Include="Pages\Clients\HeaderClient.razor" />
     <None Include="Pages\Clients\LayoutClient.razor" />
     <None Include="Pages\Clients\MovieList.razor" />
     <None Include="Pages\Customer\ProfileCustomer.razor" />
