@@ -13,10 +13,17 @@
     </div>
     <div class="login-container">
         <h2>Đăng Nhập</h2>
-        <EditForm Model="@loginModel">
+        <EditForm Model="@loginModel" OnValidSubmit="LoginAccount">
             <DataAnnotationsValidator />
             <ValidationSummary />
-
+            @if (isProcessing)
+            {
+                <p>Processing...</p>
+            }
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="text-danger">@errorMessage</p>
+            }
             <div class="input-group">
                 <label for="username">Email hoặc số điện thoại</label>
                 <InputText id="username" class="form-control" @bind-Value="loginModel.EmailorPhone" required />
@@ -26,7 +33,8 @@
                 <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" required />
             </div>
             <div class="d-flex justify-content-center">
-                <button onclick="@LoginAccount()">Đăng Nhập</button>
+
+                <button type="submit">Đăng Nhập</button>
                 
             </div>
             <div class="links">
@@ -37,61 +45,42 @@
     </div>
 </body>
 
-@if (isProcessing)
-{
-    <p>Processing...</p>
-}
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p class="text-danger">@errorMessage</p>
-}
+
+
 
 @code {
     private LoginModel loginModel = new LoginModel();
     private bool isProcessing;
     private string errorMessage;
+    private string account;
+    private string pass;
     HttpClient _http = new HttpClient();
 
     public async Task LoginAccount()
     {
         isProcessing = true;
-        errorMessage = null; // Reset error message before processing
+        errorMessage = null; 
 
         try
         {
-            // Gửi yêu cầu POST tới API
             var login = await _http.PostAsJsonAsync("https://localhost:7211/api/Login/Login", loginModel);
-
-            // Kiểm tra mã trạng thái HTTP
             if (login.IsSuccessStatusCode)
             {
                 try
                 {
-                    // Thử đọc phản hồi JSON
-                    var result = await login.Content.ReadFromJsonAsync<TokenResponse>();
-                    if (result != null && !string.IsNullOrEmpty(result.Token))
-                    {
-                        var handler = new JwtSecurityTokenHandler().ReadJwtToken(result.Token);
-
-                        // Lưu token vào localStorage hoặc sessionStorage
-                        await _localStorage.SetItemAsync("authToken", result.Token);
-                        _navi.NavigateTo("/cinemaslist");
-                    }
-                    else
-                    {
-                        errorMessage = "Token không hợp lệ .";
-                    }
+                    var content = await login.Content.ReadAsStringAsync();
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
+                    _navi.NavigateTo("/lst-movies");
+                    
                 }
                 catch (Exception ex)
                 {
-                    // Bắt và xử lý lỗi khi đọc JSON
                     errorMessage = $"Lỗi khi xử lý JSON: {ex.Message}";
                 }
             }
             else
             {
-                // Xử lý khi yêu cầu không thành công
                 var error = await login.Content.ReadAsStringAsync();
                 errorMessage = $"Lỗi từ API: {error}";
             }
@@ -100,20 +89,11 @@
         {
             errorMessage = $"Có lỗi xảy ra: {ex.Message}";
         }
-
         isProcessing = false;
     }
-
-    // Mô hình đăng nhập
     public class LoginModel
     {
         public string EmailorPhone { get; set; }
         public string Password { get; set; }
-    }
-
-    // Phản hồi từ API
-    private class TokenResponse
-    {
-        public string Token { get; set; }
     }
 }
