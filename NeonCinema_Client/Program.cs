@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
+using NeonCinema_Client.IServices.User;
+using NeonCinema_Client.Services.User;
 /*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +16,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-//// Configure the HttpClient for UserService
-//builder.Services.AddHttpClient<UserService>(client =>
-//{
-//    client.BaseAddress = new Uri("https://yourapiurl.com/"); // Thay đổi URL cho phù hợp với API của bạn
-//});
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress =
+    new Uri("https://localhost:7211/")
+});
+
+builder.Services.AddScoped<IUserServices, UserService>();
 
 var app = builder.Build();
 
@@ -34,6 +38,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapFallbackToPage("/_Host"); // Nếu bạn sử dụng Blazor Server
+});
+
 
 app.Run();

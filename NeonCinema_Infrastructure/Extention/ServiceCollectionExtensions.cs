@@ -49,6 +49,8 @@ using NeonCinema_Infrastructure.Implement.Languages;
 
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Infrastructure.Implement.Movie;
+using NeonCinema_Application.Interface.Users;
+using NeonCinema_Infrastructure.Implement.Users;
 
 
 
@@ -75,7 +77,10 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IRankMemberRepository, RankMemberRepositories>();
             services.AddTransient<IGenreRepositories, GenreRepositories>();
             services.AddTransient<IDirectorRepositories, DirectorRepositories>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
+
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
             services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
@@ -90,14 +95,10 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
-
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();
-
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
-
-
             return services;
         }
     }

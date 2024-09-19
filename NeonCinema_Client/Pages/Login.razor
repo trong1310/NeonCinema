@@ -1,42 +1,45 @@
 ﻿@page "/login"
-@using Microsoft.AspNetCore.Components.Forms
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/css/Login/Login.css" />
+@using NeonCinema_Client.Pages.Clients
+@using System.IdentityModel.Tokens.Jwt
+@layout LayoutClient
+@inject NavigationManager _navi
 
-</head>
-</html>
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
-            <source src="/images/Ngày 24.... trailer - Phim kinh dị - KC_ 22.04.2022.mp4" type="video/mp4">
-            Your browser does not support the video tag.
+            <source src="/images/Ngày 24.... trailer - Phim kinh dị - KC_ 22.04.2022.mp4" type="audio/mp4">
         </video>
     </div>
-
     <div class="login-container">
         <h2>Đăng Nhập</h2>
-        <EditForm Model="@loginModel" OnValidSubmit="HandleSubmit">
+        <EditForm Model="@loginModel" OnValidSubmit="LoginAccount">
             <DataAnnotationsValidator />
             <ValidationSummary />
-
+          
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="text-danger">@errorMessage</p>
+            }
             <div class="input-group">
-                <label for="username">Tài Khoản</label>
-                <InputText id="username" class="form-control" @bind-Value="loginModel.Username" required />
+                <label for="username">Email hoặc số điện thoại</label>
+                <InputText id="username" class="form-control" @bind-Value="loginModel.EmailorPhone" required />
             </div>
             <div class="input-group">
                 <label for="password">Mật Khẩu</label>
-                <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" required />
+                <InputText id="password"  class="form-control" @bind-Value="loginModel.Password" required />
             </div>
-            <button type="submit">Đăng Nhập</button>
+            <div class="d-flex justify-content-center">
+                @if (isProcessing)
+                {
+                    <button disabled >vui lòng chờ</button>
+                }
+               else
+               {
+                    <button type="submit">Đăng Nhập</button>
+               }
+                
+            </div>
             <div class="links">
                 <a href="#">Quên Mật Khẩu?</a>
                 <a href="#">Đăng ký</a>
@@ -45,19 +48,55 @@
     </div>
 </body>
 
+
+
+
+
 @code {
     private LoginModel loginModel = new LoginModel();
+    private bool isProcessing;
+    private string errorMessage;
+    private string account;
+    private string pass;
+    HttpClient _http = new HttpClient();
 
-    private void HandleSubmit()
+    public async Task LoginAccount()
     {
-        // Xử lý logic đăng nhập ở đây
-        // Ví dụ: gọi API để xác thực người dùng
-        Console.WriteLine($"Username: {loginModel.Username}, Password: {loginModel.Password}");
-    }
+        isProcessing = true;
+        errorMessage = null; 
 
+        try
+        {
+            var login = await _http.PostAsJsonAsync("https://localhost:7211/api/Login/Login", loginModel);
+            if (login.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var content = await login.Content.ReadAsStringAsync();
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
+                    _navi.NavigateTo("/");
+                    
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = $"Lỗi khi xử lý JSON: {ex.Message}";
+                }
+            }
+            else
+            {
+                var error = await login.Content.ReadAsStringAsync();
+                errorMessage = $"Thông tin đăng nhập không chính xác";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Có lỗi xảy ra: {ex.Message}";
+        }
+        isProcessing = false;
+    }
     public class LoginModel
     {
-        public string Username { get; set; }
+        public string EmailorPhone { get; set; }
         public string Password { get; set; }
     }
 }
