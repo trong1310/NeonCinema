@@ -1,4 +1,8 @@
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.IServices.User
 @inherits LayoutComponentBase
+@inject IUserServices Service
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -13,7 +17,7 @@
     <link rel="stylesheet" href="/css/Customer/Customer.css">
 
 </head>
-<body>
+<body> 
     <!-- Header -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
@@ -47,7 +51,8 @@
                 <div class="navbar-nav ml-auto d-flex align-items-center">
                     <div class="nav-item user-info">
                         <img class="user-icon" src="/images/Customer/user-icon.png" />
-                        <span>Đặng Đức Cường</span>
+                        <span>@user.FullName</span>
+
 
                         <a href="#">/Thoát</a>
                     </div>
@@ -84,5 +89,26 @@
 </body>
 </html>
 @code {
+    private UserDTO user = new UserDTO();
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var phoneNumber = "0334583920"; // Thay đổi với số điện thoại người dùng thực tế
+            user = await Service.GetByIDUser(phoneNumber, cts.Token);
+        }
+        catch (HttpRequestException httpEx)
+        {
+
+            // Xử lý lỗi HTTP
+            Console.WriteLine($"Lỗi HTTP: {httpEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Xử lý lỗi chung
+            Console.WriteLine($"Lỗi: {ex.Message}");
+        }
+    }
 }
