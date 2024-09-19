@@ -35,11 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IServices\" />
 
     <Folder Include="Pages\Admin\" />
     <Folder Include="Pages\Img\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
