@@ -29,16 +29,17 @@ namespace NeonCinema_API.Controllers
 		private async Task<LoginDTO> GetUser(string emailOrPhone, string password)
 		{
 			var user = await _context.Users.FirstOrDefaultAsync(
-				x => x.PhoneNumber == emailOrPhone || x.Email == emailOrPhone);
-			var userRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == user.RoleID);
-			return new LoginDTO
-			{
-				Email = user.Email,
-				FullName = user.FullName,
-				RoleName = userRole.RoleName,
-				PhoneNumber = user.PhoneNumber,
-				ID = user.ID,
-			};
+				x => x.PhoneNumber == emailOrPhone  && x.PassWord == Hash.Encrypt(password)
+				);
+                var userRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == user.RoleID);
+			  return new LoginDTO
+              {
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    RoleName = userRole.RoleName,
+                    PhoneNumber = user.PhoneNumber,
+                    ID = user.ID,
+              };
 		}
 		private string GenerateJwtToken(LoginDTO user)
 		{
@@ -72,12 +73,6 @@ namespace NeonCinema_API.Controllers
 				{
 					return BadRequest("Vui lòng nhập Email/Số điện thoại và mật khẩu.");
 				}
-                //var captchaClient = request.ReCaptcha;
-                //var checkCaptcha = await _captcha.VerifyToken(captchaClient);
-                //if (!checkCaptcha)
-                //{
-                //    return ("Captcha không đúng vui lòng thử lại");
-                //}
                 var userLogin = await GetUser(request.EmailOrPhone,request.Password);
 				if (userLogin == null )
 				{
