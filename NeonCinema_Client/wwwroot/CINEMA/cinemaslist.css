@@ -1,0 +1,135 @@
+﻿.cinema-details.hh h3 {
+    font-family: 'Copperplate', 'Copperplate Gothic Light', serif;
+}
+
+.cinema-container {
+    display: flex;
+    gap: 10px;
+   
+    margin-left: 450px;
+}
+
+.cinema-image {
+    display: inline-block;
+    width: 30%;
+    height: 60%;
+    margin-top: 70px;
+    padding: 10px;
+    position: relative;
+}
+
+.image-large {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cinema-details {
+    flex: 1.5;
+    margin-left: 30px;
+    margin-top: 100px;
+    color: #41b51a;
+}
+
+.form-group {
+    margin-bottom: 10px;
+    margin-top: 30px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.cinema-image img {
+    border: 5px solid transparent;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.7), 0 0 50px rgba(0, 255, 0, 0.6), 0 0 70px rgba(0, 255, 0, 0.5);
+    animation: green-glow 1.5s infinite;
+}
+.cinema-image .btn-overlay {
+    position: absolute;
+    bottom: 10px; /* Khoảng cách từ đáy ảnh */
+    right: 10px; /* Khoảng cách từ cạnh phải ảnh */
+    padding: 10px 20px;
+    background-color: green; /* Màu nền của button */
+    color: white; /* Màu chữ của button */
+    border: none;
+    border-radius: 5px; /* Bo góc button */
+    cursor: pointer;
+    opacity: 0; /* Ẩn button mặc định */
+    transition: opacity 0.3s ease; /* Hiệu ứng chuyển tiếp */
+    margin-right: 118px;
+    margin-bottom: 200px;
+}
+
+.cinema-image:hover .btn-overlay {
+    opacity: 1; /* Hiện button khi di chuột qua ảnh */
+}
+@keyframes green-glow {
+    0% {
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.7), 0 0 50px rgba(0, 255, 0, 0.6), 0 0 70px rgba(0, 255, 0, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(0, 255, 0, 0.8), 0 0 60px rgba(0, 255, 0, 0.7), 0 0 80px rgba(0, 255, 0, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.7), 0 0 50px rgba(0, 255, 0, 0.6), 0 0 70px rgba(0, 255, 0, 0.5);
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+.abc {
+    font-weight: bold; /* Đậm chữ */
+    animation: colorChange 7s linear infinite; /* Áp dụng animation */
+    /*text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px red, 0 0 20px yellow, 0 0 30px yellow, 0 0 40px yellow, 0 0 50px yellow;*/ /* Ánh sáng rộng và nhiều lớp */
+}
+
+@keyframes colorChange {
+    0% {
+        color: red;
+    }
+
+    14% {
+        color: orange;
+    }
+
+    28% {
+        color: yellow;
+    }
+
+    42% {
+        color: green;
+    }
+
+    57% {
+        color: cyan;
+    }
+
+    71% {
+        color: blue;
+    }
+
+    85% {
+        color: magenta;
+    }
+
+    100% {
+        color: red;
+    }
+}
+
