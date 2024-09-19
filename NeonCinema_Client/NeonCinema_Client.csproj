@@ -47,6 +47,7 @@
 
     <Folder Include="Pages\Admin\" />
     <Folder Include="Pages\Img\" />
+    <Folder Include="wwwroot\images\FlimImages\" />
   </ItemGroup>
 
   <ItemGroup>
