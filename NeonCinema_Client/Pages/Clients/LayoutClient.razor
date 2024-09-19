@@ -1,9 +1,11 @@
+@inherits LayoutComponentBase
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
-@inject Blazored.LocalStorage.ILocalStorageService _local
-@inherits LayoutComponentBase
 @inject IUserServices Service
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@using System.IdentityModel.Tokens.Jwt
 @inject NavigationManager NavigationManager
+
 
 
 <!DOCTYPE html>
@@ -53,11 +55,9 @@
                 </ul>
                 <div class="navbar-nav ml-auto d-flex align-items-center">
                     <div class="nav-item user-info">
-                        <img class="user-icon" src="/images/Customer/user-icon.png" />
-                        <span>@fullName</span>
-
-
-                        <a href="#">/Thoát</a>
+                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick=Profile />
+                        <p>@username</p>
+                        <a href="#" @onclick=Logout >/Thoát</a>
                     </div>
                     <button class="buy-ticket-btn">
                         <i class="fas fa-ticket-alt"></i>
@@ -92,9 +92,21 @@
 </body>
 </html>
 @code {
-    private string fullName; 
+    private string username;
+
     protected override async Task OnInitializedAsync()
     {
-        fullName = await _local.GetItemAsStringAsync("name");
+        username = await _localStorage.GetItemAsync<string>("name");
+    }
+
+    private async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("nameidentifier");
+        await _localStorage.RemoveItemAsync("name");
+        NavigationManager.NavigateTo("/login");
+    }
+    private async Task Profile()
+    {
+        NavigationManager.NavigateTo("/customer-profile");
     }
 }
