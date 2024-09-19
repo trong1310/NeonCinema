@@ -1,11 +1,11 @@
+@inherits LayoutComponentBase
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
-@inherits LayoutComponentBase
 @inject IUserServices Service
-
-
-@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@using System.IdentityModel.Tokens.Jwt
 @inject NavigationManager NavigationManager
+
 
 
 <!DOCTYPE html>
@@ -55,11 +55,9 @@
                 </ul>
                 <div class="navbar-nav ml-auto d-flex align-items-center">
                     <div class="nav-item user-info">
-                        <img class="user-icon" src="/images/Customer/user-icon.png" />
-                        <span>@user.FullName</span>
-
-
-                        <a href="#">/Thoát</a>
+                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick=Profile />
+                        <p>@username</p>
+                        <a href="#" @onclick=Logout >/Thoát</a>
                     </div>
                     <button class="buy-ticket-btn">
                         <i class="fas fa-ticket-alt"></i>
@@ -94,26 +92,21 @@
 </body>
 </html>
 @code {
-    private UserDTO user = new UserDTO();
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private string username;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var phoneNumber = "0334583920"; // Thay đổi với số điện thoại người dùng thực tế
-            user = await Service.GetByIDUser(phoneNumber, cts.Token);
-        }
-        catch (HttpRequestException httpEx)
-        {
+        username = await _localStorage.GetItemAsync<string>("name");
+    }
 
-            // Xử lý lỗi HTTP
-            Console.WriteLine($"Lỗi HTTP: {httpEx.Message}");
-        }
-        catch (Exception ex)
-        {
-            // Xử lý lỗi chung
-            Console.WriteLine($"Lỗi: {ex.Message}");
-        }
+    private async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("nameidentifier");
+        await _localStorage.RemoveItemAsync("name");
+        NavigationManager.NavigateTo("/login");
+    }
+    private async Task Profile()
+    {
+        NavigationManager.NavigateTo("/customer-profile");
     }
 }
