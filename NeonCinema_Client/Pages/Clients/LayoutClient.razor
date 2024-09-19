@@ -1,10 +1,8 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
+@inject Blazored.LocalStorage.ILocalStorageService _local
 @inherits LayoutComponentBase
 @inject IUserServices Service
-
-
-@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 
 
@@ -56,7 +54,7 @@
                 <div class="navbar-nav ml-auto d-flex align-items-center">
                     <div class="nav-item user-info">
                         <img class="user-icon" src="/images/Customer/user-icon.png" />
-                        <span>@user.FullName</span>
+                        <span>@fullName</span>
 
 
                         <a href="#">/Thoát</a>
@@ -94,26 +92,9 @@
 </body>
 </html>
 @code {
-    private UserDTO user = new UserDTO();
-    private CancellationTokenSource cts = new CancellationTokenSource();
-
+    private string fullName; 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var phoneNumber = "0334583920"; // Thay đổi với số điện thoại người dùng thực tế
-            user = await Service.GetByIDUser(phoneNumber, cts.Token);
-        }
-        catch (HttpRequestException httpEx)
-        {
-
-            // Xử lý lỗi HTTP
-            Console.WriteLine($"Lỗi HTTP: {httpEx.Message}");
-        }
-        catch (Exception ex)
-        {
-            // Xử lý lỗi chung
-            Console.WriteLine($"Lỗi: {ex.Message}");
-        }
+        fullName = await _local.GetItemAsStringAsync("name");
     }
 }
