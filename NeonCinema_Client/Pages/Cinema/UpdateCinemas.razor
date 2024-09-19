@@ -1,0 +1,65 @@
+﻿@page "/update-cinema"
+
+<link rel="stylesheet" href="/CINEMA/updatecnm.css">
+
+<div class="update-cinema-container">
+    <div class="update-cinema-header">
+        <h2 style="color: #5aaf06">Update Cinema Information</h2>
+    </div>
+    <div class="update-cinema-content">
+        <!-- Image Section -->
+        <div class="image-section">
+            <img src="https://thanhnien.mediacdn.vn/Uploaded/2014/ihay.thanhnien.com.vn/Pictures201406/Ta_Ban/30Jun2014/maco3.jpg" alt="Cinema Image" class="cinema-image" />
+        </div>
+
+        <!-- Form Section -->
+        <div class="update-cinema-form">
+            <form>
+                <div class="form-group">
+                    <label for="name">Cinema Name:</label>
+                    <input type="text" id="name" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" id="phone" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Website:</label>
+                    <input type="text" id="website" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="opening-hours">Opening Hours:</label>
+                    <input type="text" id="opening-hours" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="closing-hours">Closing Hours:</label>
+                    <input type="text" id="closing-hours" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="room-number">Number of Rooms:</label>
+                    <input type="number" id="room-number" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn-update" @onclick="UpdateCinema">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void UpdateCinema()
+    {
+        // Add your update logic here
+        // e.g., Save changes to the database or perform any other action
+    }
+}
