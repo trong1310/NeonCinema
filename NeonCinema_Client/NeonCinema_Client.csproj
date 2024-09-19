@@ -13,6 +13,14 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\abc\**" />
+
+    <Compile Remove="Pages\Employees\**" />
+    <Content Remove="Pages\abc\**" />
+    <Content Remove="Pages\Employees\**" />
+    <EmbeddedResource Remove="Pages\abc\**" />
+    <EmbeddedResource Remove="Pages\Employees\**" />
+    <None Remove="Pages\abc\**" />
+
     <Compile Remove="Pages\Customers\**" />
     <Compile Remove="Pages\Employees\**" />
     <Content Remove="Pages\abc\**" />
@@ -23,6 +31,7 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
     <None Remove="Pages\Customers\**" />
+
 
     <None Remove="Pages\Employees\**" />
   </ItemGroup>
@@ -64,11 +73,13 @@
   <ItemGroup>
     <None Include="Pages\Clients\LayoutClient.razor" />
     <None Include="Pages\Clients\MovieList.razor" />
+
+
     <None Include="Pages\Customers\ProfileCustomer.razor" />
 
     <None Include="Pages\Cinema\AppCinemas.razor" />
+
     <None Include="Pages\Cinema\CinemasList.razor" />
-    <None Include="Pages\Cinema\LayoutCinemas.razor" />
 
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Room\RoomAdd.razor" />
