@@ -1,0 +1,84 @@
+﻿.update-cinema-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+   
+    border-radius: 8px;
+    background-color: black;
+}
+
+.update-cinema-header {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-left: 427px;
+}
+
+.update-cinema-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.image-section {
+    flex: 1;
+}
+
+.cinema-image {
+    width: 500px;
+    height: 700px;
+    border-radius: 8px;
+    display: block;
+    
+}
+
+.update-cinema-form {
+    flex: 2;
+    max-width: 600px;
+    margin-top: 50px
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group input {
+        background-color: #a6a7a5;
+    }
+
+        .form-group input:hover {
+            background-color: #c1c4be;
+        }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #5aaf06; /* Màu chữ đen */
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #000; /* Màu chữ đen */
+}
+
+.btn-update {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #e19104; /* Màu xanh lá cây */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+    .btn-update:hover {
+        background-color: #218838; /* Màu xanh lá cây đậm hơn khi hover */
+    }
+
+

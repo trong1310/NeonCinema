@@ -1,4 +1,5 @@
-﻿<div class="container">
+﻿@page "/Rooom"
+<div class="container">
     <!-- Phần Thêm Phòng Chiếu -->
     <div class="add-room-section">
         <h3>Thêm Phòng Chiếu Mới</h3>
@@ -24,226 +25,238 @@
     </div>
 </div>
 
-
-<table class="table caption-top">
-    <thead>
-        <tr>
-            <th scope="col">Tên phòng</th>
-            <th scope="col">Số ghế ngồi</th>
-            <th scope="col">Trạng thái</th>
-            <th scope="col">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
+<div class="hl">
+    <table class="table caption-top">
+        <thead>
+            <tr>
+                <th scope="col">Tên phòng</th>
+                <th scope="col">Số ghế ngồi</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="dd">
+                <td>
+                    <div class="user-info">
+                        <div class="user-image">
+                            <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
+                        </div>
+                        <div class="user-text">
+                            <p class="small-text">Phòng 1A</p>
+                            <p class="small-text">70/100</p>
+                        </div>
                     </div>
+                </td>
+                <td>
                     <div class="user-text">
-                        <p class="small-text">Phòng 1A</p>
-                        <p class="small-text">70/100</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">100</p>
-                    
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Hoạt động</p>
+                        <p class="small-text">100</p>
 
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button" onclick="toggleForm(this)">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-
-                    <div class="sub-form" style="display: none;">
-                        <h4>Cập nhật thông tin</h4>
-                        <form>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="fullName">Tên phòng</label>
-                                    <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
-                                </div>
-                                <div class="form-group">
-                                    <label for="phoneNumber">Số ghế</label>
-                                    <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
-                                </div>
-                            </div>
-                            <button type="submit" class="submit-btn">Cập Nhật</button>
-                        </form>
                     </div>
-                    
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://bvhttdl.mediacdn.vn/291773308735864832/2023/11/7/z4879-1699329989409651859190-1699340955629-1699340955744695767212.jpg" alt="User Image" />
-                    </div>
+                </td>
+                <td>
                     <div class="user-text">
-                        <p class="small-text">Phòng 2A</p>
-                        <p class="small-text">0/150</p>
+                        <p class="small-text">Hoạt động</p>
+
                     </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">150</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Hoạt động</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button" onclick="toggleForm(this)">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-
-                    <div class="sub-form" style="display: none;">
-                        <h4>Cập nhật thông tin</h4>
-                        <form>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="fullName">Tên phòng</label>
-                                    <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
-                                </div>
-                                <div class="form-group">
-                                    <label for="phoneNumber">Số ghế</label>
-                                    <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
-                                </div>
-                            </div>
-                            <button type="submit" class="submit-btn">Cập Nhật</button>
-                        </form>
-                    </div>
-
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://cdn.thoibaonganhang.vn/stores/news_dataimages/minhvl/112020/09/10/3850_a12_Copy_2.jpg" alt="User Image" />
-                    </div>
+                </td>
+                <td>
                     <div class="user-text">
-                        <p class="small-text">Phòng 1B</p>
-                        <p class="small-text">0/100</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">100</p>
+                        <button class="dot-button" onclick="toggleForm(this)">
+                            <span class="dots">&#x22EF;</span>
+                        </button>
 
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Nghưng Hoạt động</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button" onclick="toggleForm(this)">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-
-                    <div class="sub-form" style="display: none;">
-                        <h4>Cập nhật thông tin</h4>
-                        <form>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="fullName">Tên phòng</label>
-                                    <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
+                        <div class="sub-form" style="display: none;">
+                            <h4>Cập nhật thông tin</h4>
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName">Tên phòng</label>
+                                        <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Số ghế</label>
+                                        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="phoneNumber">Số ghế</label>
-                                    <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
-                                </div>
-                            </div>
-                            <button type="submit" class="submit-btn">Cập Nhật</button>
-                        </form>
-                    </div>
+                                <button type="submit" class="submit-btn">Cập Nhật</button>
+                            </form>
+                        </div>
 
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://www.elle.vn/wp-content/uploads/2023/03/28/522244/phim-Viet-Mat-Troi-Mua-Dong-1500x2000-1.jpg" alt="User Image" />
                     </div>
+                </td>
+            </tr>
+            <tr class="dd">
+                <td>
+                    <div class="user-info">
+                        <div class="user-image">
+                            <img src="https://bvhttdl.mediacdn.vn/291773308735864832/2023/11/7/z4879-1699329989409651859190-1699340955629-1699340955744695767212.jpg" alt="User Image" />
+                        </div>
+                        <div class="user-text">
+                            <p class="small-text">Phòng 2A</p>
+                            <p class="small-text">0/150</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
                     <div class="user-text">
-                        <p class="small-text">Phòng 2B</p>
-                        <p class="small-text">170/200</p>
+                        <p class="small-text">150</p>
+
                     </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">100</p>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <p class="small-text">Hoạt động</p>
 
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Hoạt động</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button" onclick="toggleForm(this)">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-
-                    <div class="sub-form" style="display: none;">
-                        <h4>Cập nhật thông tin</h4>
-                        <form>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="fullName">Tên phòng</label>
-                                    <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
-                                </div>
-                                <div class="form-group">
-                                    <label for="phoneNumber">Số ghế</label>
-                                    <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
-                                </div>
-                            </div>
-                            <button type="submit" class="submit-btn">Cập Nhật</button>
-                        </form>
                     </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <button class="dot-button" onclick="toggleForm(this)">
+                            <span class="dots">&#x22EF;</span>
+                        </button>
 
-                </div>
-            </td>
-        </tr>
-       
-       
-        
-    </tbody>
-</table>
+                        <div class="sub-form" style="display: none;">
+                            <h4>Cập nhật thông tin</h4>
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName">Tên phòng</label>
+                                        <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Số ghế</label>
+                                        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
+                                    </div>
+                                </div>
+                                <button type="submit" class="submit-btn">Cập Nhật</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+            <tr class="dd">
+                <td>
+                    <div class="user-info">
+                        <div class="user-image">
+                            <img src="https://cdn.thoibaonganhang.vn/stores/news_dataimages/minhvl/112020/09/10/3850_a12_Copy_2.jpg" alt="User Image" />
+                        </div>
+                        <div class="user-text">
+                            <p class="small-text">Phòng 1B</p>
+                            <p class="small-text">0/100</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <p class="small-text">100</p>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <p class="small-text">Nghưng Hoạt động</p>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <button class="dot-button" onclick="toggleForm(this)">
+                            <span class="dots">&#x22EF;</span>
+                        </button>
+
+                        <div class="sub-form" style="display: none;">
+                            <h4>Cập nhật thông tin</h4>
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName">Tên phòng</label>
+                                        <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Số ghế</label>
+                                        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
+                                    </div>
+                                </div>
+                                <button type="submit" class="submit-btn">Cập Nhật</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+            <tr class="dd">
+                <td>
+                    <div class="user-info">
+                        <div class="user-image">
+                            <img src="https://www.elle.vn/wp-content/uploads/2023/03/28/522244/phim-Viet-Mat-Troi-Mua-Dong-1500x2000-1.jpg" alt="User Image" />
+                        </div>
+                        <div class="user-text">
+                            <p class="small-text">Phòng 2B</p>
+                            <p class="small-text">170/200</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <p class="small-text">100</p>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <p class="small-text">Hoạt động</p>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="user-text">
+                        <button class="dot-button" onclick="toggleForm(this)">
+                            <span class="dots">&#x22EF;</span>
+                        </button>
+
+                        <div class="sub-form" style="display: none;">
+                            <h4>Cập nhật thông tin</h4>
+                            <form>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName">Tên phòng</label>
+                                        <input type="text" id="fullName" name="fullName" placeholder="Nhập tên phòng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Số ghế</label>
+                                        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Nhập số ghế">
+                                    </div>
+                                </div>
+                                <button type="submit" class="submit-btn">Cập Nhật</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+
+
+
+        </tbody>
+    </table>
+</div>
+
 <style>
+    .hl{
+        width: 80%;
+        margin-left: 165px;
+    }
+    .table caption-top{
+        background-color: white;
+        color: black;
+        
+    }
     .user-info {
         display: flex;
         align-items: center;
+        
     }
 
     .user-image {
@@ -466,7 +479,9 @@
         }
 
 
-
+        .user-text{
+            color:black;
+        }
 
 
     .sub-form {
@@ -545,6 +560,10 @@
     table {
         table-layout: fixed;
         width: 100%;
+    }
+
+    .dd{
+        background-color: white;
     }
 
 </style>

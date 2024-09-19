@@ -1,111 +1,50 @@
 ﻿@page "/cinemaslist"
-@* @using NeonCinema_Domain.Database.Entities
- *@
+@inject NavigationManager Navigation
 
+<link rel="stylesheet" href="/CINEMA/cinemaslist.css">
 
 <div class="cinema-container">
     <!-- Large Image Placeholder -->
     <div class="cinema-image">
         <img src="https://baomoi.vinhphuc.gov.vn/Upload/baiviet/2024/1/6/nthuong/990_d-a-2.jpg" alt="Cinema Image" class="image-large" />
+        <button class="btn-overlay" @onclick="NavigateToUpdateCinema">Update</button>
     </div>
 
     <!-- Cinema Information Fields -->
     <div class="cinema-details">
-       <div class="hh">
-            <h3> NEON CINEMAS</h3>
-       </div>
-        <div class="form-group">
-            <label for="name">Name: <strong>Neon Cinemas</strong></label>
-
+        <div class="hh">
+            <h3 class="abc"> NEON CINEMAS</h3>
         </div>
 
         <div class="form-group">
             <label for="location">Location:  <strong>Ba Vì - Hà Nội</strong></label>
-
         </div>
 
         <div class="form-group">
             <label for="phone">Phone Number: <strong>0388008268</strong></label>
-
         </div>
 
         <div class="form-group">
             <label for="website">Website: <strong>cgv.vn</strong></label>
-
         </div>
 
         <div class="form-group">
-            <label for="opening-hours">Opening Hours:     <strong> 08:00</strong></label>
-
+            <label for="opening-hours">Opening Hours: <strong>08:00</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="closing-hours">Closing Hours:  <strong>02:00</strong></label>
-
+            <label for="closing-hours">Closing Hours: <strong>02:00</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="room-number">Number of Rooms:  <strong>200</strong></label>
-
+            <label for="room-number">Number of Rooms: <strong>200</strong></label>
         </div>
     </div>
 </div>
 
-<h3> </h3>
-
-
 @code {
-    
+    private void NavigateToUpdateCinema()
+    {
+        Navigation.NavigateTo("/update-cinema");
+    }
 }
-
-
-<style>
-    .cinema-details.hh h3 {
-        font-family: 'Copperplate', 'Copperplate Gothic Light', serif;
-    }
-    .cinema-container {
-        display: flex; /* Thiết lập chế độ hiển thị của container thành flexbox để dễ dàng sắp xếp các phần tử con theo hàng ngang hoặc dọc. */
-        gap: 10px; /* Đặt khoảng cách giữa các phần tử con trong container là 10px. */
-        margin-top: 20px; /* Khoảng cách phía trên của container với các phần tử khác được đặt là 20px. */
-        margin-left: 250px; /* Khoảng cách phía trái của container với lề của phần tử chứa nó được đặt là 150px. */
-        
-    }
-
-    .cinema-image {
-        display: inline-block; /* Để div chỉ chiếm chiều rộng của hình ảnh bên trong nó. */
-        width: 30%; /* Giảm kích thước bề ngang của div.cinema-image xuống 50% để ảnh nhỏ hơn. */
-        height: 60%; /* Để chiều cao tự động điều chỉnh theo tỷ lệ chiều rộng, giữ nguyên tỷ lệ khung hình ban đầu. */
-        margin-top: 70px;
-    }
-
-    .image-large {
-        display: block; /* Để loại bỏ khoảng cách thừa bên dưới hình ảnh và đảm bảo nó chiếm toàn bộ chiều rộng của phần tử chứa nó. */
-        width: 100%; /* Đảm bảo hình ảnh chiếm toàn bộ chiều rộng của phần tử chứa. */
-        height: auto; /* Để chiều cao tự động điều chỉnh theo tỷ lệ chiều rộng, giữ nguyên tỷ lệ khung hình ban đầu. */
-        border-radius: 10px; /* Bo tròn các góc của hình ảnh với bán kính 10px. */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng cho hình ảnh với khoảng cách ngang 0px, khoảng cách dọc 4px, độ mờ 8px và màu sắc bóng đen với độ mờ 20%. */
-    }
-
-    .cinema-details {
-        flex: 1.5; /* Phân bổ không gian cho phần tử chi tiết theo tỉ lệ 1.5 so với các phần tử khác trong container flex. */
-        margin-left: 10px; /* Đặt khoảng cách phía trái của phần tử chi tiết với phần tử hình ảnh là 10px. */
-        margin-top: 80px;
-    }
-
-    .form-group {
-        margin-bottom: 10px; /* Khoảng cách phía dưới của mỗi nhóm thông tin (form-group) được đặt là 10px. */
-        margin-top: 30px;  
-    }
-
-    .form-control {
-        width: 100%; /* Đặt chiều rộng của các trường nhập liệu (form-control) là 100% của phần tử chứa nó, làm cho chúng chiếm toàn bộ chiều rộng có sẵn. */
-        padding: 8px; /* Đặt khoảng cách bên trong các trường nhập liệu (padding) là 8px từ tất cả các cạnh. */
-        border: 1px solid #ccc; /* Thêm đường viền với độ dày 1px, kiểu đường viền là solid và màu sắc là #ccc (màu xám nhạt). */
-        border-radius: 4px; /* Bo tròn các góc của trường nhập liệu với bán kính 4px. */
-    }
-
-
-
-
-
-</style>
