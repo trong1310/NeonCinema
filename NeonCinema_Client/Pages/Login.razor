@@ -16,10 +16,7 @@
         <EditForm Model="@loginModel" OnValidSubmit="LoginAccount">
             <DataAnnotationsValidator />
             <ValidationSummary />
-            @if (isProcessing)
-            {
-                <p>Processing...</p>
-            }
+          
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <p class="text-danger">@errorMessage</p>
@@ -30,11 +27,17 @@
             </div>
             <div class="input-group">
                 <label for="password">Mật Khẩu</label>
-                <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" required />
+                <InputText id="password"  class="form-control" @bind-Value="loginModel.Password" required />
             </div>
             <div class="d-flex justify-content-center">
-
-                <button type="submit">Đăng Nhập</button>
+                @if (isProcessing)
+                {
+                    <button disabled >vui lòng chờ</button>
+                }
+               else
+               {
+                    <button type="submit">Đăng Nhập</button>
+               }
                 
             </div>
             <div class="links">
@@ -71,7 +74,7 @@
                 {
                     var content = await login.Content.ReadAsStringAsync();
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
-                    _navi.NavigateTo("/lst-movies");
+                    _navi.NavigateTo("/");
                     
                 }
                 catch (Exception ex)
@@ -82,7 +85,7 @@
             else
             {
                 var error = await login.Content.ReadAsStringAsync();
-                errorMessage = $"Lỗi từ API: {error}";
+                errorMessage = $"Thông tin đăng nhập không chính xác";
             }
         }
         catch (Exception ex)
