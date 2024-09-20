@@ -2,7 +2,11 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
 @using NeonCinema_Client.Pages.Clients
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
+@inject IUserServices _service
+@inject AuthenticationStateProvider _providee 
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 
 <div class="profile-container">
@@ -32,21 +36,21 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
-                                <input type="text" id="FullName" class="form-control" value="Đặng Đức Cường" />
+                                <input type="text" id="FullName" class="form-control" @bind="userdto.FullName"/>
                             </div>
                             <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
-                                <input type="text" id="PhoneNumber" class="form-control" value="0879130050" />
+                                <input type="text" id="PhoneNumber" class="form-control" @bind="userdto.PhoneNumber" />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="Email">Email</label>
-                                <input type="email" id="Email" class="form-control" value="gnouc2000@gmail.com" />
+                                <input type="email" id="Email" class="form-control" @bind="userdto.Email" />
                             </div>
                             <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control" value="" disabled />
+                                <input type="text" id="DateOfBirth" class="form-control" @bind="userdto.DateOfBirth" />
                             </div>
                         </div>
                         <div class="mb-3">
@@ -73,18 +77,18 @@
                             <label>Giới tính</label>
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked @bind="userdto.Gender"/>
                                     <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" @bind="userdto.Gender" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="Address">Địa chỉ</label>
-                            <textarea id="Address" class="form-control" rows="2">Khu 7 - Thị trấn Trạm Trôi - Hoài Đức - Hà Nội</textarea>
+                            <textarea id="Address" class="form-control" rows="2" @bind="userdto.Address"></textarea>
                         </div>
                         <div class="text-center">
                             <button type="button" class="btn btn-primary">Lưu</button>
@@ -127,5 +131,15 @@
     private void GetForm()
     {
         show = !show;
+    }
+    UserLoginDTO userdto = new UserLoginDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserInfoFromToken();
+    }
+    private async Task GetUserInfoFromToken()
+    {
+        userdto = await _service.UserLogin();
     }
 }

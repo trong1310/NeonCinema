@@ -5,7 +5,6 @@ using Microsoft.OpenApi.Models;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Cinemas;
-
 using NeonCinema_Application.Interface.Countrys;
 using NeonCinema_Application.Interface.Point;
 using NeonCinema_Application.Interface.RannkMember;
@@ -15,11 +14,9 @@ using NeonCinema_Application.Interface.ShiftChange;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Domain.Database.Entities;
-
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.Cinemas;
-
 using NeonCinema_Infrastructure.Implement.Countrys;
 using NeonCinema_Infrastructure.Implement.Points;
 using NeonCinema_Infrastructure.Implement.RankMembers;
@@ -30,20 +27,10 @@ using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 using System.Text;
 using Twilio;
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-  
-
-
 builder.Services.AddControllers();
-// Capcha Login
 
-// builder.Services.Configure<ReCapchaRequest>(builder.Configuration.GetSection("RecaptchaSettings"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
