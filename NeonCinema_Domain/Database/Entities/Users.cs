@@ -19,10 +19,8 @@ namespace NeonCinema_Domain.Database.Entities
         public string Gender { get; set; }
         public string Images { get; set; }
         public DateTime DateOrBriht { get; set; }
-        public string? ConfirmCode { get; set; }
         public string Adderss { get; set; }
-        public DateTimeOffset? SeenTime { get; set; }   
-       public EntityStatus Status { get; set; }
+        public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }
 
         //

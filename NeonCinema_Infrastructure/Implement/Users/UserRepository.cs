@@ -56,9 +56,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
                 Gender = request.Gender,
                 Images = request.Images,
                 DateOrBriht = request.DateOrBriht,
-                ConfirmCode = request.ConfirmCode,
                 Adderss = request.Adderss,
-                SeenTime = request.SeenTime,
                 Status = request.Status,
                 RoleID = request.RoleID == Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // mặc định RoleID = 3
             };
