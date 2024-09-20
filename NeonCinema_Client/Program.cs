@@ -6,6 +6,7 @@ using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
 using NeonCinema_Client.IServices.User;
 using NeonCinema_Client.Services.User;
+using NeonCinema_Client.Pages.Users;
 /*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +16,14 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-
+builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress =
-    new Uri("https://localhost:7211/")
+    new Uri("https://localhost:5039/")
 });
 
-builder.Services.AddScoped<IUserServices, UserService>();
+
 
 var app = builder.Build();
 

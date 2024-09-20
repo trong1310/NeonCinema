@@ -1,218 +1,92 @@
-﻿@page "/userlist"
+﻿@page "/updateuser"
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.IServices.User
+@using NeonCinema_Domain.Enum
+@inject IUserServices UserService
+@inject NavigationManager Navigation
 
+<div class="container mt-4" style="color: white">
+    <h4 class="mb-4">Chỉnh sửa Thông Tin Người Dùng</h4>
 
+    @if (user == null)
+    {
+        <p>Đang tải dữ liệu...</p>
+    }
+    else
+    {
+        <form class="form-horizontal" @onsubmit="SaveChanges">
+            <div class="form-group">
+                <label for="images"><img src="@user.Images" alt="Ảnh người dùng" class="img-fluid rounded-circle" /></label>
+            </div>
 
-<div class="user-container">
-    <!-- User Image -->
-    <div class="user-image">
-        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" class="image-large" />
-    </div>
+            <div class="form-group">
+                <label for="fullName">Họ và tên</label>
+                <input type="text" id="fullName" @bind="user.FullName" class="form-control" />
+            </div>
 
-    <!-- User Information -->
-    <div class="user-details">
-        <div class="form-group">
-            <label for="fullName">Full Name:</label>
-            <p>Lê Quang Hào</p>
-        </div>
+            <div class="form-group">
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="text" id="phoneNumber" @bind="user.PhoneNumber" class="form-control" />
+            </div>
 
-        <div class="form-group">
-            <label for="passWord">Password:</label>
-            <p>********</p>
-        </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" @bind="user.Email" class="form-control" />
+            </div>
 
-        <div class="form-group">
-            <label for="phoneNumber">Phone Number:</label>
-            <p>0388008268</p>
-        </div>
+            <div class="form-group">
+                <label for="gender">Giới tính:</label>
+                <select id="gender" @bind="user.Gender" class="form-control">
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
+                    <option value="Other">Khác</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <p>hao2k4@gmail.com</p>
-        </div>
+            <div class="form-group">
+                <label for="dateOfBirth">Ngày sinh nhật</label>
+                <input type="date" id="dateOfBirth" @bind="user.DateOrBriht" class="form-control" />
+            </div>
 
-        <div class="form-group">
-            <label for="gender">Gender:</label>
-            <p>Nam</p>
-        </div>
+            <div class="form-group">
+                <label for="address">Địa chỉ</label>
+                <input type="text" id="address" @bind="user.Adderss" class="form-control" />
+            </div>
 
-       
+            <div class="form-group">
+                <label for="status">Trạng thái:</label>
+                <select id="status" @bind="user.Status" class="form-control">
+                    <option value="@EntityStatus.Active">Hoạt động</option>
+                    <option value="@EntityStatus.Inactive">Không hoạt động</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="dateOfBirth">Date of Birth:</label>
-            <p>1990-01-01</p>
-        </div>
-
-        <div class="form-group">
-            <label for="address">Address:</label>
-            <p>123 Main St, Springfield</p>
-        </div>
-
-        <div class="form-group">
-            <label for="seenTime">Seen Time:</label>
-            <p>2024-09-16T12:00:00Z</p>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status:</label>
-            <p>Hoạt động</p>
-        </div>
-        
-        <div class="form-group">
-            <label for="status">Role:</label>
-            <p>Admin</p>
-        </div>
-    </div>
+            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+        </form>
+    }
 </div>
-<hr />
 
-<div class="edit-container">
-    <h3>Chỉnh sửa Thông Tin Người Dùng</h3>
+@code {
+    private UserDTO user;
+    private string phoneNumber;
 
-    <form>
-        <div class="form-group">
-            <label for="fullName">Tên đầy đủ:</label>
-            <input type="text" id="fullName" name="fullName" value="John Doe" />
-        </div>
-
-        <div class="form-group">
-            <label for="phoneNumber">Số điện thoại:</label>
-            <input type="text" id="phoneNumber" name="phoneNumber" value="0123456789" />
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="johndoe@example.com" />
-        </div>
-
-        <div class="form-group">
-            <label for="gender">Giới tính:</label>
-            <select id="gender" name="gender">
-                <option value="Male" selected>Nam</option>
-                <option value="Female">Nữ</option>
-                <option value="Other">Khác</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="images">Hình ảnh:</label>
-            <input type="file" id="images" name="images" value="ProfilePicture.jpg" />
-        </div>
-
-        <div class="form-group">
-            <label for="dateOfBirth">Ngày sinh:</label>
-            <input type="date" id="dateOfBirth" name="dateOfBirth" value="1990-01-01" />
-        </div>
-
-        <div class="form-group">
-            <label for="address">Địa chỉ:</label>
-            <input type="text" id="address" name="address" value="123 Main St, Springfield" />
-        </div>
-
-        <div class="form-group">
-            <label for="status">Trạng thái:</label>
-            <select id="status" name="status">
-                <option value="Active" selected>Hoạt động</option>
-                <option value="Inactive">Không hoạt động</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="roleID">ID vai trò:</label>
-            <input type="text" id="roleID" name="roleID" value="12345678-1234-1234-1234-123456789012" />
-        </div>
-
-        <br />
-        <div class="form-groupp">
-            <button type="submit" class="btn-submit">Lưu Thay Đổi</button>
-        </div>
-    </form>
-</div>
-<style>
-    .edit-container {
-        width: 80%;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        if (query.ContainsKey("phoneNumber"))
+        {
+            phoneNumber = query["phoneNumber"];
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                user = await UserService.GetByIDUser(phoneNumber, CancellationToken.None);
+            }
         }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-    .btn-submit {
-        background-color: #007bff; /* Màu xanh cho nền của nút */
-        color: white; /* Màu chữ trắng */
-        border: 1px solid #007bff; /* Viền màu xanh */
-        padding: 10px 20px; /* Padding cho nút */
-        border-radius: 5px; /* Bo góc nút */
-        cursor: pointer; /* Con trỏ khi hover lên nút */
-        font-size: 16px; /* Kích thước chữ */
     }
 
-        .btn-submit:hover {
-            background-color: #0056b3; /* Màu nền khi hover */
-            border-color: #0056b3; /* Màu viền khi hover */
-        }
-</style>
-
-<style>
-    .user-container {
-        display: flex; /* Sử dụng flexbox để sắp xếp hình ảnh và thông tin bên cạnh nhau. */
-        gap: 15px; /* Khoảng cách giữa hình ảnh và thông tin. */
-        margin-top: 20px; /* Khoảng cách phía trên của container với các phần tử khác. */
-        margin-left: 150px; /* Khoảng cách phía trái của container với lề của phần tử chứa nó. */
+    private async Task SaveChanges()
+    {
+        await UserService.UpdateUser(user);
+        Navigation.NavigateTo("/listuser");
     }
-
-    .user-image {
-        display: flex; /* Để hình ảnh có thể căn chỉnh theo chiều dọc. */
-        align-items: center; /* Căn chỉnh hình ảnh theo chiều dọc. */
-    }
-
-    .image-large {
-        width: 170px; /* Kích thước bề ngang của hình ảnh. */
-        height: 170px; /* Kích thước bề cao của hình ảnh. */
-        border-radius: 100%; /* Bo tròn các góc của hình ảnh. */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng cho hình ảnh. */
-        object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng, giữ tỷ lệ khung hình và lấp đầy phần tử chứa. */
-    }
-
-    .user-details {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Chia đều thành 2 cột. */
-        gap: 15px; /* Khoảng cách giữa các ô trong lưới. */
-        margin-left: 15px; /* Khoảng cách giữa thông tin và hình ảnh. */
-    }
-
-    .form-group {
-        margin-bottom: 0; /* Loại bỏ khoảng cách phía dưới của mỗi nhóm thông tin. */
-    }
-
-        .form-group label {
-            font-weight: bold; /* Làm cho nhãn thông tin nổi bật hơn. */
-            font-size: 14px; /* Kích thước chữ của nhãn nhỏ hơn. */
-        }
-
-        .form-group p {
-            font-size: 12px; /* Kích thước chữ của thông tin nhỏ hơn. */
-            margin: 0; /* Loại bỏ khoảng cách mặc định phía trên và dưới của đoạn văn. */
-        }
-</style>
+}
