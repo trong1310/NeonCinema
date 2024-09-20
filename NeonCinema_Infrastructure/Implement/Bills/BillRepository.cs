@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Bogus;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -14,9 +18,11 @@ namespace NeonCinema_Infrastructure.Implement.Bills
     public class BillRepository : IEntityRepository<Bill>
     {
         NeonCinemasContext _context;
-        public BillRepository(NeonCinemasContext context)
+        private readonly IMapper _map;
+        public BillRepository(NeonCinemasContext context , IMapper map)
         {
             _context = context;
+            _map = map;
         }
 
         public async Task<HttpResponseMessage> Create(Bill entity, CancellationToken cancellationToken)
@@ -26,7 +32,6 @@ namespace NeonCinema_Infrastructure.Implement.Bills
                 Bill bill = new Bill
                 {
                     ID = Guid.NewGuid(),
-                    CheckinID = entity.CheckinID,
                     UserID = entity.UserID,
                     TotalPrice = entity.TotalPrice,
                     QrCode = entity.QrCode,
@@ -85,7 +90,6 @@ namespace NeonCinema_Infrastructure.Implement.Bills
         {
             var lst = await _context.BillDetails
                 .Include(x => x.Users)
-                .Include(x => x.Checkins)
                 .ToListAsync(cancellationToken);
 
             return lst;
@@ -124,13 +128,10 @@ namespace NeonCinema_Infrastructure.Implement.Bills
                         Content = new StringContent("Bill is not found")
                     };
                 }
-
                 bill.UserID = entity.UserID;
-                bill.CheckinID = entity.CheckinID;
                 bill.TotalPrice = entity.TotalPrice;
                 bill.QrCode = entity.QrCode;
                 bill.Status = entity.Status;
-
                 _context.BillDetails.Update(bill);
                 await _context.SaveChangesAsync(cancellationToken);
 
@@ -146,6 +147,20 @@ namespace NeonCinema_Infrastructure.Implement.Bills
                     Content = new StringContent(ex.Message)
                 };
             }
+        }
+
+        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        {
+           var bill = _context.BillDetails.Where(x=>x.UserID== userID).Select(x=> new BillDTO
+           {
+                TotalPrice = x.TotalPrice,
+                Status = x.Status,
+                OderDate = x.CreatedTime,
+                UserID = userID,
+                ID = x.ID
+
+            }).ToList();
+            return bill;
         }
     }
 }

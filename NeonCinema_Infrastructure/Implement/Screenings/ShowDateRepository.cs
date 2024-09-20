@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -93,6 +94,11 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             var lst = await _context.ShowDate.ToListAsync(cancellationToken);
 
             return lst;
+        }
+
+        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)

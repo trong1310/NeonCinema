@@ -13,7 +13,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public Guid  ID { get; set; }
 		public Guid CinemasID { get; set; }
 		public Guid RoomID { get; set; }
-		public Guid BillID { get; set; }
+		public Guid TicketID { get; set; }
 		public Guid MovieID { get; set; }
 		public Guid SeatID { get; set; }
 		public Guid Show_ReleaseID { get; set; }
@@ -23,7 +23,7 @@ namespace NeonCinema_Domain.Database.Entities
 
 		public virtual Cinemas? Cinemas { get; set; }
 		public virtual Room? Room { get; set; }
-		public virtual Bill? Bills { get; set; }
+		public virtual Ticket? Tickets { get; set; }
 		public virtual Movies? Movies { get; set; }
 		public virtual Seat? Seat { get; set; }
 		public virtual Show_release? Show_Release { get; set; }

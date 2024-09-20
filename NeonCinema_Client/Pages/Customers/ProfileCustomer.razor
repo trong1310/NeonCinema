@@ -5,8 +5,6 @@
 @layout LayoutClient
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 
-
-
 <div class="profile-container">
     <div class="row">
         <div class="col-lg-12 col-md-10">
@@ -14,60 +12,64 @@
                 <p class="profile-title">THÔNG TIN CÁ NHÂN</p>
                 <div class="row">
                     <div class="col-md-3 text-center">
-                        <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img" alt="User Image" />
+                        <aside class="d-block">
+                            <label class="image-select">
+                                <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img mx-auto d-block" alt="User Image" />
+                                <input type="file" name="avatarFile" accept="image/*" style="display: none;">
+                            </label>
+                        </aside>
+                        <div class="text-left">
+                            <ul class="profile-info list-unstyled">
+                                <li><h5>Họ Tên:</h5></li>
+                                <li><h5>Điểm tích lũy:</h5></li>
+                                <li><h5>Tổng chi tiêu:</h5></li>
+                                <li><h5>Hạng:</h5></li>
+                            </ul>
+                        </div>
+                    </div>
 
-                        <button class="btn btn-light mt-4">TẢI ẢNH LÊN</button>
-
-                   </div>
                     <div class="col-md-9">
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
                                 <input type="text" id="FullName" class="form-control" value="Đặng Đức Cường" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
                                 <input type="text" id="PhoneNumber" class="form-control" value="0879130050" />
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
                                 <label for="Email">Email</label>
                                 <input type="email" id="Email" class="form-control" value="gnouc2000@gmail.com" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control"value="" disabled/>
+                                <input type="date" id="DateOfBirth" class="form-control" value="" disabled />
                             </div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="Email">Mật khẩu</label>
-                            <div class="d-flex justify-content-center">
-								<input type="password" id="password" class="form-control" value="abc123" style="height: 42px;width: 685px" disabled />    
-                                <button @onclick="GetForm" style="padding: 0 ; margin-left:10px">Đổi mật khẩu</button>
+                        <div class="mb-3">
+                            <label for="password">Mật khẩu</label>
+                            <div class="d-flex">
+                                <input type="password" id="password" class="form-control me-2" style="width: 100%;" disabled />
+                                <button @onclick="GetForm" class="btn btn-outline-secondary">Đổi mật khẩu</button>
                             </div>
-                             @if (show)
+                            @if (show)
                             {
-                                <div class="form-group col-md-6">
-                                    <label for="password">Nhập mật khẩu mới</label>
-                                    <input type="password" id="password" class="form-control" value="Đặng Đức Cường" />
+                                <div class="mb-3">
+                                    <label for="NewPassword">Nhập mật khẩu mới</label>
+                                    <input type="password" id="NewPassword" class="form-control" />
+                                    <label for="ConfirmPassword" class="mt-2">Nhập lại mật khẩu</label>
+                                    <input type="password" id="ConfirmPassword" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="password">Nhập lại mật khẩu</label>
-                                    <input type="password" id="password" class="form-control" value="0879130050" />
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <p>
-                                        <label class="label-checkbox-container">
-                                            <input type="checkbox"  /> Hiện mật khẩu
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </p>
-                                    
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="showPassword" />
+                                    <label class="form-check-label" for="showPassword">Hiện mật khẩu</label>
                                 </div>
                             }
                         </div>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Giới tính</label>
                             <div>
                                 <div class="form-check form-check-inline">
@@ -80,26 +82,50 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="Address">Địa chỉ</label>
                             <textarea id="Address" class="form-control" rows="2">Khu 7 - Thị trấn Trạm Trôi - Hoài Đức - Hà Nội</textarea>
                         </div>
-                        <div class="form-group text-center">
+                        <div class="text-center">
                             <button type="button" class="btn btn-primary">Lưu</button>
                         </div>
                     </div>
                 </div>
+                <span class="d-flex align-items-center" style="font-size: 30px;">Lịch sử giao dịch</span>
+                <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px;" />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Thời gian giao dịch</th>
+                            <th scope="col">Mã hóa đơn</th>
+                            <th scope="col">Tên phim</th>
+                            <th scope="col">Tổng tiền</th>
+                            <th scope="col">Tổng Điểm tích lũy</th>
+                            <th scope="col">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>6</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-@code{
-
+@code {
     private bool show = false;
     private void GetForm()
     {
-        show = !show;    
+        show = !show;
     }
-
 }
