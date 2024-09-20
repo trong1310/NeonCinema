@@ -1,10 +1,9 @@
-﻿@page "/login"
+@page "/login"
 @using NeonCinema_Client.Pages.Clients
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
-
-@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@inject Blazored.LocalStorage.ILocalStorageService _localstorgae
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
@@ -63,7 +62,7 @@
     public async Task LoginAccount()
     {
         isProcessing = true;
-        errorMessage = null; 
+        errorMessage = null;
 
         try
         {
@@ -74,8 +73,13 @@
                 {
                     var content = await login.Content.ReadAsStringAsync();
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
+                    var claim = token.Claims;
+                    var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                    var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                    var otherphone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone").Value;
+                    await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
+                    await _localstorgae.SetItemAsync("name", name.Trim());
                     _navi.NavigateTo("/");
-                    
                 }
                 catch (Exception ex)
                 {
@@ -84,8 +88,7 @@
             }
             else
             {
-                var error = await login.Content.ReadAsStringAsync();
-                errorMessage = $"Thông tin đăng nhập không chính xác";
+                errorMessage = "Thông tin đăng nhập không chính xác";
             }
         }
         catch (Exception ex)
@@ -94,6 +97,7 @@
         }
         isProcessing = false;
     }
+
     public class LoginModel
     {
         public string EmailorPhone { get; set; }

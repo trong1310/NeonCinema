@@ -2,11 +2,18 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
 
+
 @inject IUserServices Service
 
 
 
+
+@inject IUserServices Service
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@using System.IdentityModel.Tokens.Jwt
+
 @inject NavigationManager NavigationManager
+
 
 
 <!DOCTYPE html>
@@ -14,16 +21,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Web của Bạn</title>
+    <title>NeonCinema</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/Customer/Customer.css">
     <link rel="stylesheet" href="/css/Login/Login.css">
 
 </head>
-<body> 
+<body class="layout-body">
     <!-- Header -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark">
@@ -56,11 +64,9 @@
                 </ul>
                 <div class="navbar-nav ml-auto d-flex align-items-center">
                     <div class="nav-item user-info">
-                        <img class="user-icon" src="/images/Customer/user-icon.png" />
-                        <span>@user.FullName</span>
-
-
-                        <a href="#">/Thoát</a>
+                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="Profile" />
+                        <p>@username</p>
+                        <a href="#" @onclick="Logout">/Thoát</a>
                     </div>
                     <button class="buy-ticket-btn">
                         <i class="fas fa-ticket-alt"></i>
@@ -69,7 +75,6 @@
                 </div>
             </div>
         </nav>
-
     </header>
 
     <!-- Content -->
@@ -82,39 +87,37 @@
         <p>Customer Layout Footer</p>
     </footer>
 
-
-
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
     <!-- Popper.js for Bootstrap 4 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
 @code {
-    private UserDTO user = new UserDTO();
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private string username;
+    private string userId;
+    private string otherphone;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var phoneNumber = "0334583920"; // Thay đổi với số điện thoại người dùng thực tế
-            user = await Service.GetByIDUser(phoneNumber, cts.Token);
-        }
-        catch (HttpRequestException httpEx)
-        {
+        userId = await _localStorage.GetItemAsync<string>("nameidentifier");
+        username = await _localStorage.GetItemAsync<string>("name");
+        otherphone = await _localStorage.GetItemAsync<string>("otherphone");
+    }
 
-            // Xử lý lỗi HTTP
-            Console.WriteLine($"Lỗi HTTP: {httpEx.Message}");
-        }
-        catch (Exception ex)
-        {
-            // Xử lý lỗi chung
-            Console.WriteLine($"Lỗi: {ex.Message}");
-        }
+    private async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("nameidentifier");
+        await _localStorage.RemoveItemAsync("name");
+        await _localStorage.RemoveItemAsync("otherphone");
+        NavigationManager.NavigateTo("/login");
+    }
+    private async Task Profile()
+    {
+        NavigationManager.NavigateTo("/customer-profile");
     }
 }

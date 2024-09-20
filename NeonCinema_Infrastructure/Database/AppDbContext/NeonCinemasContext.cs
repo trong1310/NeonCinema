@@ -58,6 +58,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Show_release> Show_release { get; set; }
         public DbSet<ShowDate> ShowDate { get; set; }
         public DbSet<Point> Points { get; set; }
+        public DbSet<FileUpload> FileUploads { get; set; }
+       
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -67,8 +69,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             // optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
+
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
+
 
 
         }
@@ -77,6 +82,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             SeenDingData(modelBuilder);
+          
         }
         private void SeenDingData(ModelBuilder modelBuilder)
         {
