@@ -52,6 +52,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
                 Images = request.Images,
                 DateOrBriht = request.DateOrBriht,
                 Adderss = request.Adderss,
+
                 Status = request.Status,
                 RoleID = request.RoleID == Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // mặc định RoleID = 3
             };
@@ -113,6 +114,9 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     Email = u.Email,
                     Gender = u.Gender,
                     Images = u.Images,
+                    DateOrBriht = u.DateOrBriht,
+                    Adderss = u.Adderss,
+                    
                     Status = u.Status,
                     RoleID = u.RoleID
                 }).ToListAsync(cancellationToken);

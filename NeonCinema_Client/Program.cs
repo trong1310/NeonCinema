@@ -6,9 +6,15 @@ using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
 using NeonCinema_Client.IServices.User;
 using NeonCinema_Client.Services.User;
+
+using NeonCinema_Client.Pages.Users;
+/*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
+
+
 using NeonCinema_Client.Services.FileUploads;
-/*using NeonCinema_Client.Services; */// 
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +23,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddScoped<IUserServices, UserServices>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -25,14 +34,20 @@ builder.Services.AddCors(options =>
                           policy.AllowAnyOrigin();
                       });
 });
+
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress =
-    new Uri("https://localhost:7211/")
+    new Uri("https://localhost:5039/")
 });
+
+
+
+
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddBlazoredLocalStorage();
+
 
 var app = builder.Build();
 
