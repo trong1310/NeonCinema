@@ -6,6 +6,7 @@ using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
 using NeonCinema_Client.IServices.User;
 using NeonCinema_Client.Services.User;
+using NeonCinema_Client.Services.FileUploads;
 /*using NeonCinema_Client.Services; */// 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddCors(options =>
 {
@@ -28,7 +30,7 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress =
     new Uri("https://localhost:7211/")
 });
-
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddBlazoredLocalStorage();
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Ticket;
@@ -22,6 +23,7 @@ namespace NeonCinema_API.Controllers
 
 
         [HttpGet("get-all-ticket")]
+    
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var result = await _repos.GetAllTicket(cancellationToken);
@@ -30,6 +32,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpPost("create-ticket")]
+
         public async Task<IActionResult> PostTicket([FromBody] TicketDTO request, CancellationToken cancellationToken)
         {
             try

@@ -18,8 +18,7 @@
 
                         <button class="btn btn-light mt-4">TẢI ẢNH LÊN</button>
 
-
-                    </div>
+                   </div>
                     <div class="col-md-9">
                         <div class="form-row">
                             <div class="form-group col-md-6">
@@ -38,8 +37,35 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="text" id="DateOfBirth" class="form-control" value="16/12/2000" />
+                                <input type="date" id="DateOfBirth" class="form-control"value="" disabled/>
                             </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="Email">Mật khẩu</label>
+                            <div class="d-flex justify-content-center">
+								<input type="password" id="password" class="form-control" value="abc123" style="height: 42px;width: 685px" disabled />    
+                                <button @onclick="GetForm" style="padding: 0 ; margin-left:10px">Đổi mật khẩu</button>
+                            </div>
+                             @if (show)
+                            {
+                                <div class="form-group col-md-6">
+                                    <label for="password">Nhập mật khẩu mới</label>
+                                    <input type="password" id="password" class="form-control" value="Đặng Đức Cường" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="password">Nhập lại mật khẩu</label>
+                                    <input type="password" id="password" class="form-control" value="0879130050" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <p>
+                                        <label class="label-checkbox-container">
+                                            <input type="checkbox"  /> Hiện mật khẩu
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </p>
+                                    
+                                </div>
+                            }
                         </div>
                         <div class="form-group">
                             <label>Giới tính</label>
@@ -52,20 +78,6 @@
                                     <input class="form-check-input" type="radio" name="gender" id="genderFemale" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="City">Tỉnh/Thành Phố</label>
-                                <input type="text" id="City" class="form-control" value="Hà Nội" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="District">Quận/Huyện</label>
-                                <input type="text" id="District" class="form-control" value="Hoài Đức" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="Ward">Phường/Xã</label>
-                                <input type="text" id="Ward" class="form-control" value="Thị trấn Trạm Trôi" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -83,5 +95,11 @@
 </div>
 
 @code{
-  
+
+    private bool show = false;
+    private void GetForm()
+    {
+        show = !show;    
+    }
+
 }
