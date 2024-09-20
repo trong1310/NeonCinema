@@ -1,284 +1,147 @@
-@page "/userlistss"
 
-<table class="table caption-top">
+﻿@page "/listuser"
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.IServices.User
+@inject IUserServices UserService // Sử dụng IuserSV thay vì UserService
+@inject NavigationManager Navigation
+
+    
+    
+<div class="container">
+    <div class="kh" style="text-align: center;">
+        <h3 style="color:white">Danh sách khách hàng</h3>
+    </div>
+
+    <div class="search-container" style="background-color: forestgreen; color: black; width: 350px; height: 60px; border-radius: 10px; padding: 10px; box-sizing: border-box;">
+        <input class="form-control" style="width: calc(100% - 20px); color: black; height: 40px; border-radius: 10px; background-color: white; margin: auto; display: block;" placeholder="Tìm kiếm theo số điện thoại" @oninput="OnInputPhoneNumber" />
+    </div>
+
+
+</div>
+
+<table class="table caption-top" style="width: 100%; background-color:white; margin-top: 20px;">
+
     <thead>
-        <tr>
+        <tr style="color: black">
+            <th scope="col">Ảnh cá nhân</th>
             <th scope="col">Họ và tên</th>
             <th scope="col">Thông tin liên lạc</th>
+            <th scope="col">Giới tính</th>
+            <th scope="col">Ngày sinh nhật</th>
             <th scope="col">Địa chỉ</th>
+            <th scope="col">Trạng Thái</th>
             <th scope="col">Thao tác</th>
         </tr>
     </thead>
-    <tbody>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Lê Quang Hào</p>
-                        <p class="small-text">Chức vụ: nhân viên</p>  
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Ba Vì - Hà Nội</p>
-                   
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://bvhttdl.mediacdn.vn/291773308735864832/2023/11/7/z4879-1699329989409651859190-1699340955629-1699340955744695767212.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Trạm Trôi - Hoài Đức</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://cdn.thoibaonganhang.vn/stores/news_dataimages/minhvl/112020/09/10/3850_a12_Copy_2.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Kiến Xương - Thái Bình</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://www.elle.vn/wp-content/uploads/2023/03/28/522244/phim-Viet-Mat-Troi-Mua-Dong-1500x2000-1.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Kinh Môn - Hải Dương</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Ba Vì - Hà Nội</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Ba Vì - Hà Nội</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="user-info">
-                    <div class="user-image">
-                        <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474079tFK/anh-kinh-di-chuc-ngu-ngon_043212044.jpg" alt="User Image" />
-                    </div>
-                    <div class="user-text">
-                        <p class="small-text">Họ tên: Đặng Đức Cường</p>
-                        <p class="small-text">Chức vụ: khách hàng</p>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">hao2k4@gmail.com</p>
-                    <p class="small-text">0388008268</p>
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <p class="small-text">Ba Vì - Hà Nội</p>
-
-                </div>
-            </td>
-            <td>
-                <div class="user-text">
-                    <button class="dot-button">
-                        <span class="dots">&#x22EF;</span>
-                    </button>
-                    <p style="font-size: 12px; margin: 0;"> 01/01/1990</p>
-                </div>
-            </td>
-        </tr>
+    <tbody style="color:black">
+        @if (filteredUsers == null)
+        {
+            <tr>
+                <td colspan="8">Đang tải dữ liệu...</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var user in filteredUsers)
+            {
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-image">
+                                <img style="width: 70px; height: 70px; object-fit: cover; border-radius: 100%;" src="@user.Images" />
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.FullName</p>
+                            <p class="small-text">@user.RoleID</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.Email</p>
+                            <p class="small-text">@user.PhoneNumber</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.Gender</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.DateOrBriht</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.Adderss</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <p class="small-text">@user.Status</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-text">
+                            <button @onclick="() => ShowDetails(user.PhoneNumber)" style="background-color:darkorange">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
     </tbody>
 </table>
-<style>
-    .user-info {
-        display: flex;
-        align-items: center;
-    }
 
-    .user-image {
-        margin-right: 10px; /* Khoảng cách giữa ảnh và text */
-    }
+@code {
+    private List<UserDTO> users; // Danh sách người dùng ban đầu
+    private List<UserDTO> filteredUsers; // Danh sách người dùng đã lọc
+    private string searchPhoneNumber = ""; // Biến để lưu số điện thoại nhập vào
+    private string selectedGender = ""; // Biến để lưu lựa chọn giới tính
 
-        .user-image img {
-            width: 40px; /* Chiều rộng của ảnh */
-            height: 40px; /* Chiều cao của ảnh */
-            border-radius: 100%; /* Bo góc cho ảnh */
-            object-fit: cover; /* Giữ tỷ lệ khung hình của ảnh và lấp đầy vùng chứa */
+    // Phương thức này được gọi khi trang khởi tạo và lấy toàn bộ danh sách người dùng
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUser(CancellationToken.None);
+        filteredUsers = new List<UserDTO>(users); // Khởi tạo với toàn bộ danh sách người dùng
+    }
+    private void OnInputPhoneNumber(ChangeEventArgs e)
+    {
+        searchPhoneNumber = e.Value.ToString(); // Cập nhật giá trị của searchPhoneNumber
+        FilterUsers(); // Gọi phương thức lọc ngay khi có sự thay đổi
+    }
+    // Phương thức này dùng để lọc người dùng dựa trên số điện thoại và giới tính
+    private void FilterUsers()
+    {
+        // Nếu ô tìm kiếm trống, hiển thị toàn bộ danh sách người dùng
+        if (string.IsNullOrEmpty(searchPhoneNumber))
+        {
+            filteredUsers = new List<UserDTO>(users); // Hiển thị toàn bộ danh sách
+        }
+        else
+        {
+            // Lọc danh sách người dùng theo thứ tự từ đầu số đến cuối số
+            filteredUsers = users
+                .Where(user => user.PhoneNumber.StartsWith(searchPhoneNumber)) // Kiểm tra số điện thoại bắt đầu bằng giá trị nhập
+                .ToList();
         }
 
-    .user-text .small-text {
-        font-size: 12px; /* Cỡ chữ nhỏ */
-        margin: 0; /* Loại bỏ margin của p */
-        line-height: 1.2; /* Chiều cao dòng */
+        // Lọc thêm theo giới tính nếu có lựa chọn
+        if (!string.IsNullOrEmpty(selectedGender))
+        {
+            filteredUsers = filteredUsers
+                .Where(user => user.Gender == selectedGender)
+                .ToList();
+        }
     }
 
-    .dot-button {
-        background: none;
-        border: none;
-        cursor: pointer;
+    private void ShowDetails(string phoneNumber)
+    {
+        Navigation.NavigateTo($"/updateuser?phoneNumber={phoneNumber}");
     }
+}
 
-    .dots {
-        font-size: 18px;
-        color: black;
-    }
-
-    /* Khi di chuột vào dấu 3 chấm, thay đổi màu thành đỏ */
-    .dot-button:hover .dots {
-        color: red;
-    }
-</style>

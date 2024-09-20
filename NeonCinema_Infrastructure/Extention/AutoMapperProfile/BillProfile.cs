@@ -16,7 +16,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
             CreateMap<BillDTO, Bill>().ReverseMap();
             CreateMap<BillUpdateRequest, Bill>();
             CreateMap<BillDeleteRequest, Bill>();
-
+            CreateMap<Users, ViewBillUserRequest>();
         }
     }
 }

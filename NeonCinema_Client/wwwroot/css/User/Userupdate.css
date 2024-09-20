@@ -1,0 +1,115 @@
+﻿<style >
+.edit-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formm {
+    width: 900px;
+    margin-left: 160px
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.column {
+    flex: 1;
+}
+
+.btn-submit {
+    background-color: #007bff; /* Màu xanh cho nền của nút */
+    color: white; /* Màu chữ trắng */
+    border: 1px solid #007bff; /* Viền màu xanh */
+    /* Padding cho nút */
+    /* Bo góc nút */
+    /* Con trỏ khi hover lên nút */
+    font-size: 16px; /* Kích thước chữ */
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-submit:hover {
+        background-color: #45a049; /* Màu nền khi hover */
+        /* Màu viền khi hover */
+    }
+
+
+.user-container {
+    display: flex; /* Sử dụng flexbox để sắp xếp hình ảnh và thông tin bên cạnh nhau */
+    gap: 15px; /* Khoảng cách giữa hình ảnh và thông tin */
+    /* Khoảng cách phía trên của container với các phần tử khác */
+    margin-left: 150px; /* Khoảng cách phía trái của container với lề của phần tử chứa nó */
+}
+
+.user-image {
+    display: flex; /* Để hình ảnh có thể căn chỉnh theo chiều dọc */
+    align-items: center; /* Căn chỉnh hình ảnh theo chiều dọc */
+}
+
+.image-large {
+    width: 170px; /* Kích thước bề ngang của hình ảnh */
+    height: 170px; /* Kích thước bề cao của hình ảnh */
+    border-radius: 100%; /* Bo tròn các góc của hình ảnh */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng cho hình ảnh */
+    object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng, giữ tỷ lệ khung hình và lấp đầy phần tử chứa */
+}
+
+.user-details {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Chia đều thành 3 cột */
+    gap: 15px; /* Khoảng cách giữa các ô trong lưới */
+    margin-left: 15px; /* Khoảng cách giữa thông tin và hình ảnh */
+    margin-top: 30px;
+}
+
+.form-group {
+    margin-bottom: 0; /* Loại bỏ khoảng cách phía dưới của mỗi nhóm thông tin */
+}
+
+    .form-group label {
+        font-weight: bold; /* Làm cho nhãn thông tin nổi bật hơn */
+        font-size: 14px; /* Kích thước chữ của nhãn nhỏ hơn */
+    }
+
+    .form-group p {
+        font-size: 12px; /* Kích thước chữ của thông tin nhỏ hơn */
+        margin: 0; /* Loại bỏ khoảng cách mặc định phía trên và dưới của đoạn văn */
+    }
+
+
+
+
+   
+    </style >

@@ -5,18 +5,29 @@ using System.Text;
 
 namespace NeonCinema_Client.Services.User
 {
-    public class UserService : IUserServices
+    public class UserServices : IUserServices
     {
         private readonly HttpClient _httpClient;
 
-        public UserService(HttpClient httpClient)
+        public UserServices()
         {
-            _httpClient = httpClient;
+            var handler = CreateHttpClientHandler();
+            _httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new Uri("http://localhost:5039")
+            };
+        }
+
+        private static HttpClientHandler CreateHttpClientHandler()
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            return handler;
         }
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync("users", cancellationToken);
+            var response = await _httpClient.GetAsync("api/User/get-all", cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);

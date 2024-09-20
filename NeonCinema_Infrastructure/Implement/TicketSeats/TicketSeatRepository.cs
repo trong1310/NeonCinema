@@ -91,7 +91,7 @@ namespace NeonCinema_Infrastructure.Implement.TicketSeats
             {
                 throw new KeyNotFoundException("TicketSeat not found");
             }
-            ticketSeat.BillID = dto.BillID;
+            ticketSeat.TicketID = dto.TicketID;
             ticketSeat.CinemasID = dto.CinemasID;
             ticketSeat.RoomID = dto.RoomID;
             ticketSeat.Status = dto.Status;

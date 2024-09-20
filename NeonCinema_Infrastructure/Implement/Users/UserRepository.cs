@@ -41,11 +41,6 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     Content = new StringContent("Số điện thoại hoặc email đã tồn tại!")
                 };
             }
-            var validROle = new[] { "25d7afcb-949b-4717-a961-b50f2e18657d", "ba820c64-1a81-4c44-80ea-47038c930c3b", "56bece24-ba60-4b2b-801c-b68cfc8ccf9d" };
-            if (!validROle.Equals(request.RoleID))
-            {
-                throw new InvalidOperationException("Bạn chỉ được tạo 3 role là admin:25d7afcb-949b-4717-a961-b50f2e18657d  và Client:ba820c64-1a81-4c44-80ea-47038c930c3b ,Staff:56bece24-ba60-4b2b-801c-b68cfc8ccf9d ");
-            }
             var newUser = new NeonCinema_Domain.Database.Entities.Users
             {
 
@@ -56,9 +51,8 @@ namespace NeonCinema_Infrastructure.Implement.Users
                 Gender = request.Gender,
                 Images = request.Images,
                 DateOrBriht = request.DateOrBriht,
-                ConfirmCode = request.ConfirmCode,
                 Adderss = request.Adderss,
-                SeenTime = request.SeenTime,
+
                 Status = request.Status,
                 RoleID = request.RoleID == Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // mặc định RoleID = 3
             };
@@ -120,6 +114,9 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     Email = u.Email,
                     Gender = u.Gender,
                     Images = u.Images,
+                    DateOrBriht = u.DateOrBriht,
+                    Adderss = u.Adderss,
+                    
                     Status = u.Status,
                     RoleID = u.RoleID
                 }).ToListAsync(cancellationToken);

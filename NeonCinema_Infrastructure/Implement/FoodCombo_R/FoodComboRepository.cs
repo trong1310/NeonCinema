@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -87,6 +88,11 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
                 .ToListAsync(cancellationToken);
 
             return lst;
+        }
+
+        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<FoodCombo> GetById(Guid id, CancellationToken cancellationToken)

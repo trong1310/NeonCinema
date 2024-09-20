@@ -80,8 +80,6 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IGenreRepositories, GenreRepositories>();
             services.AddTransient<IDirectorRepositories, DirectorRepositories>();
             services.AddTransient<IUserRepository, UserRepository>();
-
-
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
