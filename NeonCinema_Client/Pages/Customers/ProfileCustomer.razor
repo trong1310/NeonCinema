@@ -2,7 +2,11 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
 @using NeonCinema_Client.Pages.Clients
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
+@inject IUserServices _service
+@inject AuthenticationStateProvider _providee 
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 
 <div class="profile-container">
@@ -17,22 +21,25 @@
                     <div class="col-md-9">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="FullName" class="form-label">Họ và tên</label>
-                                <input type="text" id="FullName" class="form-control" value="Đặng Đức Cường" />
+                                <label for="FullName">Họ và tên</label>
+                                <input type="text" id="FullName" class="form-control" @bind="userdto.FullName"/>
                             </div>
                             <div class="col-md-6">
-                                <label for="PhoneNumber" class="form-label">Số điện thoại</label>
-                                <input type="text" id="PhoneNumber" class="form-control" value="0879130050" />
+                                <label for="PhoneNumber">Số điện thoại</label>
+                                <input type="text" id="PhoneNumber" class="form-control" @bind="userdto.PhoneNumber" />
+
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label for="Email" class="form-label">Email</label>
-                                <input type="email" id="Email" class="form-control" value="gnouc2000@gmail.com" />
+
+                                <label for="Email">Email</label>
+                                <input type="email" id="Email" class="form-control" @bind="userdto.Email" />
                             </div>
                             <div class="col-md-6">
-                                <label for="DateOfBirth" class="form-label">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control" value="" disabled />
+                                <label for="DateOfBirth">Ngày sinh</label>
+                                <input type="text" id="DateOfBirth" class="form-control" @bind="userdto.DateOfBirth" />
+
                             </div>
                         </div>
                         <div class="mt-3">
@@ -63,32 +70,18 @@
                             <label>Giới tính</label>
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked @bind="userdto.Gender"/>
                                     <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" @bind="userdto.Gender" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-4">
-                                <label for="City" class="form-label">Tỉnh/Thành Phố</label>
-                                <input type="text" id="City" class="form-control" value="Hà Nội" />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="District" class="form-label">Quận/Huyện</label>
-                                <input type="text" id="District" class="form-control" value="Hoài Đức" />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="Ward" class="form-label">Phường/Xã</label>
-                                <input type="text" id="Ward" class="form-control" value="Thị trấn Trạm Trôi" />
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <label for="Address" class="form-label">Địa chỉ</label>
-                            <textarea id="Address" class="form-control" rows="2">Khu 7 - Thị trấn Trạm Trôi - Hoài Đức - Hà Nội</textarea>
+                        <div class="mb-3">
+                            <label for="Address">Địa chỉ</label>
+                            <textarea id="Address" class="form-control" rows="2" @bind="userdto.Address"></textarea>
                         </div>
                         <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary">Lưu</button>
@@ -138,5 +131,15 @@
     private void GetForm()
     {
         show = !show;
+    }
+    UserLoginDTO userdto = new UserLoginDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserInfoFromToken();
+    }
+    private async Task GetUserInfoFromToken()
+    {
+        userdto = await _service.UserLogin();
     }
 }
