@@ -38,14 +38,14 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress =
-    new Uri("https://localhost:5039/")
+    new Uri("https://localhost:7130/")
 });
 
 
 
 
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IUserServices, UserService>();
+builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddBlazoredLocalStorage();
 
 

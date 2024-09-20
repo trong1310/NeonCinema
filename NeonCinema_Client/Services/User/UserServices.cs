@@ -2,6 +2,7 @@
 using NeonCinema_Client.IServices.User;
 using System.Text.Json;
 using System.Text;
+using System.Net.Http.Json;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -68,6 +69,16 @@ namespace NeonCinema_Client.Services.User
 
             var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
             return response;
+        }
+
+        public async Task<UserLoginDTO> UserLogin()
+        {
+            var response = await _httpClient.GetAsync("/api/Login/current");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UserLoginDTO>();
+            }
+            return null; 
         }
     }
 }
