@@ -76,6 +76,7 @@
                     var claim = token.Claims;
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                    var otherphone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone").Value;
                     await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
                     _navi.NavigateTo("/");
