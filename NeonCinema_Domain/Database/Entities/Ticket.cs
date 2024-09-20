@@ -21,6 +21,8 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual  ICollection<BookTickets>? BookTickets { get; set; }
 		public virtual Users? Customers { get; set; }
         public virtual Seat? Seat { get; set; }
+        public virtual ICollection<Checkin>? Checkins { get; set; }
+        public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
         public virtual Screening? Screening { get; set; }
         public virtual Surcharges? Surcharges { get; set; }
 

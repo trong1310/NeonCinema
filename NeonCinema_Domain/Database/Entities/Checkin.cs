@@ -13,6 +13,8 @@ namespace NeonCinema_Domain.Database.Entities
 		public string Code { get; set; }
 		public string Type { get; set; }
 		public string Name { get; set; }	
-		public virtual ICollection<Bill>? Bills { get; set; }
+		public Guid TicketID { get; set; }
+
+		public virtual Ticket? Tickets { get; set; }
 	}
 }

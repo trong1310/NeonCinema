@@ -12,8 +12,8 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 namespace NeonCinema_Infrastructure.Migrations
 {
     [DbContext(typeof(NeonCinemasContext))]
-    [Migration("20240919175710_new")]
-    partial class @new
+    [Migration("20240920070450_intit")]
+    partial class intit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,8 +44,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -102,8 +102,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -141,14 +141,11 @@ namespace NeonCinema_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CheckinID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -185,8 +182,6 @@ namespace NeonCinema_Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CheckinID");
-
                     b.HasIndex("PaymentMethodID");
 
                     b.HasIndex("UserID");
@@ -203,8 +198,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -252,8 +247,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -274,11 +269,16 @@ namespace NeonCinema_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TicketID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("TicketID");
 
                     b.ToTable("Checkin", (string)null);
                 });
@@ -296,8 +296,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -382,8 +382,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -465,8 +465,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -514,8 +514,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -550,8 +550,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -588,8 +588,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -634,8 +634,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -706,8 +706,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -750,8 +750,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateEarned")
                         .HasColumnType("datetime2");
@@ -796,8 +796,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -850,8 +850,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -883,21 +883,21 @@ namespace NeonCinema_Infrastructure.Migrations
                         new
                         {
                             ID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(7050), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 297, DateTimeKind.Local).AddTicks(9633),
                             RoleName = "Admin",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(7125), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 297, DateTimeKind.Local).AddTicks(9672),
                             RoleName = "Client",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(7133), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 297, DateTimeKind.Local).AddTicks(9677),
                             RoleName = "Staff",
                             Status = 1
                         });
@@ -915,8 +915,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -963,8 +963,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1022,8 +1022,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1075,8 +1075,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1116,8 +1116,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1159,8 +1159,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1213,8 +1213,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1268,8 +1268,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1326,8 +1326,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateRelease")
                         .HasColumnType("datetime2");
@@ -1404,8 +1404,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("CustomerID")
                         .HasColumnType("uniqueidentifier");
@@ -1464,17 +1464,14 @@ namespace NeonCinema_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BillID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CinemasID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1515,9 +1512,10 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.Property<Guid>("TicketID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("BillID");
+                    b.HasKey("ID");
 
                     b.HasIndex("CinemasID");
 
@@ -1530,6 +1528,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasIndex("Seat_Show_TimeStatusID");
 
                     b.HasIndex("Show_ReleaseID");
+
+                    b.HasIndex("TicketID");
 
                     b.ToTable("TicketSeat", (string)null);
                 });
@@ -1544,14 +1544,11 @@ namespace NeonCinema_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConfirmCode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateOrBriht")
                         .HasColumnType("datetime2");
@@ -1609,9 +1606,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid>("RoleID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("SeenTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -1624,9 +1618,9 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("ad0e05ad-b965-44a7-bf5c-3f1559584e7b"),
+                            ID = new Guid("6911a135-93f0-4c25-9383-ff550bf9ceee"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(7396), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 297, DateTimeKind.Local).AddTicks(9812),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "giapptph39723@fpt.edu.vn",
                             FullName = "Phùng Tiến Giáp",
@@ -1639,9 +1633,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("c0d00a87-3a84-4d1a-8687-1b4ebaad4f7f"),
+                            ID = new Guid("c13586dd-1d60-453e-9bd1-b7c2f58bf439"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(8800), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 298, DateTimeKind.Local).AddTicks(368),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FullName = "Admin",
@@ -1654,9 +1648,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("ad009c72-683d-4c7a-9dc8-5d145073444c"),
+                            ID = new Guid("fc45e598-45c4-4886-b4f8-b5d543e9ffbb"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(8994), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 298, DateTimeKind.Local).AddTicks(419),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "client@gmail.com",
                             FullName = "Client",
@@ -1669,9 +1663,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("300538f1-d225-4128-a521-4385544fc743"),
+                            ID = new Guid("33ee2785-2900-44aa-9ff1-0b1d8cb09a7a"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(9177), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 298, DateTimeKind.Local).AddTicks(447),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vantrongvt1310@gmail.com",
                             FullName = "Nguyễn Văn Trọng",
@@ -1684,9 +1678,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("48747bd3-35df-414a-9e06-e99e0b5d27d2"),
+                            ID = new Guid("d85a335e-96e6-40c8-ae30-3c7f22bac73f"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(9291), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 298, DateTimeKind.Local).AddTicks(484),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Phongdxph35748@fpt.edu.vn",
                             FullName = "Đặng Xuân Phong",
@@ -1699,9 +1693,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("4550a0df-4eb9-4c3a-b8fd-881771609ba4"),
+                            ID = new Guid("78230e03-f4a4-4848-a911-a56fd4e33c6f"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTimeOffset(new DateTime(2024, 9, 20, 0, 57, 9, 417, DateTimeKind.Unspecified).AddTicks(9403), new TimeSpan(0, 7, 0, 0, 0)),
+                            CreatedTime = new DateTime(2024, 9, 20, 14, 4, 50, 298, DateTimeKind.Local).AddTicks(563),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cuongddpc07789@fpt.edu.vn",
                             FullName = "Đặng Đức Cường",
@@ -1723,8 +1717,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
@@ -1808,12 +1802,6 @@ namespace NeonCinema_Infrastructure.Migrations
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Bill", b =>
                 {
-                    b.HasOne("NeonCinema_Domain.Database.Entities.Checkin", "Checkins")
-                        .WithMany("Bills")
-                        .HasForeignKey("CheckinID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("NeonCinema_Domain.Database.Entities.PaymentMethod", null)
                         .WithMany("BillDetail")
                         .HasForeignKey("PaymentMethodID");
@@ -1823,8 +1811,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Checkins");
 
                     b.Navigation("Users");
                 });
@@ -1846,6 +1832,17 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("MovieType");
 
                     b.Navigation("Movies");
+                });
+
+            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Checkin", b =>
+                {
+                    b.HasOne("NeonCinema_Domain.Database.Entities.Ticket", "Tickets")
+                        .WithMany("Checkins")
+                        .HasForeignKey("TicketID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.FoodCombo", b =>
@@ -2067,12 +2064,6 @@ namespace NeonCinema_Infrastructure.Migrations
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.TicketSeat", b =>
                 {
-                    b.HasOne("NeonCinema_Domain.Database.Entities.Bill", "Bills")
-                        .WithMany("TicketSeats")
-                        .HasForeignKey("BillID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("NeonCinema_Domain.Database.Entities.Cinemas", "Cinemas")
                         .WithMany("TicketSeats")
                         .HasForeignKey("CinemasID")
@@ -2107,7 +2098,11 @@ namespace NeonCinema_Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Bills");
+                    b.HasOne("NeonCinema_Domain.Database.Entities.Ticket", "Tickets")
+                        .WithMany("TicketSeats")
+                        .HasForeignKey("TicketID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Cinemas");
 
@@ -2120,6 +2115,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("Seat_Show_TimeStatus");
 
                     b.Navigation("Show_Release");
+
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Users", b =>
@@ -2171,13 +2168,6 @@ namespace NeonCinema_Infrastructure.Migrations
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Bill", b =>
                 {
                     b.Navigation("FoodCombos");
-
-                    b.Navigation("TicketSeats");
-                });
-
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Checkin", b =>
-                {
-                    b.Navigation("Bills");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Cinemas", b =>
@@ -2298,6 +2288,10 @@ namespace NeonCinema_Infrastructure.Migrations
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Ticket", b =>
                 {
                     b.Navigation("BookTickets");
+
+                    b.Navigation("Checkins");
+
+                    b.Navigation("TicketSeats");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Users", b =>

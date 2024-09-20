@@ -64,16 +64,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             // optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
 
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-
-
 
 
         }
@@ -92,20 +89,20 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 {
                     ID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
 
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     Status = EntityStatus.Active,
                     RoleName = "Admin",
                 },
                 new Roles
                 {
                     ID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     Status = EntityStatus.Active,
                     RoleName = "Client",
                 },  new Roles
                 {
                     ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     Status = EntityStatus.Active,
                     RoleName = "Staff",
                 },
@@ -115,7 +112,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             {
                 new Users {
                     ID = Guid.NewGuid(),
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     FullName = "Phùng Tiến Giáp",
                     Email = "giapptph39723@fpt.edu.vn",
                     PassWord = Hash.Encrypt("abc123"),
@@ -129,7 +126,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
                 new Users {
                     ID = Guid.NewGuid(),
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     FullName = "Admin",
                     Email = "admin@gmail.com",
                     PassWord = Hash.Encrypt("admin123"),
@@ -143,7 +140,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
                 new Users {
                     ID = Guid.NewGuid(),
-                    CreatedTime = DateTimeOffset.Now,
+                    CreatedTime = DateTime.Now,
                     FullName = "Client",
                     Email = "client@gmail.com",
                     PassWord = Hash.Encrypt("client123"),
@@ -158,7 +155,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				
 				  new Users {
 					ID = Guid.NewGuid(),
-					CreatedTime = DateTimeOffset.Now,
+					CreatedTime = DateTime.Now,
 					FullName = "Nguyễn Văn Trọng",
 					Email = "vantrongvt1310@gmail.com",
 					PassWord = Hash.Encrypt("abc123"),
@@ -172,7 +169,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				},
 				 new Users {
 					ID = Guid.NewGuid(),
-					CreatedTime = DateTimeOffset.Now,
+					CreatedTime = DateTime.Now,
 					FullName = "Đặng Xuân Phong",
 					Email = "Phongdxph35748@fpt.edu.vn",
 					PassWord = Hash.Encrypt("abc123"),
@@ -186,7 +183,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				},
 				new Users {
 					ID = Guid.NewGuid(),
-					CreatedTime = DateTimeOffset.Now,
+					CreatedTime = DateTime  .Now,
 					FullName = "Đặng Đức Cường",
 					Email = "cuongddpc07789@fpt.edu.vn",
 					PassWord = Hash.Encrypt("abc123"),

@@ -15,6 +15,7 @@ namespace NeonCinema_API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+
 	public class LoginController : ControllerBase
 	{
 		private readonly IConfiguration _configuration;
@@ -52,10 +53,10 @@ namespace NeonCinema_API.Controllers
 
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
-        new Claim(ClaimTypes.Name, user.FullName),
-        new Claim(ClaimTypes.Role, user.RoleName),
-        new Claim(ClaimTypes.OtherPhone, user.PhoneNumber),
+                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Role, user.RoleName),
+                new Claim(ClaimTypes.OtherPhone, user.PhoneNumber),
     };
 
             var token = new JwtSecurityToken(

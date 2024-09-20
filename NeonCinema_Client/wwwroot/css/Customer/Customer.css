@@ -288,7 +288,21 @@ label {
 
 }
 
+.profile-info {
+    list-style-type: none; /* Bỏ dấu đầu dòng */
+    padding-left: 0; /* Căn sát lề trái */
+    margin-top: 15px; /* Khoảng cách từ ảnh đến danh sách */
+}
 
+    .profile-info li {
+        margin-left: 0; /* Đảm bảo các thẻ <li> bắt sát lề trái */
+        font-family: Arial, sans-serif;
+        font-size: 30px
+    }
+
+.table {
+    background-color: #C6E2FF;
+}
 
 
 

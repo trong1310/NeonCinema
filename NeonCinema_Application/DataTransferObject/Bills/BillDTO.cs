@@ -9,10 +9,11 @@ namespace NeonCinema_Application.DataTransferObject.Bills
 {
     public class BillDTO
     {
-        public Guid CheckinID { get; set; }
+        public Guid ID { get; set; }
         public Guid UserID { get; set; }
         public decimal TotalPrice { get; set; }
         public string QrCode { get; set; }
+        public DateTimeOffset? OderDate { get; set; }
         public EntityStatus Status { get; set; }
     }
 }

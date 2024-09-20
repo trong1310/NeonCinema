@@ -17,7 +17,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.HasKey(x => x.ID);
             builder.Property(x => x.TotalPrice).HasDefaultValue(0);
             builder.HasOne(x => x.Users).WithMany(x => x.Bills).HasForeignKey(x => x.UserID).OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.Checkins).WithMany(x => x.Bills).HasForeignKey(x => x.CheckinID).OnDelete(DeleteBehavior.NoAction);
+         
         }
     }
 }
