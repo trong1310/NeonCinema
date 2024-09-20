@@ -62,16 +62,25 @@
                         <a class="nav-link" href="#">Khuyến mãi/Sự kiện</a>
                     </li>
                 </ul>
-                <div class="navbar-nav ml-auto d-flex align-items-center">
-                    <div class="nav-item user-info">
-                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="Profile" />
-                        <p>@username</p>
-                        <a href="#" @onclick="Logout">/Thoát</a>
-                    </div>
-                    <button class="buy-ticket-btn">
-                        <i class="fas fa-ticket-alt"></i>
-                        MUA VÉ
-                    </button>
+                <div class="navbar-nav ml-auto ">
+                    @if (!isLoginPage)
+                    {
+                        @if (isLoggedIn)
+                        {
+                            <div class="user-info">
+                                <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="Profile" />
+                                <span>@username</span>
+                                <a href="#" @onclick="Logout">/Thoát</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="login btn btn-success" @onclick="NavigateToLogin">
+                                <i class="fa-solid fa-user" style="color: #fafafa; margin-right:10px;"></i>
+                                ĐĂNG NHẬP
+                            </button>
+                        }
+                    }
                 </div>
             </div>
         </nav>
@@ -101,12 +110,16 @@
     private string username;
     private string userId;
     private string otherphone;
+    private bool isLoggedIn;
+    private bool isLoginPage;
 
     protected override async Task OnInitializedAsync()
     {
         userId = await _localStorage.GetItemAsync<string>("nameidentifier");
         username = await _localStorage.GetItemAsync<string>("name");
         otherphone = await _localStorage.GetItemAsync<string>("otherphone");
+        isLoggedIn = !string.IsNullOrEmpty(username);
+        isLoginPage = NavigationManager.Uri.Contains("/login");
     }
 
     private async Task Logout()
@@ -119,5 +132,9 @@
     private async Task Profile()
     {
         NavigationManager.NavigateTo("/customer-profile");
+    }
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
     }
 }
