@@ -1,6 +1,9 @@
 ﻿@page "/customer-profile"
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.IServices.User
 @using NeonCinema_Client.Pages.Clients
 @layout LayoutClient
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
 
 
 
@@ -92,9 +95,11 @@
 </div>
 
 @code{
+
     private bool show = false;
     private void GetForm()
     {
         show = !show;    
     }
+
 }

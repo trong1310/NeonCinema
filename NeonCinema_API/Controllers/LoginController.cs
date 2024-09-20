@@ -19,19 +19,23 @@ namespace NeonCinema_API.Controllers
 	{
 		private readonly IConfiguration _configuration;
 		private readonly NeonCinemasContext _context;
-	//	private readonly IReCapchaRepositories _captcha;
-        public LoginController(IConfiguration configuration)
+        private string _secretKey;
+        //	private readonly IReCapchaRepositories _captcha;
+        public LoginController(NeonCinemasContext context ,IConfiguration configuration)
         {
 			_configuration = configuration;
-			_context = new NeonCinemasContext();
-        //    _captcha = captcha;
+			_context = context;
+            _secretKey = configuration["Jwt:Secret"];
+
+            //    _captcha = captcha;
         }
 		private async Task<LoginDTO> GetUser(string emailOrPhone, string password)
 		{
 			var user = await _context.Users.FirstOrDefaultAsync(
 				x => x.PhoneNumber == emailOrPhone  && x.PassWord == Hash.Encrypt(password)
 				);
-                var userRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == user.RoleID);
+           
+            var userRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == user.RoleID);
 			  return new LoginDTO
               {
                     Email = user.Email,
@@ -41,29 +45,30 @@ namespace NeonCinema_API.Controllers
                     ID = user.ID,
               };
 		}
-		private string GenerateJwtToken(LoginDTO user)
-		{
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        private string GenerateJwtToken(LoginDTO user)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"])); // Sử dụng Jwt:Key
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-			var claims = new[]
-			{
-			new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
-			new Claim(ClaimTypes.Name, user.FullName),
-			new Claim(ClaimTypes.Role, user.RoleName),
-			new Claim(ClaimTypes.OtherPhone , user.PhoneNumber),
-		};
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+        new Claim(ClaimTypes.Name, user.FullName),
+        new Claim(ClaimTypes.Role, user.RoleName),
+        new Claim(ClaimTypes.OtherPhone, user.PhoneNumber),
+    };
 
-			var token = new JwtSecurityToken(
-				_configuration["JWT:Issuer"],
-				_configuration["JWT:Audience"],
-				claims,
-				expires: DateTime.Now.AddMinutes(120),
-				signingCredentials: creds);
+            var token = new JwtSecurityToken(
+                _configuration["JWT:Issuer"],
+                _configuration["JWT:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: creds);
 
-			return new JwtSecurityTokenHandler().WriteToken(token);
-		}
-		[HttpPost("Login")]
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        [HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequest request)
 		{
 			try

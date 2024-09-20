@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
@@ -21,6 +22,7 @@ namespace NeonCinema_API.Controllers
             _mapper = mapper;
         }
         [HttpGet("Get-all")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request)
         {
             // Gọi phương thức GetAllAsync với request để lấy dữ liệu phân trang
@@ -39,6 +41,7 @@ namespace NeonCinema_API.Controllers
             return Ok(result);
         }
         [HttpGet("Get-by-id")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var seatType = await _seatTypeRepository.GetByIdAsync(id);
@@ -50,6 +53,7 @@ namespace NeonCinema_API.Controllers
             return Ok(result);
         }
         [HttpPost("Create-SeatType")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSeatTypeDTO createSeatTypeDTO)
         {
             var seatType = _mapper.Map<SeatType>(createSeatTypeDTO);
