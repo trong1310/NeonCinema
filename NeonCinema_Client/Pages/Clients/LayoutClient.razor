@@ -1,9 +1,17 @@
 @inherits LayoutComponentBase
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
+
+
+@inject IUserServices Service
+
+
+
+
 @inject IUserServices Service
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @using System.IdentityModel.Tokens.Jwt
+
 @inject NavigationManager NavigationManager
 
 
@@ -21,6 +29,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/Customer/Customer.css">
     <link rel="stylesheet" href="/css/Login/Login.css">
+
 </head>
 <body class="layout-body">
     <!-- Header -->
