@@ -13,6 +13,7 @@ html, body {
     padding: 15px 50px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000; /* Đảm bảo Navbar nằm trên các phần tử khác */
+    justify-content: space-between;
 }
 
 .navbar-brand img {
@@ -26,9 +27,9 @@ html, body {
     transition: color 0.3s ease;
 }
 
-.navbar-nav .nav-item .nav-link:hover {
-    color: #32cd32;
-}
+    .navbar-nav .nav-item .nav-link:hover {
+        color: #32cd32;
+    }
 
 .navbar-nav .nav-item .dropdown-menu {
     background-color: #333;
@@ -36,28 +37,39 @@ html, body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.navbar-nav .nav-item .dropdown-menu .dropdown-item {
-    color: #ddd;
+    .navbar-nav .nav-item .dropdown-menu .dropdown-item {
+        color: #ddd;
+    }
+
+        .navbar-nav .nav-item .dropdown-menu .dropdown-item:hover {
+            color: #fff;
+        }
+
+
+.login {
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 0px 15px 0px;
+    border: none;
+    width: 150px;
+    height: 50px;
+    font-size: 14px;
+    border-radius: 10px;
+    margin-left: 660px;
 }
 
-.navbar-nav .nav-item .dropdown-menu .dropdown-item:hover {
-    color: #fff;
-}
 
 .buy-ticket-btn {
     background-color: #4caf50;
     color: white;
     border: none;
-
     padding: 8px 20px;
     width: 180px;
     font-size: 17px;
-
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     display: flex;
-
     align-items: center;
     justify-content: space-between;
     position: absolute;
@@ -66,12 +78,11 @@ html, body {
     transform: translateX(-50%);
     z-index: 2;
     opacity: 0;
-
 }
 
-.buy-ticket-btn:hover {
-    background-color: green;
-}
+    .buy-ticket-btn:hover {
+        background-color: green;
+    }
 
 
     .buy-ticket-btn i {
@@ -81,9 +92,9 @@ html, body {
 
 
 .user-icon {
-    width: 60px;
-    height: 60px;
-    margin-right: 15px;
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
 }
 
 .user-info {
@@ -93,20 +104,19 @@ html, body {
     margin-right: 20px;
 }
 
-.user-info a {
-    color: #4caf50;
-    margin-left: 2px;
-    text-decoration: none;
-    font-weight: bold;
-}
+    .user-info a {
+        color: #4caf50;
+        margin-left: 2px;
+        text-decoration: none;
+        font-weight: bold;
+    }
 
-.user-info a:hover {
-    color: green;
-}
+        .user-info a:hover {
+            color: green;
+        }
 
 /* Main */
 main {
-
     margin: 0;
     background-color: #000;
     width: 100%;
@@ -114,28 +124,42 @@ main {
 }
 
 /* Movie List */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: transparent;
-
-}
-
+/* Điều chỉnh kích thước của các nút điều khiển */
 .carousel-control-prev,
 .carousel-control-next {
-
-    width: 5%;
+    width: 5%; /* Điều chỉnh kích thước nút */
+    height: 100%; /* Chiều cao phủ đầy để dễ bấm */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* Loại bỏ hoàn toàn nền */
+    border: none; /* Bỏ viền */
 }
 
-    .carousel-control-prev i,
-    .carousel-control-next i {
-        font-size: 2rem;
-        color: #4caf50;
+    /* Điều chỉnh các biểu tượng điều khiển (prev và next) */
+    .carousel-control-prev .fa-chevron-left,
+    .carousel-control-next .fa-chevron-right {
+        font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
+        color: #4caf50; /* Màu biểu tượng mặc định */
+        transition: color 0.3s ease, transform 0.3s ease; /* Thêm hiệu ứng cho biểu tượng */
     }
 
-    .carousel-control-prev:hover i,
-    .carousel-control-next:hover i {
-        color: #2c6e49;
+    /* Thay đổi màu và kích thước khi hover */
+    .carousel-control-prev:hover .fa-chevron-left,
+    .carousel-control-next:hover .fa-chevron-right {
+        color: limegreen; /* Màu xanh lá cây khi hover */
+        transform: scale(1.5); /* Phóng to biểu tượng khi hover */
     }
+
+    /* Đảm bảo không có màu nền nào xuất hiện khi hover */
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: transparent; /* Đảm bảo nền trong suốt khi hover */
+    }
+
+
+
+
 
 .title-Movielist {
     color: #4caf50;
@@ -149,7 +173,6 @@ main {
     justify-content: center;
     align-items: center;
     font-size: 24px;
-
 }
 
 /* Đảm bảo rằng movie-card có không gian đủ lớn */
@@ -159,7 +182,6 @@ main {
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
-
     width: 100%;
     height: 100%;
     position: relative;
@@ -215,12 +237,10 @@ main {
 
 .carousel-item {
     overflow: visible;
-
 }
 
 /* Hiệu ứng khi hover vào movie-card */
 .movie-card:hover .buy-ticket-btn {
-
     opacity: 1;
 }
 
@@ -245,7 +265,6 @@ main {
     background-color: #333; /* Màu nền xám đen cho card */
     color: #fff; /* Màu chữ trắng trên card */
     border: none; /* Loại bỏ border nếu có */
-    border-radius: 0 !important; /* Loại bỏ border-radius */
 }
 
 /* Định dạng cho các input và textarea trên nền tối */
@@ -285,7 +304,22 @@ label {
 
 .form-check {
     margin-right: 70px;
+}
 
+.profile-info {
+    list-style-type: none; /* Bỏ dấu đầu dòng */
+    padding-left: 0; /* Căn sát lề trái */
+    margin-top: 15px; /* Khoảng cách từ ảnh đến danh sách */
+}
+
+    .profile-info li {
+        margin-left: 0; /* Đảm bảo các thẻ <li> bắt sát lề trái */
+        font-family: Arial, sans-serif;
+        font-size: 30px
+    }
+
+.table {
+    background-color: #C6E2FF;
 }
 
 
