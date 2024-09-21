@@ -22,27 +22,23 @@ namespace NeonCinema_Infrastructure.Implement.FileUpLoad
         }
         public async Task<int> UploadFiles(IFormFile file)
         {
-            if (file  == null || file.Length == 0)
+            if (file == null || file.Length == 0)
             {
                 return -1;
             }
-            // luu file vao wwwroot
-            var filePath = Path.Combine(_environment.ContentRootPath,"wwwroot", "uploads", file.FileName);
 
-            using( var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-            // luu thong tin file vao db
-            var fileUpLoads = new FileUpload
+            // Chỉ lưu thông tin file vào db
+            var fileUpload = new FileUpload
             {
                 FileName = file.FileName,
-                ContentType = file.ContentType,
-                Content =  await ReadFileContentAsync(filePath)
+                ContentType = file.ContentType
             };
-            _context.FileUploads.Add(fileUpLoads);
+
+            _context.FileUploads.Add(fileUpload);
             await _context.SaveChangesAsync();
-            return fileUpLoads.Id;
+
+            return fileUpload.Id;
+
         }
         private async Task<byte[]> ReadFileContentAsync(string filePath)
         {
