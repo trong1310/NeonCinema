@@ -48,6 +48,7 @@ namespace NeonCinema_API.Controllers
                 Address = user.Adderss,
                 Gender = user.Gender,   
                 DateOfBirth = user.DateOrBriht.ToString(),
+                Password = user.PassWord,
             };
 		}
         private string GenerateJwtToken(UserLoginDTO user)
@@ -66,7 +67,9 @@ namespace NeonCinema_API.Controllers
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
                 new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,    
-                new Claim(ClaimTypes.Gender, user.Gender)       
+                new Claim(ClaimTypes.Gender, user.Gender) ,
+                
+
             };
 
             // Tạo token với các thông tin trên
@@ -115,14 +118,15 @@ namespace NeonCinema_API.Controllers
             {
                 var userDto = new UserLoginDTO
                 {
-                    //   ID = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
+                    ID = Guid.Parse(user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value),
                     FullName = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value,
                     Email = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value,
-                    //  RoleName = user.FindFirst(c => c.Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
+                   // RoleName = user.FindFirst(c => c.Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
                     PhoneNumber = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value,
                     Address = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value,
                     DateOfBirth = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value,
                     Gender = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value
+
                 };
                 return Ok(userDto);
             }
