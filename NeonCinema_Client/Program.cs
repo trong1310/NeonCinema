@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
 using NeonCinema_Client.Services.User;
-using NeonCinema_Client.Services.FileUploads;
+
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Client.Data.IServices.User;
 
@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<IFileService, FileService>();
+
 
 builder.Services.AddScoped<IUserServices, UserServices>();
 

@@ -66,9 +66,8 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
-              //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
-    
-             });
+
+            });
 
             
             
