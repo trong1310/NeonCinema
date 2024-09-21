@@ -59,11 +59,10 @@
                 <select id="status" @bind="user.Status" class="form-control">
                     <option value="@EntityStatus.Active">Hoạt động</option>
                     <option value="@EntityStatus.Locked">Không hoạt động</option>
-<<<<<<< HEAD
+
                     <option value="@EntityStatus.PendingForConfirmation">Chờ xác nhận</option>
                     <option value="@EntityStatus.PendingForApproval">Chờ phê duyệt</option>
-=======
->>>>>>> 63ccd7c5dfb604b516a1e264b9de47b00c38adeb
+
                 </select>
             </div>
 
@@ -90,7 +89,7 @@
 
     private async Task SaveChanges()
     {
-<<<<<<< HEAD
+
         if (user == null)
         {
             return; // Handle the case where user is null
@@ -122,10 +121,10 @@
             // await UserService.UpdateUser();
             // await LoadData();
         }
-=======
+
         // await UserService.UpdateUser(user);
         Navigation.NavigateTo("/listuser");
->>>>>>> 63ccd7c5dfb604b516a1e264b9de47b00c38adeb
+
     }
 
 }
