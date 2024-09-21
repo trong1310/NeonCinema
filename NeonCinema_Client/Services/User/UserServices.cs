@@ -80,14 +80,12 @@ namespace NeonCinema_Client.Services.User
             return response;
         }
 
-<<<<<<< HEAD
-        
-=======
+
         public async Task<UserLoginDTO> UserLogin(  )
         {
             var response =  await _httpClient.GetFromJsonAsync<UserLoginDTO>("https://localhost:7211/api/Login/current"); 
             return response;
         }
->>>>>>> 63ccd7c5dfb604b516a1e264b9de47b00c38adeb
+
     }
 }
