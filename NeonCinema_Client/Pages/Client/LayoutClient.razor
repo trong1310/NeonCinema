@@ -1,17 +1,10 @@
 @inherits LayoutComponentBase
 @using NeonCinema_Application.DataTransferObject.User
-@using NeonCinema_Client.IServices.User
-
-
+@using NeonCinema_Client.Data.IServices.User
 @inject IUserServices Service
-
-
-
-
 @inject IUserServices Service
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @using System.IdentityModel.Tokens.Jwt
-
 @inject NavigationManager NavigationManager
 
 
@@ -62,19 +55,6 @@
                         <a class="nav-link" href="#">Khuyến mãi/Sự kiện</a>
                     </li>
                 </ul>
-            </div>
-
-                <div class="navbar-nav ml-auto d-flex align-items-center">
-                    <div class="nav-item user-info">
-                        <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="Profile" />
-                        <span>@username</span>
-                        <a href="#" @onclick="Logout">/Thoát</a>
-                    </div>
-                    <button class="buy-ticket-btn">
-                        <i class="fas fa-ticket-alt"></i>
-                        MUA VÉ
-                    </button>
-
                 <div class="navbar-nav ml-auto ">
                     @if (!isLoginPage)
                     {
@@ -94,9 +74,7 @@
                             </button>
                         }
                     }
-
                 </div>
-            </div>
         </nav>
     </header>
 
@@ -110,7 +88,7 @@
         <p>Customer Layout Footer</p>
     </footer>
 
-    <!-- jQuery -->
+                            <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <!-- Popper.js for Bootstrap 4 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
@@ -131,7 +109,7 @@
     {
         userId = await _localStorage.GetItemAsync<string>("nameidentifier");
         username = await _localStorage.GetItemAsync<string>("name");
-        otherphone = await _localStorage.GetItemAsync<string>("otherphone");
+        otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
         isLoggedIn = !string.IsNullOrEmpty(username);
         isLoginPage = NavigationManager.Uri.Contains("/login");
     }
@@ -140,7 +118,7 @@
     {
         await _localStorage.RemoveItemAsync("nameidentifier");
         await _localStorage.RemoveItemAsync("name");
-        await _localStorage.RemoveItemAsync("otherphone");
+        await _localStorage.RemoveItemAsync("mobilephone");
         NavigationManager.NavigateTo("/login");
     }
     private async Task Profile()
