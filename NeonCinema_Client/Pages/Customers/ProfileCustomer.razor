@@ -135,7 +135,7 @@
     private string phone="";
     private string address="";
     private string age="";
-    private bool gender;
+    private string gender;
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,7 +146,7 @@
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
         address = await _localStorage.GetItemAsync<string>("address");
         age = await _localStorage.GetItemAsync<string>("dateofbirth");
-        gender = await _localStorage.GetItemAsync<bool>("gender");
+        gender = await _localStorage.GetItemAsync<string>("gender");
        
     }
     
