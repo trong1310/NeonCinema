@@ -1,9 +1,42 @@
 ﻿@page "/upload-files"
+@using NeonCinema_Client.Services.FileUploads
 @inherits UploadFileBase
-
+@inject IFileService FileService
 <h3>UploadFile</h3>
-<InputFile OnChange="InputFileChange" multiple></InputFile>
-<button class="btn btn-success" @onclick="Upload">Upload</button>
-@code {
+ 
+<InputFile OnChange="OnFileSelected" />
+<button @onclick="OnUploadButtonClicked">Thêm Ảnh</button>
+@if (!string.IsNullOrEmpty(UploadedImageUrl))
+{
+    <h4>Image Preview:</h4>
+    <img src="@UploadedImageUrl" alt="Uploaded Image" style="max-width: 300px;" />
+}
 
+@code {
+    private IBrowserFile selectedFile;
+    private string UploadedImageUrl;
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task OnUploadButtonClicked()
+    {
+        if (selectedFile != null)
+        {
+            try
+            {
+                // Gọi service upload và nhận lại URL của ảnh
+                UploadedImageUrl = await FileService.UploadFiles(selectedFile);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error uploading file: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No file selected.");
+        }
+    }
 }
