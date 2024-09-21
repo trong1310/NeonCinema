@@ -1,9 +1,9 @@
 ﻿@page "/updateuser"
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
-@using NeonCinema_Domain.Enum
 @inject IUserServices UserService
 @inject NavigationManager Navigation
+@using NeonCinema_Domain.Enum
 
 <div class="container mt-4" style="color: white">
     <h4 class="mb-4">Chỉnh sửa Thông Tin Người Dùng</h4>
@@ -14,43 +14,44 @@
     }
     else
     {
-        <form class="form-horizontal" @onsubmit="SaveChanges">
+        <form class="form-horizontal" >
             <div class="form-group">
-                <label for="images"><img src="@user.Images" alt="Ảnh người dùng" class="img-fluid rounded-circle" /></label>
+               @*  <label for="images"><img src="@user.Images" alt="Ảnh người dùng" class="img-fluid rounded-circle" /></label> *@
             </div>
 
             <div class="form-group">
                 <label for="fullName">Họ và tên</label>
-                <input type="text" id="fullName" @bind="user.FullName" class="form-control" />
+                <input type="text" id="fullName" @bind="user.FullName" class="form-control" required />
             </div>
 
             <div class="form-group">
                 <label for="phoneNumber">Số điện thoại:</label>
-                <input type="text" id="phoneNumber" @bind="user.PhoneNumber" class="form-control" />
+                <input type="text" id="phoneNumber" @bind="user.PhoneNumber" class="form-control" required />
             </div>
 
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" @bind="user.Email" class="form-control" />
+                <input type="email" id="email" @bind="user.Email" class="form-control" required />
             </div>
 
             <div class="form-group">
                 <label for="gender">Giới tính:</label>
-                <select id="gender" @bind="user.Gender" class="form-control">
-                    <option value="Male">Nam</option>
-                    <option value="Female">Nữ</option>
-                    <option value="Other">Khác</option>
-                </select>
+                <input type="text" id="email" @bind="user.Gender" class="form-control" required />
+                @* <select id="gender" @bind="user.Gender" class="form-control">
+                    <option value="Nam" selected="@((user.Gender == "Nam").ToString())">Nam</option>
+                    <option value="Nữ" selected="@((user.Gender == "Nữ").ToString())">Nữ</option>
+                    <option value="Khác" selected="@((user.Gender == "Khác").ToString())">Khác</option>
+                </select> *@
             </div>
 
             <div class="form-group">
                 <label for="dateOfBirth">Ngày sinh nhật</label>
-                <input type="date" id="dateOfBirth" @bind="user.DateOrBriht" class="form-control" />
+                <input type="date" id="dateOfBirth" @bind="user.DateOrBriht" class="form-control" required />
             </div>
 
             <div class="form-group">
                 <label for="address">Địa chỉ</label>
-                <input type="text" id="address" @bind="user.Adderss" class="form-control" />
+                <InputText type="text" id="address" @bind-Value="user.Adderss" class="form-control" required />
             </div>
 
             <div class="form-group">
@@ -58,10 +59,14 @@
                 <select id="status" @bind="user.Status" class="form-control">
                     <option value="@EntityStatus.Active">Hoạt động</option>
                     <option value="@EntityStatus.Locked">Không hoạt động</option>
+
+                    <option value="@EntityStatus.PendingForConfirmation">Chờ xác nhận</option>
+                    <option value="@EntityStatus.PendingForApproval">Chờ phê duyệt</option>
+
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+            <button @onclick="SaveChanges" type="button" class="btn btn-warning">Lưu Thay Đổi</button>
         </form>
     }
 </div>
@@ -74,19 +79,52 @@
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-        if (query.ContainsKey("phoneNumber"))
+
+        if (query.ContainsKey("phoneNumber")) // Đảm bảo tên khóa là 'phoneNumber'
         {
-            phoneNumber = query["phoneNumber"];
-            if (!string.IsNullOrEmpty(phoneNumber))
-            {
-                user = await UserService.GetByIDUser(phoneNumber, CancellationToken.None);
-            }
+            phoneNumber = query["phoneNumber"]; // Lấy số điện thoại
+            user = await UserService.GetByIDUser(phoneNumber, CancellationToken.None); // Tải dữ liệu người dùng
         }
     }
 
     private async Task SaveChanges()
     {
+
+        if (user == null)
+        {
+            return; // Handle the case where user is null
+        }
+
+        var cancellationToken = CancellationToken.None;
+
+        UserUpdateRequest updateRequest = new UserUpdateRequest
+            {
+                FullName = user.FullName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Gender = user.Gender,
+                DateOrBriht = user.DateOrBriht,
+                Adderss = user.Adderss,
+                Status = user.Status,
+
+               
+            };
+        
+        var response = await UserService.UpdateUser(user.RoleID, updateRequest, cancellationToken); // Ensure you're using the correct ID property
+        if (response.IsSuccessStatusCode)
+        {
+
+            Navigation.NavigateTo("/listuser");
+        }
+        else
+        {
+            // await UserService.UpdateUser();
+            // await LoadData();
+        }
+
         // await UserService.UpdateUser(user);
         Navigation.NavigateTo("/listuser");
+
     }
+
 }

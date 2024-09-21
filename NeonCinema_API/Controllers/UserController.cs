@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
@@ -52,6 +53,7 @@ namespace NeonCinema_API.Controllers
             return Ok("Cập nhật người dùng thành công!");
         }
         [HttpGet("get-all")]
+        
         public async Task<IActionResult> GetAllUser(CancellationToken cancellationToken)
         {
             var users = await _userRepository.GetAllUser(cancellationToken);
@@ -70,6 +72,7 @@ namespace NeonCinema_API.Controllers
             {
                 return NotFound($"Không tìm thấy người dùng với số điện thoại {phoneNumber}.");
             }
+           
 
             return Ok(user);
         }

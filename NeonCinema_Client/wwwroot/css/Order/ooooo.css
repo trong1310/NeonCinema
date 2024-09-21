@@ -1,0 +1,45 @@
+﻿/* Ensure the container fills the viewport */
+.container-fluid {
+    min-height: 100vh; /* Full viewport height */
+}
+
+/* Header Styling */
+header {
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+}
+
+/* Navbar Styling */
+.navbar {
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-link {
+    color: #555; /* Adjust nav link color */
+}
+
+    .nav-link:hover {
+        color: #007bff; /* Link color on hover */
+    }
+
+/* Main Content Area */
+main {
+    background-color: #f8f9fa;
+}
+
+article {
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #343a40; /* Bootstrap dark color */
+    color: white;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
