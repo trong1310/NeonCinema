@@ -11,11 +11,11 @@ namespace NeonCinema_Client.Pages.UpLoadFile
 
         public List<IBrowserFile> files { get; set; } = new List<IBrowserFile>();
 
-        protected async Task InputFileChange(InputFileChangeEventArgs e)
-        {
-            files.Clear(); // Xóa danh sách tệp trước khi thêm mới
-            files.AddRange(e.GetMultipleFiles(e.FileCount)); // Thêm các tệp mới
-        }
+        //protected async Task InputFileChange(InputFileChangeEventArgs e)
+        //{
+        //    files.Clear(); // Xóa danh sách tệp trước khi thêm mới
+        //    files.AddRange(e.GetMultipleFiles(e.FileCount)); // Thêm các tệp mới
+        //}
 
         protected async Task Upload()
         {
