@@ -41,6 +41,8 @@
     <Content Remove="Pages\Register.razor" />
 
     <Content Remove="Pages\Users.razor" />
+
+    <Content Remove="Pages\Users\ListStaff.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,6 +71,7 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\Register.razor" />
     <_ContentIncludedByDefault Remove="Pages\Users.razor" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\User\LISTuser.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +91,7 @@
     <None Include="Pages\Room\RoomUpdate.razor" />
     <None Include="Pages\Users.razor" />
     <None Include="Pages\Users\App.razor" />
+    <None Include="Pages\Users\ListStaff.razor" />
     <None Include="Pages\Users\LIST.razor" />
     <None Include="Pages\Users\UserEdit.razor" />
     <None Include="Pages\Users\UserLayout.razor" />
