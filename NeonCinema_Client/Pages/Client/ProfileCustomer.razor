@@ -124,12 +124,12 @@
         show = !show;
     }
 
-    private string name = "";
-    private string email = "";
-    private string phone = "";
-    private string address = "";
+    private string? name = "";
+    private string? email = "";
+    private string? phone = "";
+    private string? address = "";
     private DateTime? age; 
-    private string gender;
+    private string? gender;
     private bool IsMaleChecked => gender == "Nam";
     private bool IsFemaleChecked => gender == "Nữ";
 
@@ -139,17 +139,11 @@
         email = await _localStorage.GetItemAsync<string>("email");
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
         address = await _localStorage.GetItemAsync<string>("address");
-
-        // Lấy giá trị ngày sinh từ LocalStorage
         var birthDateString = await _localStorage.GetItemAsync<string>("dateofbirth");
-
-        // Chuyển đổi chuỗi thành DateTime nếu có giá trị
         if (DateTime.TryParse(birthDateString, out var parsedDate))
         {
             age = parsedDate;
         }
-
-        // Lấy giá trị giới tính
         gender = await _localStorage.GetItemAsync<string>("gender");
     }
 }

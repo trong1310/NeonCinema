@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -21,32 +22,56 @@ namespace NeonCinema_Infrastructure.Implement.Movie
     public class MovieRepositories : IMovieRepositories
     {
         private readonly NeonCinemasContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _maps;
-        public MovieRepositories(IMapper maps)
+        public MovieRepositories(IMapper maps, IWebHostEnvironment webHostEnvironment)
         {
+            _webHostEnvironment = webHostEnvironment;
             _context = new NeonCinemasContext();
             _maps = maps;
         }
-        public async Task<HttpResponseMessage> Create(Movies request, CancellationToken cancellationToken)
+        public async Task<Movies> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                request.ID = Guid.NewGuid();
+               
                 request.Status = MovieStatus.PendingForApproval;
-                request.CreatedTime = DateTime.Now;
-                await _context.Movies.AddAsync(request);
-                await _context.SaveChangesAsync(cancellationToken);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+               
+                string fileRoot = Path.Combine(_webHostEnvironment.WebRootPath, "trailers");
+                if (!Directory.Exists(fileRoot))
                 {
-                    Content = new StringContent("Thêm thành công")
+                    Directory.CreateDirectory(fileRoot);
+                }
+                string trailerfile = Guid.NewGuid() + Path.GetExtension(request.Trailer.FileName);
+                string trailerFilePath = Path.Combine(fileRoot, trailerfile);
+                using (var fileStream = new FileStream(trailerFilePath, FileMode.Create))
+                {
+                    request.Trailer.CopyTo(fileStream);
+                }
+                var movies = new Movies() 
+                {
+                    ID = Guid.NewGuid(),
+                   
+                    Duration = request.Duration,
+                    Name = request.Name,
+                    Description = request.Description,
+                    StarTime = request.StarTime,
+                    Trailer = $"/trailers/{trailerfile}",
+                    AgeAllowed = request.AgeAllowed,
+                    Status = request.Status,
+                    GenreID = request.GenreID,
+                    LenguageID = request.LenguageID,
+                    CountryID = request.CountryID,
+                    DirectorID = request.DirectorID
                 };
+                await _context.Movies.AddAsync(movies);
+                await _context.SaveChangesAsync(cancellationToken);
+                return movies;
+
             }
             catch (Exception ex)
             {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
-                };
+                return null;
             }
         }
 
