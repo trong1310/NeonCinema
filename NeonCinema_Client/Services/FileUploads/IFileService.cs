@@ -4,6 +4,6 @@ namespace NeonCinema_Client.Services.FileUploads
 {
     public interface IFileService
     {
-        Task UploadFiles(IBrowserFile file);
+        Task<string> UploadFiles(IBrowserFile file);
     }
 }
