@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Infrastructure.Database.AppDbContext;
+using System.Net;
+using System.Security.Claims;
 
 namespace NeonCinema_API.Controllers
 {
@@ -13,10 +17,12 @@ namespace NeonCinema_API.Controllers
     {
         IEntityRepository<Bill> _repos;
         IMapper _mapper;
+        NeonCinemasContext _context;
         public BillController(IEntityRepository<Bill> repos, IMapper mapper)
         {
             _repos = repos;
             _mapper = mapper;
+            _context = new NeonCinemasContext();
         }
 
         [HttpGet("get-all-bill")]
@@ -76,5 +82,20 @@ namespace NeonCinema_API.Controllers
 
             return Ok(_mapper.Map<BillDTO>(result));
         }
+        //[HttpGet("GetBillByUser")]
+        //public async IActionResult GetBillByUser ([FromQuery]Guid userId,CancellationToken cancellationToken)
+        //{
+        //    var user = await _context.Users.FirstOrDefaultAsync(x => x.ID == userId);
+        //    if(user == null)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    var billHistory = _repos.GetBillByUser(user.ID, cancellationToken).ToList();
+        //    if (billHistory == null) 
+        //    {
+        //        return NotFound("Bạn chưa mua vé ");
+        //    }
+        //    return Ok(billHistory);
+        //}
     }
 }

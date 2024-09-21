@@ -31,7 +31,9 @@
             <div class="d-flex justify-content-center">
                 @if (isProcessing)
                 {
-                    <button disabled >vui lòng chờ</button>
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 }
                else
                {
@@ -76,10 +78,10 @@
                     var claim = token.Claims;
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                    var otherphone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone").Value;
+                    var otherphone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
                     await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
-                    _navi.NavigateTo("/");
+                    _navi.NavigateTo("/customer-profile");
                 }
                 catch (Exception ex)
                 {
@@ -88,7 +90,7 @@
             }
             else
             {
-                errorMessage = "Thông tin đăng nhập không chính xác";
+                errorMessage = "Thông tin đăng nhập không chính xác" ;
             }
         }
         catch (Exception ex)

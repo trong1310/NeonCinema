@@ -2,10 +2,12 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.IServices.User
 @using NeonCinema_Client.Pages.Clients
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
+@inject IUserServices _service
+@inject AuthenticationStateProvider _providee 
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
-
-
 
 <div class="profile-container">
     <div class="row">
@@ -15,76 +17,73 @@
                 <div class="row">
                     <div class="col-md-3 text-center">
                         <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img" alt="User Image" />
-
-                        <button class="btn btn-light mt-4">TẢI ẢNH LÊN</button>
-
-                   </div>
+                    </div>
                     <div class="col-md-9">
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
-                                <input type="text" id="FullName" class="form-control" value="Đặng Đức Cường" />
+                                <input type="text" id="FullName" class="form-control" @bind="userdto.FullName"/>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
-                                <input type="text" id="PhoneNumber" class="form-control" value="0879130050" />
+                                <input type="text" id="PhoneNumber" class="form-control" @bind="userdto.PhoneNumber" />
+
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+
                                 <label for="Email">Email</label>
-                                <input type="email" id="Email" class="form-control" value="gnouc2000@gmail.com" />
+                                <input type="email" id="Email" class="form-control" @bind="userdto.Email" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control"value="" disabled/>
+                                <input type="text" id="DateOfBirth" class="form-control" @bind="userdto.DateOfBirth" />
+
                             </div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="Email">Mật khẩu</label>
-                            <div class="d-flex justify-content-center">
-								<input type="password" id="password" class="form-control" value="abc123" style="height: 42px;width: 685px" disabled />    
-                                <button @onclick="GetForm" style="padding: 0 ; margin-left:10px">Đổi mật khẩu</button>
+                        <div class="mt-3">
+                            <div class="mb-3">
+                                <label for="Password" class="form-label">Mật khẩu</label>
+                                <div class="d-flex">
+                                    <input type="password" id="Password" class="form-control" value="abc123" disabled />
+                                    <button class="btn btn-light ms-2" @onclick="GetForm">Đổi mật khẩu</button>
+                                </div>
+                                @if (show)
+                                {
+                                    <div class="mt-3">
+                                        <label for="NewPassword" class="form-label">Nhập mật khẩu mới</label>
+                                        <input type="password" id="NewPassword" class="form-control" />
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="ConfirmPassword" class="form-label">Nhập lại mật khẩu</label>
+                                        <input type="password" id="ConfirmPassword" class="form-control" />
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" id="ShowPassword" />
+                                        <label class="form-check-label" for="ShowPassword">Hiện mật khẩu</label>
+                                    </div>
+                                }
                             </div>
-                             @if (show)
-                            {
-                                <div class="form-group col-md-6">
-                                    <label for="password">Nhập mật khẩu mới</label>
-                                    <input type="password" id="password" class="form-control" value="Đặng Đức Cường" />
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="password">Nhập lại mật khẩu</label>
-                                    <input type="password" id="password" class="form-control" value="0879130050" />
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <p>
-                                        <label class="label-checkbox-container">
-                                            <input type="checkbox"  /> Hiện mật khẩu
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </p>
-                                    
-                                </div>
-                            }
                         </div>
                         <div class="form-group">
                             <label>Giới tính</label>
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked @bind="userdto.Gender"/>
                                     <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" @bind="userdto.Gender" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="Address">Địa chỉ</label>
-                            <textarea id="Address" class="form-control" rows="2">Khu 7 - Thị trấn Trạm Trôi - Hoài Đức - Hà Nội</textarea>
+                            <textarea id="Address" class="form-control" rows="2" @bind="userdto.Address"></textarea>
                         </div>
-                        <div class="form-group text-center">
+                        <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary">Lưu</button>
                         </div>
                     </div>
@@ -93,13 +92,50 @@
         </div>
     </div>
 </div>
+                <span class="d-flex align-items-center" style="font-size: 30px;">Lịch sử giao dịch</span>
+                <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px;" />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Thời gian giao dịch</th>
+                            <th scope="col">Mã hóa đơn</th>
+                            <th scope="col">Tên phim</th>
+                            <th scope="col">Tổng tiền</th>
+                            <th scope="col">Tổng Điểm tích lũy</th>
+                            <th scope="col">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>6</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-@code{
 
+
+
+@code {
     private bool show = false;
     private void GetForm()
     {
-        show = !show;    
+        show = !show;
     }
+    UserLoginDTO userdto = new UserLoginDTO();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserInfoFromToken();
+    }
+    private async Task GetUserInfoFromToken()
+    {
+        userdto = await _service.UserLogin();
+    }
 }

@@ -14,7 +14,7 @@ namespace NeonCinema_Domain.Database.Base
         public bool? Deleted { get; set; }
         public Guid? DeletedBy { get; set; }
         public DateTimeOffset? DeletedTime { get; set; }
-        public DateTimeOffset? CreatedTime { get; set; } 
-
+        public DateTime? CreatedTime { get; set; }
+        
     }
 }
