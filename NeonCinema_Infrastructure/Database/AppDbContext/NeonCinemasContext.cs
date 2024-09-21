@@ -59,7 +59,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<ShowDate> ShowDate { get; set; }
         public DbSet<Point> Points { get; set; }
         public DbSet<FileUpload> FileUploads { get; set; }
-       
+
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -83,7 +83,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             SeenDingData(modelBuilder);
-          
+
         }
         private void SeenDingData(ModelBuilder modelBuilder)
         {
@@ -156,51 +156,51 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Gender = "Nam",
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
-				
-				  new Users {
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Nguyễn Văn Trọng",
-					Email = "vantrongvt1310@gmail.com",
-					PassWord = Hash.Encrypt("abc123"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0334583920",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("13/10/2004"),
-					Images = "images.jpg",
-					Gender = "Nam",
-					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-				},
-				 new Users {
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Đặng Xuân Phong",
-					Email = "Phongdxph35748@fpt.edu.vn",
-					PassWord = Hash.Encrypt("abc123"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0356400122",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("13/10/2004"),
-					Images = "images.jpg",
-					Gender = "Nam",
-					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-				},
-				new Users {
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Đặng Đức Cường",
-					Email = "cuongddpc07789@fpt.edu.vn",
-					PassWord = Hash.Encrypt("abc123"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0879130050",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("13/10/2004"),
-					Images = "images.jpg",
-					Gender = "Nam",
-					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-				},
-			};
-			modelBuilder.Entity<Users>(b => { b.HasData(userData);});
+
+                  new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Nguyễn Văn Trọng",
+                    Email = "vantrongvt1310@gmail.com",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334583920",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                 new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Xuân Phong",
+                    Email = "Phongdxph35748@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0356400122",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Đức Cường",
+                    Email = "cuongddpc07789@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0879130050",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+            };
+            modelBuilder.Entity<Users>(b => { b.HasData(userData); });
             var actors = new List<Actor>
 {
     new Actor
@@ -208,7 +208,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ID = Guid.Parse("1e3f1c1b-3c4b-45d2-90ed-dc58eabf1d27"),
         FullName = "Nguyen Van A",
         Gender = "Nam",
-        BirthDate = new DateTime(30,05,2002),
+         BirthDate = DateTime.Parse("10/10/2000"),
         Address = "Hanoi, Vietnam",
         Nationality = "Vietnamese",
         Biography = "A famous actor in Vietnam.",
@@ -220,7 +220,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ID = Guid.Parse("2a1d1b2e-6d9c-4e20-bac6-2a6c77b6f26f"),
         FullName = "Tran Thi B",
         Gender = "Nu",
-        BirthDate = new DateTime(15,03,2000),
+         BirthDate = DateTime.Parse("10/10/2000"),
         Address = "Ho Chi Minh City, Vietnam",
         Nationality = "Vietnamese",
         Biography = "Known for her roles in romantic movies.",
@@ -242,7 +242,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ID = Guid.Parse("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de"),
         FullName = "Le Minh Khai",
         Gender = "Nam",
-        BirthDate = new DateTime(10,07,2000),
+        BirthDate = DateTime.Parse("10/10/2000"),
         Address = "Da Nang, Vietnam",
         Nationality = "Vietnamese",
         Biography = "Renowned director with multiple awards.",
@@ -254,7 +254,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ID = Guid.Parse("6b2f4c5a-7f1a-4b87-bd52-1c6c6f2d4a3b"),
         FullName = "Hoang Hoa",
         Gender = "Nam",
-        BirthDate = new DateTime(10,07,2001),
+        BirthDate = DateTime.Parse("10/10/2000"),
         Address = "Nha Trang, Vietnam",
         Nationality = "Vietnamese",
         Biography = "Specializes in action films.",
@@ -331,24 +331,24 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<MovieType>(b => { b.HasData(movieTypes); });
             var categoryMovies = new List<CategoryMovies>
 {
-        new CategoryMovies { 
-        ID = Guid.Parse("5b6a7f8c-9e0d-4f9e-9d2c-d4d5f6a0b1c3"), 
-        MovieID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), 
-        MovieTypeID = Guid.Parse("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"), 
+        new CategoryMovies {
+        ID = Guid.Parse("5b6a7f8c-9e0d-4f9e-9d2c-d4d5f6a0b1c3"),
+        MovieID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"),
+        MovieTypeID = Guid.Parse("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"),
         Status = EntityStatus.Active }
 
 };
             modelBuilder.Entity<CategoryMovies>(b => { b.HasData(categoryMovies); });
             var movies = new List<Movies>
 {
-    new Movies { ID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), 
-        Duration = 120, Name = "Inception", 
-        Description = "A thief who steals corporate secrets using dream-sharing technology.", 
-        StarTime = new DateTime(10,07,2024), Trailer = "inception_trailer.mp4", 
+    new Movies { ID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"),
+        Duration = 120, Name = "Inception",
+        Description = "A thief who steals corporate secrets using dream-sharing technology.",
+        StarTime =  DateTime.Parse("10/10/2000"), Trailer = "inception_trailer.mp4",
         AgeAllowed = 13, Status = MovieStatus.Active,
-        GenreID = Guid.Parse("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"), 
-        LenguageID = Guid.Parse("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"), 
-        CountryID = Guid.Parse("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"), 
+        GenreID = Guid.Parse("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"),
+        LenguageID = Guid.Parse("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"),
+        CountryID = Guid.Parse("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"),
         DirectorID = Guid.Parse("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de") }
 };
             modelBuilder.Entity<Movies>(b => { b.HasData(movies); });
