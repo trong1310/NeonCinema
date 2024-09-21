@@ -19,7 +19,7 @@ namespace NeonCinema_Application.DataTransferObject.User
         public DateTime DateOrBriht { get; set; }// ngày sinh nhật
         public string? ConfirmCode { get; set; }//mã xác nhận
         public string Adderss { get; set; }
-        public DateTimeOffset? SeenTime { get; set; }// thời gian
+       
         public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }//mặc định role = 3(khách hàng)
         

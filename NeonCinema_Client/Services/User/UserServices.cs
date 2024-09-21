@@ -46,16 +46,25 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync($"users/{phoneNumber}", cancellationToken);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            try
             {
-                throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
+                var response = await _httpClient.GetAsync($"api/User/get-by-phone/{phoneNumber}", cancellationToken);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
+                }
+
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonSerializer.Deserialize<UserDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<UserDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            catch (HttpRequestException ex)
+            {
+                // Xử lý lỗi yêu cầu HTTP
+                throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
+            }
         }
 
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
@@ -80,25 +89,13 @@ namespace NeonCinema_Client.Services.User
             return response;
         }
 
-        //public async Task<UserLoginDTO> UserLogin()
-        //{
-            
-            
-        //    try
-        //    {
-        //        var login = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Login/Login", _loginModel);
-        //        var content = await login.Content.ReadAsStringAsync();
-        //        string token = new JwtSecurityTokenHandler().ReadJwtToken(content).ToString();
-               
-        //        var response =  await _httpClient.GetFromJsonAsync<UserLoginDTO>($"https://localhost:7211/api/Login/current{token}");
-        //        return response;
-        //    }
-        //    catch (SecurityTokenMalformedException ex)
-        //    {
-        //        // Xử lý lỗi khi token không hợp lệ
-        //        Console.WriteLine($"Token không hợp lệ: {ex.Message}"); return null;
-        //    }
-           
-        //}
+
+
+        public async Task<UserLoginDTO> UserLogin(  )
+        {
+            var response =  await _httpClient.GetFromJsonAsync<UserLoginDTO>("https://localhost:7211/api/Login/current"); 
+            return response;
+        }
+
     }
 }

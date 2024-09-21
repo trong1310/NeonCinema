@@ -1,0 +1,207 @@
+﻿@page "/order"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container Layout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/Order/ooooo.css"> <!-- Custom CSS for additional styles -->
+    <style>
+        .counter {
+            display: flex;
+            align-items: center;
+        }
+
+            .counter button {
+                background-color: #ff0000;
+                color: white;
+                border: none;
+                width: 40px;
+                height: 40px;
+                font-size: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .counter input {
+                width: 60px;
+                height: 40px;
+                text-align: center;
+                font-size: 18px;
+                margin: 0 5px;
+            }
+
+            .counter button:focus {
+                outline: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid min-vh-100 d-flex flex-column">
+        <!-- Header -->
+        <header class="bg-primary text-white text-center py-3">
+            <h1>BOOKING ONLINE</h1>
+            @* <p>Subtitle or description can go here.</p> *@
+        </header>
+
+        <!-- Navigation Bar -->
+        <nav class="bg-light navbar navbar-expand-lg navbar-light py-2">
+            <div class="container">
+                <div class="row text-center w-100">
+                    <!-- First row -->
+                    <div class="col-md-4">
+                        <p> <strong>21/09/2024 09:30 ~ 21/09/2024 11:55</strong></p>
+                        <p>138 Phố Trần Bình, Mỹ Đình, Nam Từ Liêm Hà Nội</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Số phòng</p>
+                        <p>số ghế đã chọn</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Loại ghế</p>
+                        <p>Thời gian chiếu phim đã chọn</p>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- Main Article Section -->
+        <main class="flex-grow-1">
+            <div class="container my-4">
+                <div class="row">
+                    <!-- Article Section (Main Content) -->
+                    <article class="col-lg-8 col-md-7 mb-4">
+                        <div class="row">
+                            <!-- Image Section -->
+                            <div class="col-md-6">
+                                <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2023_11_6_638348793945260765_gia-bap-nuoc-cgv-2023-la-bao-nhieu-nhung-uu-dai-combo-moi-nhat-hien-nay-la-gi-7.jpg" alt="Alternate Text" style="width: 80%; height: auto;" />
+                            </div>
+
+                            <!-- Text Section -->
+                            <div class="col-md-6 d-flex flex-column justify-content-center">
+                                <p><strong>MY COMBO</strong></p>
+                                <p>- Có phụ thu thêm tiền khi đổi vị bắp phô mai và bắp mix.</p>
+                                <p>- Nhận hàng trong ngày xem phim (khi mua cùng vé) hoặc trong ngày đã chọn (khi mua tại CGV Store)</p>
+                                <p>Giá: <strong>89.000,00 ₫</strong></p>
+                                <div class="container my-4">
+                                    <div class="counter">
+                                        <button class="decrement">-</button>
+                                        <input type="text" class="counterValue" value="0" readonly>
+                                        <button class="increment">+</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="row" style="margin-top: 20px">
+                            <!-- Image Section -->
+                            <div class="col-md-6">
+                                <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2023_11_6_638348793945260765_gia-bap-nuoc-cgv-2023-la-bao-nhieu-nhung-uu-dai-combo-moi-nhat-hien-nay-la-gi-7.jpg" alt="Alternate Text" style="width: 80%; height: auto;" />
+                            </div>
+
+                            <!-- Text Section -->
+                            <div class="col-md-6 d-flex flex-column justify-content-center">
+                                <p><strong><strong>CONAN CARD COLLECTI</strong></strong></p>
+                                <p>20 bộ thẻ Conan Character In Action hoặc 20 bộ thẻ Conan Characrer In Photo (full box)</p>
+                                <p>- Số lượng sản phẩm có hạn</p>
+                                <p>- Tặng 02 nước ngọt siêu lớn + 01 bắp hai vị</p>
+                                <p>- Nhận hàng trong ngày xem phim (khi mua cùng vé) hoặc trong ngày đã chọn (khi mua tại CGV Store)</p>
+                                <p>Giá: <strong>1.099.000,00 ₫</strong></p>
+                                <div class="container my-4">
+                                    <div class="counter">
+                                        <button class="decrement">-</button>
+                                        <input type="text" class="counterValue" value="0" readonly>
+                                        <button class="increment">+</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="row" style="margin-top: 20px">
+                            <!-- Image Section -->
+                            <div class="col-md-6">
+                                <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:quality(100)/2023_11_6_638348793945260765_gia-bap-nuoc-cgv-2023-la-bao-nhieu-nhung-uu-dai-combo-moi-nhat-hien-nay-la-gi-7.jpg" alt="Alternate Text" style="width: 80%; height: auto;" />
+                            </div>
+
+                            <!-- Text Section -->
+                            <div class="col-md-6 d-flex flex-column justify-content-center">
+                                <p><strong><strong>BT21 MININI COUPLE C</strong></strong></p>
+                                <p>02 ly nhân vật BT21 phiên bản Minini (kèm nước ngọt) + 01 bắp ngọt lớn.</p>
+                                <p>- Mẫu ly nhân vật phụ thuộc vào số lượng hàng hóa tại rạp</p>
+                                <p>- Nhận hàng trong ngày xem phim (khi mua cùng vé) hoặc trong ngày đã chọn (khi mua tại CGV Store)</p>
+                                <p>Giá: <strong>499.000,00 ₫</strong></p>
+                                <div class="container my-4">
+                                    <div class="counter">
+                                        <button class="decrement">-</button>
+                                        <input type="text" class="counterValue" value="0" readonly>
+                                        <button class="increment">+</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                    </article>
+
+                    <!-- Aside Section (Right Sidebar) -->
+                    <aside class="col-lg-4 col-md-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Aside Section</h5>
+                                <p>This is a sidebar where you can add additional content like links, advertisements, or other information.</p>
+                                <ul class="list-group">
+                                    <li class="list-group-item">Link 1</li>
+                                    <li class="list-group-item">Link 2</li>
+                                    <li class="list-group-item">Link 3</li>
+                                    <li class="list-group-item">Link 4</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-white text-center py-3">
+            <p>© 2024 Your Website. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<script>
+    // JavaScript to handle increment and decrement
+    // JavaScript để xử lý sự kiện tăng và giảm giá trị
+    const decrementButtons = document.querySelectorAll('.decrement');
+    const incrementButtons = document.querySelectorAll('.increment');
+    const counterValues = document.querySelectorAll('.counterValue');
+
+    decrementButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            let currentValue = parseInt(counterValues[index].value);
+            if (currentValue > 0) {
+                counterValues[index].value = currentValue - 1;
+            }
+        });
+    });
+
+    incrementButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            let currentValue = parseInt(counterValues[index].value);
+            counterValues[index].value = currentValue + 1;
+        });
+    });
+
+</script>
