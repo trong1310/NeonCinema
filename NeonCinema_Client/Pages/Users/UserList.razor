@@ -57,7 +57,7 @@
                 <label for="status">Trạng thái:</label>
                 <select id="status" @bind="user.Status" class="form-control">
                     <option value="@EntityStatus.Active">Hoạt động</option>
-                    <option value="@EntityStatus.Inactive">Không hoạt động</option>
+                    <option value="@EntityStatus.Locked">Không hoạt động</option>
                 </select>
             </div>
 
@@ -86,7 +86,7 @@
 
     private async Task SaveChanges()
     {
-        await UserService.UpdateUser(user);
+        // await UserService.UpdateUser(user);
         Navigation.NavigateTo("/listuser");
     }
 }
