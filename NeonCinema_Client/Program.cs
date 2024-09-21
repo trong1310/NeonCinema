@@ -38,7 +38,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress =
-    new Uri("https://localhost:5039/")
+    new Uri("https://localhost:7130/")
 });
 
 
