@@ -131,7 +131,7 @@
     {
         userId = await _localStorage.GetItemAsync<string>("nameidentifier");
         username = await _localStorage.GetItemAsync<string>("name");
-        otherphone = await _localStorage.GetItemAsync<string>("otherphone");
+        otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
         isLoggedIn = !string.IsNullOrEmpty(username);
         isLoginPage = NavigationManager.Uri.Contains("/login");
     }
@@ -140,7 +140,7 @@
     {
         await _localStorage.RemoveItemAsync("nameidentifier");
         await _localStorage.RemoveItemAsync("name");
-        await _localStorage.RemoveItemAsync("otherphone");
+        await _localStorage.RemoveItemAsync("mobilephone");
         NavigationManager.NavigateTo("/login");
     }
     private async Task Profile()

@@ -6,12 +6,17 @@ using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
 using NeonCinema_Client.IServices.User;
 using NeonCinema_Client.Services.User;
-
+using NeonCinema_Client.IServices.LoginServices;
+using NeonCinema_Client.Services.LoginSv;
 using NeonCinema_Client.Pages.Users;
 /*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
 
 using NeonCinema_Client.Services.FileUploads;
+using NeonCinema_Application.DataTransferObject.Utilities;
+using NeonCinema_Client.Models;
+using NeonCinema_Client.IServices.LoginServices;
+using NeonCinema_Client.Services.LoginSv;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -35,17 +40,14 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress =
-    new Uri("https://localhost:7130/")
-});
-
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7211/") });
 
 
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<LoginServices>();
 builder.Services.AddBlazoredLocalStorage();
 
 

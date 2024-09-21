@@ -3,19 +3,28 @@ using NeonCinema_Client.IServices.User;
 using System.Text.Json;
 using System.Text;
 using System.Net.Http.Json;
+using NeonCinema_Application.DataTransferObject.Utilities;
+using static NeonCinema_Client.Pages.Login;
+using static System.Net.WebRequestMethods;
+using NeonCinema_Client.Models;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NeonCinema_Client.Services.User
 {
+    [Authorize]
     public class UserServices : IUserServices
     {
         private readonly HttpClient _httpClient;
-
+        private readonly LoginModel _loginModel;
         public UserServices()
         {
+            _loginModel = new LoginModel();
             var handler = CreateHttpClientHandler();
             _httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri("http://localhost:5039")
+                BaseAddress = new Uri("https://localhost:7211")
             };
         }
 
@@ -79,6 +88,7 @@ namespace NeonCinema_Client.Services.User
             var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
             return response;
         }
+
 
 
         public async Task<UserLoginDTO> UserLogin(  )
