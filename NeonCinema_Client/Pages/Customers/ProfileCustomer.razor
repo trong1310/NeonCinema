@@ -36,12 +36,11 @@
                             <div class="col-md-6">
 
                                 <label for="Email">Email</label>
-                                <input type="text" id="Email" class="form-control" @bind="email" />
+                                <input type="text" id="email" class="form-control" @bind="email" />
                             </div>
                             <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
                                 <input type="text" id="DateOfBirth" class="form-control" @bind="age" />
-
                             </div>
                         </div>
                         <div class="mt-3">
@@ -73,18 +72,18 @@
                             <label>Giới tính</label>
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" checked @bind="gender" />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" @bind="gender"/>
                                     <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" @bind="gender" />
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale"  @bind="gender" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="Address">Địa chỉ</label>
-                           <InputText @bind-Value="email"></InputText>
+                            <input type="text" id="address" class="form-control" @bind="address" />
                         </div>
                         <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary">Lưu</button>
@@ -135,20 +134,20 @@
     private string email= "";
     private string phone="";
     private string address="";
-    private string age=""; 
-    private string gender="";
+    private string age="";
+    private bool gender;
 
     protected override async Task OnInitializedAsync()
     {
 
         // ID = await _localStorage.GetItemAsync<string>("nameidentifier").Result,
         name = await _localStorage.GetItemAsync<string>("name");
-        email = await _localStorage.GetItemAsync<string>("emailaddress");
+        email = await _localStorage.GetItemAsync<string>("email");
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
-        address = await _localStorage.GetItemAsync<string>("streetaddress");
+        address = await _localStorage.GetItemAsync<string>("address");
         age = await _localStorage.GetItemAsync<string>("dateofbirth");
-        gender = await _localStorage.GetItemAsync<string>("gender");
-        
+        gender = await _localStorage.GetItemAsync<bool>("gender");
+       
     }
     
 }
