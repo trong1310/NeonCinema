@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -88,6 +89,11 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                 .ToListAsync(cancellationToken);
 
             return lst;
+        }
+
+        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<BookTickets> GetById(Guid id, CancellationToken cancellationToken)

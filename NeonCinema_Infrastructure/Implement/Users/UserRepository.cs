@@ -41,11 +41,14 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     Content = new StringContent("Số điện thoại hoặc email đã tồn tại!")
                 };
             }
+<<<<<<< HEAD
             //var validROle = new[] { "25d7afcb-949b-4717-a961-b50f2e18657d", "ba820c64-1a81-4c44-80ea-47038c930c3b", "56bece24-ba60-4b2b-801c-b68cfc8ccf9d" };
             //if (!validROle.Equals(request.RoleID))
             //{
             //    throw new InvalidOperationException("Bạn chỉ được tạo 3 role là admin:25d7afcb-949b-4717-a961-b50f2e18657d  và Client:ba820c64-1a81-4c44-80ea-47038c930c3b ,Staff:56bece24-ba60-4b2b-801c-b68cfc8ccf9d ");
             //}
+=======
+>>>>>>> 63ccd7c5dfb604b516a1e264b9de47b00c38adeb
             var newUser = new NeonCinema_Domain.Database.Entities.Users
             {
 

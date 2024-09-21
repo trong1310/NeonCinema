@@ -9,7 +9,10 @@
   <ItemGroup>
 
     <Compile Remove="Pages\Employees\**" />
+
+    <Compile Remove="Pages\Img\**" />
     <Content Remove="Pages\Employees\**" />
+    <Content Remove="Pages\Img\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\abc\**" />
@@ -19,6 +22,7 @@
     <Content Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
+    <EmbeddedResource Remove="Pages\Img\**" />
     <None Remove="Pages\abc\**" />
 
     <Compile Remove="Pages\Customers\**" />
@@ -34,6 +38,9 @@
 
 
     <None Remove="Pages\Employees\**" />
+
+
+    <None Remove="Pages\Img\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,7 +55,6 @@
   <ItemGroup>
 
     <Folder Include="Pages\Admin\" />
-    <Folder Include="Pages\Img\" />
     <Folder Include="wwwroot\images\FlimImages\" />
   </ItemGroup>
 

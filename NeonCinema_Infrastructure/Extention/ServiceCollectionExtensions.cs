@@ -66,7 +66,7 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 //options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCenima;Integrated Security=True;Trust Server Certificate=True");
-                options.UseSqlServer("Server=vantrong\\SQLEXPRESS;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+                options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
     
              });
 
@@ -80,8 +80,6 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IGenreRepositories, GenreRepositories>();
             services.AddTransient<IDirectorRepositories, DirectorRepositories>();
             services.AddTransient<IUserRepository, UserRepository>();
-
-
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
