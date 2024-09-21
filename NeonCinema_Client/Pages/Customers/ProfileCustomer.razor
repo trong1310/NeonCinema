@@ -36,7 +36,7 @@
                             <div class="col-md-6">
 
                                 <label for="Email">Email</label>
-                                <input type="text" id="Email" class="form-control" @bind="email" />
+                                <input type="text" id="email" class="form-control" @bind="email" />
                             </div>
                             <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
@@ -84,7 +84,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="Address">Địa chỉ</label>
-                           <InputText @bind-Value="email"></InputText>
+                            <input type="text" id="address" class="form-control" @bind="address" />
                         </div>
                         <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary">Lưu</button>
@@ -143,9 +143,9 @@
 
         // ID = await _localStorage.GetItemAsync<string>("nameidentifier").Result,
         name = await _localStorage.GetItemAsync<string>("name");
-        email = await _localStorage.GetItemAsync<string>("emailaddress");
+        email = await _localStorage.GetItemAsync<string>("email");
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
-        address = await _localStorage.GetItemAsync<string>("streetaddress");
+        address = await _localStorage.GetItemAsync<string>("address");
         age = await _localStorage.GetItemAsync<string>("dateofbirth");
         gender = await _localStorage.GetItemAsync<string>("gender");
         
