@@ -12,6 +12,10 @@ namespace NeonCinema_Domain.Enum
         PendingForConfirmation = 2, // cho xac nhan 
         PendingForApproval = 3, // cho phe duyet
         Locked = 4, // da khoa
+        Men = 5,//Nam
+        Girl = 6,//Nữ
+        ABC = 7,// Khác
+
     }
 }
 

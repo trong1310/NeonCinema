@@ -1,21 +1,29 @@
 ﻿using NeonCinema_Application.DataTransferObject.User;
-using NeonCinema_Client.IServices.User;
 using System.Text.Json;
 using System.Text;
 using System.Net.Http.Json;
+using NeonCinema_Application.DataTransferObject.Utilities;
+using static NeonCinema_Client.Pages.Login;
+using static System.Net.WebRequestMethods;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using NeonCinema_Client.Data.IServices.User;
 
 namespace NeonCinema_Client.Services.User
 {
+    [Authorize]
     public class UserServices : IUserServices
     {
         private readonly HttpClient _httpClient;
-
+        private readonly LoginModel _loginModel;
         public UserServices()
         {
+            _loginModel = new LoginModel();
             var handler = CreateHttpClientHandler();
             _httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri("http://localhost:5039")
+                BaseAddress = new Uri("https://localhost:7211")
             };
         }
 
@@ -37,16 +45,25 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync($"users/{phoneNumber}", cancellationToken);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            try
             {
-                throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
+                var response = await _httpClient.GetAsync($"api/User/get-by-phone/{phoneNumber}", cancellationToken);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
+                }
+
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonSerializer.Deserialize<UserDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<UserDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            catch (HttpRequestException ex)
+            {
+                // Xử lý lỗi yêu cầu HTTP
+                throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
+            }
         }
 
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
@@ -66,19 +83,8 @@ namespace NeonCinema_Client.Services.User
                 JsonSerializer.Serialize(request),
                 Encoding.UTF8,
                 "application/json");
-
             var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
             return response;
-        }
-
-        public async Task<UserLoginDTO> UserLogin()
-        {
-            var response = await _httpClient.GetAsync("/api/Login/current");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<UserLoginDTO>();
-            }
-            return null; 
         }
     }
 }

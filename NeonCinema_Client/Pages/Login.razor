@@ -1,5 +1,5 @@
 @page "/login"
-@using NeonCinema_Client.Pages.Clients
+@using NeonCinema_Client.Pages.Client
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
@@ -26,7 +26,7 @@
             </div>
             <div class="input-group">
                 <label for="password">Mật Khẩu</label>
-                <InputText id="password"  class="form-control" @bind-Value="loginModel.Password" required />
+                <InputText id="password" type="password"  class="form-control" @bind-Value="loginModel.Password" required />
             </div>
             <div class="d-flex justify-content-center">
                 @if (isProcessing)
@@ -78,8 +78,17 @@
                     var claim = token.Claims;
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                    var otherphone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
+                    var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
+                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;     
+                    var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress").Value;
+                    var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
+                    var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
                     await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
+                    await _localstorgae.SetItemAsync("mobilephone", mobilephone.Trim());
+                    await _localstorgae.SetItemAsync("email", email.Trim());
+                    await _localstorgae.SetItemAsync("address", address.Trim());
+                    await _localstorgae.SetItemAsync("dateofbirth", dateofbirth.Trim());
+                    await _localstorgae.SetItemAsync("gender", gender.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
                     _navi.NavigateTo("/customer-profile");
                 }
