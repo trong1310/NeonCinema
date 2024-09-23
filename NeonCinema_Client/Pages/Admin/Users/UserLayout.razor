@@ -1,0 +1,38 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>NeonCinema_Client</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row">
+            <p class="cinema-title">NEON CINEMAS</p>
+        </div>
+
+        <article class="content px-4">
+            <NeonCinema_Client.Pages.Room.RoomList/>
+        </article>
+    </main>
+</div>
+
+<style>
+    .cinema-title {
+        color: green; /* Đổi màu chữ thành đỏ */
+        font-size: 2em; /* Tăng kích thước chữ */
+        font-weight: bold; /* In đậm chữ */
+        margin: 0; /* Loại bỏ khoảng cách thừa */
+        font-family: 'Copperplate', 'Copperplate Gothic Light', serif; /* Đổi font chữ thành Lucida Bright */
+    }
+
+
+    .top-row {
+        display: flex;
+        justify-content: flex-start; /* Đảm bảo chữ căn trái trong container */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        height: 100px; /* Điều chỉnh chiều cao nếu cần */
+        text-align: center;
+    }
+</style>
