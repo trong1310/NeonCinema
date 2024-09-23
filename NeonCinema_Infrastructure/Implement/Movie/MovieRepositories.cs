@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -23,7 +22,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
     public class MovieRepositories : IMovieRepositories
     {
         private readonly NeonCinemasContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _maps;
         public MovieRepositories(IMapper maps, IWebHostEnvironment hv)
         {
@@ -31,10 +29,11 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             _context = new NeonCinemasContext();
             _maps = maps;
         }
-        public async Task<bool> Create(CreateMovieRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(Movies request, CancellationToken cancellationToken)
         {
             try
             {
+
                
                
                 string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
@@ -67,15 +66,24 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CreatedTime = DateTime.Now,
                     
                     
-                };
-                await _context.Movies.AddAsync(movies);
-                await _context.SaveChangesAsync(cancellationToken);
-                return true;
 
+                request.ID = Guid.NewGuid();
+                request.Status = MovieStatus.PendingForApproval;
+                request.CreatedTime = DateTime.Now;
+                await _context.Movies.AddAsync(request);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Thêm thành công")
+
+                };
             }
             catch (Exception ex)
             {
-                return false;
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                };
             }
         }
 
@@ -86,7 +94,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
                 if (obj != null)
                 {
-                    obj.Status = MovieStatus.StopShowing;
+                    obj.Deleted = true;
                     obj.DeletedTime = DateTime.Now;
                     _context.Movies.Update(obj);
                     await _context.SaveChangesAsync(cancellationToken);
@@ -115,46 +123,46 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Movies.Include(x=>x.Genre).Include(x=>x.Screening).Include
-                (x=>x.Director).Include(x=>x.Lenguage).Include(x=>x.Countrys).AsNoTracking();
-           
+            var query = _context.Movies.AsNoTracking();
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
             }
            
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataview = (from a in result.Data
+            var dataView = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
+                            join c in query on b.GenreID equals c.ID
+                            join e in query on b.CountryID equals e.ID
+                            join g in query on b.DirectorID equals g.ID
+                            join h in query on b.LenguageID equals h.ID
                             orderby b.StarTime 
-                            where b.Status == MovieStatus.Active
-                            
+                            where b.Deleted == false
                             select new MovieDTO
                             {
-                                ID = b.ID,
-                                AgeAllowed = b.AgeAllowed ,
+                                AgeAllowed = b.AgeAllowed,
                                 Trailer = b.Trailer,
                                 Status = b.Status,
                                 StarTime = b.StarTime,
                                 Name = b.Name,
                                 Duration = b.Duration,
                                 Description = b.Description,
-                                LanguareName = b.Lenguage.LanguageName,
-                                CountryName = b.Countrys.CountryName,
-                                DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,
+                                LanguareName = h.Lenguage.LanguageName,
+                                CountryName = e.Countrys.CountryName,
+                                DirectorName = g.Director.FullName,
+                                GenreName = c.Genre.GenreName,
+                                
+                                
                             }).ToList();
-         
-            return  new PaginationResponse<MovieDTO>()
+            return new PaginationResponse<MovieDTO>()
             {
-                Data = dataview,
+                Data = result.Data,
                 HasNext = result.HasNext,
                 PageNumber = result.PageNumber,
                  PageSize = result.PageSize,
                 
             };
-            
         }
 
         public async Task<List<MovieDTO>> GetMovieComingsoon(ViewMovieRequest request, CancellationToken cancellationToken)
@@ -224,7 +232,14 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             try
             {
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+                if(obj.Deleted == true && obj == null)
+                {
 
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy phim")
+                    };
+                }
                 request.Duration = obj.Duration;
                 request.Name = obj.Name;
                 request.Status = obj.Status;

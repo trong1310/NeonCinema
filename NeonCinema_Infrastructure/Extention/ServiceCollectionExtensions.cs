@@ -66,8 +66,9 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
-
-            });
+              //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+    
+             });
 
             
             
@@ -81,8 +82,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
-            services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
-            services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
+            //services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
+            //services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
             services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();

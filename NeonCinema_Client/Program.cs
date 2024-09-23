@@ -3,10 +3,24 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
+using NeonCinema_Client.Data;
+using NeonCinema_Client.IServices.User;
 using NeonCinema_Client.Services.User;
+using NeonCinema_Client.IServices.LoginServices;
+using NeonCinema_Client.Services.LoginSv;
+using NeonCinema_Client.Pages.Users;
+/*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
+
+using NeonCinema_Client.Services.FileUploads;
 using NeonCinema_Application.DataTransferObject.Utilities;
-using NeonCinema_Client.Data.IServices.User;
+using NeonCinema_Client.Models;
+
+using NeonCinema_Client.IServices.LoginServices;
+using NeonCinema_Client.Services.LoginSv;
+using NeonCinema_Client.IServices.Cinemas;
+using NeonCinema_Client.Services.Cinemas;
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -16,8 +30,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
-
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 
 builder.Services.AddCors(options =>
@@ -34,7 +49,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<LoginServices>();
 builder.Services.AddBlazoredLocalStorage();
 
 

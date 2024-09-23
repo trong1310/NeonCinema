@@ -1,167 +1,91 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Bills;
+using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.ShowTime;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.Screenings
 {
-    public class ShowTimeRepository : IEntityRepository<ShowTime>
+    public class ShowTimeRepository : IShowTimeRepository
     {
-        NeonCinemasContext _context;
+        private readonly NeonCinemasContext _context;
+        private readonly IMapper _mapper;
 
-        public ShowTimeRepository(NeonCinemasContext context)
+        public ShowTimeRepository(NeonCinemasContext context, IMapper mapper)
         {
-                _context = context;
-        }
-        public async Task<HttpResponseMessage> Create(ShowTime entity, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (entity.EndTime <= entity.StartTime || entity.StartTime <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-
-
-                ShowTime st = new ShowTime
-                {
-                    ID = Guid.NewGuid(),
-                    StartTime = entity.StartTime,
-                    EndTime = entity.EndTime,
-                    Status = EntityStatus.PendingForConfirmation
-                };
-
-                _context.ShowTimes.Add(st);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Create successfully")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<List<ShowTimeDTO>> GetAllShowTime(CancellationToken cancellationToken)
         {
-            try
-            {
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
-
-                if (st == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("ShowTime is not found")
-                    };
-                }
-
-                _context.ShowTimes.Remove(st);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Delete successfully")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+            var showTimes = await _context.ShowTimes.ToListAsync(cancellationToken);
+            return _mapper.Map<List<ShowTimeDTO>>(showTimes);
         }
 
-        public async Task<List<ShowTime>> GetAll(CancellationToken cancellationToken)
+        public async Task<ShowTimeDTO> GetByIDShowTime(Guid id, CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowTimes.ToListAsync(cancellationToken);
-
-            return lst;
+            var showTime = await _context.ShowTimes.FindAsync(new object[] { id }, cancellationToken);
+            return _mapper.Map<ShowTimeDTO>(showTime);
         }
 
-        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateShowTime(ShowTimeCreateRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var showTime = _mapper.Map<ShowTime>(request);
+            await _context.ShowTimes.AddAsync(showTime, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(HttpStatusCode.Created)
+            {
+                Content = new StringContent($"ShowTime with ID {showTime.ID} created.")
+            };
         }
 
-        public async Task<ShowTime> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> UpdateShowTime(Guid id, ShowTimeUpdateRequest request, CancellationToken cancellationToken)
         {
-            try
+            var showTime = await _context.ShowTimes.FindAsync(new object[] { id }, cancellationToken);
+            if (showTime == null)
             {
-                var st = await _context.ShowTimes.FindAsync(id);
-
-                if (st == null)
-                {
-                    throw new Exception("ShowTime is not found");
-                }
-
-
-                return st;
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-            catch (Exception ex)
+
+            _mapper.Map(request, showTime);
+            _context.ShowTimes.Update(showTime);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                throw new Exception(ex.Message);
-            }
+                Content = new StringContent($"ShowTime with ID {id} updated.")
+            };
         }
 
-        public async Task<HttpResponseMessage> Update(ShowTime entity, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteShowTime(Guid id, CancellationToken cancellationToken)
         {
-            try
+            var showTime = await _context.ShowTimes.FindAsync(new object[] { id }, cancellationToken);
+            if (showTime == null)
             {
-                if (entity.EndTime <= entity.StartTime || entity.StartTime <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-
-                var st = await _context.ShowTimes.FindAsync(entity.ID);
-
-                if (st == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("ShowDate is not found")
-                    };
-                }
-
-                st.StartTime = entity.StartTime;
-                st.EndTime = entity.EndTime;
-                st.Status = entity.Status;
-
-                _context.ShowTimes.Update(st);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Update successfully")
-                };
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-            catch (Exception ex)
+
+            _context.ShowTimes.Remove(showTime);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+                Content = new StringContent($"ShowTime with ID {id} deleted.")
+            };
         }
+
+        
     }
 }

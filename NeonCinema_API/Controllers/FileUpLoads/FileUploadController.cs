@@ -16,19 +16,16 @@ namespace NeonCinema_API.Controllers.FileUpLoads
         [HttpPost("Upload-images")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
-            if (file == null || file.Length == 0)
+            var fileId = await _repo.UploadFiles(file);
+
+            if (fileId == -1)
             {
-                return BadRequest("Invalid file.");
+                return BadRequest("No file uploaded.");
             }
-
-            var fileUrl = await _repo.UploadFiles(file);
-
-            if (fileUrl == null)
+            else
             {
-                return StatusCode(500, "Error uploading file.");
+                return Ok(fileId);
             }
-
-            return Ok(fileUrl); // Trả về URL của file
         }
     }
 }

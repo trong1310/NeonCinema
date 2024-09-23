@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeonCinema_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDb : Migration
+    public partial class NewMiGraTion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,6 +29,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -53,6 +54,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -90,6 +92,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -123,6 +126,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -141,6 +145,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -159,6 +164,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -179,6 +185,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -198,6 +205,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -217,6 +225,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -239,6 +248,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -258,6 +268,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -309,6 +320,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -324,7 +336,7 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Movies",
+                name: "MovieDetail",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -342,31 +354,32 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Movies", x => x.ID);
+                    table.PrimaryKey("PK_MovieDetail", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Movies_Countrys_CountryID",
+                        name: "FK_MovieDetail_Countrys_CountryID",
                         column: x => x.CountryID,
                         principalTable: "Countrys",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_Movies_Director_DirectorID",
+                        name: "FK_MovieDetail_Director_DirectorID",
                         column: x => x.DirectorID,
                         principalTable: "Director",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Movies_Genre_GenreID",
+                        name: "FK_MovieDetail_Genre_GenreID",
                         column: x => x.GenreID,
                         principalTable: "Genre",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_Movies_Lenguage_LenguageID",
+                        name: "FK_MovieDetail_Lenguage_LenguageID",
                         column: x => x.LenguageID,
                         principalTable: "Lenguage",
                         principalColumn: "ID");
@@ -390,6 +403,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -418,6 +432,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -448,6 +463,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -461,9 +477,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         principalTable: "Actor",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_ActorMovies_Movies_MovieID",
+                        name: "FK_ActorMovies_MovieDetail_MovieID",
                         column: x => x.MovieID,
-                        principalTable: "Movies",
+                        principalTable: "MovieDetail",
                         principalColumn: "ID");
                 });
 
@@ -478,6 +494,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -486,14 +503,14 @@ namespace NeonCinema_Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_CategoryMovies", x => x.ID);
                     table.ForeignKey(
+                        name: "FK_CategoryMovies_MovieDetail_MovieID",
+                        column: x => x.MovieID,
+                        principalTable: "MovieDetail",
+                        principalColumn: "ID");
+                    table.ForeignKey(
                         name: "FK_CategoryMovies_MovieType_MovieTypeID",
                         column: x => x.MovieTypeID,
                         principalTable: "MovieType",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_CategoryMovies_Movies_MovieID",
-                        column: x => x.MovieID,
-                        principalTable: "Movies",
                         principalColumn: "ID");
                 });
 
@@ -510,6 +527,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -518,9 +536,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Screening", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Screening_Movies_MovieID",
+                        name: "FK_Screening_MovieDetail_MovieID",
                         column: x => x.MovieID,
-                        principalTable: "Movies",
+                        principalTable: "MovieDetail",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_Screening_Room_RoomID",
@@ -552,6 +570,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -560,9 +579,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Show_release", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Show_release_Movies_MovieID",
+                        name: "FK_Show_release_MovieDetail_MovieID",
                         column: x => x.MovieID,
-                        principalTable: "Movies",
+                        principalTable: "MovieDetail",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_Show_release_Room_RoomID",
@@ -584,6 +603,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -614,6 +634,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -641,6 +662,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -668,6 +690,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -693,6 +716,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -721,6 +745,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -762,6 +787,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -795,6 +821,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -845,6 +872,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -878,6 +906,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -891,9 +920,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         principalTable: "Cinemas",
                         principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_TicketSeat_Movies_MovieID",
+                        name: "FK_TicketSeat_MovieDetail_MovieID",
                         column: x => x.MovieID,
-                        principalTable: "Movies",
+                        principalTable: "MovieDetail",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TicketSeat_Room_RoomID",
@@ -923,102 +952,27 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Actor",
-                columns: new[] { "ID", "Address", "Biography", "BirthDate", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "Nationality", "Status" },
-                values: new object[,]
-                {
-                    { new Guid("1e3f1c1b-3c4b-45d2-90ed-dc58eabf1d27"), "Hanoi, Vietnam", "A famous actor in Vietnam.", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, "Nguyen Van A", "Nam", "link_to_image_a.jpg", null, null, "Vietnamese", 1 },
-                    { new Guid("2a1d1b2e-6d9c-4e20-bac6-2a6c77b6f26f"), "Ho Chi Minh City, Vietnam", "Known for her roles in romantic movies.", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, "Tran Thi B", "Nu", "link_to_image_b.jpg", null, null, "Vietnamese", 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Countrys",
-                columns: new[] { "ID", "CountryName" },
-                values: new object[,]
-                {
-                    { new Guid("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"), "Việt Nam" },
-                    { new Guid("2b2a3f4c-6e7d-4f7e-8c2d-d4d5f6a0b1c3"), "Mỹ" },
-                    { new Guid("4b2a3f4c-6e7d-4f7e-8c2d-d4d5f6a0b1c3"), "Nhật Bản" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Director",
-                columns: new[] { "ID", "Address", "Biography", "BirthDate", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "Nationality", "Status" },
-                values: new object[,]
-                {
-                    { new Guid("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de"), "Da Nang, Vietnam", "Renowned director with multiple awards.", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, "Le Minh Khai", "Nam", "\"link_to_image_director_a.jpg\"", null, null, "Vietnamese", 1 },
-                    { new Guid("6b2f4c5a-7f1a-4b87-bd52-1c6c6f2d4a3b"), "Nha Trang, Vietnam", "Specializes in action films.", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, "Hoang Hoa", "Nam", "\"link_to_image_director_b.jpg\"", null, null, "Vietnamese", 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Genre",
-                columns: new[] { "ID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "GenreName", "ModifiedBy", "ModifiedTime" },
-                values: new object[,]
-                {
-                    { new Guid("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"), null, null, null, null, "Hành Động", null, null },
-                    { new Guid("8d4f2c3a-0d7f-4c95-91d5-5d6e6b9076b8"), null, null, null, null, "Tình Cảm", null, null },
-                    { new Guid("8d4f2c3a-0d7f-4c95-91d5-5d6e6b9076b9"), null, null, null, null, "Kinh Dị", null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Lenguage",
-                columns: new[] { "ID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "LanguageName", "ModifiedBy", "ModifiedTime" },
-                values: new object[,]
-                {
-                    { new Guid("0e5f3a9c-dc4d-4f4c-95a2-9c2d8a4a0b3d"), null, null, null, null, "Tiếng Anh", null, null },
-                    { new Guid("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"), null, null, null, null, "Tiếng Việt", null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "MovieType",
-                columns: new[] { "ID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "MovieTypeName" },
-                values: new object[,]
-                {
-                    { new Guid("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"), null, null, null, null, null, null, "Phim Bộ" },
-                    { new Guid("4b5a6f7c-8e9d-4f8e-9c2d-d4d5f6a0b1c3"), null, null, null, null, null, null, "Phim Chiếu Rạp" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "ID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
+                columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2204), null, null, null, null, "Admin", 1 },
-                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2227), null, null, null, null, "Staff", 1 },
-                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2225), null, null, null, null, "Client", 1 }
+                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(6641), null, null, null, null, null, "Admin", 1 },
+                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(6659), null, null, null, null, null, "Staff", 1 },
+                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(6657), null, null, null, null, null, "Client", 1 }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Movies",
-                columns: new[] { "ID", "AgeAllowed", "CountryID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "Description", "DirectorID", "Duration", "GenreID", "LenguageID", "ModifiedBy", "ModifiedTime", "Name", "StarTime", "Status", "Trailer" },
-                values: new object[] { new Guid("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), 13, new Guid("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"), null, null, null, null, "A thief who steals corporate secrets using dream-sharing technology.", new Guid("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de"), 120, new Guid("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"), new Guid("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"), null, null, "Inception", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "inception_trailer.mp4" });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "ID", "Adderss", "CreatedBy", "CreatedTime", "DateOrBriht", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "Status" },
+                columns: new[] { "ID", "Adderss", "CreatedBy", "CreatedTime", "DateOrBriht", "Deleted", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("1c2fb24f-c5a6-4fb5-8b2e-23487d204ad3"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2711), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "client@gmail.com", "Client", "Nam", "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("4d42b98f-29ad-4e24-a85b-442a55fdee02"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2750), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("5c127f61-2c5f-4c25-a3a0-98a86e8a0a4a"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2686), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "admin@gmail.com", "Admin", "Nam", "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
-                    { new Guid("8ba3de96-9d6c-432e-a56d-13415e2eab85"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2317), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
-                    { new Guid("90f60b71-8683-46df-976f-6e35fac38c85"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2769), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("c143a1cc-c8d4-4bae-bb25-5348b16e1e38"), "Ba Vi", null, new DateTime(2024, 9, 23, 10, 1, 49, 800, DateTimeKind.Local).AddTicks(2730), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 }
+                    { new Guid("1b81a728-acb3-4b4b-ab3a-ad4a8a889424"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(6785), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
+                    { new Guid("5e93e6ce-00c0-4b2c-a675-bd762dcd2898"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(7200), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@gmail.com", "Admin", "Nam", "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
+                    { new Guid("8432b37c-01d1-446e-89ca-20218c7f4401"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(7389), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("855b4ec2-859b-473d-9952-5d72dddb68e0"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(7304), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("a12ddbd4-fb38-4c5d-9f00-d309e9cd073a"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(7349), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("d282c2f3-e9a3-402f-aeae-137b384552d0"), "Ba Vi", null, new DateTime(2024, 9, 22, 16, 58, 22, 929, DateTimeKind.Local).AddTicks(7254), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "client@gmail.com", "Client", "Nam", "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 }
                 });
-
-            migrationBuilder.InsertData(
-                table: "ActorMovies",
-                columns: new[] { "ID", "ActorID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "MovieID", "Status" },
-                values: new object[,]
-                {
-                    { new Guid("3c9f3b4a-5c9b-45f0-b5c5-c1243d569b87"), new Guid("1e3f1c1b-3c4b-45d2-90ed-dc58eabf1d27"), null, null, null, null, null, null, new Guid("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), 1 },
-                    { new Guid("4c5a9e4f-5b6e-4652-a2e1-6ec8cddc2e45"), new Guid("2a1d1b2e-6d9c-4e20-bac6-2a6c77b6f26f"), null, null, null, null, null, null, new Guid("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CategoryMovies",
-                columns: new[] { "ID", "CreatedBy", "CreatedTime", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "MovieID", "MovieTypeID", "Status" },
-                values: new object[] { new Guid("5b6a7f8c-9e0d-4f9e-9d2c-d4d5f6a0b1c3"), null, null, null, null, null, null, new Guid("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), new Guid("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActorMovies_ActorID",
@@ -1076,23 +1030,23 @@ namespace NeonCinema_Infrastructure.Migrations
                 column: "ServiceID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movies_CountryID",
-                table: "Movies",
+                name: "IX_MovieDetail_CountryID",
+                table: "MovieDetail",
                 column: "CountryID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movies_DirectorID",
-                table: "Movies",
+                name: "IX_MovieDetail_DirectorID",
+                table: "MovieDetail",
                 column: "DirectorID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movies_GenreID",
-                table: "Movies",
+                name: "IX_MovieDetail_GenreID",
+                table: "MovieDetail",
                 column: "GenreID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movies_LenguageID",
-                table: "Movies",
+                name: "IX_MovieDetail_LenguageID",
+                table: "MovieDetail",
                 column: "LenguageID");
 
             migrationBuilder.CreateIndex(
@@ -1299,7 +1253,7 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Movies");
+                name: "MovieDetail");
 
             migrationBuilder.DropTable(
                 name: "ShowDate");

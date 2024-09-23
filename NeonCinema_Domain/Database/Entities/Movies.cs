@@ -13,13 +13,16 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid ID { get; set; }
         public int Duration { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; }/// <summary>
+        /// ///
+        /// </summary>
         public DateTime StarTime { get; set; }
         public string Trailer { get; set; }
         public string Images { get; set; }
         public int AgeAllowed { get; set; }
         public MovieStatus Status { get; set; } = MovieStatus.Active;
-        public Guid GenreID { get; set; }
+        public Guid GenreID { get; set; }/// <s
+        /// </summary>
         public Guid LenguageID { get; set; }
         public Guid CountryID { get; set; }
         public Guid DirectorID { get; set; }

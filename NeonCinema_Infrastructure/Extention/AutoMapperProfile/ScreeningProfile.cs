@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using NeonCinema_Application.DataTransferObject.Screenings;
+using NeonCinema_Application.DataTransferObject.Screening;
+
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,10 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     public class ScreeningProfile : Profile
     {
         public ScreeningProfile() 
-        { 
-            CreateMap<ScreeningDTO, Screening>().ReverseMap();
+        {
+            CreateMap<ScreeningCreateRequest, Screening>();
+            CreateMap<ScreeningUpdateRequest, Screening>();
+            CreateMap<Screening, ScreeningDTO>().ReverseMap();
         }
 
     }
