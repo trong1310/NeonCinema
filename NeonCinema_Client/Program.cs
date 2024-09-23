@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
-using NeonCinema_Client.IServices.User;
+using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
 using NeonCinema_Client.IServices.LoginServices;
 using NeonCinema_Client.Services.LoginSv;
-using NeonCinema_Client.Pages.Users;
+using NeonCinema_Client.Pages.Admin.Users;
 /*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
 
