@@ -82,8 +82,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
-            services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
-            services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
+            //services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
+            //services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
             services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();

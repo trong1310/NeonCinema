@@ -43,3 +43,111 @@ p {
     margin: 0;
     padding: 0;
 }
+.counter {
+    display: flex;
+    align-items: center;
+}
+
+    .counter button {
+        background-color: #ff0000;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .counter input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        font-size: 18px;
+        margin: 0 5px;
+    }
+
+    .counter button:focus {
+        outline: none;
+    }
+.images {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+    .images img {
+        max-width: 250px; /* Giới hạn kích thước ảnh */
+        height: auto;
+        margin-right: 20px; /* Khoảng cách giữa ảnh và thông tin */
+    }
+
+.thongtin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding-left: 10px;
+    line-height: 1.8;
+}
+
+    .thongtin p {
+        margin: 0;
+    }
+
+.button-container {
+    margin-top: 20px; /* Thêm khoảng cách trên nút */
+    text-align: center; /* Căn giữa nút */
+}
+
+.btn {
+    padding: 10px 20px; /* Điều chỉnh kích thước nút */
+}
+.QL {
+    margin-top: 20px; /* Thêm khoảng cách trên để nút không sát vào phần thông tin */
+    text-align: center; /* Căn giữa nút */
+    width: 550px;
+    
+}
+
+    .QL button {
+        color: black;
+        background-color: white;
+        padding: 10px 20px; /* Điều chỉnh kích thước nút */
+        font-size: 16px;
+        border-radius: 10px;
+        border: 2px solid green;
+    }
+
+        .QL button:hover {
+            background-color: forestgreen;
+            color: white;
+        }
+.KKK {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+    .KKK p {
+        margin: 0; /* Xóa margin mặc định của thẻ <p> */
+    }
+
+.btn-icon-text {
+    display: flex;
+    align-items: center; /* Aligns icon and text vertically */
+    background: none; /* Optional: Removes default button background */
+    border: none; /* Optional: Removes default button border */
+    cursor: pointer; /* Changes cursor on hover */
+}
+.row {
+    margin-top: 20px; /* Khoảng cách trên đồng nhất cho tất cả các hàng */
+    display: flex;
+    align-items: stretch; /* Đảm bảo chiều cao đều cho các cột */
+}
+
+.col-md-6 {
+    display: flex;
+    flex-direction: column; /* Căn chỉnh nội dung theo chiều dọc */
+    justify-content: space-between; /* Phân phối không gian đều */
+}

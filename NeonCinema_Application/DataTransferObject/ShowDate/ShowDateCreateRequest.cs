@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.ShowDate
 {
-    public class ShowDateDeleteRequest
+    public class ShowDateCreateRequest
     {
         public Guid ID { get; set; }
         public DateTime StarDate { get; set; }

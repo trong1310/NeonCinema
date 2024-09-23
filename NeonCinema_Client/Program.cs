@@ -15,8 +15,12 @@ using NeonCinema_Client.Pages.Users;
 using NeonCinema_Client.Services.FileUploads;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Client.Models;
+
 using NeonCinema_Client.IServices.LoginServices;
 using NeonCinema_Client.Services.LoginSv;
+using NeonCinema_Client.IServices.Cinemas;
+using NeonCinema_Client.Services.Cinemas;
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -28,7 +32,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddSingleton<WeatherForecastService>();
-
+builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 
 builder.Services.AddCors(options =>

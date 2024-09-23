@@ -1,65 +1,104 @@
 ﻿@page "/update-cinema"
+@using NeonCinema_Application.DataTransferObject.Cinemas
+@using NeonCinema_Client.IServices.Cinemas
+@inject NavigationManager Navigation
+@inject ICinemasService CnmSV
 
 <link rel="stylesheet" href="/CINEMA/updatecnm.css">
 
 <div class="update-cinema-container">
     <div class="update-cinema-header">
-        <h2 style="color: #5aaf06">Update Cinema Information</h2>
+        <h2 style="color: #5aaf06">Cập nhật thông tin rạp chiếu phim</h2>
     </div>
     <div class="update-cinema-content">
-        <!-- Image Section -->
         <div class="image-section">
             <img src="https://thanhnien.mediacdn.vn/Uploaded/2014/ihay.thanhnien.com.vn/Pictures201406/Ta_Ban/30Jun2014/maco3.jpg" alt="Cinema Image" class="cinema-image" />
         </div>
 
-        <!-- Form Section -->
         <div class="update-cinema-form">
-            <form>
+            <form onsubmit="return false;">
                 <div class="form-group">
-                    <label for="name">Cinema Name:</label>
-                    <input type="text" id="name" class="form-control" />
+                    <label for="name">Tên rạp chiếu phim:</label>
+                    <input type="text" id="name" class="form-control" @bind="@cinemaUpdateRequest.Name" />
                 </div>
 
                 <div class="form-group">
-                    <label for="location">Location:</label>
-                    <input type="text" id="location" class="form-control" />
+                    <label for="location">Địa điểm:</label>
+                    <input type="text" id="location" class="form-control" @bind="@cinemaUpdateRequest.Location" />
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="text" id="phone" class="form-control" />
+                    <label for="phone">Số điện thoại:</label>
+                    <input type="text" id="phone" class="form-control" @bind="@cinemaUpdateRequest.PhoneNumber" />
                 </div>
 
                 <div class="form-group">
                     <label for="website">Website:</label>
-                    <input type="text" id="website" class="form-control" />
+                    <input type="text" id="website" class="form-control" @bind="@cinemaUpdateRequest.WebSite" />
                 </div>
 
                 <div class="form-group">
-                    <label for="opening-hours">Opening Hours:</label>
-                    <input type="text" id="opening-hours" class="form-control" />
+                    <label for="opening-hours">Giờ mở cửa:</label>
+                    <input type="text" id="opening-hours" class="form-control" @bind="@cinemaUpdateRequest.OpeningHours" />
                 </div>
 
                 <div class="form-group">
-                    <label for="closing-hours">Closing Hours:</label>
-                    <input type="text" id="closing-hours" class="form-control" />
+                    <label for="closing-hours">Giờ đóng cửa:</label>
+                    <input type="text" id="closing-hours" class="form-control" @bind="@cinemaUpdateRequest.ClosingHours" />
                 </div>
 
                 <div class="form-group">
-                    <label for="room-number">Number of Rooms:</label>
-                    <input type="number" id="room-number" class="form-control" />
+                    <label for="room-number">Số phòng:</label>
+                    <input type="number" id="room-number" class="form-control" @bind="@cinemaUpdateRequest.RoomNumber" />
                 </div>
 
-                <button type="submit" class="btn-update" @onclick="UpdateCinema">Update</button>
+                <button type="submit" class="btn-update" @onclick="UpdateCinema">Cập nhật</button>
             </form>
         </div>
     </div>
 </div>
 
 @code {
-    private void UpdateCinema()
+    private CinemasUpdateRequest cinemaUpdateRequest = new CinemasUpdateRequest();
+    private Guid cinemaId;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Add your update logic here
-        // e.g., Save changes to the database or perform any other action
+        // Lấy ID rạp từ chuỗi truy vấn
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        if (Guid.TryParse(query["id"], out cinemaId))
+        {
+            // Lấy chi tiết rạp hiện có
+            var cinema = await CnmSV.GetByIDRCinemas(cinemaId, CancellationToken.None);
+            if (cinema != null)
+            {
+                // Điền thông tin vào yêu cầu cập nhật
+                cinemaUpdateRequest.Name = cinema.Name;
+                cinemaUpdateRequest.Location = cinema.Location;
+                cinemaUpdateRequest.PhoneNumber = cinema.PhoneNumber;
+                cinemaUpdateRequest.WebSite = cinema.WebSite;
+                cinemaUpdateRequest.OpeningHours = cinema.OpeningHours;
+                cinemaUpdateRequest.ClosingHours = cinema.ClosingHours;
+                cinemaUpdateRequest.RoomNumber = cinema.RoomNumber;
+            }
+        }
+    }
+
+    private async Task UpdateCinema()
+    {
+        Console.WriteLine($"Tên: {cinemaUpdateRequest.Name}, Địa điểm: {cinemaUpdateRequest.Location}, Số điện thoại: {cinemaUpdateRequest.PhoneNumber}");
+        // Gọi dịch vụ cập nhật
+        var response = await CnmSV.UpdateCinemas(cinemaId, cinemaUpdateRequest, CancellationToken.None);
+        if (response.IsSuccessStatusCode)
+        {
+            // Điều hướng lại về danh sách rạp sau khi cập nhật thành công
+            Navigation.NavigateTo("/cinemaslist");
+        }
+        else
+        {
+            // Xử lý lỗi (tùy chọn)
+            Console.WriteLine("Cập nhật không thành công.");
+        }
     }
 }

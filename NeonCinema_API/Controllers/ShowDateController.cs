@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.ShowDate;
 using NeonCinema_Application.DataTransferObject.Ticket;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.ShowDate;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Implement.Screenings;
 
@@ -13,70 +14,63 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class ShowDateController : ControllerBase
     {
-        IEntityRepository<ShowDate> _repos;
-        IMapper _mapper;
-        public ShowDateController(IEntityRepository<ShowDate> repos, IMapper mapper)
+        private readonly IShowDateRepository _showDateRepository;
+
+        public ShowDateController(IShowDateRepository showDateRepository)
         {
-            _repos = repos;
-            _mapper = mapper;
+            _showDateRepository = showDateRepository;
         }
 
-        [HttpGet("get-all-showdate")]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        // GET: api/showdate
+        [HttpGet]
+        public async Task<IActionResult> GetAllShiftChange(CancellationToken cancellationToken)
         {
-            var result = await _repos.GetAll(cancellationToken);
-
-            return Ok(result.Select(x => _mapper.Map<ShowDateDTO>(x)).ToList());
+            var result = await _showDateRepository.GetAllShiftChange(cancellationToken);
+            return Ok(result);
         }
 
-        [HttpPost("create-showdate")]
-        public async Task<IActionResult> PostTicket([FromBody] ShowDateDTO request, CancellationToken cancellationToken)
+        // GET: api/showdate/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIDShiftChange(Guid id, CancellationToken cancellationToken)
         {
-            try
+            var result = await _showDateRepository.GetByIDShiftChange(id, cancellationToken);
+            if (result == null)
             {
-                var result = await _repos.Create(_mapper.Map<ShowDate>(request), cancellationToken);
-                return Ok(result);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            return Ok(result);
         }
 
-        [HttpPut("update-showdate")]
-        public async Task<IActionResult> UpdateTicket([FromBody] ShowDateUpdateRequest request, CancellationToken cancellationToken)
+        // POST: api/showdate
+        [HttpPost]
+        public async Task<IActionResult> CreateShiftChange([FromBody] ShowDateCreateRequest request, CancellationToken cancellationToken)
         {
-            try
+            if (request == null)
             {
-                var result = await _repos.Update(_mapper.Map<ShowDate>(request), cancellationToken);
-                return Ok(result);
+                return BadRequest("Invalid data.");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+
+            var response = await _showDateRepository.CreateShiftChange(request, cancellationToken);
+            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
         }
 
-        [HttpDelete("delete-showdate")]
-        public async Task<IActionResult> DeleteTicket([FromBody] ShowDateDeleteRequest requests, CancellationToken cancellationToken)
+        // PUT: api/showdate/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateShiftChange(Guid id, [FromBody] ShowDateUpdateRequest request, CancellationToken cancellationToken)
         {
-            try
+            if (request == null)
             {
-                var result = await _repos.Delete(_mapper.Map<ShowDate>(requests), cancellationToken);
-                return Ok(result);
+                return BadRequest("Invalid data.");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+
+            var response = await _showDateRepository.UpdateShiftChange(id, request, cancellationToken);
+            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
         }
-
-        [HttpGet("get-showdate-by-id")]
-        public async Task<IActionResult> GetShowDate(Guid id,CancellationToken cancellationToken)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteShiftChange(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _repos.GetById(id, cancellationToken);
-
-            return Ok(_mapper.Map<ShowDateDTO>(result));
+            var response = await _showDateRepository.DeleteShiftChange(id, cancellationToken);
+            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
         }
     }
 }

@@ -15,6 +15,8 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         {
             CreateMap<ShowDateDTO, ShowDate>().ReverseMap();
             CreateMap<ShowDateUpdateRequest, ShowDate>();
+            CreateMap<ShowDateCreateRequest, ShowDate>();
+            // Thêm ánh xạ này
         }
     }
 }
