@@ -30,12 +30,11 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             _context = new NeonCinemasContext();
             _maps = maps;
         }
-        public async Task<Movies> Create(CreateMovieRequest request, CancellationToken cancellationToken)
+        public async Task<bool> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
                
-                request.Status = MovieStatus.PendingForApproval;
                
                 string fileRoot = Path.Combine(_webHostEnvironment.WebRootPath, "trailers");
                 if (!Directory.Exists(fileRoot))
@@ -51,27 +50,30 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 var movies = new Movies() 
                 {
                     ID = Guid.NewGuid(),
-                   
+                  
                     Duration = request.Duration,
                     Name = request.Name,
                     Description = request.Description,
                     StarTime = request.StarTime,
                     Trailer = $"/trailers/{trailerfile}",
                     AgeAllowed = request.AgeAllowed,
-                    Status = request.Status,
+                    Status = MovieStatus.PendingForApproval,
                     GenreID = request.GenreID,
                     LenguageID = request.LenguageID,
                     CountryID = request.CountryID,
-                    DirectorID = request.DirectorID
+                    DirectorID = request.DirectorID,
+                    CreatedTime = DateTime.Now,
+                    
+                    
                 };
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
-                return movies;
+                return true;
 
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
 
@@ -82,7 +84,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
                 if (obj != null)
                 {
-                    obj.Deleted = true;
+                    obj.Status = MovieStatus.StopShowing;
                     obj.DeletedTime = DateTime.Now;
                     _context.Movies.Update(obj);
                     await _context.SaveChangesAsync(cancellationToken);
@@ -111,45 +113,45 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Movies.AsNoTracking();
+            var query = _context.Movies.Include(x=>x.Genre).Include(x=>x.Screening).Include
+                (x=>x.Director).Include(x=>x.Lenguage).Include(x=>x.Countrys).AsNoTracking();
+           
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
             }
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataView = (from a in result.Data
+            var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
-                            join c in query on b.GenreID equals c.ID
-                            join e in query on b.CountryID equals e.ID
-                            join g in query on b.DirectorID equals g.ID
-                            join h in query on b.LenguageID equals h.ID
                             orderby b.StarTime 
-                            where b.Deleted == false
+                            where b.Status == MovieStatus.Active
+                            
                             select new MovieDTO
                             {
-                                AgeAllowed = b.AgeAllowed,
+                                ID = b.ID,
+                                AgeAllowed = b.AgeAllowed ,
                                 Trailer = b.Trailer,
                                 Status = b.Status,
                                 StarTime = b.StarTime,
                                 Name = b.Name,
                                 Duration = b.Duration,
                                 Description = b.Description,
-                                LanguareName = h.Lenguage.LanguageName,
-                                CountryName = e.Countrys.CountryName,
-                                DirectorName = g.Director.FullName,
-                                GenreName = c.Genre.GenreName,
-                                
-                                
+                                LanguareName = b.Lenguage.LanguageName,
+                                CountryName = b.Countrys.CountryName,
+                                DirectorName = b.Director.FullName,
+                                GenreName = b.Genre.GenreName,
                             }).ToList();
-            return new PaginationResponse<MovieDTO>()
+         
+            return  new PaginationResponse<MovieDTO>()
             {
-                Data = result.Data,
+                Data = dataview,
                 HasNext = result.HasNext,
                 PageNumber = result.PageNumber,
                  PageSize = result.PageSize,
                 
             };
+            
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
@@ -157,14 +159,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             try
             {
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if(obj.Deleted == true && obj == null)
-                {
 
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy phim")
-                    };
-                }
                 request.Duration = obj.Duration;
                 request.Name = obj.Name;
                 request.Status = obj.Status;

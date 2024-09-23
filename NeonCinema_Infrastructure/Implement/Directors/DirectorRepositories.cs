@@ -62,7 +62,7 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 else
                 {
                     obj.DeletedTime = DateTime.UtcNow;
-                    obj.Deleted = true;
+                    obj.Status = EntityStatus.Locked;
                     _context.Directors.Update(obj);
                     await _context.SaveChangesAsync(cancellationToken);
                     return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -89,7 +89,7 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 query =  query.Where(x => x.FullName.Contains(request.SearchName.ToLower()));
             }
             var obj = await query.ToListAsync();
-            return _map.Map < List<DirectorDTO>>(obj.Where(x => x.Deleted == null));
+            return _map.Map < List<DirectorDTO>>(obj);
         }
 
         public async Task<HttpResponseMessage> UpdateDirector(Director director, CancellationToken cancellationToken)

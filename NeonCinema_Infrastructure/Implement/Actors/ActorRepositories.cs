@@ -61,7 +61,7 @@ namespace NeonCinema_Infrastructure.Implement.Actors
                 else
                 {
                     obj.DeletedTime = DateTime.UtcNow;
-                    obj.Deleted = true;
+                    obj.Status = EntityStatus.Locked;
                     _context.Actors.Update(obj);
                     await _context.SaveChangesAsync(cancellationToken);
                     return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -95,7 +95,7 @@ namespace NeonCinema_Infrastructure.Implement.Actors
             }
 
             var actor = await query.ToListAsync();
-            return _map.Map<List<ActorDTO>>(actor.Where(x=>x.Deleted == null));
+            return _map.Map<List<ActorDTO>>(actor);
         }
 
         public async Task<HttpResponseMessage> UpdateActor(Actor actor, CancellationToken cancellationToken)
