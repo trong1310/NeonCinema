@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -23,13 +24,14 @@ namespace NeonCinema_Infrastructure.Implement.Movie
     {
         private readonly NeonCinemasContext _context;
         private readonly IMapper _maps;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         public MovieRepositories(IMapper maps, IWebHostEnvironment hv)
         {
             _webHostEnvironment = hv;
             _context = new NeonCinemasContext();
             _maps = maps;
         }
-        public async Task<HttpResponseMessage> Create(Movies request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,10 +49,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 {
                     request.Images.CopyTo(fileStream);
                 }
-                var movies = new Movies() 
+                var movies = new Movies()
                 {
                     ID = Guid.NewGuid(),
-                  
+
                     Duration = request.Duration,
                     Name = request.Name,
                     Trailer = request.Trailer,
@@ -64,13 +66,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
-                    
-                    
 
-                request.ID = Guid.NewGuid();
-                request.Status = MovieStatus.PendingForApproval;
-                request.CreatedTime = DateTime.Now;
-                await _context.Movies.AddAsync(request);
+
+                };
+                await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {

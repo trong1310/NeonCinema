@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using Microsoft.AspNetCore.Http;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;

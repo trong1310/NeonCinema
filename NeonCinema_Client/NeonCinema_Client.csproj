@@ -24,17 +24,12 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
     <None Remove="Pages\abc\**" />
-
-    <Compile Remove="Pages\Customers\**" />
     <Compile Remove="Pages\Employees\**" />
     <Content Remove="Pages\abc\**" />
-    <Content Remove="Pages\Customers\**" />
     <Content Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\abc\**" />
-    <EmbeddedResource Remove="Pages\Customers\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
-    <None Remove="Pages\Customers\**" />
 
 
     <None Remove="Pages\Employees\**" />
@@ -86,11 +81,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Pages\Clients\LayoutClient.razor" />
-    <None Include="Pages\Clients\MovieList.razor" />
-
-
-    <None Include="Pages\Customers\ProfileCustomer.razor" />
 
     <None Include="Pages\Cinema\AppCinemas.razor" />
 
@@ -111,10 +101,6 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Pages\Customers\ProfileCustomer.razor" />
   </ItemGroup>
 
 </Project>
