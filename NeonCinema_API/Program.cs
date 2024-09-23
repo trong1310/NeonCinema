@@ -11,6 +11,8 @@ using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Application.Interface.ShiftChange;
+using NeonCinema_Application.Interface.ShowDate;
+using NeonCinema_Application.Interface.ShowTime;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Domain.Database.Entities;
@@ -22,6 +24,7 @@ using NeonCinema_Infrastructure.Implement.Points;
 using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Infrastructure.Implement.Roles;
 using NeonCinema_Infrastructure.Implement.Room;
+using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
@@ -41,6 +44,8 @@ builder.Services.AddScoped<IRolesRepository, RoleRepository>();
 builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
+builder.Services.AddScoped<IShowDateRepository, ShowDateRepository>();
+builder.Services.AddScoped<IShowTimeRepository, ShowTimeRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
 builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
@@ -64,6 +69,8 @@ builder.Services.AddAuthentication(x =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
     };
+
+
 });
 builder.Services.AddSwaggerGen(c =>
 {

@@ -1,0 +1,140 @@
+@inherits LayoutComponentBase
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.IServices.User
+
+
+@inject IUserServices Service
+
+
+
+
+@inject IUserServices Service
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@using System.IdentityModel.Tokens.Jwt
+
+@inject NavigationManager NavigationManager
+
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonCinema</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/Customer/Customer.css">
+    <link rel="stylesheet" href="/css/Login/Login.css">
+
+</head>
+<body class="layout-body">
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="#">
+                <img src="images/Client/logo.jpg" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Phim
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Phim đang chiếu</a>
+                            <a class="dropdown-item" href="#">Phim sắp chiếu</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Hệ thống rạp</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Cửa hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Khuyến mãi/Sự kiện</a>
+                    </li>
+                </ul>
+                <div class="navbar-nav ml-auto ">
+                    @if (!isLoginPage)
+                    {
+                        @if (isLoggedIn)
+                        {
+                            <div class="user-info">
+                                <img class="user-icon" src="/images/Customer/user-icon.png" @onclick="Profile" />
+                                <span>@username</span>
+                                <a href="#" @onclick="Logout">/Thoát</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="login btn btn-success" @onclick="NavigateToLogin">
+                                <i class="fa-solid fa-user" style="color: #fafafa; margin-right:10px;"></i>
+                                ĐĂNG NHẬP
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Content -->
+    <main>
+        @Body
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Customer Layout Footer</p>
+    </footer>
+
+                            <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Popper.js for Bootstrap 4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+@code {
+    private string username;
+    private string userId;
+    private string otherphone;
+    private bool isLoggedIn;
+    private bool isLoginPage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = await _localStorage.GetItemAsync<string>("nameidentifier");
+        username = await _localStorage.GetItemAsync<string>("name");
+        otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
+        isLoggedIn = !string.IsNullOrEmpty(username);
+        isLoginPage = NavigationManager.Uri.Contains("/login");
+    }
+
+    private async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("nameidentifier");
+        await _localStorage.RemoveItemAsync("name");
+        await _localStorage.RemoveItemAsync("mobilephone");
+        NavigationManager.NavigateTo("/login");
+    }
+    private async Task Profile()
+    {
+        NavigationManager.NavigateTo("/customer-profile");
+    }
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+}

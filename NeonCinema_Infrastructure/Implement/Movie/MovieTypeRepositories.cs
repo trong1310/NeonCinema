@@ -4,7 +4,6 @@ using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -52,8 +51,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				var obj = await _context.MoviesType.FindAsync(movieType.ID);
 				if (obj != null)
 				{
-                 
-                    obj.DeletedTime = DateTime.Now;
+					obj.Deleted = true;
+					obj.DeletedTime = DateTime.Now;
 
 				}
 				_context.MoviesType.Update(obj);
@@ -81,7 +80,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 			}
 
 			var obj = await query.ToListAsync();
-			return _map.Map<List<MovieTypeDTO>>(obj);
+			return _map.Map<List<MovieTypeDTO>>(obj.Where(x => x.Deleted == false));
 		}
 
         public async Task<HttpResponseMessage> Update(MovieType movieType, CancellationToken cancellationToken)

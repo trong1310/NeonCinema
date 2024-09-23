@@ -11,11 +11,8 @@
     <Compile Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\Img\**" />
-
-    <Compile Remove="wwwroot\images\FlimImages\**" />
     <Content Remove="Pages\Employees\**" />
     <Content Remove="Pages\Img\**" />
-    <Content Remove="wwwroot\images\FlimImages\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\abc\**" />
@@ -26,23 +23,24 @@
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
-    <EmbeddedResource Remove="wwwroot\images\FlimImages\**" />
     <None Remove="Pages\abc\**" />
+
+    <Compile Remove="Pages\Customers\**" />
     <Compile Remove="Pages\Employees\**" />
     <Content Remove="Pages\abc\**" />
+    <Content Remove="Pages\Customers\**" />
     <Content Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\abc\**" />
+    <EmbeddedResource Remove="Pages\Customers\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
+    <None Remove="Pages\Customers\**" />
 
 
     <None Remove="Pages\Employees\**" />
 
 
     <None Remove="Pages\Img\**" />
-
-
-    <None Remove="wwwroot\images\FlimImages\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,18 +49,18 @@
 
     <Content Remove="Pages\Users.razor" />
 
-    <Content Remove="Pages\Admin\Users\ListStaff.razor" />
+    <Content Remove="Pages\Users\ListStaff.razor" />
   </ItemGroup>
 
   <ItemGroup>
 
-    <Folder Include="Dialog\Models\" />
-
-    <Folder Include="Pages\Staff\" />
+    <Folder Include="Pages\Admin\" />
+    <Folder Include="wwwroot\images\FlimImages\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Bogus" Version="35.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.20" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -84,31 +82,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Pages\Client\LayoutClient.razor" />
-    <None Include="Pages\Client\MovieList.razor" />
+    <None Include="Pages\Clients\LayoutClient.razor" />
+    <None Include="Pages\Clients\MovieList.razor" />
 
 
-    <None Include="Pages\Client\ProfileCustomer.razor" />
+    <None Include="Pages\Customers\ProfileCustomer.razor" />
 
-    <None Include="Pages\Admin\Cinema\AppCinemas.razor" />
+    <None Include="Pages\Cinema\AppCinemas.razor" />
 
-    <None Include="Pages\Admin\Cinema\CinemasList.razor" />
+    <None Include="Pages\Cinema\CinemasList.razor" />
 
     <None Include="Pages\Register.razor" />
-    <None Include="Pages\Admin\Room\RoomAdd.razor" />
-    <None Include="Pages\Admin\Room\RoomList.razor" />
-    <None Include="Pages\Admin\Room\RoomUpdate.razor" />
+    <None Include="Pages\Room\RoomAdd.razor" />
+    <None Include="Pages\Room\RoomList.razor" />
+    <None Include="Pages\Room\RoomUpdate.razor" />
     <None Include="Pages\Users.razor" />
-    <None Include="Pages\Admin\Users\App.razor" />
-    <None Include="Pages\Admin\Users\ListStaff.razor" />
-    <None Include="Pages\Admin\Users\LIST.razor" />
-    <None Include="Pages\Admin\Users\UserEdit.razor" />
-    <None Include="Pages\Admin\Users\UserLayout.razor" />
-    <None Include="Pages\Admin\Users\UserList.razor" />
+    <None Include="Pages\Users\App.razor" />
+    <None Include="Pages\Users\ListStaff.razor" />
+    <None Include="Pages\Users\LIST.razor" />
+    <None Include="Pages\Users\UserEdit.razor" />
+    <None Include="Pages\Users\UserLayout.razor" />
+    <None Include="Pages\Users\UserList.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\Customers\ProfileCustomer.razor" />
   </ItemGroup>
 
 </Project>
