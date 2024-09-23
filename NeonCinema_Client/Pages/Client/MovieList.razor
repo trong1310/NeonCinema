@@ -53,7 +53,7 @@
                         </div>
                         <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
                         <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
-                        <button class="btn buy-ticket-btn">
+                        <button class="btn buy-ticket-btn" @onclick="OpenDialog">
                             <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                         </button>
                     </div>
@@ -194,6 +194,22 @@
     </button>
 </div>
 
+<!-- chọn lịch chiếu sẽ hiển thị khi click mua vé -->
+<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+
+@code {
+    private ChooseShowTimeDialog? chooseSTD;
+
+    private void OpenDialog()
+    {
+        chooseSTD?.Open();
+    }
+
+    private void OnDialogClose()
+    {
+        // Logic xử lý khi dialog đóng (nếu cần)
+    }
+}
 
 
 <style>
