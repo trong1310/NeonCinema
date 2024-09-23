@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -23,13 +24,14 @@ namespace NeonCinema_Infrastructure.Implement.Movie
     {
         private readonly NeonCinemasContext _context;
         private readonly IMapper _maps;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         public MovieRepositories(IMapper maps, IWebHostEnvironment hv)
         {
             _webHostEnvironment = hv;
             _context = new NeonCinemasContext();
             _maps = maps;
         }
-        public async Task<HttpResponseMessage> Create(Movies request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,10 +49,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 {
                     request.Images.CopyTo(fileStream);
                 }
-                var movies = new Movies() 
+                var movies = new Movies()
                 {
                     ID = Guid.NewGuid(),
-                  
+
                     Duration = request.Duration,
                     Name = request.Name,
                     Trailer = request.Trailer,
@@ -65,12 +67,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
                     
-                    
-
-                request.ID = Guid.NewGuid();
-                request.Status = MovieStatus.PendingForApproval;
-                request.CreatedTime = DateTime.Now;
-                await _context.Movies.AddAsync(request);
+                };
+                await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
@@ -123,7 +121,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Movies.AsNoTracking();
+            var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
+      (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
@@ -133,10 +132,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataView = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
-                            join c in query on b.GenreID equals c.ID
-                            join e in query on b.CountryID equals e.ID
-                            join g in query on b.DirectorID equals g.ID
-                            join h in query on b.LenguageID equals h.ID
+                          
                             orderby b.StarTime 
                             where b.Deleted == false
                             select new MovieDTO
@@ -148,10 +144,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Name = b.Name,
                                 Duration = b.Duration,
                                 Description = b.Description,
-                                LanguareName = h.Lenguage.LanguageName,
-                                CountryName = e.Countrys.CountryName,
-                                DirectorName = g.Director.FullName,
-                                GenreName = c.Genre.GenreName,
+                                LanguareName = b.Lenguage.LanguageName,
+                                CountryName = b.Countrys.CountryName,
+                                DirectorName = b.Director.FullName,
+                                GenreName = b.Genre.GenreName,
                                 
                                 
                             }).ToList();
