@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.CategoryMovies;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 var obj = await _context.CategoryMovies.FindAsync(data.ID);
                 if (obj != null)
                 {
-                    obj.Deleted = true;
+                    obj.Status = EntityStatus.Locked;
                     obj.DeletedTime = DateTime.Now;
 
                 }
@@ -75,7 +76,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         {
            var query = _context.CategoryMovies.AsNoTracking();
             var result = await query.ToListAsync();
-            return _map.Map<List<CategoryDTO>>(result.Where(x => x.Deleted == false));
+            return _map.Map<List<CategoryDTO>>(result);
         }
 
         public async Task<HttpResponseMessage> Update(CategoryMovies data, CancellationToken cancellationToken)

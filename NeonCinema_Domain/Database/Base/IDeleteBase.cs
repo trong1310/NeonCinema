@@ -8,7 +8,7 @@ namespace NeonCinema_Domain.Database.Base
 {
     public interface IDeleteBase
     {
-        public bool? Deleted { get; set; }
+      
 
         public Guid? DeletedBy { get; set; }
 

@@ -17,7 +17,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public DateTime StarTime { get; set; }
         public IFormFile Trailer { get; set; }
         public int AgeAllowed { get; set; }
-        public MovieStatus Status { get; set; } = MovieStatus.Active;
+    
         public Guid GenreID { get; set; }
         public Guid LenguageID { get; set; }
         public Guid CountryID { get; set; }

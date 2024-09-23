@@ -64,8 +64,6 @@ builder.Services.AddAuthentication(x =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
     };
-
-
 });
 builder.Services.AddSwaggerGen(c =>
 {
