@@ -1,15 +1,14 @@
 ﻿using NeonCinema_Application.DataTransferObject.User;
-using NeonCinema_Client.IServices.User;
 using System.Text.Json;
 using System.Text;
 using System.Net.Http.Json;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using static NeonCinema_Client.Pages.Login;
 using static System.Net.WebRequestMethods;
-using NeonCinema_Client.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using NeonCinema_Client.Data.IServices.User;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -84,18 +83,8 @@ namespace NeonCinema_Client.Services.User
                 JsonSerializer.Serialize(request),
                 Encoding.UTF8,
                 "application/json");
-
             var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
             return response;
         }
-
-
-
-        public async Task<UserLoginDTO> UserLogin(  )
-        {
-            var response =  await _httpClient.GetFromJsonAsync<UserLoginDTO>("https://localhost:7211/api/Login/current"); 
-            return response;
-        }
-
     }
 }
