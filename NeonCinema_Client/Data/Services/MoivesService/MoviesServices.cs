@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
 
 namespace NeonCinema_Client.Services.MoivesService
@@ -11,9 +12,10 @@ namespace NeonCinema_Client.Services.MoivesService
             _httpClient = new HttpClient();
         }
 
-        public Task<List<MovieDTO>> GetAllMovies(MovieDTO movies)
+        public  async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
         {
-            throw new NotImplementedException();
+            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
+            return obj;
         }
 
     }

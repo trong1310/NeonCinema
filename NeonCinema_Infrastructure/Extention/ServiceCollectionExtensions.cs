@@ -99,7 +99,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
-            services.AddScoped<IFileRepo,FileRepo>();
+            
             
             return services;
         }

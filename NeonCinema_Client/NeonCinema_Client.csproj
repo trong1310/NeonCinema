@@ -54,8 +54,12 @@
 
   <ItemGroup>
 
-    <Folder Include="Pages\Admin\" />
-    <Folder Include="wwwroot\images\FlimImages\" />
+    <Folder Include="Dialog\Models\" />
+
+    <Folder Include="Pages\Staff\" />
+
+    <Folder Include="wwwroot\imageFlims\" />
+
   </ItemGroup>
 
   <ItemGroup>
