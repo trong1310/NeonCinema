@@ -10,7 +10,7 @@ namespace NeonCinema_Domain.Enum
     {
         Active = 0, 
         PendingForApproval = 1,
-        InActive = 2,
+        Comingsoon = 2,
         StopShowing = 3,
     }
 }

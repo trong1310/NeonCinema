@@ -59,6 +59,8 @@
     <Folder Include="Dialog\Models\" />
 
     <Folder Include="Pages\Staff\" />
+
+    <Folder Include="wwwroot\imageFlims\" />
   </ItemGroup>
 
   <ItemGroup>

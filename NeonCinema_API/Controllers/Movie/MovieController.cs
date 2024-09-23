@@ -41,5 +41,7 @@ namespace NeonCinema_API.Controllers.Movie
             var obj = await _reps.Delete(_map.Map<NeonCinema_Domain.Database.Entities.Movies>(request), cancellationToken);
             return Ok(obj);
         }
+       
+       
     }
 }
