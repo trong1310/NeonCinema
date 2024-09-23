@@ -29,8 +29,4 @@
     <ProjectReference Include="..\NeonCinema_Infrastructure\NeonCinema_Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
 </Project>
