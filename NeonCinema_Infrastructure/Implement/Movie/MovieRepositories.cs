@@ -68,12 +68,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
-<<<<<<< HEAD
 
-
-=======
-                    
->>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
                 };
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
