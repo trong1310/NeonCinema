@@ -6,13 +6,17 @@ html, body {
     width: 100%;
     overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
 }
-
+.carousel-item img {
+    width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
+    height: 700px; /* Đặt chiều cao cố định cho tất cả các ảnh */
+    object-fit: cover; /* Cắt ảnh để phù hợp với kích thước mà không làm biến dạng */
+}
 /* Các kiểu dáng cho Navbar */
 .navbar {
     background-color: #1b1b1b;
     padding: 15px 50px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 100; /* Đảm bảo Navbar nằm trên các phần tử khác */
+    z-index: 1000; /* Đảm bảo Navbar nằm trên các phần tử khác */
     justify-content: space-between;
 }
 
@@ -155,6 +159,7 @@ main {
     .carousel-control-prev:hover,
     .carousel-control-next:hover {
         background-color: transparent; /* Đảm bảo nền trong suốt khi hover */
+        
     }
 
 

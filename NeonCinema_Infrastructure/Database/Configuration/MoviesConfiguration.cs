@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<Movies> builder)
         {
-            builder.ToTable("Movies");
+            builder.ToTable("MovieDetail");
             builder.HasKey(x=>x.ID);
             builder.Property(x => x.Duration).HasDefaultValue(0);
             builder.Property(x => x.AgeAllowed).HasDefaultValue(0);

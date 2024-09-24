@@ -1,0 +1,59 @@
+﻿@page "/comingsoon-flim"
+@layout LayoutClient
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Client.DataTransferObject.MovieData
+@inject IUserServices _filmsServices
+<div class="container text-center">
+    <div class="row row-cols-2 row-cols-lg-4 g-2 g-lg-3">
+        <div class="col">
+
+            @if (_lstMovie == null || _lstMovie.Count == 0)
+            {
+                <p>Không có phim nào để hiển thị.</p>
+            }
+            else
+            {
+                @foreach (var item in _lstMovie)
+                {
+                    <div class="card movie-card d-flex">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top"alt="">
+                        <div class="card-body">
+                            <div class="tags mb-2">
+                                <span class="badge bg-danger">@item.AgeAllowed</span>
+                                <span class="badge bg-dark">@item.StarTime</span>
+                                <span class="badge bg-success">@item.LanguareName
+                                </span>
+                            </div>
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <button class="btn buy-ticket-btn">
+                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+@code {
+    private List<MovieData> _lstMovie;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovie();
+    }
+
+    public async Task LoadMovie( )
+    {
+
+        _lstMovie = await _filmsServices.GetMovieComing();
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/name/{imageUrl}";
+    }
+}

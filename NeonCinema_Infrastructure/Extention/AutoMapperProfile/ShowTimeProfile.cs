@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         public ShowTimeProfile()
         {
             CreateMap<ShowTimeDTO, ShowTime>().ReverseMap();
-            CreateMap<ShowTimeDeleteRequest, ShowTime>();
+            CreateMap<ShowTimeCreateRequest, ShowTime>(); // Thêm ánh xạ này
             CreateMap<ShowTimeUpdateRequest, ShowTime>();
         }
     }
