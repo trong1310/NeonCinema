@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 
+
 namespace NeonCinema_Infrastructure.Implement.Movie
 {
     public class MovieRepositories : IMovieRepositories
@@ -43,6 +44,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 {
                     Directory.CreateDirectory(fileRoot);
                 }
+
                 string trailerfile = Guid.NewGuid() + Path.GetExtension(request.Images.FileName);
                 string trailerFilePath = Path.Combine(fileRoot, trailerfile);
                 using (var fileStream = new FileStream(trailerFilePath, FileMode.Create))
@@ -66,7 +68,12 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
+<<<<<<< HEAD
+
+
+=======
                     
+>>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
                 };
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
@@ -84,6 +91,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 };
             }
         }
+
+
 
         public async Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken)
         {

@@ -1,6 +1,6 @@
 ﻿using NeonCinema_Application.DataTransferObject.Cinemas;
 
-namespace NeonCinema_Client.Data.IServices.Cinemas
+namespace NeonCinema_Client.IServices.Cinemas
 {
     public interface ICinemasService
     {

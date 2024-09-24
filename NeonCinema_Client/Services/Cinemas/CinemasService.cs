@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Cinemas;
 using NeonCinema_Application.Interface.Cinemas;
-using NeonCinema_Client.Data.IServices.Cinemas;
+using NeonCinema_Client.IServices.Cinemas;
 using NeonCinema_Domain.Database.Entities;
 
-namespace NeonCinema_Client.Data.Services.Cinemas
+namespace NeonCinema_Client.Services.Cinemas
 {
     public class CinemasService : ICinemasService
     {
