@@ -68,8 +68,12 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
+<<<<<<< HEAD
 
 
+=======
+                    
+>>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
                 };
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
@@ -126,7 +130,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Movies.AsNoTracking();
+            var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
+      (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
@@ -136,10 +141,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataView = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
-                            join c in query on b.GenreID equals c.ID
-                            join e in query on b.CountryID equals e.ID
-                            join g in query on b.DirectorID equals g.ID
-                            join h in query on b.LenguageID equals h.ID
+                          
                             orderby b.StarTime 
                             where b.Deleted == false
                             select new MovieDTO
@@ -151,10 +153,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Name = b.Name,
                                 Duration = b.Duration,
                                 Description = b.Description,
-                                LanguareName = h.Lenguage.LanguageName,
-                                CountryName = e.Countrys.CountryName,
-                                DirectorName = g.Director.FullName,
-                                GenreName = c.Genre.GenreName,
+                                LanguareName = b.Lenguage.LanguageName,
+                                CountryName = b.Countrys.CountryName,
+                                DirectorName = b.Director.FullName,
+                                GenreName = b.Genre.GenreName,
                                 
                                 
                             }).ToList();
