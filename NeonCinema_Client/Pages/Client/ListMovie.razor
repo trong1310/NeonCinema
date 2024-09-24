@@ -1,32 +1,32 @@
-﻿@page "/"
-@layout LayoutClient
+﻿@layout LayoutClient
 
-<div id="carouselExampleIndicators" class="carousel slide">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+<body>
+    <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="images/Client/slide1.jpg" class="d-block w-100" alt="Slide 1" loading="lazy">
+            </div>
+            <div class="carousel-item">
+                <img src="images/Client/slide2.jpg" class="d-block w-100" alt="Slide 2" loading="lazy">
+            </div>
+            <div class="carousel-item">
+                <img src="images/Client/slide3.jpg" class="d-block w-100" alt="Slide 3" loading="lazy">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="images/Client/slide1.jpg" class="d-block w-100" alt="Slide 1" loading="lazy">
-        </div>
-        <div class="carousel-item">
-            <img src="images/Client/slide2.jpg" class="d-block w-100" alt="Slide 2" loading="lazy">
-        </div>
-        <div class="carousel-item">
-            <img src="images/Client/slide3.jpg" class="d-block w-100" alt="Slide 3" loading="lazy">
-        </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-        <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-        <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
 
 
 
@@ -43,148 +43,89 @@
         <ul class="carousel-track">
             <!-- Movie Card 1 -->
             <li class="carousel-slide current-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/cam.jpg" class="card-img-top" alt="CÁM">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T18</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
+                        <div class="card movie-card">
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                <button class="btn buy-ticket-btn" @onclick="OpenDialog">
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <img src="/images/Client/phim3.png" class="card-img-top" alt="Làm giàu với ma">
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-danger">T13</span>
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
+                                <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <img src="/images/Client/phim5.png" class="card-img-top" alt="Làm giàu với ma">
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-danger">T13</span>
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
+                                <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <img src="/images/Client/phim7.jpg" class="card-img-top" alt="Làm giàu với ma">
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-danger">T13</span>
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
+                                <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="tags mb-2">
+                                    <span class="badge bg-dark">PHỤ ĐỀ</span>
+                                    <span class="badge bg-success">2D</span>
+                                </div>
+                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                </button>
+                            </div>
                         </div>
-                        <h5 class="card-title">CÁM</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
-                        <button class="btn buy-ticket-btn" @onclick="OpenDialog">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <!-- Movie Card 2 -->
-            <li class="carousel-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim2.jpg" class="card-img-top" alt="Handsome Guys">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T16</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">HANDSOME GUYS</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Action</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <li class="carousel-slide current-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim3.png" class="card-img-top" alt="Làm giàu với ma">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T13</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <!-- Movie Card 2 -->
-            <li class="carousel-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim4.jpg" class="card-img-top" alt="Handsome Guys">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T16</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">HANDSOME GUYS</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Action</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <li class="carousel-slide current-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim5.png" class="card-img-top" alt="Làm giàu với ma">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T13</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <!-- Movie Card 2 -->
-            <li class="carousel-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim6.jpg" class="card-img-top" alt="Handsome Guys">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T16</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">HANDSOME GUYS</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Action</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <li class="carousel-slide current-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim7.jpg" class="card-img-top" alt="Làm giàu với ma">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T13</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
-            </li>
-            <!-- Movie Card 2 -->
-            <li class="carousel-slide" style="margin-left: 10px">
-                <div class="card movie-card">
-                    <img src="/images/Client/phim8.jpg" class="card-img-top" alt="Handsome Guys">
-                    <div class="card-body">
-                        <div class="tags mb-2">
-                            <span class="badge bg-danger">T16</span>
-                            <span class="badge bg-dark">PHỤ ĐỀ</span>
-                            <span class="badge bg-success">2D</span>
-                        </div>
-                        <h5 class="card-title">HANDSOME GUYS</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Action</span></p>
-                        <button class="btn buy-ticket-btn">
-                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                        </button>
-                    </div>
-                </div>
             </li>
             <!-- Add more movie cards similarly... -->
         </ul>
-    </div>
+                    </div>
     <!-- Carousel Controls -->
     <button class="carousel-control-prev" id="prevBtn">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -192,11 +133,15 @@
     <button class="carousel-control-next" id="nextBtn">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
     </button>
-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
 
 <!-- chọn lịch chiếu sẽ hiển thị khi click mua vé -->
 <ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
-
 @code {
     private ChooseShowTimeDialog? chooseSTD;
 
@@ -302,7 +247,7 @@
             const prevIndex = currentIndex - 1;
             moveToSlide(track, prevIndex);
             updateButtonVisibility();
-        }
+}
     });
 
     // Listen for resize event
