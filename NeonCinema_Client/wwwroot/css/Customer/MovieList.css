@@ -1,0 +1,197 @@
+﻿/* Cài đặt cho body */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
+}
+
+/* Cài đặt cho các nút điều khiển carousel */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%; /* Điều chỉnh kích thước nút */
+    height: 100%; /* Chiều cao phủ đầy để dễ bấm */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* Loại bỏ hoàn toàn nền */
+    border: none;
+}
+
+    /* Cài đặt cho biểu tượng điều khiển */
+    .carousel-control-prev .fa-chevron-left,
+    .carousel-control-next .fa-chevron-right {
+        font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
+        color: #4caf50; /* Màu biểu tượng mặc định */
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Hiệu ứng hover cho biểu tượng điều khiển */
+    .carousel-control-prev:hover .fa-chevron-left,
+    .carousel-control-next:hover .fa-chevron-right {
+        color: limegreen; /* Màu xanh lá cây khi hover */
+        transform: scale(1.5); /* Phóng to biểu tượng khi hover */
+    }
+
+.movie-card {
+    margin: 15px; /* Thêm margin xung quanh card */
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s; /* Thêm hiệu ứng cho box-shadow */
+    width: calc(100% - 30px); /* Điều chỉnh width để bù cho margin */
+    height: auto; /* Sử dụng auto để có không gian cho nội dung */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+    .movie-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+/* Đảm bảo thông tin bên dưới ảnh có không gian và dễ đọc */
+.movie-info {
+    padding: 10px;
+    text-align: left;
+    flex: 1;
+    background-color: white;
+}
+
+    .movie-info h3 {
+        font-size: 18px;
+        color: #4caf50;
+        margin: 15px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+/* Hiệu ứng hover không làm cho card bị che khuất */
+.movie-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ đổ bóng khi hover */
+}
+
+/* Cài đặt cho badge */
+.tags .badge {
+    font-size: 14px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    margin-right: 3px;
+}
+
+    .tags .badge:last-child {
+        margin-right: 0;
+    }
+
+/* Hiệu ứng khi hover vào movie-card */
+.movie-card:hover .buy-ticket-btn {
+    opacity: 1;
+}
+
+/* Hiệu ứng khi hover vào movie-card làm cho ảnh mờ đi */
+.movie-card:hover img {
+    opacity: 0.7;
+}
+.card-body {
+    background-color: #292C35; /* Màu nền tối để phù hợp */
+    color: #ffffff;
+}
+/* Cài đặt cho danh sách */
+ol,
+ul {
+    list-style: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* Loại bỏ outline khi nút và input được chọn */
+button:focus, input:focus, textarea:focus {
+    outline: none; /* Sử dụng none thay vì 0 */
+}
+
+/* Cài đặt cho wrapper của card */
+.card_wrapper {
+    background: linear-gradient(180deg, #23273A 46.35%, #FA4A6F 119.01%);
+    width: 100%;
+    min-height: 100vh; /* Thay đổi từ height sang min-height */
+    display: flex;
+    align-items: center;
+    padding: 20px; /* Thêm padding để có không gian cho các thẻ */
+    overflow: visible; /* Đảm bảo không bị cắt */
+}
+
+/* Cài đặt cho carousel slider */
+.slider_carousel .owl-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+.slider_carousel .owl-prev, .slider_carousel .owl-next {
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transition: background 0.3s ease; /* Hiệu ứng chuyển màu nền */
+}
+
+.slider_carousel .owl-next {
+    right: -50px;
+}
+
+.slider_carousel .owl-prev {
+    left: -50px;
+}
+
+    /* Hiệu ứng hover cho các nút điều khiển trong carousel */
+    .slider_carousel .owl-prev:hover,
+    .slider_carousel .owl-next:hover {
+        background: #f0f0f0; /* Chuyển màu nền khi hover */
+    }
+/* Cài đặt cho các nút điều khiển carousel */
+.owl-nav {
+    position: absolute; /* Đặt các nút ở vị trí tuyệt đối */
+    top: 50%; /* Đặt nút giữa theo chiều dọc */
+    width: 100%; /* Để chiếm toàn bộ chiều rộng */
+    display: flex;
+    justify-content: space-between; /* Căn giữa và cách đều hai bên */
+    transform: translateY(-50%); /* Căn chỉnh giữa hoàn toàn */
+    z-index: 10; /* Đặt z-index để đảm bảo nó nằm trên các phần tử khác */
+}
+
+    .owl-nav button {
+        width: 40px; /* Điều chỉnh kích thước nút để dễ bấm hơn */
+        height: 40px; /* Chiều cao cố định */
+        background-color: transparent; /* Loại bỏ hoàn toàn nền */
+        border: none; /* Không viền */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer; /* Hiển thị con trỏ khi hover */
+    }
+
+        /* Cài đặt cho biểu tượng điều khiển */
+        .owl-nav button i {
+            font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
+            color: #4caf50; /* Màu biểu tượng mặc định */
+            transition: color 0.3s ease, transform 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+        }
+
+        /* Hiệu ứng hover cho biểu tượng điều khiển */
+        .owl-nav button:hover i {
+            color: limegreen; /* Màu xanh lá cây khi hover */
+            transform: scale(1.5); /* Phóng to biểu tượng khi hover */
+        }

@@ -15,11 +15,16 @@
             <div class="card p-4 shadow-sm">
                 <p class="profile-title">THÔNG TIN CÁ NHÂN</p>
                 <div class="row">
-                    <div class="col-md-3 text-center">
+                    <div class="col-md-5 text-center">
                         <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img" alt="User Image" />
+                        <div class="mt-4 customer-movie">
+                            <p><span class="font-weight-bold">Điểm:</span> 100 điểm</p>
+                            <p><span class="font-weight-bold">Tổng chi tiêu:</span> 30000000</p>
+                            <p><span class="font-weight-bold">Hoạt động:</span> aaaaaa</p>
+                        </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="row">
+                    <div class="col-md-6 ">
+                        <div class="row mt-3">
                             <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
                                 <input type="text" id="FullName" class="form-control" @bind="name" />
@@ -39,13 +44,12 @@
                                 <input type="date" id="DateOfBirth" class="form-control" @bind="age" />
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <div class="mb-3">
-                                <label for="Password" class="form-label">Mật khẩu</label>
-                                <div class="d-flex">
-                                    <input type="password" id="Password" class="form-control" disabled />
-                                    <button class="btn btn-light ms-2" @onclick="GetForm">Đổi mật khẩu</button>
-                                </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12 d-flex">
+                                <input type="password" id="Password" class="form-control" disabled />
+                                <button class="btn btn-light ms-4" @onclick="GetForm">Đổi mật khẩu</button>
+                            </div>
+                            <div class="col-md-12">
                                 @if (show)
                                 {
                                     <div class="mt-3">
@@ -63,25 +67,31 @@
                                 }
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Giới tính</label>
-                            <div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale" value="Nam" checked="@IsMaleChecked" />
-                                    <label class="form-check-label" for="genderMale">Nam</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderFemale" value="Nữ" checked="@IsFemaleChecked" />
-                                    <label class="form-check-label" for="genderFemale">Nữ</label>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label>Giới tính</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="genderMale" value="Nam" checked="@IsMaleChecked" />
+                                        <label class="form-check-label" for="genderMale">Nam</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="genderFemale" value="Nữ" checked="@IsFemaleChecked" />
+                                        <label class="form-check-label" for="genderFemale">Nữ</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="Address">Địa chỉ</label>
-                            <input type="text" id="address" class="form-control" @bind="address" />
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label for="Address">Địa chỉ</label>
+                                <input type="text" id="address" class="form-control address-input" @bind="address" />
+                            </div>
                         </div>
-                        <div class="text-center mt-4">
-                            <button type="button" class="btn btn-primary">Lưu</button>
+
+                        <div class=" mt-4">
+                            <button style="width: 130px; margin-left: 295px;" type="button" class="btn btn-primary">Lưu</button>
                         </div>
                     </div>
                 </div>
@@ -90,8 +100,16 @@
     </div>
 </div>
 
-<span class="d-flex align-items-center" style="font-size: 30px;">Lịch sử giao dịch</span>
-<input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px;" />
+<div class="row bg bg-secondary">
+    <div class="col-md-10">
+        <span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
+    </div>
+    <div class="col-md-2">
+        <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
+    </div>
+</div>
+
+
 <table class="table">
     <thead>
         <tr>
