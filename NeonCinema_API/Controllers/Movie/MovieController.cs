@@ -28,7 +28,7 @@ namespace NeonCinema_API.Controllers.Movie
         [HttpPost ("Create")]
         public async Task <IActionResult> Create([FromForm] CreateMovieRequest request, CancellationToken cancellationToken)
         {
-            var obj = await _reps.Create(_map.Map<NeonCinema_Domain.Database.Entities.Movies>(request),cancellationToken);
+            var obj = await _reps.Create(request,cancellationToken);
             return Ok(obj);
         }
         [HttpPut("Update")]
