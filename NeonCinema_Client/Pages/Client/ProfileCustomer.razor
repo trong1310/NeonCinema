@@ -148,6 +148,7 @@
     private string? address = "";
     private DateTime? age; 
     private string? gender;
+    private string? images;
     private bool IsMaleChecked => gender == "Nam";
     private bool IsFemaleChecked => gender == "Nữ";
 
@@ -157,11 +158,16 @@
         email = await _localStorage.GetItemAsync<string>("email");
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
         address = await _localStorage.GetItemAsync<string>("address");
+        images = await _localStorage.GetItemAsync<string>("images");
         var birthDateString = await _localStorage.GetItemAsync<string>("dateofbirth");
         if (DateTime.TryParse(birthDateString, out var parsedDate))
         {
             age = parsedDate;
         }
         gender = await _localStorage.GetItemAsync<string>("gender");
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/Resources/{imageUrl}";
     }
 }

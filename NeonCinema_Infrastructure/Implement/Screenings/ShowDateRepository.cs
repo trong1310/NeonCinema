@@ -2,19 +2,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NeonCinema_Application.DataTransferObject.Bills;
+using NeonCinema_Application.DataTransferObject.ShowDate;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Interface.ShowDate;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.Screenings
 {
-    public class ShowDateRepository : IEntityRepository<ShowDate>
+    public class ShowDateRepository : IShowDateRepository
     {
         NeonCinemasContext _context;
         IMapper _mapper;
@@ -23,136 +26,64 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             _context = context;
             _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> Create(ShowDate entity, CancellationToken cancellationToken)
+
+        public async Task<List<ShowDateDTO>> GetAllShiftChange(CancellationToken cancellationToken)
         {
-            try
-            {
-                if (entity.StarDate <= DateTime.Now)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Time is not correct")
-                    };
-                }
-                ShowDate sd = new ShowDate
-                {
-                    ID = Guid.NewGuid(),
-                    StarDate = entity.StarDate,
-                    Status = EntityStatus.PendingForConfirmation
-                };
-
-                _context.ShowDate.Add(sd);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Create successfully")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+            var showDates = await _context.ShowDate.ToListAsync(cancellationToken);
+            return _mapper.Map<List<ShowDateDTO>>(showDates);
         }
 
-        public async Task<HttpResponseMessage> Delete(ShowDate entity, CancellationToken cancellationToken)
+        public async Task<ShowDateDTO> GetByIDShiftChange(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
-
-                if(sd == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("ShowDate is not found")
-                    };
-                }
-
-                _context.ShowDate.Remove(sd);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Delete successfully")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+            var showDate = await _context.ShowDate.FindAsync(new object[] { id }, cancellationToken);
+            return _mapper.Map<ShowDateDTO>(showDate);
         }
 
-        public async Task<List<ShowDate>> GetAll(CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateShiftChange(ShowDateCreateRequest request, CancellationToken cancellationToken)
         {
-            var lst = await _context.ShowDate.ToListAsync(cancellationToken);
+            var showDate = _mapper.Map<ShowDate>(request);
+            await _context.ShowDate.AddAsync(showDate, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
-            return lst;
+            return new HttpResponseMessage(HttpStatusCode.Created)
+            {
+                Content = new StringContent($"ShowDate with ID {showDate.ID} created.")
+            };
         }
 
-        public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> UpdateShiftChange(Guid id, ShowDateUpdateRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var showDate = await _context.ShowDate.FindAsync(new object[] { id }, cancellationToken);
+            if (showDate == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+            _mapper.Map(request, showDate);
+            _context.ShowDate.Update(showDate);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent($"ShowDate with ID {id} updated.")
+            };
         }
 
-        public async Task<ShowDate> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteShiftChange(Guid id, CancellationToken cancellationToken)
         {
-            try
+            var showDate = await _context.ShowDate.FindAsync(new object[] { id }, cancellationToken);
+            if (showDate == null)
             {
-                var sd = await _context.ShowDate.FindAsync(id);
-
-                if (sd == null)
-                {
-                    throw new Exception("ShowDate is not found");
-                }
-
-
-                return sd;
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-            catch (Exception ex)
+
+            _context.ShowDate.Remove(showDate);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<HttpResponseMessage> Update(ShowDate entity, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var sd = await _context.ShowDate.FindAsync(entity.ID);
-
-                if (sd == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("ShowDate is not found")
-                    };
-                }
-
-                sd.StarDate = entity.StarDate;
-                sd.Status = entity.Status;
-
-                _context.ShowDate.Update(sd);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Update successfully")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.Message)
-                };
-            }
+                Content = new StringContent($"ShowDate with ID {id} deleted.")
+            };
         }
     }
 }

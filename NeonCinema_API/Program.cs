@@ -1,5 +1,6 @@
 using Com.CloudRail.SI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NeonCinema_Application.DataTransferObject.Utilities;
@@ -11,6 +12,8 @@ using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Application.Interface.ShiftChange;
+using NeonCinema_Application.Interface.ShowDate;
+using NeonCinema_Application.Interface.ShowTime;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Domain.Database.Entities;
@@ -22,13 +25,14 @@ using NeonCinema_Infrastructure.Implement.Points;
 using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Infrastructure.Implement.Roles;
 using NeonCinema_Infrastructure.Implement.Room;
+using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 using System.Text;
 using Twilio;
 var builder = WebApplication.CreateBuilder(args);
-
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -41,6 +45,8 @@ builder.Services.AddScoped<IRolesRepository, RoleRepository>();
 builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
+builder.Services.AddScoped<IShowDateRepository, ShowDateRepository>();
+builder.Services.AddScoped<IShowTimeRepository, ShowTimeRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
 builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
@@ -66,6 +72,14 @@ builder.Services.AddAuthentication(x =>
     };
 
 
+});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin();
+                      });
 });
 builder.Services.AddSwaggerGen(c =>
 {
@@ -118,8 +132,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Resources")),
+    RequestPath = new PathString("/Resources")
+});
 app.UseHttpsRedirection();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 app.UseCors("AllowLocalhost");

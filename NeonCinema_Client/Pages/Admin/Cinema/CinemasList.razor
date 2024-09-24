@@ -1,50 +1,59 @@
 ﻿@page "/cinemaslist"
+@using NeonCinema_Application.DataTransferObject.Cinemas
+@using NeonCinema_Client.Data.IServices.Cinemas
 @inject NavigationManager Navigation
-
+@inject ICinemasService CnmSV
 <link rel="stylesheet" href="/CINEMA/cinemaslist.css">
 
 <div class="cinema-container">
     <!-- Large Image Placeholder -->
     <div class="cinema-image">
-        <img src="https://baomoi.vinhphuc.gov.vn/Upload/baiviet/2024/1/6/nthuong/990_d-a-2.jpg" alt="Cinema Image" class="image-large" />
+        <img src="https://cdn.24h.com.vn/upload/2-2021/images/2021-06-21/201156078_601597017412098_6474867026000216894_n-1624269669-655-width500height709.jpg" alt="Cinema Image" class="image-large" />
         <button class="btn-overlay" @onclick="NavigateToUpdateCinema">Update</button>
     </div>
 
     <!-- Cinema Information Fields -->
     <div class="cinema-details">
         <div class="hh">
-            <h3 class="abc"> NEON CINEMAS</h3>
+            <h3 class="abc">Name: <strong>@cinema.Name</strong></h3>
         </div>
 
         <div class="form-group">
-            <label for="location">Location:  <strong>Ba Vì - Hà Nội</strong></label>
+            <label for="location">Location:  <strong>@cinema.Location</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="phone">Phone Number: <strong>0388008268</strong></label>
+            <label for="phone">Phone Number: <strong>@cinema.PhoneNumber</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="website">Website: <strong>cgv.vn</strong></label>
+            <label for="website">Website: <strong>@cinema.WebSite</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="opening-hours">Opening Hours: <strong>08:00</strong></label>
+            <label for="opening-hours">Opening Hours: <strong>@cinema.OpeningHours</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="closing-hours">Closing Hours: <strong>02:00</strong></label>
+            <label for="closing-hours">Closing Hours: <strong>@cinema.ClosingHours</strong></label>
         </div>
 
         <div class="form-group">
-            <label for="room-number">Number of Rooms: <strong>200</strong></label>
+            <label for="room-number">Number of Rooms: <strong>@cinema.RoomNumber</strong></label>
         </div>
     </div>
 </div>
 
 @code {
+    private CinemasDTO cinema = new CinemasDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cinema = await CnmSV.GetByIDRCinemas(Guid.Parse("c6c27489-2911-4a5c-ac22-a8e0e971be9e"), CancellationToken.None);
+    }
+
     private void NavigateToUpdateCinema()
     {
-        Navigation.NavigateTo("/update-cinema");
+        Navigation.NavigateTo($"/update-cinema?id={cinema.ID}");
     }
 }

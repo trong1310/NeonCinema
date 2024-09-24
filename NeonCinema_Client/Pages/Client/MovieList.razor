@@ -196,6 +196,22 @@
 
 <!-- chọn lịch chiếu sẽ hiển thị khi click mua vé -->
 <ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+<div class="container text-center">
+    <div class="row g-4">
+        <div class="col-6">
+            <div class="p-3">Custom column padding</div>
+        </div>
+        <div class="col-6">
+            <div class="p-3">Custom column padding</div>
+        </div>
+        <div class="col-6">
+            <div class="p-3">Custom column padding</div>
+        </div>
+        <div class="col-6">
+            <div class="p-3">Custom column padding</div>
+        </div>
+    </div>
+</div>
 
 @code {
     private ChooseShowTimeDialog? chooseSTD;
@@ -254,10 +270,12 @@
 
     .carousel-control-prev {
         left: 0;
+        background-color: transparent;
     }
 
     .carousel-control-next {
         right: 0;
+        background-color: transparent;
     }
 
     

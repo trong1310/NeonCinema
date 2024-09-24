@@ -3,10 +3,18 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
+using NeonCinema_Client.Data;
+using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
+using NeonCinema_Client.Pages.Admin.Users;
+/*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
+
 
 using NeonCinema_Application.DataTransferObject.Utilities;
-using NeonCinema_Client.Data.IServices.User;
+using NeonCinema_Client.Models;
+using NeonCinema_Client.Data.Services.Cinemas;
+using NeonCinema_Client.Data.IServices.Cinemas;
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -16,8 +24,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
-
+builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 
 builder.Services.AddCors(options =>
@@ -34,6 +41,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddBlazoredLocalStorage();
 
