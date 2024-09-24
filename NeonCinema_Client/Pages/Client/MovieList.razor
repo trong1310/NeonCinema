@@ -44,15 +44,15 @@
             <!-- Movie Card 1 -->
             <li class="carousel-slide current-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim1.jpg" class="card-img-top" alt="Làm giàu với ma">
+                    <img src="/images/Client/cam.jpg" class="card-img-top" alt="CÁM">
                     <div class="card-body">
                         <div class="tags mb-2">
-                            <span class="badge bg-danger">T13</span>
+                            <span class="badge bg-danger">T18</span>
                             <span class="badge bg-dark">PHỤ ĐỀ</span>
                             <span class="badge bg-success">2D</span>
                         </div>
-                        <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
-                        <p class="card-text">Thể loại phim: <span class="genre">Comedy</span></p>
+                        <h5 class="card-title">CÁM</h5>
+                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
                         <button class="btn buy-ticket-btn" @onclick="OpenDialog">
                             <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                         </button>
@@ -79,7 +79,7 @@
             </li>
             <li class="carousel-slide current-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim1.jpg" class="card-img-top" alt="Làm giàu với ma">
+                    <img src="/images/Client/phim3.png" class="card-img-top" alt="Làm giàu với ma">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T13</span>
@@ -97,7 +97,7 @@
             <!-- Movie Card 2 -->
             <li class="carousel-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim2.jpg" class="card-img-top" alt="Handsome Guys">
+                    <img src="/images/Client/phim4.jpg" class="card-img-top" alt="Handsome Guys">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T16</span>
@@ -114,7 +114,7 @@
             </li>
             <li class="carousel-slide current-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim1.jpg" class="card-img-top" alt="Làm giàu với ma">
+                    <img src="/images/Client/phim5.png" class="card-img-top" alt="Làm giàu với ma">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T13</span>
@@ -132,7 +132,7 @@
             <!-- Movie Card 2 -->
             <li class="carousel-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim2.jpg" class="card-img-top" alt="Handsome Guys">
+                    <img src="/images/Client/phim6.jpg" class="card-img-top" alt="Handsome Guys">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T16</span>
@@ -149,7 +149,7 @@
             </li>
             <li class="carousel-slide current-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim1.jpg" class="card-img-top" alt="Làm giàu với ma">
+                    <img src="/images/Client/phim7.jpg" class="card-img-top" alt="Làm giàu với ma">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T13</span>
@@ -167,7 +167,7 @@
             <!-- Movie Card 2 -->
             <li class="carousel-slide" style="margin-left: 10px">
                 <div class="card movie-card">
-                    <img src="/images/Client/phim2.jpg" class="card-img-top" alt="Handsome Guys">
+                    <img src="/images/Client/phim8.jpg" class="card-img-top" alt="Handsome Guys">
                     <div class="card-body">
                         <div class="tags mb-2">
                             <span class="badge bg-danger">T16</span>
@@ -247,7 +247,7 @@
     }
 
     .carousel-slide {
-        min-width: 20%; /* Mỗi slide chiếm 1/5 chiều rộng */
+        min-width: 19%; /* Mỗi slide chiếm 1/5 chiều rộng */
         transition: transform 0.5s ease-in-out; /* Giữ hiệu ứng chuyển động mượt mà */
         display: flex; /* Căn giữa các mục trong thẻ */
         justify-content: center; /* Căn giữa thẻ phim */
@@ -291,7 +291,7 @@
     let currentIndex = 0;
     const slidesToShow = 5; // Number of slides to show at once
 
-    // Move to specified index
+    // Move to specified indexupda
     const moveToSlide = (track, targetIndex) => {
         const targetSlide = slides[targetIndex];
         track.style.transform = 'translateX(-' + targetSlide.style.left + ')';
