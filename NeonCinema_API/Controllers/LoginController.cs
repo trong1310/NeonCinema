@@ -49,6 +49,7 @@ namespace NeonCinema_API.Controllers
                 Gender = user.Gender,   
                 DateOfBirth = user.DateOrBriht.ToString(),
                 Password = user.PassWord,
+                Images = user.Images,
             };
 		}
         private string GenerateJwtToken(UserLoginDTO user)
@@ -60,15 +61,15 @@ namespace NeonCinema_API.Controllers
             // Tạo claims với thông tin người dùng
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),  
-                new Claim(ClaimTypes.Name, user.FullName),                  
+                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
                 new Claim(ClaimTypes.Role, user.RoleName),
                 new Claim(ClaimTypes.StreetAddress, user.Address),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
-                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,    
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,
                 new Claim(ClaimTypes.Gender, user.Gender) ,
-                
+                new Claim("profile_image_url", user.Images),
 
             };
 

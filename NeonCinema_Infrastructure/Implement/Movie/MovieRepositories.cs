@@ -60,7 +60,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     Trailer = request.Trailer,
                     Description = request.Description,
                     StarTime = request.StarTime,
-                    Images = $"/Resources/{trailerfile}",
+                    Images = $"{trailerfile}",
                     AgeAllowed = request.AgeAllowed,
                     Status = MovieStatus.Comingsoon,
                     GenreID = request.GenreID,

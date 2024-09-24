@@ -13,5 +13,6 @@ namespace NeonCinema_Client.Data.IServices.User
         public Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken);
         public Task<HttpResponseMessage> UpdateUser(Guid id, UserUpdateRequest request, CancellationToken cancellationToken);
         public Task<List<MovieData>> GetMovieComing ();
+        public Task<List<MovieData>> GetMovieShowing();
     }
 }
