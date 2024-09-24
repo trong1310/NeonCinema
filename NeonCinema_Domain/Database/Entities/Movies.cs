@@ -20,7 +20,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Trailer { get; set; }
         public string Images { get; set; }
         public int AgeAllowed { get; set; }
-        public MovieStatus Status { get; set; } = MovieStatus.Active;
+        public MovieStatus Status { get; set; } 
         public Guid GenreID { get; set; }/// <s
         /// </summary>
         public Guid LenguageID { get; set; }

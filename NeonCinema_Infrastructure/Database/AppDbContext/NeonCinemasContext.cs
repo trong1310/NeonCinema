@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
+using Bogus.Hollywood.Models;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -337,25 +338,25 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     ID = Guid.NewGuid(),
                     CountryName = "Nhật Bản"
                 },
-                       new Countrys()
+                new Countrys()
                 {
                     ID = Guid.NewGuid(),
                     CountryName = "Vương Quốc Anh"
                 },
-                              new Countrys()
+               new Countrys()
                 {
                     ID = Guid.NewGuid(),
                     CountryName = "Trung Quốc"
                 },
-                                     new Countrys()
+                new Countrys()
                 {
                     ID = Guid.NewGuid(),
                     CountryName = "Việt Nam"
                 },
             };
             modelBuilder.Entity<Countrys>(x => { x.HasData(countryData); });
-        }
-    }
+		}
+	}
 
 };
 
