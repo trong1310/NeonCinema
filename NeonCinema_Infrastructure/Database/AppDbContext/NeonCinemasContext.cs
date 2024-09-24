@@ -145,9 +145,48 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Gender = "Nam",
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
-<<<<<<< HEAD
-=======
-
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Nguyễn Văn Trọng",
+                    Email = "vantrongvt1310@gmail.com",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334583920",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                 new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Xuân Phong",
+                    Email = "Phongdxph35748@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0356400122",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Đức Cường",
+                    Email = "cuongddpc07789@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0879130050",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
                   new Users {
                     ID = Guid.NewGuid(),
                     CreatedTime = DateTime.Now,
@@ -192,57 +231,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
             };
             modelBuilder.Entity<Users>(b => { b.HasData(userData); });
->>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
-
-                  new Users {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Nguyễn Văn Trọng",
-                    Email = "vantrongvt1310@gmail.com",
-                    PassWord = Hash.Encrypt("abc123"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0334583920",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("13/10/2004"),
-                    Images = "images.jpg",
-                    Gender = "Nam",
-                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                },
-                 new Users {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Đặng Xuân Phong",
-                    Email = "Phongdxph35748@fpt.edu.vn",
-                    PassWord = Hash.Encrypt("abc123"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0356400122",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("13/10/2004"),
-                    Images = "images.jpg",
-                    Gender = "Nam",
-                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                },
-                new Users {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Đặng Đức Cường",
-                    Email = "cuongddpc07789@fpt.edu.vn",
-                    PassWord = Hash.Encrypt("abc123"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0879130050",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("13/10/2004"),
-                    Images = "images.jpg",
-                    Gender = "Nam",
-                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                },
-            };
-            modelBuilder.Entity<Users>(b => { b.HasData(userData); });
-
-<<<<<<< HEAD
-            modelBuilder.Entity<CategoryMovies>(b => { b.HasData(CategoryMovies); });
-=======
->>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
             var movies = new List<Movies>
 {
                 new Movies {
@@ -337,22 +325,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     DirectorID = Guid.Parse("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de")
                 },
             };
+            modelBuilder.Entity<Movies>(b => { b.HasData(movies); });
         }
 
-<<<<<<< HEAD
-        // fakedata vào đây
     }
+
 };
        
     
-
-=======
-
-    }
-
-    // fakedata vào đây
-}
->>>>>>> 26fafc141994cf0a24fb823c278fe39f1106aa40
 
 
 
