@@ -8,7 +8,7 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class ResourcesController : ControllerBase
     {
-        [HttpGet("name")]
+        [HttpGet("{name}")]
         //[Authorize]
         public PhysicalFileResult Get([FromRoute] string name)
         {

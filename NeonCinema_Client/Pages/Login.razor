@@ -83,6 +83,7 @@
                     var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress").Value;
                     var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
                     var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
+                    var images = claim.FirstOrDefault(c => c.Type == "profile_image_url").Value;
                     await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
                     await _localstorgae.SetItemAsync("mobilephone", mobilephone.Trim());
                     await _localstorgae.SetItemAsync("email", email.Trim());
