@@ -98,6 +98,7 @@ body {
 .movie-card:hover img {
     opacity: 0.7;
 }
+
 .card-body {
     background-color: #292C35; /* Màu nền tối để phù hợp */
     color: #ffffff;

@@ -40,6 +40,8 @@
 
   <ItemGroup>
 
+    <Content Remove="Pages\Client\ListMovie.razor" />
+
     <Content Remove="Pages\Register.razor" />
 
     <Content Remove="Pages\Users.razor" />
@@ -73,6 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Client\ListMovie.razor" />
     <_ContentIncludedByDefault Remove="Pages\Register.razor" />
     <_ContentIncludedByDefault Remove="Pages\Users.razor" />
     <_ContentIncludedByDefault Remove="wwwroot\css\User\LISTuser.css" />
@@ -80,12 +83,18 @@
 
   <ItemGroup>
 
+    <None Include="Pages\Client\ListMovie.razor" />
+
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Client\ListMovie.razor" />
   </ItemGroup>
 
 </Project>
