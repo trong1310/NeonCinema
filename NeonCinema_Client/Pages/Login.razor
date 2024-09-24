@@ -91,7 +91,7 @@
                     await _localstorgae.SetItemAsync("dateofbirth", dateofbirth.Trim());
                     await _localstorgae.SetItemAsync("gender", gender.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
-                    _navi.NavigateTo("/customer-profile");
+                    _navi.NavigateTo("/");
                 }
                 catch (Exception ex)
                 {

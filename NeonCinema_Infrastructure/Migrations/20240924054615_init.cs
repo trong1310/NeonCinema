@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeonCinema_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -956,10 +956,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CountryName" },
                 values: new object[,]
                 {
-                    { new Guid("0cfb454e-7559-4a14-b2d3-144586754f11"), "Việt Nam" },
-                    { new Guid("905ea469-2e5b-430b-b186-d82d943f68d7"), "Trung Quốc" },
-                    { new Guid("90b9de94-a5bf-42aa-86d8-5793474a438f"), "Vương Quốc Anh" },
-                    { new Guid("a49d7281-6ee7-4fe7-bb33-8f3a6b6e6550"), "Nhật Bản" }
+                    { new Guid("02ca8e43-30be-4517-a2b7-a0d57be7b4a1"), "Trung Quốc" },
+                    { new Guid("2c8f6510-f3a4-4c88-ac9c-644b9224dcf1"), "Vương Quốc Anh" },
+                    { new Guid("3dddb00c-eb3d-49f2-9930-49541ff887c4"), "Việt Nam" },
+                    { new Guid("ee043328-1038-46ad-af7c-202ea66a348b"), "Nhật Bản" }
                 });
 
             migrationBuilder.InsertData(
@@ -967,10 +967,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "Address", "Biography", "BirthDate", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "Nationality", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("246b2069-f0b3-4d9b-acbe-d0a2905ee96e"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn A", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
-                    { new Guid("7e6b4ed5-32cb-42b5-8b4d-c3f8eadcf8a3"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn B", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 4 },
-                    { new Guid("a642c7e1-be45-4061-840b-6c461b9b002d"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn D", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
-                    { new Guid("b5af28fa-e8da-4bf8-b8dd-2ed7a43d0813"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn C", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 4 }
+                    { new Guid("5384f451-8708-432f-a4ef-6c6194441ecb"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn B", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 4 },
+                    { new Guid("b9456a12-2c2a-4d55-9a5f-22653de4eda2"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn C", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 4 },
+                    { new Guid("fae3ee33-697c-4d3a-83d0-a2501ba086da"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn A", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
+                    { new Guid("fc54eeee-9be5-4856-8272-4b8b7255bb32"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn D", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -978,10 +978,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "GenreName", "ModifiedBy", "ModifiedTime" },
                 values: new object[,]
                 {
-                    { new Guid("33641d28-be84-4443-9511-d57f33b1323d"), null, null, null, null, null, "2D", null, null },
-                    { new Guid("8358150a-3921-4a8c-aad4-daf34c6dbd69"), null, null, null, null, null, "Tình cảm", null, null },
-                    { new Guid("c66be521-1458-41b5-bee3-cd5ed3978724"), null, null, null, null, null, "Kịch tính", null, null },
-                    { new Guid("e16bb72c-a8e0-4808-9b87-67717ae9be20"), null, null, null, null, null, "Hoạt hình", null, null }
+                    { new Guid("23071fc1-68f5-4679-b5d1-a2cd2d093009"), null, null, null, null, null, "2D", null, null },
+                    { new Guid("ac942040-e3e5-4312-85a8-4c2f8e615b97"), null, null, null, null, null, "Kịch tính", null, null },
+                    { new Guid("ae30a02e-8357-489c-8ecb-62f7202c78cc"), null, null, null, null, null, "Tình cảm", null, null },
+                    { new Guid("d4dffc4a-a0b2-47a2-ad23-f599796ecb67"), null, null, null, null, null, "Hoạt hình", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -989,9 +989,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "LanguageName", "ModifiedBy", "ModifiedTime" },
                 values: new object[,]
                 {
-                    { new Guid("446abc1f-f8f0-4547-b87f-413711de651d"), null, null, null, null, null, "ja", null, null },
-                    { new Guid("c9f13c78-2c78-448b-aff9-fdb808ebf823"), null, null, null, null, null, "vi", null, null },
-                    { new Guid("d0397e9c-b2fc-4a0d-957e-efe2657b053a"), null, null, null, null, null, "en", null, null }
+                    { new Guid("7af11cac-7c03-4921-85ce-8d358033c1f4"), null, null, null, null, null, "vi", null, null },
+                    { new Guid("9150f88a-04f0-454d-8c1e-e61cecaa21c9"), null, null, null, null, null, "ja", null, null },
+                    { new Guid("e0865ef3-ada6-4d63-bec6-679ce34c09c3"), null, null, null, null, null, "en", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -999,9 +999,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(5929), null, null, null, null, null, "Admin", 1 },
-                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(5951), null, null, null, null, null, "Staff", 1 },
-                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(5948), null, null, null, null, null, "Client", 1 }
+                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(3896), null, null, null, null, null, "Admin", 1 },
+                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(3915), null, null, null, null, null, "Staff", 1 },
+                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(3913), null, null, null, null, null, "Client", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1009,15 +1009,15 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "Adderss", "CreatedBy", "CreatedTime", "DateOrBriht", "Deleted", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("069c461b-95aa-41dc-a773-deeb4f0a9268"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6594), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("4fe017ef-886e-4968-bd13-5574e5e7b092"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6481), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "client@gmail.com", "Client", "Nam", "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("87275c74-cdfe-4401-8787-8fd07ce6ebb2"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6614), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("8a56594a-2ecc-49b9-86cd-00a818c03c72"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6515), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("a311b9da-d496-431b-b285-972149d7d095"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6639), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("b2bb898f-ae03-4389-a2ee-b818c8db9194"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6551), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("c1cc5c40-b517-40d1-9e9f-31b27e8f44f2"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6035), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
-                    { new Guid("f09e3286-7e00-4396-9e1a-bb6d66fc90c3"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6573), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("fd911691-6a6a-48a0-a3a5-559e8acf0934"), "Ba Vi", null, new DateTime(2024, 9, 24, 11, 14, 26, 631, DateTimeKind.Local).AddTicks(6451), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@gmail.com", "Admin", "Nam", "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 }
+                    { new Guid("1c74a1aa-d009-4cac-bf49-ccfd1d6f6dd7"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4437), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("43bce7cd-ed68-450f-ae5e-53d3b5455ff4"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4461), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("45095ca8-2603-44d2-95bc-9e73b8e57a45"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4506), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("a5c2aa5e-28e3-4b01-a2af-71c9b6e094fd"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4559), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("b0764e5d-b31e-4288-b377-34a7ea69b07f"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4001), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
+                    { new Guid("b1b5f4ff-d04b-4555-83d3-c92fd29f483a"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4540), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("c24c3cb9-cf07-4fe0-af63-4e533beb7bd1"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4384), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@gmail.com", "Admin", "Nam", "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
+                    { new Guid("eb6b790c-f7e4-4551-bf33-c2a2f025780d"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4483), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", "Nam", "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("fa987487-3930-4d38-83d4-d7da3a3357dc"), "Ba Vi", null, new DateTime(2024, 9, 24, 12, 46, 15, 233, DateTimeKind.Local).AddTicks(4413), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "client@gmail.com", "Client", "Nam", "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 }
                 });
 
             migrationBuilder.CreateIndex(

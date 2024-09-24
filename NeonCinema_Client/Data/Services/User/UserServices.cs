@@ -15,7 +15,7 @@ using NeonCinema_Client.DataTransferObject.MovieData;
 
 namespace NeonCinema_Client.Services.User
 {
-    [Authorize]
+
     public class UserServices : IUserServices
     {
         private readonly HttpClient _httpClient;
