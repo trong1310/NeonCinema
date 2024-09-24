@@ -66,7 +66,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 <<<<<<< Updated upstream
             optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-          //  optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //  optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
         }
 
@@ -233,13 +233,134 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
             };
             modelBuilder.Entity<Users>(b => { b.HasData(userData); });
-        }
+            var languageData = new List<Language>()
+             { new Language(){
+                ID = Guid.NewGuid(),
+                LanguageName = "en",
+             },
+             new Language()
+             {
+                 ID = Guid.NewGuid(),
+                 LanguageName = "vi",
+             },
+             new Language()
+             {
+                 ID= Guid.NewGuid(),
+                 LanguageName = "ja"
+             }
+            };
+            modelBuilder.Entity<Language>(b => { b.HasData(languageData); });
+            var directorData = new List<Director>()
+            {
+                new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn A",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Active,
+                },
+                 new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn D",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Active,
+                },
+                  new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn B",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Locked,
+                },
+                   new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn C",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Locked,
+                }
+            };
+            modelBuilder.Entity<Director>(a => { a.HasData(directorData); });
+            var genreData = new List<Genre>()
+            {
+                new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Kịch tính",
 
+                },
+                   new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Tình cảm",
+
+                },
+                      new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "2D",
+
+                },
+                         new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Hoạt hình",
+
+                },
+
+            };
+            modelBuilder.Entity<Genre>(x => { x.HasData(genreData); });
+            var countryData = new List<Countrys>()
+            {
+                new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Nhật Bản"
+                },
+                       new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Vương Quốc Anh"
+                },
+                              new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Trung Quốc"
+                },
+                                     new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Việt Nam"
+                },
+            };
+            modelBuilder.Entity<Countrys>(x => { x.HasData(countryData); });
+        }
     }
 
 };
-       
-    
+
+
 
 
 
