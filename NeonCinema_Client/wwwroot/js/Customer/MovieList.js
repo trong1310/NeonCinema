@@ -1,5 +1,9 @@
-﻿function slider_carouselInit() {
-    $('.owl-carousel.slider_carousel').owlCarousel({
+﻿$(document).ready(function () {
+    slider_carouselInit();
+});
+
+function slider_carouselInit() {
+    jQuery('.owl-carousel.slider_carousel').owlCarousel({
         dots: false,
         loop: true,
         margin: 10,
@@ -22,7 +26,3 @@
         }
     });
 }
-
-$(document).ready(function () {
-    slider_carouselInit();
-});
