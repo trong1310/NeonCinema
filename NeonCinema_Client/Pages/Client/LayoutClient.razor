@@ -38,15 +38,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Phim
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Phim đang chiếu</a>
-                            <a class="dropdown-item" href="#">Phim sắp chiếu</a>
-                        </div>
-                    </li>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           Phim
+                        </button>
+                        <ul class="dropdown-menu">
+                            <a class="dropdown-item" onclick="@OpenNowShowing">Phim đang chiếu</a>
+                            <a class="dropdown-item" onclick="@OpenComingFlims">Phim sắp chiếu</a>
+                        </ul>
+                    </div>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Hệ thống rạp</a>
                     </li>
@@ -93,6 +93,9 @@
 
     <!-- Tải jQuery trước Owl Carousel -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Sau đó mới tải Owl Carousel -->
+    <script src="path/to/owl.carousel.min.js"></script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Tải Owl Carousel JS sau khi jQuery đã được tải -->
@@ -134,5 +137,13 @@
     private void NavigateToLogin()
     {
         NavigationManager.NavigateTo("/login");
+    }
+    public void OpenComingFlims()
+    {
+        NavigationManager.NavigateTo("/comingsoon-flims");
+    }
+    public void OpenNowShowing()
+    {
+        NavigationManager.NavigateTo("/nowshowing-flims");
     }
 }

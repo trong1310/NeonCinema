@@ -1,8 +1,10 @@
 ﻿@page "/"
 @layout LayoutClient
+@using NeonCinema_Client.Data.IServices.FlimsUser
 @using NeonCinema_Client.Data.IServices.User
 @using NeonCinema_Client.DataTransferObject.MovieData
-@inject IUserServices _filmsServices
+@inject IFlimUsers _filmsServices
+@inject NavigationManager _navi
 
 <body>
     <div id="carouselExampleIndicators" class="carousel slide">
@@ -35,7 +37,7 @@
     <div class="card_wrapper">
         <div class="container">
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <div class="owl-carousel slider_carousel">
                         <div class="card movie-card">
                             <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
@@ -53,29 +55,14 @@
                             </div>
                         </div>
                         <div class="card movie-card">
-                            <img src="/images/Client/phim1.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">16</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
-                                </div>
-                                <h5 class="card-title">LÀM GIÀU VỚI MA</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Drama</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/phim2.jpg" class="card-img-top" loading="lazy">
+                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                             <div class="card-body">
                                 <div class="tags mb-2">
                                     <span class="badge bg-danger">18</span>
                                     <span class="badge bg-dark">Phụ đề</span>
                                     <span class="badge bg-success">3D</span>
                                 </div>
-                                <h5 class="card-title">HAND SOME</h5>
+                                <h5 class="card-title">CÁM</h5>
                                 <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
                                 <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                     <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
@@ -83,44 +70,14 @@
                             </div>
                         </div>
                         <div class="card movie-card">
-                            <img src="/images/Client/phim4.jpg" class="card-img-top" loading="lazy">
+                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                             <div class="card-body">
                                 <div class="tags mb-2">
                                     <span class="badge bg-danger">18</span>
                                     <span class="badge bg-dark">Phụ đề</span>
                                     <span class="badge bg-success">3D</span>
                                 </div>
-                                <h5 class="card-title">HAI MUỐI</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Drama</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/phim6.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
-                                </div>
-                                <h5 class="card-title">CHÀNG NỮ</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Drama</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/phim7.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
-                                </div>
-                                <h5 class="card-title">HELL BOY</h5>
+                                <h5 class="card-title">CÁM</h5>
                                 <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
                                 <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                     <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
@@ -128,14 +85,14 @@
                             </div>
                         </div>
                         <div class="card movie-card">
-                            <img src="/images/Client/phim8.jpg" class="card-img-top" loading="lazy">
+                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                             <div class="card-body">
                                 <div class="tags mb-2">
                                     <span class="badge bg-danger">18</span>
                                     <span class="badge bg-dark">Phụ đề</span>
                                     <span class="badge bg-success">3D</span>
                                 </div>
-                                <h5 class="card-title">SÓI BẢNH</h5>
+                                <h5 class="card-title">CÁM</h5>
                                 <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
                                 <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                     <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
@@ -147,23 +104,16 @@
             </div>
         </div>
     </div>
+	<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
 
-    <ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
-    
+
 
     @code {
         private ChooseShowTimeDialog? chooseSTD;
         private List<MovieData> _lstMovies = new List<MovieData>();
-
         protected override async Task OnInitializedAsync()
         {
-            await LoadMovie();
-        }
 
-        public async Task LoadMovie()
-        {
-
-            _lstMovies = await _filmsServices.GetMovieComing();
         }
         private string GetImageUrl(string imageUrl)
         {
@@ -174,7 +124,7 @@
         {
             chooseSTD?.Open();
         }
-
+       
         private void OnDialogClose()
         {
             // Logic xử lý khi dialog đóng (nếu cần)

@@ -9,7 +9,7 @@ namespace NeonCinema_Application.Pagination
     public class PaginationResponse<TDataType>
     {
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 15;
+        public int PageSize { get; set; } = 12;
         public bool HasNext { get; set; }
         public ICollection<TDataType>? Data { get; set; }
     }
