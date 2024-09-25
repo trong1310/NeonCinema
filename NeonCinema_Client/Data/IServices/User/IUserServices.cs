@@ -1,4 +1,7 @@
-﻿using NeonCinema_Application.DataTransferObject.User;
+﻿using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
+using NeonCinema_Application.Pagination;
+using NeonCinema_Client.DataTransferObject.MovieData;
 
 namespace NeonCinema_Client.Data.IServices.User
 {

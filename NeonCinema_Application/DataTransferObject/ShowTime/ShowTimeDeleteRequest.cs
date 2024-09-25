@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeonCinema_Domain.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,8 @@ namespace NeonCinema_Application.DataTransferObject.ShowTime
     public class ShowTimeDeleteRequest
     {
         public Guid ID { get; set; }
-        public Guid DeleteBy { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public EntityStatus Status { get; set; }
     }
 }

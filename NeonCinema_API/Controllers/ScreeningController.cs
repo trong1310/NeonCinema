@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.Screenings;
+using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.Interface;
-using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_API.Controllers
 {
@@ -11,28 +10,40 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class ScreeningController : ControllerBase
     {
-        private readonly IScreeningRepository _repos;
+        private readonly IScreeningRepository _screeningRepository;
         private readonly IMapper _mapper;
-        public ScreeningController(IScreeningRepository repos, IMapper mapper)
+
+        public ScreeningController(IScreeningRepository screeningRepository, IMapper mapper)
         {
-            _repos = repos;
+            _screeningRepository = screeningRepository;
             _mapper = mapper;
         }
 
-        [HttpGet("get-all-screening")]
-        public async Task<IActionResult> GetAllScreening(CancellationToken cancellationToken)
+        [HttpGet("get-all-screenings")]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _repos.GetAllScreening(cancellationToken);
-            return Ok(lst);
+            var result = await _screeningRepository.GetAllScreening(cancellationToken);
+            return Ok(result);
         }
 
-        [HttpPost("post-screening")]
-        public async Task<IActionResult> PostScreening([FromBody] ScreeningCreateRequest request, CancellationToken cancellationToken)
+        [HttpGet("get-screening-by-id/{id}")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _screeningRepository.GetScreeningById(id, cancellationToken);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("create-screening")]
+        public async Task<IActionResult> Create([FromBody] ScreeningCreateRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _repos.CreateScreening(_mapper.Map<Screening>(request), cancellationToken);
-                return Ok(result);
+                var response = await _screeningRepository.CreateScreening(request, cancellationToken);
+                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
@@ -40,13 +51,18 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpPut("update-screening")]
-        public async Task<IActionResult> UpdateScreening([FromBody] ScreeningUpdateRequest request, CancellationToken cancellationToken)
+        [HttpPut("update-screening/{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ScreeningUpdateRequest request, CancellationToken cancellationToken)
         {
+            if (id != request.ID)
+            {
+                return BadRequest("ID mismatch");
+            }
+
             try
             {
-                var result = await _repos.UpdateScreening(_mapper.Map<Screening>(request), cancellationToken);
-                return Ok(result);
+                var response = await _screeningRepository.UpdateScreening(request, cancellationToken);
+                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {
@@ -54,13 +70,13 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpDelete("delete-screening")]
-        public async Task<IActionResult> DeleteScreening([FromBody] ScreeningDeleteRequest request, CancellationToken cancellationToken)
+        [HttpDelete("delete-screening/{id}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _repos.DeleteScreening(_mapper.Map<Screening>(request), cancellationToken);
-                return Ok(result);
+                var response = await _screeningRepository.DeleteScreening(id, cancellationToken);
+                return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
             {

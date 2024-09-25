@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Resources\1cf8711b-54c6-43d8-9ea7-064e127cd692.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.20">
@@ -26,8 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\trailers\" />
-    <Folder Include="wwwroot\uploads\" />
+    <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 
 </Project>

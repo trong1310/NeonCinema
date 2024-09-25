@@ -14,7 +14,8 @@ namespace NeonCinema_Application.Interface.Movie
     public interface IMovieRepositories
     {
         public Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request,CancellationToken cancellationToken);
-        public Task<Movies> Create (CreateMovieRequest request,CancellationToken cancellationToken);
+    
+        public Task<HttpResponseMessage> Create (CreateMovieRequest request,CancellationToken cancellationToken);
         public Task<HttpResponseMessage> Update (Movies request,CancellationToken cancellationToken);
         public Task<HttpResponseMessage> Delete (Movies request,CancellationToken cancellationToken);
     }

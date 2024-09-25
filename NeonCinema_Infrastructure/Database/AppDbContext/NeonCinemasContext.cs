@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
+using Bogus.Hollywood.Models;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -64,18 +65,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-           // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-             optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-
-            //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-
-            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-
-
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+         //   optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
         }
 
@@ -156,7 +147,48 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Gender = "Nam",
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
-
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Nguyễn Văn Trọng",
+                    Email = "vantrongvt1310@gmail.com",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0334583920",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                 new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Xuân Phong",
+                    Email = "Phongdxph35748@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0356400122",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
+                new Users {
+                    ID = Guid.NewGuid(),
+                    CreatedTime = DateTime.Now,
+                    FullName = "Đặng Đức Cường",
+                    Email = "cuongddpc07789@fpt.edu.vn",
+                    PassWord = Hash.Encrypt("abc123"),
+                    Status = EntityStatus.Active,
+                    PhoneNumber = "0879130050",
+                    Adderss = "Ba Vi",
+                    DateOrBriht= DateTime.Parse("13/10/2004"),
+                    Images = "images.jpg",
+                    Gender = "Nam",
+                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+                },
                   new Users {
                     ID = Guid.NewGuid(),
                     CreatedTime = DateTime.Now,
@@ -201,160 +233,135 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
             };
             modelBuilder.Entity<Users>(b => { b.HasData(userData); });
-            var actors = new List<Actor>
-{
-    new Actor
-    {
-        ID = Guid.Parse("1e3f1c1b-3c4b-45d2-90ed-dc58eabf1d27"),
-        FullName = "Nguyen Van A",
-        Gender = "Nam",
-         BirthDate = DateTime.Parse("10/10/2000"),
-        Address = "Hanoi, Vietnam",
-        Nationality = "Vietnamese",
-        Biography = "A famous actor in Vietnam.",
-        Images = "link_to_image_a.jpg",
-        Status = EntityStatus.Active
-    },
-    new Actor
-    {
-        ID = Guid.Parse("2a1d1b2e-6d9c-4e20-bac6-2a6c77b6f26f"),
-        FullName = "Tran Thi B",
-        Gender = "Nu",
-         BirthDate = DateTime.Parse("10/10/2000"),
-        Address = "Ho Chi Minh City, Vietnam",
-        Nationality = "Vietnamese",
-        Biography = "Known for her roles in romantic movies.",
-        Images = "link_to_image_b.jpg",
-        Status = EntityStatus.Active
-    }
-};
-            modelBuilder.Entity<Actor>(b => { b.HasData(actors); });
-            var actorMovies = new List<ActorMovie>
-{
-    new ActorMovie { ID = Guid.Parse("3c9f3b4a-5c9b-45f0-b5c5-c1243d569b87"), ActorID = Guid.Parse("1e3f1c1b-3c4b-45d2-90ed-dc58eabf1d27"), MovieID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), Status = EntityStatus.Active },
-    new ActorMovie { ID = Guid.Parse("4c5a9e4f-5b6e-4652-a2e1-6ec8cddc2e45"), ActorID = Guid.Parse("2a1d1b2e-6d9c-4e20-bac6-2a6c77b6f26f"), MovieID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"), Status = EntityStatus.Active }
-};
-            modelBuilder.Entity<ActorMovie>(b => { b.HasData(actorMovies); });
-            var directors = new List<Director>
-{
-    new Director
-    {
-        ID = Guid.Parse("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de"),
-        FullName = "Le Minh Khai",
-        Gender = "Nam",
-        BirthDate = DateTime.Parse("10/10/2000"),
-        Address = "Da Nang, Vietnam",
-        Nationality = "Vietnamese",
-        Biography = "Renowned director with multiple awards.",
-        Images = "link_to_image_director_a.jpg",
-        Status = EntityStatus.Active
-    },
-    new Director
-    {
-        ID = Guid.Parse("6b2f4c5a-7f1a-4b87-bd52-1c6c6f2d4a3b"),
-        FullName = "Hoang Hoa",
-        Gender = "Nam",
-        BirthDate = DateTime.Parse("10/10/2000"),
-        Address = "Nha Trang, Vietnam",
-        Nationality = "Vietnamese",
-        Biography = "Specializes in action films.",
-        Images = "link_to_image_director_b.jpg",
-        Status = EntityStatus.Active
-    }
-};
-            modelBuilder.Entity<Director>(b => { b.HasData(directors); });
-            var genres = new List<Genre>
-{
-    new Genre
-    {
-        ID = Guid.Parse("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"),
-        GenreName = "Hành Động"
-    },
-    new Genre
-    {
-        ID = Guid.Parse("8d4f2c3a-0d7f-4c95-91d5-5d6e6b9076b8"),
-        GenreName = "Tình Cảm"
-    },
-    new Genre
-    {
-        ID = Guid.Parse("8d4f2c3a-0d7f-4c95-91d5-5d6e6b9076b9"),
-        GenreName = "Kinh Dị"
-    }
-};
-            modelBuilder.Entity<Genre>(b => { b.HasData(genres); });
-            var languages = new List<Language>
-{
-    new Language
-    {
-        ID = Guid.Parse("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"),
-        LanguageName = "Tiếng Việt"
-    },
-    new Language
-    {
-        ID = Guid.Parse("0e5f3a9c-dc4d-4f4c-95a2-9c2d8a4a0b3d"),
-        LanguageName = "Tiếng Anh"
-    }
-};
-            modelBuilder.Entity<Language>(b => { b.HasData(languages); });
-            var countries = new List<Countrys>
-{
-    new Countrys
-    {
-        ID = Guid.Parse("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"),
-        CountryName = "Việt Nam"
-    },
-    new Countrys
-    {
-        ID = Guid.Parse("2b2a3f4c-6e7d-4f7e-8c2d-d4d5f6a0b1c3"),
-        CountryName = "Mỹ"
-    },
-    new Countrys
-    {
-        ID = Guid.Parse("4b2a3f4c-6e7d-4f7e-8c2d-d4d5f6a0b1c3"),
-        CountryName = "Nhật Bản"
-    }
-};
-            modelBuilder.Entity<Countrys>(b => { b.HasData(countries); });
-            var movieTypes = new List<MovieType>
-{
-    new MovieType
-    {
-        ID =Guid.Parse("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"),
-        MovieTypeName = "Phim Bộ"
-    },
-    new MovieType
-    {
-        ID = Guid.Parse("4b5a6f7c-8e9d-4f8e-9c2d-d4d5f6a0b1c3"),
-        MovieTypeName = "Phim Chiếu Rạp"
-    }
-};
-            modelBuilder.Entity<MovieType>(b => { b.HasData(movieTypes); });
-            var categoryMovies = new List<CategoryMovies>
-{
-        new CategoryMovies {
-        ID = Guid.Parse("5b6a7f8c-9e0d-4f9e-9d2c-d4d5f6a0b1c3"),
-        MovieID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"),
-        MovieTypeID = Guid.Parse("3b4a5f6c-7e8d-4f7e-9d3c-d4d5f6a0b1c3"),
-        Status = EntityStatus.Active }
+            var languageData = new List<Language>()
+             { new Language(){
+                ID = Guid.NewGuid(),
+                LanguageName = "en",
+             },
+             new Language()
+             {
+                 ID = Guid.NewGuid(),
+                 LanguageName = "vi",
+             },
+             new Language()
+             {
+                 ID= Guid.NewGuid(),
+                 LanguageName = "ja"
+             }
+            };
+            modelBuilder.Entity<Language>(b => { b.HasData(languageData); });
+            var directorData = new List<Director>()
+            {
+                new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn A",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Active,
+                },
+                 new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn D",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Active,
+                },
+                  new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn B",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Locked,
+                },
+                   new Director()
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = "Nguyễn Văn C",
+                    Address = "Hà Nội",
+                    Biography = "Có",
+                    BirthDate = DateTime.Parse("10/10/2000"),
+                    Gender = "Nam",
+                    Images = "image1.jpg",
+                    Nationality = "Ha Noi",
+                    Status = EntityStatus.Locked,
+                }
+            };
+            modelBuilder.Entity<Director>(a => { a.HasData(directorData); });
+            var genreData = new List<Genre>()
+            {
+                new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Kịch tính",
+
+                },
+                   new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Tình cảm",
+
+                },
+                      new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "2D",
+
+                },
+                         new Genre()
+                {
+                    ID = Guid.NewGuid(),
+                    GenreName = "Hoạt hình",
+
+                },
+
+            };
+            modelBuilder.Entity<Genre>(x => { x.HasData(genreData); });
+            var countryData = new List<Countrys>()
+            {
+                new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Nhật Bản"
+                },
+                new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Vương Quốc Anh"
+                },
+               new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Trung Quốc"
+                },
+                new Countrys()
+                {
+                    ID = Guid.NewGuid(),
+                    CountryName = "Việt Nam"
+                },
+            };
+            modelBuilder.Entity<Countrys>(x => { x.HasData(countryData); });
+		}
+	}
 
 };
-            modelBuilder.Entity<CategoryMovies>(b => { b.HasData(categoryMovies); });
-            var movies = new List<Movies>
-{
-    new Movies { ID = Guid.Parse("4e9a5b9f-44f3-4a68-897c-0e92f8831e8a"),
-        Duration = 120, Name = "Inception",
-        Description = "A thief who steals corporate secrets using dream-sharing technology.",
-        StarTime =  DateTime.Parse("10/10/2000"), Trailer = "inception_trailer.mp4",
-        AgeAllowed = 13, Status = MovieStatus.Active,
-        GenreID = Guid.Parse("7c3f9d2e-31e2-4d23-82c8-805c9c1a2309"),
-        LenguageID = Guid.Parse("9a5d3f1c-b0c5-40c5-9d84-b0b8c4d6a1d7"),
-        CountryID = Guid.Parse("1b2a3f4c-5e6d-4f7e-8b2c-d4d5f6a0b1c3"),
-        DirectorID = Guid.Parse("5a1d9b1a-71f2-4e29-b3a5-8f4c0a5e94de") }
-};
-            modelBuilder.Entity<Movies>(b => { b.HasData(movies); });
-        }
-    }
-}
+
+
+
 
 
 

@@ -51,8 +51,8 @@ using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Infrastructure.Implement.Movie;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Infrastructure.Implement.Users;
-using NeonCinema_Application.Interface.FileUpLoad;
-using NeonCinema_Infrastructure.Implement.FileUpLoad;
+using NeonCinema_Application.Interface.UserFlims;
+using NeonCinema_Infrastructure.Implement.UserMovies;
 
 
 
@@ -66,8 +66,9 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
-
-            });
+              //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
+    
+             });
 
             
             
@@ -81,8 +82,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
-            services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
-            services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
+            //services.AddScoped<IEntityRepository<ShowDate>, ShowDateRepository>();
+            //services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
             services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();
@@ -98,7 +99,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
-            services.AddScoped<IFileRepo,FileRepo>();
+            services.AddTransient<IUserMovies, UserMoviess>();            
             
             return services;
         }

@@ -9,6 +9,7 @@ namespace NeonCinema_Application.DataTransferObject.ShowDate
 {
     public class ShowDateDTO
     {
+        public Guid ID { get; set; }
         public DateTime StarDate { get; set; }
         public EntityStatus Status { get; set; }
     }
