@@ -22,11 +22,13 @@ namespace NeonCinema_Domain.Database.Entities
         public string Adderss { get; set; }
         public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }
+        public Guid PromotionUserID { get; set; }
 
         //
     
         public virtual Roles? Roles { get; set; }
         public virtual ICollection<Bill>? Bills { get; set; }
+        public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
         public virtual ICollection<Point>? Points { get; set; }
         public virtual ICollection<RankMember>? RankMembers { get; set; }
         public virtual ICollection<Ticket>? Ticket { get; set; }
