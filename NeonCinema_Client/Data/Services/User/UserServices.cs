@@ -89,16 +89,5 @@ namespace NeonCinema_Client.Services.User
             var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
             return response;
         }
-
-        public async Task<List<MovieData>> GetMovieComing()
-        {
-            var getflims = await _httpClient.GetFromJsonAsync<List<MovieData>>("https://localhost:7211/api/UserFlims/Get-coming");
-            return getflims;
-        }
-        public async Task<List<MovieData>> GetMovieShowing()
-        {
-            var getflims = await _httpClient.GetFromJsonAsync<List<MovieData>>("https://localhost:7211/api/UserFlims/Get-showing");
-            return getflims;
-        }
     }
 }
