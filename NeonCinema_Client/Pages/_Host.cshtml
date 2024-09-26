@@ -1,4 +1,4 @@
-﻿@page "/abc"
+﻿@page "/"
 @namespace NeonCinema_Client.Pages
 @using Microsoft.AspNetCore.Components.Web
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -14,6 +14,7 @@
     <link href="css/site.css" rel="stylesheet" />
     <link href="NeonCinema_Client.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png"/>
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
     <!-- Thêm component cho HeadOutlet để prerender các thẻ meta, title -->
     <component type="typeof(HeadOutlet)" render-mode="Server" />
@@ -35,6 +36,7 @@
     </div>
 
     <!-- Script cho Blazor Server -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>
