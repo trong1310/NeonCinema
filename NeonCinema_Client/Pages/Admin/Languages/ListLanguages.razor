@@ -7,51 +7,71 @@
 @inject IToastService ToastService // Dịch vụ thông báo
 
 <div class="container-fluid">
-    <!-- Header quản lý ngôn ngữ -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">Quản lý ngôn ngữ phim</h2>
-        <button class="btn btn-success" @onclick="CreateLanguage">
-            <i class="fas fa-plus-circle"></i> Thêm mới ngôn ngữ
-        </button>
+    <!-- Card cho tên trang -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="text-black text-left">Quản lý ngôn ngữ phim</h2>
+            
+        </div>
+    </div>
+
+    <!-- Card cho tìm kiếm ngôn ngữ -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="search-bar mb-4 d-flex justify-content-between">
+                <input type="text" @bind="searchTerm" placeholder="Tìm kiếm theo tên ngôn ngữ..." class="form-control" @oninput="SearchLanguages" />
+                <button class="btn btn-outline-secondary" @onclick="SearchLanguages">
+                    <i class="fas fa-search"></i>
+
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Kiểm tra xem dữ liệu ngôn ngữ đã tải xong chưa -->
     @if (languages == null)
     {
-        <div class="d-flex justify-content-center">
+        <div class="loading">
             <p class="text-muted"><em>Đang tải dữ liệu...</em></p>
         </div>
     }
     else
     {
-        <!-- Bảng quản lý ngôn ngữ -->
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Mã ngôn ngữ</th>
-                        <th scope="col">Tên ngôn ngữ</th>
-                        <th scope="col" class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var language in languages)
-                    {
-                        <tr>
-                            <td>@language.ID</td>
-                            <td>@language.LanguageName</td>
-                            <td class="text-center">
-                                <button class="btn btn-primary btn-sm me-2" @onclick="() => EditLanguage(language.ID)">
-                                    <i class="fas fa-edit"></i> Sửa
-                                </button>
-                                <button class="btn btn-danger btn-sm" @onclick="() => ShowConfirmDeleteModal(language.ID)">
-                                    <i class="fas fa-trash-alt"></i> Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <button class="btn btn-success" @onclick="CreateLanguage">
+            <i class="fas fa-plus"></i>
+        </button>
+        <!-- Card cho bảng quản lý ngôn ngữ -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Mã ngôn ngữ</th>
+                                <th scope="col">Tên ngôn ngữ</th>
+                                <th scope="col" class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var language in filteredLanguages)
+                            {
+                                <tr>
+                                    <td>@language.ID</td>
+                                    <td>@language.LanguageName</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-primary btn-sm me-2" @onclick="() => EditLanguage(language.ID)">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => ShowConfirmDeleteModal(language.ID)">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     }
 
@@ -82,8 +102,10 @@
 
 @code {
     private List<LanguageDTO> languages;
+    private List<LanguageDTO> filteredLanguages;
     private bool isConfirmDeleteModalVisible = false;
     private Guid languageIdToDelete;
+    private string searchTerm = string.Empty; // Biến lưu trữ từ khóa tìm kiếm
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,12 +115,27 @@
     private async Task LoadLanguages()
     {
         languages = await LanguageService.GetAllLanguages();
+        filteredLanguages = languages; // Khởi tạo danh sách đã lọc với tất cả ngôn ngữ
     }
 
     private void CreateLanguage()
     {
         // Điều hướng tới trang thêm ngôn ngữ mới
         navi.NavigateTo("/create-language");
+    }
+
+    private async Task SearchLanguages()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredLanguages = languages; // Nếu không có từ khóa, hiển thị tất cả
+        }
+        else
+        {
+            filteredLanguages = languages
+                .Where(lang => lang.LanguageName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList(); // Lọc danh sách ngôn ngữ dựa trên từ khóa
+        }
     }
 
     private void ShowConfirmDeleteModal(Guid id)

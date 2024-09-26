@@ -4,10 +4,10 @@
 @using NeonCinema_Client.Data.IServices.Language
 @inject ILanguageService LanguageService
 @inject NavigationManager navi
-@inject IToastService ToastService // Dịch vụ thông báo
+@inject IToastService ToastService
 
-<div class="container">
-    <h2 class="text-primary">Cập nhật ngôn ngữ</h2>
+<div class="container mt-5">
+    <h2 class="text-black mb-4">Cập nhật ngôn ngữ</h2>
 
     @if (languageDto == null)
     {
@@ -21,12 +21,14 @@
 
             <div class="mb-3">
                 <label for="languageName" class="form-label">Tên ngôn ngữ</label>
-                <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" />
+                <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" placeholder="Nhập tên ngôn ngữ" />
                 <ValidationMessage For="@(() => languageDto.LanguageName)" />
             </div>
 
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
-            <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+            </div>
         </EditForm>
     }
 
@@ -58,7 +60,7 @@
 @code {
     [Parameter] public Guid id { get; set; }
     private UpdateLanguageRequest languageDto;
-    private bool isConfirmUpdateModalVisible = false; // Biến để quản lý hiển thị modal xác nhận
+    private bool isConfirmUpdateModalVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,7 +74,7 @@
 
     private void ShowConfirmUpdateModal()
     {
-        isConfirmUpdateModalVisible = true; // Hiển thị modal xác nhận
+        isConfirmUpdateModalVisible = true;
     }
 
     private async Task ConfirmUpdate()
@@ -80,22 +82,22 @@
         try
         {
             await LanguageService.UpdateLanguage(id, languageDto);
-            ToastService.ShowSuccess("Cập nhật ngôn ngữ thành công!"); // Thông báo thành công
-            navi.NavigateTo("/languages"); // Điều hướng về danh sách ngôn ngữ
+            ToastService.ShowSuccess("Cập nhật ngôn ngữ thành công!");
+            navi.NavigateTo("/languages");
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"Cập nhật thất bại: {ex.Message}"); // Thông báo lỗi
+            ToastService.ShowError($"Cập nhật thất bại: {ex.Message}");
         }
         finally
         {
-            isConfirmUpdateModalVisible = false; // Đóng modal sau khi cập nhật
+            isConfirmUpdateModalVisible = false;
         }
     }
 
     private void CloseConfirmModal()
     {
-        isConfirmUpdateModalVisible = false; // Đóng modal khi bấm hủy
+        isConfirmUpdateModalVisible = false;
     }
 
     private void GoBack()

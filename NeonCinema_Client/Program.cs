@@ -22,6 +22,7 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
+using NeonCinema_Domain.Database.Entities;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -56,7 +57,8 @@ builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddBlazoredLocalStorage();
-
+builder.Services.AddMudServices();
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 

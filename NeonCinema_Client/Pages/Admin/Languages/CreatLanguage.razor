@@ -4,8 +4,8 @@
 @inject ILanguageService LanguageService
 @inject NavigationManager navi
 
-<div class="container">
-    <h2 class="text-primary">Thêm mới ngôn ngữ</h2>
+<div class="container mt-5">
+    <h2 class="text-black-50 mb-4">Thêm mới ngôn ngữ</h2>
 
     <EditForm Model="languageDto" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
@@ -13,12 +13,14 @@
 
         <div class="mb-3">
             <label for="languageName" class="form-label">Tên ngôn ngữ</label>
-            <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" />
+            <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" placeholder="Nhập tên ngôn ngữ" />
             <ValidationMessage For="@(() => languageDto.LanguageName)" />
         </div>
 
-        <button type="submit" class="btn btn-success">Lưu</button>
-        <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">Lưu</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+        </div>
     </EditForm>
 </div>
 
