@@ -16,6 +16,7 @@ using NeonCinema_Client.Data.Services.Cinemas;
 using NeonCinema_Client.Data.IServices.Cinemas;
 using NeonCinema_Client.Data.IServices.FlimsUser;
 using NeonCinema_Client.Data.Services.FilmUsers;
+using MudBlazor.Services;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -47,7 +48,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddBlazoredLocalStorage();
-
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 
