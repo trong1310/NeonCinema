@@ -1,0 +1,40 @@
+﻿.container-fluid {
+    padding: 20px;
+}
+
+.header {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+    .search-bar input {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+
+.url-info {
+    font-size: 0.9rem;
+    color: #6c757d; /* Màu sắc nhạt cho văn bản */
+}
+
+.table-responsive {
+    margin-top: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.modal {
+    z-index: 1050; /* Đảm bảo modal hiển thị trên cùng */
+}
