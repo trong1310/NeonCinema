@@ -1,8 +1,9 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Enum;
 
 namespace NeonCinema_Client.DataTransferObject.MovieData
 {
-    public class MovieData
+    public class MovieData 
     {
         public int? Duration { get; set; }
         public string? Name { get; set; }

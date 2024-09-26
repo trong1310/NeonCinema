@@ -51,6 +51,8 @@ using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Infrastructure.Implement.Movie;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Infrastructure.Implement.Users;
+using NeonCinema_Application.Interface.UserFlims;
+using NeonCinema_Infrastructure.Implement.UserMovies;
 
 
 
@@ -97,7 +99,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
-            
+            services.AddTransient<IUserMovies, UserMoviess>();            
             
             return services;
         }

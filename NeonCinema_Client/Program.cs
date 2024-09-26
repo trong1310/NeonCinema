@@ -14,6 +14,8 @@ using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Client.Models;
 using NeonCinema_Client.Data.Services.Cinemas;
 using NeonCinema_Client.Data.IServices.Cinemas;
+using NeonCinema_Client.Data.IServices.FlimsUser;
+using NeonCinema_Client.Data.Services.FilmUsers;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -26,6 +28,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 
 builder.Services.AddCors(options =>
 {

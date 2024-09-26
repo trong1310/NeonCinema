@@ -114,16 +114,7 @@ builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddApplication(); //use automapper
 builder.Services.AddEventBus(builder.Configuration);
-builder.Services.AddCors(options =>////
-{
-	options.AddPolicy("AllowLocalhost",
-		builder =>
-		{
-			builder.AllowAnyOrigin()
-				   .AllowAnyMethod()
-				   .AllowAnyHeader();
-		});
-});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -142,7 +133,7 @@ app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
-app.UseCors("AllowLocalhost");
+
 app.MapControllers();
 
 app.Run();
