@@ -1,0 +1,105 @@
+﻿@page "/edit-language/{id:guid}"
+@using Blazored.Toast.Services
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Client.Data.IServices.Language
+@inject ILanguageService LanguageService
+@inject NavigationManager navi
+@inject IToastService ToastService // Dịch vụ thông báo
+
+<div class="container">
+    <h2 class="text-primary">Cập nhật ngôn ngữ</h2>
+
+    @if (languageDto == null)
+    {
+        <p><em>Đang tải dữ liệu...</em></p>
+    }
+    else
+    {
+        <EditForm Model="languageDto" OnValidSubmit="ShowConfirmUpdateModal">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="languageName" class="form-label">Tên ngôn ngữ</label>
+                <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" />
+                <ValidationMessage For="@(() => languageDto.LanguageName)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+        </EditForm>
+    }
+
+    <!-- Modal xác nhận cập nhật -->
+    @if (isConfirmUpdateModalVisible)
+    {
+        <div class="modal fade show" style="display: block;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận cập nhật ngôn ngữ</h5>
+                        <button type="button" class="close" @onclick="CloseConfirmModal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn cập nhật ngôn ngữ này?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @onclick="ConfirmUpdate">Xác nhận</button>
+                        <button class="btn btn-secondary" @onclick="CloseConfirmModal">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid id { get; set; }
+    private UpdateLanguageRequest languageDto;
+    private bool isConfirmUpdateModalVisible = false; // Biến để quản lý hiển thị modal xác nhận
+
+    protected override async Task OnInitializedAsync()
+    {
+        var language = await LanguageService.GetLanguageById(id);
+        languageDto = new UpdateLanguageRequest
+            {
+                ID = language.ID,
+                LanguageName = language.LanguageName
+            };
+    }
+
+    private void ShowConfirmUpdateModal()
+    {
+        isConfirmUpdateModalVisible = true; // Hiển thị modal xác nhận
+    }
+
+    private async Task ConfirmUpdate()
+    {
+        try
+        {
+            await LanguageService.UpdateLanguage(id, languageDto);
+            ToastService.ShowSuccess("Cập nhật ngôn ngữ thành công!"); // Thông báo thành công
+            navi.NavigateTo("/languages"); // Điều hướng về danh sách ngôn ngữ
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Cập nhật thất bại: {ex.Message}"); // Thông báo lỗi
+        }
+        finally
+        {
+            isConfirmUpdateModalVisible = false; // Đóng modal sau khi cập nhật
+        }
+    }
+
+    private void CloseConfirmModal()
+    {
+        isConfirmUpdateModalVisible = false; // Đóng modal khi bấm hủy
+    }
+
+    private void GoBack()
+    {
+        navi.NavigateTo("/languages");
+    }
+}

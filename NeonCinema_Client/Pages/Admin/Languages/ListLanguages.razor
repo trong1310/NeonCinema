@@ -1,0 +1,138 @@
+﻿@page "/languages"
+@using Blazored.Toast.Services
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Client.Data.IServices.Language
+@inject ILanguageService LanguageService
+@inject NavigationManager navi
+@inject IToastService ToastService // Dịch vụ thông báo
+
+<div class="container-fluid">
+    <!-- Header quản lý ngôn ngữ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Quản lý ngôn ngữ phim</h2>
+        <button class="btn btn-success" @onclick="CreateLanguage">
+            <i class="fas fa-plus-circle"></i> Thêm mới ngôn ngữ
+        </button>
+    </div>
+
+    <!-- Kiểm tra xem dữ liệu ngôn ngữ đã tải xong chưa -->
+    @if (languages == null)
+    {
+        <div class="d-flex justify-content-center">
+            <p class="text-muted"><em>Đang tải dữ liệu...</em></p>
+        </div>
+    }
+    else
+    {
+        <!-- Bảng quản lý ngôn ngữ -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Mã ngôn ngữ</th>
+                        <th scope="col">Tên ngôn ngữ</th>
+                        <th scope="col" class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var language in languages)
+                    {
+                        <tr>
+                            <td>@language.ID</td>
+                            <td>@language.LanguageName</td>
+                            <td class="text-center">
+                                <button class="btn btn-primary btn-sm me-2" @onclick="() => EditLanguage(language.ID)">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+                                <button class="btn btn-danger btn-sm" @onclick="() => ShowConfirmDeleteModal(language.ID)">
+                                    <i class="fas fa-trash-alt"></i> Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- Modal xác nhận xóa -->
+    @if (isConfirmDeleteModalVisible)
+    {
+        <div class="modal fade show" style="display: block;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xóa ngôn ngữ</h5>
+                        <button type="button" class="close" @onclick="CloseConfirmModal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa ngôn ngữ này?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" @onclick="ConfirmDelete">Xác nhận</button>
+                        <button class="btn btn-secondary" @onclick="CloseConfirmModal">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<LanguageDTO> languages;
+    private bool isConfirmDeleteModalVisible = false;
+    private Guid languageIdToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLanguages();
+    }
+
+    private async Task LoadLanguages()
+    {
+        languages = await LanguageService.GetAllLanguages();
+    }
+
+    private void CreateLanguage()
+    {
+        // Điều hướng tới trang thêm ngôn ngữ mới
+        navi.NavigateTo("/create-language");
+    }
+
+    private void ShowConfirmDeleteModal(Guid id)
+    {
+        languageIdToDelete = id; // Lưu ID ngôn ngữ cần xóa
+        isConfirmDeleteModalVisible = true; // Hiển thị modal xác nhận
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            await LanguageService.DeleteLanguage(languageIdToDelete);
+            ToastService.ShowSuccess("Xóa ngôn ngữ thành công!"); // Thông báo xóa thành công
+            await LoadLanguages(); // Tải lại danh sách ngôn ngữ
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Xóa thất bại: {ex.Message}");
+        }
+        finally
+        {
+            isConfirmDeleteModalVisible = false; // Đóng modal sau khi xóa
+        }
+    }
+
+    private void CloseConfirmModal()
+    {
+        isConfirmDeleteModalVisible = false; // Đóng modal khi bấm hủy
+    }
+
+    private void EditLanguage(Guid id)
+    {
+        // Điều hướng tới trang sửa ngôn ngữ
+        navi.NavigateTo($"/edit-language/{id}");
+    }
+}

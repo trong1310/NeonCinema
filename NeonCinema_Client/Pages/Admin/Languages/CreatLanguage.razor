@@ -1,0 +1,38 @@
+﻿@page "/create-language"
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Client.Data.IServices.Language
+@inject ILanguageService LanguageService
+@inject NavigationManager navi
+
+<div class="container">
+    <h2 class="text-primary">Thêm mới ngôn ngữ</h2>
+
+    <EditForm Model="languageDto" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="languageName" class="form-label">Tên ngôn ngữ</label>
+            <InputText id="languageName" @bind-Value="languageDto.LanguageName" class="form-control" />
+            <ValidationMessage For="@(() => languageDto.LanguageName)" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+    </EditForm>
+</div>
+
+@code {
+    private CreateLanguageRequest languageDto = new CreateLanguageRequest();
+
+    private async Task HandleValidSubmit()
+    {
+        await LanguageService.CreateLanguage(languageDto);
+        navi.NavigateTo("/languages");
+    }
+
+    private void GoBack()
+    {
+        navi.NavigateTo("/languages");
+    }
+}

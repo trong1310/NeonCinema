@@ -7,6 +7,7 @@ using NeonCinema_Client.Data;
 using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
 using NeonCinema_Client.Pages.Admin.Users;
+
 /*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
 
 
@@ -16,6 +17,8 @@ using NeonCinema_Client.Data.Services.Cinemas;
 using NeonCinema_Client.Data.IServices.Cinemas;
 using NeonCinema_Client.Data.IServices.FlimsUser;
 using NeonCinema_Client.Data.Services.FilmUsers;
+using NeonCinema_Client.Data.IServices.Language;
+using Blazored.Toast;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -29,6 +32,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -46,7 +50,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredToast();
 
 
 var app = builder.Build();
