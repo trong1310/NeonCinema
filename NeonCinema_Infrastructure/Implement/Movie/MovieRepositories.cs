@@ -123,46 +123,47 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
         }
 
-        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<List<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
             var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
-      (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
+               (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
+            //  var result = await query.Where(x=>x.Status == MovieStatus.Comingsoon).ToListAsync();
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
-                query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
+                query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
             }
-           
+
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataView = (from a in result.Data
+            var dataview = (from a in result.Data
                             join b in query on a.ID
-                            equals b.ID 
-                          
-                            orderby b.StarTime 
-                            where b.Deleted == false
+                            equals b.ID
+                            orderby b.StarTime
+                            
+
                             select new MovieDTO
                             {
+                                ID = b.ID,
                                 AgeAllowed = b.AgeAllowed,
                                 Trailer = b.Trailer,
                                 Status = b.Status,
-                                StarTime = b.StarTime,
                                 Name = b.Name,
                                 Duration = b.Duration,
+                                Images = b.Images,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
-                                
-                                
                             }).ToList();
-            return new PaginationResponse<MovieDTO>()
-            {
-                Data = result.Data,
-                HasNext = result.HasNext,
-                PageNumber = result.PageNumber,
-                 PageSize = result.PageSize,
-                
-            };
+            //return new PaginationResponse<MovieDTO>()
+            //{
+            //    Data = result.Data,
+            //    HasNext = result.HasNext,
+            //    PageNumber = result.PageNumber,
+            //     PageSize = result.PageSize,
+
+            //};
+            return dataview;
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
