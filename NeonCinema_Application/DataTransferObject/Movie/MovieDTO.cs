@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Movie
 {
-    public class MovieDTO 
+    public class MovieDTO   
     {
         public Guid ID { get; set; }
         public int? Duration { get; set; }

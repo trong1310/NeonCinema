@@ -1,0 +1,35 @@
+﻿
+@inherits LayoutComponentBase
+@using MudBlazor
+<MudAppBar Color="Color.Primary" Fixed="false">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+</MudAppBar>
+<MudDrawer @bind-Open="_drawerOpen" Anchor="Anchor.Left" Variant="DrawerVariant.Mini" Elevation="2">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6" Class="pl-4">Menu</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Trang Chủ</MudNavLink>
+        <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info">Giới Thiệu</MudNavLink>
+        <MudNavLink Href="/contact" Icon="@Icons.Material.Filled.ContactMail">Liên Hệ</MudNavLink>
+        <MudNavLink Href="/admin" Icon="@Icons.Material.Filled.Dashboard">Quản Trị</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
+<MudMainContent>
+    <NeonCinema_Client.Pages.Admin.Users.ListStaff></NeonCinema_Client.Pages.Admin.Users.ListStaff> <!-- Đây là thuộc tính Body mà bạn cần -->
+</MudMainContent>
+<MudAppBar Color="Color.Primary" Elevation="4">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" @onclick="_toggleDrawer" />
+    <MudText Typo="Typo.h6">Tên Ứng Dụng</MudText>
+</MudAppBar>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void _toggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
