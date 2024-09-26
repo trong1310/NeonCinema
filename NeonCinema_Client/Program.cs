@@ -17,6 +17,9 @@ using NeonCinema_Client.Data.Services.Cinemas;
 using NeonCinema_Client.Data.IServices.Cinemas;
 using NeonCinema_Client.Data.IServices.FlimsUser;
 using NeonCinema_Client.Data.Services.FilmUsers;
+using MudBlazor.Services;
+using NeonCinema_Client.Data.IServices.IMoviesServices;
+using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
 
@@ -32,6 +35,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
+builder.Services.AddTransient<IMovieservices, MoviesServices>();
 
 
 builder.Services.AddCors(options =>
@@ -52,7 +56,6 @@ builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddBlazoredToast();
 
 
 var app = builder.Build();

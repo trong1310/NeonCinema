@@ -1,0 +1,47 @@
+﻿@inject NavigationManager NavigationManager
+
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
+<style>
+    .custom-nav-link {
+        height: 60px; /* Đặt chiều cao cho MudNavLink */
+        display: flex;
+        transition: none; /* Bỏ hiệu ứng chuyển tiếp */
+        align-items: center;
+    }
+
+        /* Bỏ hover mặc định */
+        .custom-nav-link:hover {
+            background-color: transparent !important; /* Bỏ nền hover */
+            color: inherit !important; /* Giữ nguyên màu sắc chữ */
+        }
+
+    .nav-header {
+        padding: 16px; /* Khoảng cách cho tiêu đề */
+        font-weight: bold; /* Làm đậm tiêu đề */
+    }
+
+    .nav-divider {
+        margin: 8px 0; /* Khoảng cách cho đường phân cách */
+    }
+</style>
+
+<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="1">
+    <MudNavMenu Class="mud-width-full" Color="Color.Transparent">
+        <MudText Typo="Typo.h6" Class="nav-header">Đặng Đức Cường</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary nav-header">Admin</MudText>
+        <MudDivider Class="nav-divider" />
+        <MudNavLink Href="/cinema-list" Icon="fas fa-film" IconColor="Color.Success" Class="custom-nav-link">Quản lý phim</MudNavLink>
+        <MudNavLink Href="/servers" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
+        <MudNavLink Href="/rooms" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
+        <MudNavLink Href="/promotions" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
+        <MudNavLink Href="/customers" Icon="fas fa-users" IconColor="Color.Secondary" Class="custom-nav-link">Quản lý khách hàng</MudNavLink>
+        <MudNavLink Href="/tickets" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
+        <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
+        <MudNavLink Href="/account" Icon="fas fa-user-circle" IconColor="Color.Info" Class="custom-nav-link">Tài khoản</MudNavLink>
+        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+            <MudNavLink Href="/users" Icon="fas fa-user" IconColor="Color.Primary" Class="custom-nav-link">Users</MudNavLink>
+            <MudNavLink Href="/security" Icon="fas fa-lock" IconColor="Color.Error" Class="custom-nav-link">Security</MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
+</MudPaper>

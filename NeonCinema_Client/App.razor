@@ -1,21 +1,19 @@
 
 ﻿@using Microsoft.AspNetCore.Routing
+@using NeonCinema_Client.Pages.Admin
 @using NeonCinema_Client.Pages.Client
 
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutClient)" />
-
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(LayoutClient)">
+        <LayoutView Layout="@typeof(LayoutAdmin)">
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>
-
 </Router>
 
