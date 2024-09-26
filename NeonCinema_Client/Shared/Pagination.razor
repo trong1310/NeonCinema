@@ -1,0 +1,58 @@
+﻿
+@if (TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage">Previous</a>
+            </li>
+
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+                <li class="page-item @(i == CurrentPage ? "active" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(i)">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                <a class="page-link" href="javascript:void(0)" @onclick="NextPage">Next</a>
+            </li>
+        </ul>
+    </nav>
+}
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int TotalPages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    private async Task ChangePage(int page)
+    {
+        if (page != CurrentPage)
+        {
+            CurrentPage = page;
+            await OnPageChanged.InvokeAsync(page);
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            await ChangePage(CurrentPage - 1);
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            await ChangePage(CurrentPage + 1);
+        }
+    }
+}

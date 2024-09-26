@@ -1,0 +1,92 @@
+﻿@page "/nowshowing-flims"
+@layout LayoutClient
+@using MudBlazor
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.IServices.FlimsUser
+@using NeonCinema_Client.DataTransferObject.MovieData
+@inject IFlimUsers _filmsServices
+
+<div class="container text-center">
+    <div class="row">
+        <div class="row row-cols-lg-4 g-2 g-lg-3 d-flex justify-content-center">
+            @if (movies.Data != null)
+            {
+                @foreach (var item in movies.Data)
+                {
+                    <div class="card movie-card" style="width: 18rem;">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top" loading="lazy">
+                        <div class="card-body">
+                            <div class="tags mb-2">
+                                <span class="badge bg-danger">Độ tuổi: @item.AgeAllowed+</span>
+                                <span class="badge bg-dark">Thời Lượng: @item.Duration</span>
+                                <span class="badge bg-success">Thể loại: @item.LanguareName</span>
+                            </div>
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Không có phim nào để hiển thị.</p>
+            }
+        </div>
+    </div>
+    <MudPagination Color="Color.Primary" Count="next" SelectedChanged="@OnPaginationSelectedChanged" />
+
+    
+</div>
+
+<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+
+@code {
+
+    private ChooseShowTimeDialog? chooseSTD;
+    ViewMovieRequest request = new ViewMovieRequest();
+    PaginationResponse<MovieData> movies = new PaginationResponse<MovieData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovie();  // Bắt đầu tải từ trang 1
+    }
+    int next;
+    public async Task LoadMovie()
+    {
+       
+        movies = await _filmsServices.GetMovieShowing(request);
+        if (movies.HasNext)
+        {
+            next += 1;
+        }
+    }
+    public async Task OnPaginationSelectedChanged(int selectedPage)
+    {
+        next = selectedPage;
+        await LoadMovie();
+    }
+    public async Task HandleTextChanged(string newText)
+    {
+        request.SearchName = newText;
+        await LoadMovie();
+    }
+
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/Resources/{imageUrl}";
+    }
+
+    private void OpenDialog()
+    {
+        chooseSTD?.Open();
+    }
+
+    private void OnDialogClose()
+    {
+        // Logic xử lý khi dialog đóng (nếu cần)
+    }
+}

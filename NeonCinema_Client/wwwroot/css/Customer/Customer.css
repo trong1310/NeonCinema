@@ -6,17 +6,13 @@ html, body {
     width: 100%;
     overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
 }
-.carousel-item img {
-    width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
-    height: 700px; /* Đặt chiều cao cố định cho tất cả các ảnh */
-    object-fit: cover; /* Cắt ảnh để phù hợp với kích thước mà không làm biến dạng */
-}
+
 /* Các kiểu dáng cho Navbar */
 .navbar {
     background-color: #1b1b1b;
     padding: 15px 50px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Đảm bảo Navbar nằm trên các phần tử khác */
+    z-index: 100; /* Đảm bảo Navbar nằm trên các phần tử khác */
     justify-content: space-between;
 }
 
@@ -127,135 +123,9 @@ main {
     padding-top: 0;
 }
 
-/* Movie List */
-/* Điều chỉnh kích thước của các nút điều khiển */
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%; /* Điều chỉnh kích thước nút */
-    height: 100%; /* Chiều cao phủ đầy để dễ bấm */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent; /* Loại bỏ hoàn toàn nền */
-    border: none; /* Bỏ viền */
-}
 
-    /* Điều chỉnh các biểu tượng điều khiển (prev và next) */
-    .carousel-control-prev .fa-chevron-left,
-    .carousel-control-next .fa-chevron-right {
-        font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
-        color: #4caf50; /* Màu biểu tượng mặc định */
-        transition: color 0.3s ease, transform 0.3s ease; /* Thêm hiệu ứng cho biểu tượng */
-    }
-
-    /* Thay đổi màu và kích thước khi hover */
-    .carousel-control-prev:hover .fa-chevron-left,
-    .carousel-control-next:hover .fa-chevron-right {
-        color: limegreen; /* Màu xanh lá cây khi hover */
-        transform: scale(1.5); /* Phóng to biểu tượng khi hover */
-    }
-
-    /* Đảm bảo không có màu nền nào xuất hiện khi hover */
-    .carousel-control-prev:hover,
-    .carousel-control-next:hover {
-        background-color: transparent; /* Đảm bảo nền trong suốt khi hover */
-        
-    }
-
-
-
-
-
-.title-Movielist {
-    color: #4caf50;
-    text-align: center;
-    margin: 5px auto 30px;
-    border: solid 2px #4caf50;
-    border-radius: 8px;
-    width: 280px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-}
-
-/* Đảm bảo rằng movie-card có không gian đủ lớn */
-.movie-card {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-}
-
-    .movie-card img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-
-/* Đảm bảo thông tin bên dưới ảnh có không gian và dễ đọc */
-.movie-info {
-    padding: 10px;
-    text-align: left;
-    flex: 1;
-    background-color: white;
-}
-
-    .movie-info h3 {
-        font-size: 18px;
-        color: #4caf50;
-        margin: 15px 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-/* Hiệu ứng hover không làm cho card bị che khuất */
-.movie-card:hover {
-    transform: scale(1.05);
-    z-index: 10;
-}
-
-.tags .badge {
-    font-size: 14px;
-    padding: 5px 9px;
-    border-radius: 10px;
-    margin-right: 3px;
-}
-
-    .tags .badge:last-child {
-        margin-right: 0;
-    }
-
-/* Đảm bảo carousel không cắt phần tử con */
-.carousel-inner {
-    overflow: visible;
-}
-
-.carousel-item {
-    overflow: visible;
-}
-
-/* Hiệu ứng khi hover vào movie-card */
-.movie-card:hover .buy-ticket-btn {
-    opacity: 1;
-}
-
-/* Hiệu ứng khi hover vào movie-card làm cho ảnh mờ đi */
-.movie-card:hover img {
-    opacity: 0.7;
-}
-/* Cập nhật màu nền của toàn bộ trang */
 .profile-container {
-    background-color: #000; /* Màu nền đen */
+    background-color: black; /* Màu nền đen */
     color: #fff; /* Màu chữ trắng để dễ đọc trên nền đen */
 }
 
@@ -267,11 +137,22 @@ main {
 }
 /* Cập nhật màu nền và border của card */
 .card {
-    background-color: #333; /* Màu nền xám đen cho card */
+    background-color: black; /* Màu nền xám đen cho card */
     color: #fff; /* Màu chữ trắng trên card */
-    border: none; /* Loại bỏ border nếu có */
 }
 
+.customer-movie {
+    background-color: #555;
+    text-align: left;
+    margin-left: 120px;
+    padding-top: 10px;
+    padding-left: 90px;
+    border-radius: 8px;
+    width: 350px;
+    position: absolute;
+    color: #fff;
+    border: 1px solid #666;
+}
 /* Định dạng cho các input và textarea trên nền tối */
 .form-control {
     background-color: #555; /* Màu nền xám cho input và textarea */
@@ -292,8 +173,9 @@ main {
     }
 /* Định dạng cho hình ảnh hồ sơ */
 .profile-img {
-    width: 250px; /* Kích thước theo nhu cầu */
-    height: 250px; /* Kích thước theo nhu cầu */
+    width: 180px;
+    height: 180px;
+    align-items: center;
 }
 
 /* Cập nhật màu nền và border của nút chính */
@@ -323,9 +205,7 @@ label {
         font-size: 30px
     }
 
-.table {
-    background-color: #C6E2FF;
-}
+
 
 .profile-info {
     list-style-type: none; /* Bỏ dấu đầu dòng */
@@ -342,7 +222,3 @@ label {
 .table {
     background-color: #C6E2FF;
 }
-
-
-
-

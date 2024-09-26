@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
     public class ViewMovieRequest : PaginationRequest
     {
         public string? SearchName { get; set; }
-     
+        
+
     }
 }

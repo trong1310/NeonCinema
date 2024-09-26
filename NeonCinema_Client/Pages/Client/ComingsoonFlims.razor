@@ -1,46 +1,41 @@
-﻿@page "/comingsoon-flim"
+﻿@page "/comingsoon-flims"
 @layout LayoutClient
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
-@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Client.Data.IServices.FlimsUser
 @using NeonCinema_Client.DataTransferObject.MovieData
-@inject IUserServices _filmsServices
-<div class="container text-center">
-    <div class="row row-cols-2 row-cols-lg-4 g-2 g-lg-3">
-        <div class="col">
-
-            @if (_lstMovie == null || _lstMovie.Count == 0)
-            {
-                <p>Không có phim nào để hiển thị.</p>
-            }
-            else
-            {
+@inject IFlimUsers _filmsServices
+    <div class="container text-center">
+        <div class="row">
+            <div class="row row-cols-lg-4 g-2 g-lg-3 d-flex justify-content-center">
                 @foreach (var item in _lstMovie)
                 {
-                    <div class="card movie-card d-flex">
-                        <img src="@GetImageUrl(item.Images)" class="card-img-top"alt="">
+                    <div class="card movie-card " style="width: 18rem;">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top" loading="lazy">
                         <div class="card-body">
                             <div class="tags mb-2">
-                                <span class="badge bg-danger">@item.AgeAllowed</span>
-                                <span class="badge bg-dark">@item.StarTime</span>
-                                <span class="badge bg-success">@item.LanguareName
-                                </span>
+                                <span class="badge bg-danger">Độ tuổi: @item.AgeAllowed+</span>
+                                <span class="badge bg-dark">Thời Lượng: @item.Duration</span>
+                                <span class="badge bg-success">Thể loại: @item.LanguareName</span>
                             </div>
                             <h5 class="card-title">@item.Name</h5>
                             <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-                            <button class="btn buy-ticket-btn">
+                            <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
                         </div>
                     </div>
                 }
-            }
+            </div>
         </div>
     </div>
-</div>
-@code {
-    private List<MovieData> _lstMovie;
 
+<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+
+  
+@code {
+    private List<MovieData> _lstMovie =  new List<MovieData>();
+    private ChooseShowTimeDialog? chooseSTD;
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,4 +51,54 @@
     {
         return $"https://localhost:7211/Resources/{imageUrl}";
     }
+
+    private void OpenDialog()
+    {
+        chooseSTD?.Open();
+    }
+
+    private void OnDialogClose()
+    {
+        // Logic xử lý khi dialog đóng (nếu cần)
+    }
 }
+<style>
+    .movie-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #292C35;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .movie-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .movie-card .card-body {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+    .buy-ticket-btn {
+        background-color: #ff4500;
+        color: white;
+        border-radius: 20px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .buy-ticket-btn:hover {
+            background-color: #e63900;
+        }
+
+</style>

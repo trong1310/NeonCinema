@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Interface.Movie;
+using NeonCinema_Application.Interface.UserFlims;
 
 namespace NeonCinema_API.Controllers.UserFlims
 {
@@ -9,8 +10,8 @@ namespace NeonCinema_API.Controllers.UserFlims
     [ApiController]
     public class UserFlimsController : ControllerBase
     {
-        private readonly IMovieRepositories _reps;
-        public UserFlimsController(IMovieRepositories reps)
+        private readonly IUserMovies _reps;
+        public UserFlimsController(IUserMovies reps)
         {
             
             _reps = reps;
