@@ -1,5 +1,6 @@
 ﻿@page "/nowshowing-flims"
 @layout LayoutClient
+@using MudBlazor
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.FlimsUser
@@ -9,9 +10,9 @@
 <div class="container text-center">
     <div class="row">
         <div class="row row-cols-lg-4 g-2 g-lg-3 d-flex justify-content-center">
-            @if (_lstMovie != null && _lstMovie.Count > 0)
+            @if (movies.Data != null)
             {
-                @foreach (var item in _lstMovie)
+                @foreach (var item in movies.Data)
                 {
                     <div class="card movie-card" style="width: 18rem;">
                         <img src="@GetImageUrl(item.Images)" class="card-img-top" loading="lazy">
@@ -36,35 +37,42 @@
             }
         </div>
     </div>
+    <MudPagination Color="Color.Primary" Count="next" SelectedChanged="@OnPaginationSelectedChanged" />
 
-    <!-- Thanh phân trang -->
-    <Pagination CurrentPage="@currentPage" TotalPages="@totalPages" OnPageChanged="LoadMovie" />
+    
 </div>
 
 <ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
 
 @code {
-    private List<MovieData> _lstMovie = new List<MovieData>();
-    private ChooseShowTimeDialog? chooseSTD;
-    private ViewMovieRequestB request = new ViewMovieRequestB
-    {
-        PageSize = 10, 
-        PageNumber = 1  
-    };
 
-    private int currentPage = 1;
-    private int totalPages = 1;
+    private ChooseShowTimeDialog? chooseSTD;
+    ViewMovieRequest request = new ViewMovieRequest();
+    PaginationResponse<MovieData> movies = new PaginationResponse<MovieData>();
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadMovie(1);  // Bắt đầu tải từ trang 1
+        await LoadMovie();  // Bắt đầu tải từ trang 1
     }
-
-    public async Task LoadMovie(int page)
+    int next;
+    public async Task LoadMovie()
     {
-        request.PageNumber = page;  
-        var result = await _filmsServices.GetMovieShowing();
-
+       
+        movies = await _filmsServices.GetMovieShowing(request);
+        if (movies.HasNext)
+        {
+            next += 1;
+        }
+    }
+    public async Task OnPaginationSelectedChanged(int selectedPage)
+    {
+        next = selectedPage;
+        await LoadMovie();
+    }
+    public async Task HandleTextChanged(string newText)
+    {
+        request.SearchName = newText;
+        await LoadMovie();
     }
 
     private string GetImageUrl(string imageUrl)
