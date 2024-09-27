@@ -155,7 +155,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Name = b.Name,
                                 Images = b.Images,
                                 Duration = b.Duration,
-                                Images = b.Images,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
                                 CountryName = b.Countrys.CountryName,
@@ -164,14 +163,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 
                             }).ToList();
          
-            return new PaginationResponse<MovieDTO>()
-            {
-                Data = dataView,
-                HasNext = result.HasNext,
-                PageNumber = result.PageNumber,
-                 PageSize = result.PageSize,
-                
-            };
+ return dataview;
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
