@@ -34,7 +34,7 @@ namespace NeonCinema_API.Controllers
                 PageNumber = seatTypes.PageNumber,
                 PageSize = seatTypes.PageSize,
                 HasNext = seatTypes.HasNext,
-                Data = _mapper.Map<ICollection<SeatTypeDTO>>(seatTypes.Data)
+                Data = _mapper.Map<List<SeatTypeDTO>>(seatTypes.Data)
             };
 
             // Trả về kết quả dạng JSON

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Interface.UserFlims;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -28,6 +29,10 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
         {
             var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
                (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.SearchName))
+            {
+                query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
+            }
             //  var result = await query.Where(x=>x.Status == MovieStatus.Comingsoon).ToListAsync();
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             var dataview = (from a in result.Data
@@ -54,11 +59,21 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
                             }).ToList();
             return dataview;
         }
-        public async Task<List<MovieDTO>> GetMovieNowShowing(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDTO>> GetMovieNowShowing(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
-            var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
-               (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
+
+            var query = _context.Movies
+                .Include(x => x.Genre)
+                .Include(x => x.Screening)
+                .Include(x => x.Director)
+                .Include(x => x.Lenguage)
+                .Include(x => x.Countrys)
+                .AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.SearchName))
+            {
+                query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
+            }
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             var dataview = (from a in result.Data
                             join b in query on a.ID
@@ -82,7 +97,13 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
                             }).ToList();
-            return dataview;
+            return new PaginationResponse<MovieDTO>()
+            {
+                Data = dataview,
+                PageNumber  = result.PageNumber,
+                PageSize = result.PageSize,
+                HasNext = result.HasNext,
+            };
         }
 
         public async Task<List<MovieDTO>> GetTopMovies(ViewMovieRequest request, CancellationToken cancellationToken)

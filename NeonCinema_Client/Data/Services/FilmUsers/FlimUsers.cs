@@ -18,9 +18,9 @@ namespace NeonCinema_Client.Data.Services.FilmUsers
             var getflims = await _httpClient.GetFromJsonAsync<List<MovieData>>("https://localhost:7211/api/UserFlims/Get-coming");
             return getflims;
         }
-        public async Task<PaginationResponse<MovieData>> GetMovieShowing(ViewMovieRequest request)
+        public async Task<PaginationResponse<MovieDTO>> GetMovieShowing(ViewMovieRequest request)
         {
-            var getflims = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieData>>($"https://localhost:7211/api/UserFlims/Get-showing?Name={request.SearchName}&PageNumber{request.PageNumber}&PageSize{request.PageSize}");
+            var getflims = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/UserFlims/Get-showing?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
             return getflims;
         }
     }

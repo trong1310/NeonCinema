@@ -37,43 +37,43 @@
             }
         </div>
     </div>
-    <MudPagination Color="Color.Primary" Count="next" SelectedChanged="@OnPaginationSelectedChanged" />
+<MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
+        <MudPagination Color="Color.Primary" Count="@CountPage" SelectedChanged="@OnPaginationSelectedChanged" />
+</MudBlazor.MudContainer>
 
-    
 </div>
 
-<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+
 
 @code {
 
     private ChooseShowTimeDialog? chooseSTD;
     ViewMovieRequest request = new ViewMovieRequest();
-    PaginationResponse<MovieData> movies = new PaginationResponse<MovieData>();
-
+    PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
+    int CountPage = 1; 
     protected override async Task OnInitializedAsync()
     {
+
         await LoadMovie();  // Bắt đầu tải từ trang 1
     }
-    int next;
     public async Task LoadMovie()
     {
-       
+        movies.Data = null;
+        request.PageNumber = CountPage;       
         movies = await _filmsServices.GetMovieShowing(request);
         if (movies.HasNext)
         {
-            next += 1;
+            CountPage += 1;
+
         }
+
     }
     public async Task OnPaginationSelectedChanged(int selectedPage)
     {
-        next = selectedPage;
+        CountPage = selectedPage;
         await LoadMovie();
     }
-    public async Task HandleTextChanged(string newText)
-    {
-        request.SearchName = newText;
-        await LoadMovie();
-    }
+    
 
     private string GetImageUrl(string imageUrl)
     {
