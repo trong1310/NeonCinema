@@ -20,10 +20,10 @@
                             <div class="tags mb-2">
                                 <span class="badge bg-danger">Độ tuổi: @item.AgeAllowed+</span>
                                 <span class="badge bg-dark">Thời Lượng: @item.Duration</span>
-                                <span class="badge bg-success">Thể loại: @item.LanguareName</span>
+                                <span class="badge bg-success">Thể loại: @item.GenreName</span>
                             </div>
                             <h5 class="card-title">@item.Name</h5>
-                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            
                             <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
@@ -33,7 +33,12 @@
             }
             else
             {
-                <p>Không có phim nào để hiển thị.</p>
+                @if (isProcessing)
+                {
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                }
             }
         </div>
     </div>
@@ -46,7 +51,8 @@
 
 
 @code {
-
+    private bool isProcessing;
+    private string errorMessage;
     private ChooseShowTimeDialog? chooseSTD;
     ViewMovieRequest request = new ViewMovieRequest();
     PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
@@ -58,15 +64,23 @@
     }
     public async Task LoadMovie()
     {
-        movies.Data = null;
-        request.PageNumber = CountPage;       
-        movies = await _filmsServices.GetMovieShowing(request);
-        if (movies.HasNext)
+        isProcessing = true;
+        try
         {
-            CountPage += 1;
+            movies.Data = null;
+            request.PageNumber = CountPage;
+            movies = await _filmsServices.GetMovieShowing(request);
+            if (movies.HasNext)
+            {
+                CountPage += 1;
 
+            }
+            isProcessing = false;
+
+        }catch(Exception ex)
+        {
+            errorMessage = $"Có lỗi xảy ra: {ex.Message}";
         }
-
     }
     public async Task OnPaginationSelectedChanged(int selectedPage)
     {
@@ -90,3 +104,51 @@
         // Logic xử lý khi dialog đóng (nếu cần)
     }
 }
+<style>
+    /* Card container */
+    .movie-card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+        overflow: hidden;
+    }
+
+        /* Khi hover vào card */
+        .movie-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Chỉnh kích thước hình ảnh trong card */
+        .movie-card img {
+            width: 100%;
+            height: auto;
+            max-height: 250px; /* Giới hạn chiều cao tối đa của ảnh */
+            object-fit: cover; /* Giữ tỉ lệ ảnh và cắt cho vừa với khung */
+        }
+
+        /* Card body */
+        .movie-card .card-body {
+            padding: 10px;
+        }
+
+    /* Chỉnh các tags */
+    .tags {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    /* Button mua vé */
+    .buy-ticket-btn {
+        background-color: #ff5a00;
+        color: white;
+        width: 100%;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+    }
+
+        .buy-ticket-btn:hover {
+            background-color: #e04c00;
+        }
+
+</style>
