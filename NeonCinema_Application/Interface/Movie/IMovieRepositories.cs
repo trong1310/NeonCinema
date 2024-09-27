@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NeonCinema_Application.DataTransferObject.Movie;
-using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
@@ -13,7 +12,7 @@ namespace NeonCinema_Application.Interface.Movie
 {
     public interface IMovieRepositories
     {
-        public Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request,CancellationToken cancellationToken);
+        public Task<List<MovieDTO>> GetAll(ViewMovieRequest request,CancellationToken cancellationToken);
     
         public Task<HttpResponseMessage> Create (CreateMovieRequest request,CancellationToken cancellationToken);
         public Task<HttpResponseMessage> Update (Movies request,CancellationToken cancellationToken);

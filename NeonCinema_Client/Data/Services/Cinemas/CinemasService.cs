@@ -18,9 +18,9 @@ namespace NeonCinema_Client.Data.Services.Cinemas
             throw new NotImplementedException();
         }
 
-        public async Task<List<CinemasDTO>> GetAllCinemas(CancellationToken cancellationToken)
+        public async Task<List<CinemasDTO>> GetAllCinemas()
         {
-            return await _httpClient.GetFromJsonAsync<List<CinemasDTO>>("api/Cinemas", cancellationToken);
+            return await _httpClient.GetFromJsonAsync<List<CinemasDTO>>("api/Cinemas");
         }
 
         public async Task<CinemasDTO> GetByIDRCinemas(Guid id, CancellationToken cancellationToken)

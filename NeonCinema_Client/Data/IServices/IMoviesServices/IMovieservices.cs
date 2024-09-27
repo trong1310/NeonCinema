@@ -5,6 +5,6 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
 {
     public interface IMovieservices
     {
-        public Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request);
+        public Task<List<MovieDTO>> GetAllMovies();
     }
 }
