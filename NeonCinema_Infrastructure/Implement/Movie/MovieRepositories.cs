@@ -125,8 +125,14 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Movies.Include(x => x.Genre).Include(x => x.Screening).Include
-      (x => x.Director).Include(x => x.Lenguage).Include(x => x.Countrys).AsNoTracking();
+            var query = _context.Movies
+                            .Include(x => x.Genre)
+                            .Include(x => x.Screening)
+                            .Include(x => x.Director)
+                            .Include(x => x.Lenguage)
+                            .Include(x => x.Countrys)
+                            .Include(x => x.TicketSeats)
+                            .AsNoTracking();
             if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x=>x.Name.Contains(request.SearchName.ToLower()));
@@ -136,28 +142,28 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataView = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
-                          
                             orderby b.StarTime 
-                            where b.Deleted == false
                             select new MovieDTO
                             {
+                                ID = b.ID,
                                 AgeAllowed = b.AgeAllowed,
                                 Trailer = b.Trailer,
                                 Status = b.Status,
                                 StarTime = b.StarTime,
                                 Name = b.Name,
+                                Images = b.Images,
                                 Duration = b.Duration,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,
-                                
+                                GenreName = b.Genre.GenreName,                       
                                 
                             }).ToList();
+         
             return new PaginationResponse<MovieDTO>()
             {
-                Data = result.Data,
+                Data = dataView,
                 HasNext = result.HasNext,
                 PageNumber = result.PageNumber,
                  PageSize = result.PageSize,
