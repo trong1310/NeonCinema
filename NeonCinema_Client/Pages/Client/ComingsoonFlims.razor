@@ -1,4 +1,4 @@
-﻿@page "/comingsoon-flims"
+﻿d@page "/comingsoon-flims"
 @layout LayoutClient
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
@@ -10,16 +10,16 @@
             <div class="row row-cols-lg-4 g-2 g-lg-3 d-flex justify-content-center">
                 @foreach (var item in _lstMovie)
                 {
-                    <div class="card movie-card " style="width: 18rem;">
+                    <div class="card movie-card p-1" style="width: 18rem; background-color: transparent">
                         <img src="@GetImageUrl(item.Images)" class="card-img-top" loading="lazy">
-                        <div class="card-body">
+                        <div class="card-body" style="background-color: transparent">
                             <div class="tags mb-2">
-                                <span class="badge bg-danger">Độ tuổi: @item.AgeAllowed+</span>
-                                <span class="badge bg-dark">Thời Lượng: @item.Duration</span>
-                                <span class="badge bg-success">Thể loại: @item.LanguareName</span>
+                                <span class="badge bg-danger">@item.AgeAllowed+</span>
+                                <span class="badge bg-dark">@item.Duration<text>p</text></span>
+                                <span class="badge bg-success">Sub: @item.LanguareName</span>
                             </div>
                             <h5 class="card-title">@item.Name</h5>
-                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <p class="card-text">Genre: <span class="genre">@item.GenreName</span></p>
                             <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
@@ -72,11 +72,10 @@
     }
 
         .movie-card img {
-            width: 100%;
-            height: 250px;
+            width: 280px;
+            height: 430px;
             object-fit: cover;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            border-radius: 10px;
         }
 
         .movie-card .card-body {

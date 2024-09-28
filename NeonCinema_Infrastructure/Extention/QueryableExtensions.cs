@@ -14,8 +14,8 @@ namespace NeonCinema_Infrastructure.Extention
     public static class QueryableExtensions
     {
         public static async Task<PaginationResponse<TSourceEntity>> PaginateAsync<TSourceEntity>(
-          this IQueryable<TSourceEntity> queryable, PaginationRequest request,
-          CancellationToken cancellationToken)
+            this IQueryable<TSourceEntity> queryable, PaginationRequest request,
+            CancellationToken cancellationToken)
         {
             // Force to sort by CreateTime asc 
             IQueryable<TSourceEntity> finalQuery = queryable;
@@ -37,29 +37,29 @@ namespace NeonCinema_Infrastructure.Extention
             };
         }
 
-        public static async Task<PaginationResponse<TTargetEntity>> PaginateAsync<TSourceEntity, TTargetEntity>(
-            this IQueryable<TSourceEntity> queryable, PaginationRequest request, IMapper mapper,
-            CancellationToken cancellationToken) where TSourceEntity : ICreateBase
+    public static async Task<PaginationResponse<TTargetEntity>> PaginateAsync<TSourceEntity, TTargetEntity>(
+        this IQueryable<TSourceEntity> queryable, PaginationRequest request, IMapper mapper,
+        CancellationToken cancellationToken) where TSourceEntity : ICreateBase
         {
-            // Force to sort by CreateTime asc 
-            IQueryable<TSourceEntity> finalQuery = queryable.OrderByDescending(x => x.CreatedTime);
+        // Force to sort by CreateTime asc 
+        IQueryable<TSourceEntity> finalQuery = queryable.OrderByDescending(x => x.CreatedTime);
 
-            // Hit to the db to get data back to client side
-            var result = await finalQuery
-                .ProjectTo<TTargetEntity>(mapper.ConfigurationProvider)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize + 1)
-                .ToListAsync(cancellationToken);
+        // Hit to the db to get data back to client side
+        var result = await finalQuery
+            .ProjectTo<TTargetEntity>(mapper.ConfigurationProvider)
+        .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize + 1)
+            .ToListAsync(cancellationToken);
 
-            bool hasNext = result.Count == request.PageSize + 1;
+        bool hasNext = result.Count == request.PageSize + 1;
 
-            return new PaginationResponse<TTargetEntity>()
-            {
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                HasNext = hasNext,
-                Data = result.Take(request.PageSize).ToList()
-            };
-        }
+        return new PaginationResponse<TTargetEntity>()
+        {
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            HasNext = hasNext,
+            Data = result.Take(request.PageSize).ToList()
+        };
+    }
     }
 }
