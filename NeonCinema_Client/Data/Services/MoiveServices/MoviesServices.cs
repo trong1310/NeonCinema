@@ -12,9 +12,9 @@ namespace NeonCinema_Client.Services.MoivesService
             _httpClient = new HttpClient();
         }
 
-        public  async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
+        public  async Task<List<MovieDTO>> GetAllMovies( )
         {
-            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
+            var obj = await _httpClient.GetFromJsonAsync<List<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
             return obj;
         }
 

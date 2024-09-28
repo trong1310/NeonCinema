@@ -1,6 +1,6 @@
-﻿
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @using MudBlazor
+<<<<<<< HEAD
 <MudAppBar Color="Color.Primary" Fixed="false">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
     <MudSpacer />
@@ -18,17 +18,41 @@
     </MudNavMenu>
 </MudDrawer>
 <MudMainContent>
-    <NeonCinema_Client.Pages.Admin.Users.ListStaff></NeonCinema_Client.Pages.Admin.Users.ListStaff> <!-- Đây là thuộc tính Body mà bạn cần -->
+    @Body
 </MudMainContent>
 <MudAppBar Color="Color.Primary" Elevation="4">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" @onclick="_toggleDrawer" />
     <MudText Typo="Typo.h6">Tên Ứng Dụng</MudText>
 </MudAppBar>
+=======
+>>>>>>> 2d7fbc3d366e050598d179abb36d7fe9f722c374
 
+<MudThemeProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Dark">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">
+             NEON CINEMA
+        </MudText>
+        <MudSpacer />
+        <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+            <MudAvatar>
+                <MudImage Src="/images/Client/phim1.jpg" />
+            </MudAvatar>
+        </MudBadge>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NeonCinema_Client.Pages.Admin.Users.NavMenuAdmin/>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 @code {
-    private bool _drawerOpen = true;
+    bool _drawerOpen = true;
 
-    private void _toggleDrawer()
+    void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
