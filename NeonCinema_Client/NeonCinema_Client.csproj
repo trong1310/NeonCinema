@@ -47,7 +47,7 @@
 
   <ItemGroup>
 
-    <Folder Include="Dialog\Models\" />
+    <Folder Include="Dialog\RoomDialog\" />
 
     <Folder Include="Pages\Staff\" />
 
@@ -67,6 +67,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NeonCinema_Application\NeonCinema_Application.csproj" />
+    <ProjectReference Include="..\NeonCinema_Infrastructure\NeonCinema_Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +81,8 @@
   </ItemGroup>
 
   <ItemGroup>
+
+    <None Include="Pages\Admin\AddMovies\AddMoviess.razor" />
 
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />

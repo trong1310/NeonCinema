@@ -17,6 +17,12 @@ using NeonCinema_Client.Data.IServices.Cinemas;
 using NeonCinema_Client.Data.IServices.FlimsUser;
 using NeonCinema_Client.Data.Services.FilmUsers;
 using MudBlazor.Services;
+using NeonCinema_Client.Data.IServices.IRoom;
+using NeonCinema_Client.Data.Services.Room;
+using NeonCinema_Application.Interface.Room;
+using NeonCinema_Infrastructure.Implement.Room;
+using Microsoft.EntityFrameworkCore;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -30,7 +36,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
-
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddDbContext<NeonCinemasContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -43,6 +52,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7211/") });
 
 
+builder.Services.AddDbContext<NeonCinemasContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
