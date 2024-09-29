@@ -14,6 +14,8 @@ namespace NeonCinema_Application.Interface.Countrys
         public Task<CountryDTO> GetByIDRole(Guid id, CancellationToken cancellationToken);
         public Task<HttpResponseMessage> CreateRole(CountrysCreateRequest request, CancellationToken cancellationToken);
         public Task<HttpResponseMessage> UpdateRole(Guid id, CountryUpdateRequest request, CancellationToken cancellationToken);
+        public Task DeleteID(Guid id);
+
         
     }
 }

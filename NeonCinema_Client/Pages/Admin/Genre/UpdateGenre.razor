@@ -1,0 +1,40 @@
+﻿@page "/edit-genre/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Client.Data.IServices.Genre
+@inject IGenreService GenreService
+@inject NavigationManager Navigation
+
+<MudContainer>
+    <MudGrid>
+        <MudItem xs="12">
+            <h4>Quản lý thể loại > Cập nhật</h4>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="_genreName" Label="Tên thể loại" Required="true" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton OnClick="UpdateGenres" Color="Color.Primary">Cập nhật thể loại</MudButton>
+            <MudButton OnClick="@(() => Navigation.NavigateTo("/genres"))" Color="Color.Secondary">Hủy</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private string _genreName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var genre = await GenreService.GetGenreById(id, CancellationToken.None);
+        _genreName = genre.GenreName;
+    }
+
+    private async Task UpdateGenres()
+    {
+        var request = new UpdateGenreRequest { ID = id, GenreName = _genreName };
+        await GenreService.UpdateGenre(id, request, CancellationToken.None);
+        Navigation.NavigateTo("/genres");
+    }
+}

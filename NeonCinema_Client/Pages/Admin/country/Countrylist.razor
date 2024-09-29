@@ -1,0 +1,122 @@
+﻿@page "/country-management"
+@inject ICountryService CountryService
+@inject NavigationManager NavigationManager
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Client.Data.IServices.Country
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-4">
+    <!-- Khung tiêu đề -->
+    <MudPaper Class="pa-3 mb-3" Elevation="1">
+        <MudText Typo="Typo.h5" GutterBottom="true">Danh sách quốc gia</MudText>
+    </MudPaper>
+
+    <!-- Khung tìm kiếm -->
+    <MudPaper Class="pa-3 mb-3" Elevation="1">
+        <MudGrid>
+            <MudItem xs="8">
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="Search by country name"
+                              Adornment="Adornment.Start"
+                              StartAdornmentIcon="@Icons.Material.Filled.Search"
+                              OnKeyUp="@((e) => OnSearchTermChanged())" />
+            </MudItem>
+            <MudItem xs="4" class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/add-country"))"
+                               Class="border border-primary" />
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Secondary"
+                           OnClick="@Search"
+                           Class="ml-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Search" />
+                    Tìm kiếm
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Khung danh sách các quốc gia -->
+    <MudPaper Class="pa-3" Elevation="1">
+        <MudTable Items="_filteredCountries" Hover="true" Bordered="true" Striped="true">
+            <HeaderContent>
+                <MudTh>Country Name</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CountryName</MudTd>
+                <MudTd>
+                    <!-- Nút "Edit" -->
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Color="Color.Primary"
+                                   OnClick="@(() => NavigateToEditCountry(context.ID))"
+                                   Class="border border-primary" />
+                    <!-- Nút "Delete" -->
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   OnClick="@(() => DeleteCountry(context.ID))"
+                                   Class="border border-error" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<CountryDTO> _countries = new();
+    private List<CountryDTO> _filteredCountries = new();
+    private string _searchTerm = string.Empty;
+
+    // Tải danh sách các quốc gia khi trang khởi chạy
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadCountries();
+    }
+
+    // Hàm điều hướng đến trang chỉnh sửa quốc gia
+    private void NavigateToEditCountry(Guid id)
+    {
+        NavigationManager.NavigateTo($"/edit-country/{id}");
+    }
+
+    // Hàm xóa quốc gia
+    private async Task DeleteCountry(Guid id)
+    {
+        await CountryService.DeleteCountry(id);
+        await ReloadCountries();
+    }
+
+    // Tải lại danh sách các quốc gia
+    private async Task ReloadCountries()
+    {
+        _countries = await CountryService.GetAllCountries();
+        FilterCountries();
+    }
+
+    // Lọc danh sách quốc gia theo tên
+    private void FilterCountries()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            _filteredCountries = _countries;
+        }
+        else
+        {
+            _filteredCountries = _countries
+                .Where(c => c.CountryName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    // Theo dõi thay đổi trong ô tìm kiếm
+    private void OnSearchTermChanged()
+    {
+        FilterCountries();
+    }
+
+    // Hàm tìm kiếm khi nhấn nút
+    private void Search()
+    {
+        FilterCountries();
+    }
+}
