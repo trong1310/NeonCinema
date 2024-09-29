@@ -78,7 +78,7 @@
                         <td class="text-center align-middle">@(@filteredUsers.IndexOf(user) + 1)</td>
                         <td class="text-center align-middle">@user.Gender</td>
                         <td class="text-center align-middle">
-                            <img src="/images/Client/phim1.jpg" alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+                            <img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
                         </td>
                         <td class="text-center align-middle">@user.FullName</td>
                         <td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>
@@ -138,8 +138,8 @@
     protected override async Task OnInitializedAsync()
     {
         users = await UserService.GetAllUser(CancellationToken.None);
-        var roleIdToFilter = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b");
-        filteredUsers = users.Where(user => user.RoleID == roleIdToFilter).ToList();
+        var roleIdToFilter = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D");
+        filteredUsers = users.ToList();
         currentPage = 1; // Reset current page to 1 after filtering
     }
 
@@ -208,6 +208,11 @@
     {
         Navigation.NavigateTo($"/staff-details/{phoneNumber}");
     }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/Resources/{imageUrl}";
+    }
+    
 }
 
 <style>
