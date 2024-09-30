@@ -1,93 +1,90 @@
-﻿@page "/cinema-list"
-@using System.Collections.Generic
-@using NeonCinema_Application.DataTransferObject.Cinemas
-@using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Client.Data.IServices.Cinemas
-@using NeonCinema_Client.Data.IServices.IMoviesServices
-@using NeonCinema_Domain.Enum
-@inject IMovieservices service
-@layout LayoutAdmin
+﻿@page "/list-movie"
 
-<MudTable Items="@movie" Striped="true" Hover="true" Bordered="true" Class="mud-table-custom">
-    <HeaderContent>
-        <MudTh Style="width: 50px;">STT</MudTh>
-        <MudTh Style="width: 100px;">Ảnh</MudTh>
-        <MudTh Style="width: 200px;">Tên</MudTh> <!-- Cột tên dài hơn -->
-        <MudTh Style="width: 80px;">Độ tuổi</MudTh> <!-- Cột độ tuổi ngắn hơn -->
-        <MudTh Style="width: 50px;">Trạng thái</MudTh> <!-- Cột trạng thái ngắn hơn -->
-        <MudTh Style="width: 100px;">Tên đạo diễn</MudTh>
-        <MudTh Style="width: 150px;">Thao tác</MudTh> <!-- Cột thao tác ngắn hơn -->
-    </HeaderContent>
-    <RowTemplate>
-        @foreach (var item in movie)
-        {
-            int stt = 0;
-            stt++;
-            <MudTd Class="mud-td-center">@stt</MudTd>
-            <MudTd Class="mud-td-center">
-                <MudImage Src="@GetImageUrl(item.Images)" Style="width: 100px; height: auto" />
+<MudPaper Class="p-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Nhân viên</h3>
+        <div>
+            <button class="btn btn-outline-primary">Tài khoản</button>
+            <button class="btn btn-outline-secondary">Nhân viên</button>
+        </div>
+    </div>
+
+    <MudCard Class="mt-3 p-3">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Specify the type (T="string") for MudTextField -->
+                <MudTextField T="string" Placeholder="Tìm kiếm theo mã, tên..." Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" />
+            </div>
+            <div class="col-md-4">
+                <!-- Specify the type (T="string") for MudSelect -->
+                <MudSelect T="string" Placeholder="Chọn giới tính" Variant="Variant.Outlined">
+                    <MudSelectItem T="string">Nam</MudSelectItem>
+                    <MudSelectItem T="string">Nữ</MudSelectItem>
+                </MudSelect>
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+                <label>Trạng thái:</label>
+                <!-- Correctly bind the value and use valid variable references -->
+                <MudRadioGroup T="string" Orientation="Horizontal" @bind-Value="status">
+                    <MudRadio T="string">Tất cả</MudRadio>
+                    <MudRadio T="string">Đang làm việc</MudRadio>
+                    <MudRadio T="string">Đã nghỉ việc</MudRadio>
+                </MudRadioGroup>
+            </div>
+        </div>
+    </MudCard>
+
+    <MudTable Class="mt-3" T="Employee">
+        <HeaderContent>
+            <MudTh>STT</MudTh>
+            <MudTh>Hình Ảnh</MudTh>
+            <MudTh>Mã</MudTh>
+            <MudTh>Tên</MudTh>
+            <MudTh>Ngày Sinh</MudTh>
+            <MudTh>Số Điện Thoại</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Địa Chỉ</MudTh>
+            <MudTh>Trạng Thái</MudTh>
+            <MudTh>Hành Động</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="STT">@context.STT</MudTd>
+            <MudTd DataLabel="Hình Ảnh"><img src="@context.ImageUrl" alt="Hình ảnh" style="width: 50px; height: 50px; border-radius: 50%;" /></MudTd>
+            <MudTd DataLabel="Mã">@context.Id</MudTd>
+            <MudTd DataLabel="Tên">@context.Name</MudTd>
+            <MudTd DataLabel="Ngày Sinh">@context.DateOfBirth.ToString("dd/MM/yyyy")</MudTd>
+            <MudTd DataLabel="Số Điện Thoại">@context.PhoneNumber</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Địa Chỉ">@context.Address</MudTd>
+            <MudTd DataLabel="Trạng Thái">
+                <MudChip T="string" Color="@(context.Status == "active" ? Color.Success : Color.Error)">
+                    @context.Status == "active" ? "Đang Làm Việc" : "Đã Nghỉ Việc"
+                </MudChip>
             </MudTd>
-            <MudTd Class="mud-td-center">@item.Name</MudTd>
-            <MudTd Class="mud-td-center">@item.AgeAllowed</MudTd>
-            <MudTd Class="mud-td-center">
-                @if (item.Status == MovieStatus.Active)
-                {
-                    <MudChip T="string" Color="Color.Info">Active</MudChip>
-                }
-                else if (item.Status == MovieStatus.Comingsoon)
-                {
-                    <MudChip T="string" Color="Color.Success">Comingsoon</MudChip>
-                }
-                else if (item.Status == MovieStatus.StopShowing)
-                {
-                    <MudChip T="string" Color="Color.Error">StopShowing</MudChip>
-                }
-                else
-                {
-                    <MudChip T="string" Color="Color.Default">Other</MudChip>
-                }
+
+            <MudTd DataLabel="Hành Động">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
             </MudTd>
-            <MudTd Class="mud-td-center">@item.DirectorName</MudTd>
-            <MudTd Class="mud-td-center">
-                <MudFab Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" />
-                <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="margin-left:15px;"  />
-                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" style="margin-left: 15px" />
-            </MudTd>
-        }
-    </RowTemplate>
-</MudTable>
-
-<style>
-    .mud-td-center {
-        text-align: center; /* Căn giữa chữ trong ô */
-        vertical-align: middle; /* Căn giữa theo chiều dọc */
-    }
-
-    .mud-table-custom {
-        margin: 20px 0; /* Thêm khoảng cách trên và dưới bảng */
-        border-radius: 8px; /* Bo góc bảng */
-        overflow: hidden; /* Ẩn viền ngoài của bảng */
-    }
-
-    .mud-th, .mud-td {
-        padding: 12px; /* Thêm khoảng cách bên trong cho các ô */
-    }
-
-    .mud-th {
-        background-color: #f5f5f5; /* Màu nền cho tiêu đề bảng */
-        font-weight: bold; /* In đậm tiêu đề */
-    }
-</style>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
 
 @code {
-    private List<MovieDTO> movie = new List<MovieDTO>();
-    protected override async Task OnInitializedAsync()
+    // Example data model for employee
+    public class Employee
     {
-        movie = await service.GetAllMovies();
+        public int STT { get; set; }
+        public string ImageUrl { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+        public string Status { get; set; }
     }
 
-    private string GetImageUrl(string imageUrl)
-    {
-        return $"https://localhost:7211/Resources/{imageUrl}";
-    }
+    // Bound variable for status selection in MudRadioGroup
+    private string status = "all";
 }

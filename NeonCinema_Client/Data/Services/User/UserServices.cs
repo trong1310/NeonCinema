@@ -39,11 +39,8 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync("api/User/get-all", cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<List<UserDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var obj = await _httpClient.GetFromJsonAsync<List<UserDTO>>("https://localhost:7211/api/User/get-all");
+            return obj;
         }
 
         public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
@@ -71,13 +68,8 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
-            var content = new StringContent(
-                JsonSerializer.Serialize(request),
-                Encoding.UTF8,
-                "application/json");
-
-            var response = await _httpClient.PostAsync("users", content, cancellationToken);
-            return response;
+            var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
+            return obj;
         }
 
         public async Task<HttpResponseMessage> UpdateUser(Guid id, UserUpdateRequest request, CancellationToken cancellationToken)

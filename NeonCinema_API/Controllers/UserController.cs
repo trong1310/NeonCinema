@@ -16,20 +16,12 @@ namespace NeonCinema_API.Controllers
             _userRepository = us;
         }
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateUser([FromForm] UserCreateRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             var result = await _userRepository.CreateUser(request, cancellationToken);
-            if (result.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                return BadRequest(result.Content.ReadAsStringAsync().Result);
-            }
-
-            return Ok("Tạo người dùng thành công!");
+            
+            return Ok(result);
         }
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserUpdateRequest request, CancellationToken cancellationToken)

@@ -28,37 +28,21 @@
 
 <MudPopoverProvider />
 <MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="1">
-	<MudNavMenu Class="mud-width-full" Color="Color.Transparent">
-		<MudText Typo="Typo.h6" Class="nav-header">Đặng Đức Cường</MudText>
-		<MudText Typo="Typo.body2" Class="px-4 mud-text-secondary nav-header">Admin</MudText>
-		<MudDivider Class="nav-divider" />
-		<MudNavLink Href="/cinema-list" Icon="fas fa-film" IconColor="Color.Success" Class="custom-nav-link">Quản lý phim</MudNavLink>
-		<MudMenu Label="Quản lý lịch chiếu" StartIcon="fas fa-calendar" Color="Color.Primary">
-			<MudMenuItem>
-				<MudNavLink Href="/" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">
-					Quản lý ngày chiếu
-				</MudNavLink>
-			</MudMenuItem>
-			<MudMenuItem>
-				<MudNavLink Href="/" Icon="fas fa-calendar-alt" IconColor="Color.Info" Class="custom-nav-link">
-					Quản lý giờ chiếu
-				</MudNavLink>
-			</MudMenuItem>
-			<MudMenuItem>
-				<MudNavLink Href="/" Icon="fas fa-history" IconColor="Color.Info" Class="custom-nav-link">
-					Quản lý lịch chiếu phim
-				</MudNavLink>
-			</MudMenuItem>
-		</MudMenu>
-		<MudNavLink Href="/rooms" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
-		<MudNavLink Href="/promotions" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
-		<MudNavLink Href="/customers" Icon="fas fa-users" IconColor="Color.Secondary" Class="custom-nav-link">Quản lý khách hàng</MudNavLink>
-		<MudNavLink Href="/tickets" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
-		<MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
-		<MudNavLink Href="/account" Icon="fas fa-user-circle" IconColor="Color.Info" Class="custom-nav-link">Tài khoản</MudNavLink>
-		<MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
-			<MudNavLink Href="/users" Icon="fas fa-user" IconColor="Color.Primary" Class="custom-nav-link">Users</MudNavLink>
-			<MudNavLink Href="/security" Icon="fas fa-lock" IconColor="Color.Error" Class="custom-nav-link">Security</MudNavLink>
-		</MudNavGroup>
-	</MudNavMenu>
+    <MudNavMenu Class="mud-width-full" Color="Color.Transparent">
+        <MudText Typo="Typo.h6" Class="nav-header">Đặng Đức Cường</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary nav-header">Admin</MudText>
+        <MudDivider Class="nav-divider" />
+        <MudNavLink Href="/asd" Icon="fas fa-film" IconColor="Color.Success" Class="custom-nav-link">Quản lý phim</MudNavLink>
+        <MudNavLink Href="/servers" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
+        <MudNavLink Href="/rooms" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
+        <MudNavLink Href="/promotions" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
+        <MudNavLink Href="/customers" Icon="fas fa-users" IconColor="Color.Secondary" Class="custom-nav-link">Quản lý khách hàng</MudNavLink>
+        <MudNavLink Href="/tickets" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
+        <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
+        <MudNavLink Href="/account" Icon="fas fa-user-circle" IconColor="Color.Info" Class="custom-nav-link">Tài khoản</MudNavLink>
+        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+            <MudNavLink Href="/users" Icon="fas fa-user" IconColor="Color.Primary" Class="custom-nav-link">Users</MudNavLink>
+            <MudNavLink Href="/security" Icon="fas fa-lock" IconColor="Color.Error" Class="custom-nav-link">Security</MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
 </MudPaper>

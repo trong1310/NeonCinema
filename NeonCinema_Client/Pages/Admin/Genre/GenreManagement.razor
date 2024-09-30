@@ -1,0 +1,84 @@
+﻿@page "/genres"
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Client.Data.IServices.Genre
+@inject IGenreService GenreService
+@inject NavigationManager Navigation
+
+<MudGrid MaxWidth="100%">
+    <MudItem xs="12">
+        <MudPaper Elevation="1" Square="true" Style="padding: 16px; margin-bottom: 20px;">
+            <MudGrid>
+                <MudItem xs="12">
+                    <h1 style="font-size: 20px; margin: 0; text-align: left;">Quản lý thể loại</h1>
+                </MudItem>
+                <!-- Thêm một hàng mới cho tìm kiếm và nút "Thêm" -->
+                <MudItem xs="12" class="d-flex justify-content-between align-items-center" Style="margin-top: 20px;">
+                    <div style="display: flex; align-items: center;">
+                        <MudTextField @bind-Value="_searchTerm" Placeholder="Tìm kiếm..." Adornment="Adornment.Start" StartAdornmentIcon="@Icons.Material.Filled.Search" />
+                        <MudButton OnClick="@SearchGenres" Color="Color.Primary" Style="margin-left: 15px;">
+                            <MudIcon Icon="@Icons.Material.Filled.Search" />
+                        </MudButton>
+                    </div>
+                    <MudButton OnClick="@(() => Navigation.NavigateTo("/add-genre"))" Color="Color.Success" Style="margin-left: 10px;">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<!-- Danh sách các thể loại -->
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable Items="@filteredGenres" Striped="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Tên thể loại</MudTh>
+                <MudTh>Thao tác</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.GenreName</MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Info" OnClick="@(() => Navigation.NavigateTo($"/edit-genre/{@context.ID}"))">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                    </MudButton>
+                    <MudButton Color="Color.Error" OnClick="@(() => DeleteGenre(@context.ID))">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private List<GenreDTO> genres;
+    private List<GenreDTO> filteredGenres;
+    private string _searchTerm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        genres = await GenreService.GetAllGenres(CancellationToken.None);
+        filteredGenres = genres; // Khởi tạo danh sách lọc
+    }
+
+    private void SearchGenres()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            filteredGenres = genres;
+        }
+        else
+        {
+            filteredGenres = genres.Where(g => g.GenreName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+    }
+
+    private async Task DeleteGenre(Guid id)
+    {
+        await GenreService.DeleteGenre(id, CancellationToken.None);
+        genres = await GenreService.GetAllGenres(CancellationToken.None);
+        SearchGenres(); // Cập nhật danh sách sau khi xóa
+    }
+}
+
