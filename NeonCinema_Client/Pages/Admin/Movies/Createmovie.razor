@@ -1,0 +1,255 @@
+﻿@page "/create-movie"
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using Microsoft.AspNetCore.Components.Forms
+@layout LayoutAdmin
+@inject IMovieservices _mvsv;
+@inject NavigationManager _nav;
+
+<div class="p-5">
+	<div class="col-12">
+		<a href="/list-movie-admin"><i class="fa-solid fa-arrow-left"></i></a>
+		<hr />
+		<EditForm Model="input" OnValidSubmit="CreateMovie">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			
+			<div>@x</div>
+			<h4>Create movie</h4>
+			<div class="row">
+
+				<div class="col-4">
+					<div class="mb-3">
+						<label for="" class="form-label">Name movie</label>
+						<InputText @bind-Value="input.Name" class="form-control"/>
+					</div>
+					<div class="mb-3">
+						<label for="" class="form-label">Duration (minutes)</label>
+						<InputNumber @bind-Value="input.Duration"  class="form-control"/>
+					</div>
+					<div class="mb-3">
+						<label for="" class="form-label">Age allowed</label>
+						<InputNumber @bind-Value="input.AgeAllowed" class="form-control"/>
+					</div>
+					<div class="mb-3">
+						<label for="" class="form-label">Start date</label>
+						<InputDate @bind-Value="input.StarTime" class="form-control"/>
+					</div>
+					<div class="mb-3">
+						<label for="" class="form-label">Description</label>
+						<InputTextArea rows="10" @bind-Value="input.Description" class="form-control"></InputTextArea>
+					</div>
+
+					<button type="submit" class="btn btn-primary">Add</button>
+
+				</div>
+				<div class="col-4">
+					<div class="mb-3">
+						<label class="form-label">Choose genre</label>
+						<InputSelect @bind-Value="input.GenreID" class="form-control">
+							@foreach (var item in _lstgenre)
+							{
+								<option value="@item.ID">@item.GenreName</option>
+							}
+						</InputSelect>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Choose country</label>
+						<InputSelect @bind-Value="input.CountryID" class="form-control">
+							@foreach (var item in _lstcountry)
+							{
+								<option value="@item.ID">@item.CountryName</option>
+							}
+						</InputSelect>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Choose language</label>
+						<InputSelect @bind-Value="input.LenguageID" class="form-control">
+							@foreach (var item in _lstlanguage)
+							{
+								<option value="@item.ID">@item.LanguageName</option>
+							}
+						</InputSelect>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Choose director</label>
+						<InputSelect @bind-Value="input.DirectorID" class="form-control">
+							@foreach (var item in _lstdirector)
+							{
+								<option value="@item.ID">@item.FullName</option>
+							}
+						</InputSelect>
+					</div>
+				</div>
+				<div class="col-4">
+					<div class="custom-file-upload">
+						@if (showInputFile)
+						{
+							<label for="file-upload" class="custom-button">Choose image</label>
+							<InputFile id="file-upload" OnChange="OnInputFileChange" style="display:none;" accept="image/*" />
+						}
+						@if (!string.IsNullOrEmpty(selectedFileName))
+						{
+							<span>@selectedFileName</span>
+							<button class="clear-button" @onclick="ClearImage">X</button>
+						}
+						else
+						{
+							<span>Photo has not been selected</span>
+						}
+					</div>
+
+					<div class="mt-3" id="preview" style="width: 200px; height: 300px; border: 1px solid #ddd;">
+						@if (!string.IsNullOrEmpty(imageDataUrl))
+						{
+							<img src="@imageDataUrl" style="max-width: 100%; max-height: 100%;" />
+						}
+					</div>
+				</div>
+			</div>
+		</EditForm>
+	</div>
+</div>
+
+<style>
+	.custom-file-upload {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.custom-button {
+		background-color: #4CAF50; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 16px;
+	}
+
+		.custom-button:hover {
+			background-color: #45a049; /* Màu khi hover */
+		}
+
+	input[type="file"] {
+		display: none;
+	}
+</style>
+
+
+@code {
+	//choose img
+	private string imageDataUrl;
+	private string selectedFileName;
+	private bool showInputFile = true;
+
+	//genre
+	private List<GenreDTO> _lstgenre = new List<GenreDTO>();
+
+	//country
+	private List<CountryDTO> _lstcountry = new List<CountryDTO>();
+
+	//language
+	private List<LanguageDTO> _lstlanguage = new List<LanguageDTO>();
+
+	//director
+	private List<DirectorDTO> _lstdirector = new List<DirectorDTO>();
+
+
+	//movie
+	private CreateMovieRequest input = new CreateMovieRequest();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadGenre();
+		await LoadCountry();
+		await LoadLanguage();
+		await LoadDirector();
+	}
+
+	private async Task OnInputFileChange(InputFileChangeEventArgs e)
+	{
+
+		var file = e.File;
+		if (file != null)
+		{
+			selectedFileName = file.Name;
+			imageDataUrl = null;
+
+			// Đọc nội dung của file vào byte[]
+			var buffer = new byte[file.Size];
+			await file.OpenReadStream().ReadAsync(buffer);
+
+			// Chuyển đổi IBrowserFile sang IFormFile
+			var formFile = ConvertToIFormFile(file, buffer);
+
+			// Bây giờ bạn có thể sử dụng formFile để làm việc với IFormFile
+
+			imageDataUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+			input.Images = formFile;
+		}
+	}
+
+	private IFormFile ConvertToIFormFile(IBrowserFile browserFile, byte[] buffer)
+	{
+		var stream = new MemoryStream(buffer);
+		var formFile = new FormFile(stream, 0, buffer.Length, browserFile.Name, browserFile.Name)
+			{
+				ContentType = browserFile.ContentType
+			};
+		return formFile;
+	}
+
+	private void ClearImage()
+	{
+		// Xóa ảnh và tên file đã chọn
+		imageDataUrl = null;
+		selectedFileName = null;
+
+		// Tạo lại InputFile
+		showInputFile = false; // Ẩn InputFile hiện tại
+		StateHasChanged();
+		showInputFile = true;  // Hiển thị lại InputFile mới để có thể chọn lại
+	}
+
+	private string x = "chưa có gì";
+	private async Task CreateMovie()
+	{
+		if (await _mvsv.CreateMovie(input))
+		{
+			_nav.NavigateTo("/list-movie-admin");
+		}
+		else
+		{
+			x = "lỗi rồi bạn ơi";
+		}
+	}
+
+	private async Task LoadGenre()
+	{
+		_lstgenre = await _mvsv.GetAllGenre();
+	}
+
+	private async Task LoadCountry()
+	{
+		_lstcountry = await _mvsv.GetAllCountry();
+	}
+
+	private async Task LoadLanguage()
+	{
+		_lstlanguage = await _mvsv.GetAllLanguage();
+	}
+
+	private async Task LoadDirector()
+	{
+		_lstdirector = await _mvsv.GetAllDirector();
+	}
+
+
+}
