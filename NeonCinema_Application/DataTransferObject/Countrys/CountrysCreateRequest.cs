@@ -8,7 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.Countrys
 {
     public class CountrysCreateRequest
     {
-        public Guid ID { get; set; }
+      
         public string CountryName { get; set; }
     }
 }
