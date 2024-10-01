@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Domain.Database.Entities;
@@ -8,135 +7,134 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.Actors
 {
     public class ActorRepositories : IActorRepositories
     {
-       private readonly  NeonCinemasContext _context;
-       private readonly IMapper _map;
-        public ActorRepositories(IMapper map)
-        {
-            _map = map;
-            _context = new NeonCinemasContext();
-        }
-        public async Task<HttpResponseMessage> CreateActor(Actor actor, CancellationToken cancellationToken)
-        {
+        private readonly NeonCinemasContext _context;
 
-            try
+        public ActorRepositories(NeonCinemasContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<ActorDTO> CreateActor(CreateActorRequest request, CancellationToken cancellationToken)
+        {
+            var actor = new Actor
             {
-                actor.ID = Guid.NewGuid();
-                actor.CreatedTime = DateTime.UtcNow;
-                actor.Status = EntityStatus.Active;
-                await _context.Actors.AddAsync(actor);
-                await _context.SaveChangesAsync();
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                ID = Guid.NewGuid(), // Generate a new ID
+                FullName = request.FullName,
+                Gender = request.Gender,
+                BirthDate = request.BirthDate,
+                Address = request.Address,
+                Nationality = request.Nationality,
+                Biography = request.Biography,
+                Images = request.Images,
+                Status = EntityStatus.Active // Example status
+            };
+
+            // Add the actor to the context and save changes
+            await _context.Actors.AddAsync(actor, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // Manually map the Actor entity to ActorDTO
+            var actorDTO = new ActorDTO
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+                Gender = actor.Gender,
+                BirthDate = actor.BirthDate,
+                Address = actor.Address,
+                Nationality = actor.Nationality,
+                Biography = actor.Biography,
+                Images = actor.Images,
+                Status = actor.Status
+            };
+
+            return actorDTO; // Return the manually mapped ActorDTO
+        }
+
+        public Task<HttpResponseMessage> DeleteActor(DeleteActorRequest request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ActorDTO> GetActorById(Guid id, CancellationToken cancellationToken)
+        {
+            var actor = await _context.Actors.FindAsync(new object[] { id }, cancellationToken);
+            if (actor == null)
+            {
+                return null;
+            }
+
+            // Manually map the Actor entity to ActorDTO
+            var actorDTO = new ActorDTO
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+                Gender = actor.Gender,
+                BirthDate = actor.BirthDate,
+                Address = actor.Address,
+                Nationality = actor.Nationality,
+                Biography = actor.Biography,
+                Images = actor.Images,
+                Status = actor.Status
+            };
+
+            return actorDTO;
+        }
+
+        public async Task<List<ActorDTO>> GetAllActor(CancellationToken cancellationToken)
+        {
+            var actors = await _context.Actors.ToListAsync(cancellationToken);
+
+            // Manually map the list of Actor entities to a list of ActorDTOs
+            var actorDTOs = actors.Select(actor => new ActorDTO
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+                Gender = actor.Gender,
+                BirthDate = actor.BirthDate,
+                Address = actor.Address,
+                Nationality = actor.Nationality,
+                Biography = actor.Biography,
+                Images = actor.Images,
+                Status = actor.Status
+            }).ToList();
+
+            return actorDTOs;
+        }
+
+        public async Task<HttpResponseMessage> UpdateActor(Guid id, UpdateActorRequest request, CancellationToken cancellationToken)
+        {
+            var actor = await _context.Actors.FindAsync(new object[] { id }, cancellationToken);
+            if (actor == null)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
                 {
-                    Content = new StringContent("Them Thanh Cong")
+                    Content = new StringContent("Actor not found.")
                 };
             }
-            catch (Exception ex)
+
+            // Update the properties
+            actor.FullName = request.FullName;
+            actor.Gender = request.Gender;
+            actor.BirthDate = request.BirthDate;
+            actor.Address = request.Address;
+            actor.Nationality = request.Nationality;
+            actor.Biography = request.Biography;
+            actor.Images = request.Images;
+            actor.Status = request.Status;
+
+            await _context.SaveChangesAsync(cancellationToken);
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Co Loi xay ra" +ex.Message)
-                };
-            }
-        }
-
-        public async Task<HttpResponseMessage> DeleteActor(Actor actor, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await GetActorByID(actor.ID,cancellationToken);
-                if (obj == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy diễn viên")
-                    };
-                }
-                else
-                {
-                    obj.DeletedTime = DateTime.UtcNow;
-                    obj.Deleted = true;
-                    _context.Actors.Update(obj);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("Sửa thành công")
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("Có lỗi" + ex.Message)
-                };
-            }
-
-        }
-
-        private async Task<Actor> GetActorByID(Guid id, CancellationToken cancellationToken)
-        {
-           var actor =await _context.Actors.FirstOrDefaultAsync(x=>x.ID == id);
-            return actor;
-        }
-
-        public async Task<List<ActorDTO>> GetAllActor(ViewActorRequest request,  CancellationToken cancellationToken)
-        {
-            var query = _context.Actors.AsNoTracking();
-            if (!String.IsNullOrWhiteSpace(request.SearchName))
-            {
-                query = query.Where(x=>x.FullName.Contains(request.SearchName.ToLower()));
-            }
-
-            var actor = await query.ToListAsync();
-            return _map.Map<List<ActorDTO>>(actor.Where(x=>x.Deleted == null));
-        }
-
-        public async Task<HttpResponseMessage> UpdateActor(Actor actor, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await GetActorByID(actor.ID,cancellationToken);
-
-                if (obj == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy diễn viên")
-                    };
-                }
-                else
-                {
-                    actor.ModifiedTime = DateTime.UtcNow;
-                    obj.Status = actor.Status;
-                    obj.FullName = actor.FullName;
-                    obj.Address = actor.Address;
-                    obj.Gender = actor.Gender;
-                    obj.Biography = actor.Biography;
-                    obj.Images = actor.Images;
-                    obj.Nationality = actor.Nationality;
-                    
-                    _context.Actors.Update(obj);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("Sửa thành công")
-                    };
-                }
-            }
-            catch (Exception ex) 
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("Có lỗi" + ex.Message)
-                };
-            }
+                Content = new StringContent("Actor updated successfully.")
+            };
         }
     }
 }

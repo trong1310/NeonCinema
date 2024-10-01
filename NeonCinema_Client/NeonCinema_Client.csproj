@@ -53,6 +53,8 @@
 
     <Folder Include="wwwroot\imageFlims\" />
 
+    <Folder Include="wwwroot\images\Actor\" />
+
   </ItemGroup>
 
   <ItemGroup>
