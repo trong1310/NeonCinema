@@ -2,7 +2,7 @@
 @using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Client.Data.IServices.IRoom
 @using NeonCinema_Domain.Enum
-
+@layout LayoutAdmin
 @inject IRoomService RoomService
 @inject NavigationManager Navi
 
@@ -27,8 +27,8 @@
     <div class="mb-3">
         <label for="status" class="form-label">Trạng thái</label>
         <InputSelect id="status" class="form-control" @bind-Value="newRoom.Status">
-            <option value="@((int)EntityStatus.Active)">Hoạt động</option>
-            <option value="@((int)EntityStatus.Locked)">Không hoạt động</option>
+            <option value="@(EntityStatus.Active)">Hoạt động</option>
+            <option value="@(EntityStatus.Locked)">Không hoạt động</option>
         </InputSelect>
         <ValidationMessage For="@(() => newRoom.Status)" />
     </div>
