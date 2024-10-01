@@ -1,0 +1,102 @@
+﻿@page "/listmovie"
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.FlimsUser
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.FilmUsers
+@using NeonCinema_Client.DataTransferObject.MovieData
+@layout LayoutAdmin
+@inject IMovieservices _moviesv
+
+<div class="p-5">
+	<div class="col-12">
+		<div class="row">
+			<div class="boxchoosefilter">
+				<form action="">
+					<div class="col-12">
+						<div class="row">
+							<div class="col-3">
+								<label for="" class="form-label">Search</label>
+								<input class="form-control" type="text" placeholder="Search by name">
+							</div>
+							<div class="col-8 offset-1">
+								<div class="row">
+									<div class="col-3">
+										<label for="" class="form-label">Genre</label>
+										<select name="" id="" class="form-select" style="width: 200px;">
+											<option value="">All</option>
+										</select>
+									</div>
+									<div class="col-3">
+										<label for="" class="form-label">AgeAllow</label>
+										<select name="" id="" class="form-select" style="width: 200px;">
+											<option value="">All</option>
+										</select>
+									</div>
+									<div class="col-3">
+										<label for="" class="form-label">Country</label>
+										<select name="" id="" class="form-select" style="width: 300px;">
+											<option value="">All</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="boxfilter">
+								<button class="btn filteritem">Genre <i class="fa-solid fa-x"></i></button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="row mt-3">
+		<h4>List movie</h4>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Name</th>
+					<th scope="col">Genre</th>
+					<th scope="col">AgeAllow</th>
+					<th scope="col">Country</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in _lstMovie)
+				{
+					stt++;
+					<tr>
+						<th scope="row">@stt</th>
+						<td>@item.Name</td>
+						<td>@item.GenreName</td>
+						<td>@item.AgeAllowed+</td>
+						<td>@item.CountryName</td>
+						<td>
+							<button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
+						</td>
+					</tr>
+				}		
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+@code {
+	int stt = 0;
+	private List<MovieDTO> _lstMovie = new List<MovieDTO>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMovie();
+	}
+
+	public async Task LoadMovie()
+	{
+		_lstMovie = await _moviesv.GetAllMovies();
+	}
+}

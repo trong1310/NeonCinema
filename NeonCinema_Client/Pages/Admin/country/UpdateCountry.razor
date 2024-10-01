@@ -1,0 +1,41 @@
+﻿@page "/edit-country/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Client.Data.IServices.Country
+@inject ICountryService CountryService
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-4">
+    <!-- Khung tiêu đề -->
+    <MudPaper Class="pa-3 mb-3" Elevation="1">
+        <MudText Typo="Typo.h5" GutterBottom="true">@PageTitle</MudText>
+    </MudPaper>
+
+    <MudTextField @bind-Value="_countryName" Label="Country Name" Required="true" />
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateCountrys">Update</MudButton>
+    <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="NavigateBack">Cancel</MudButton>
+</MudContainer>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private string _countryName;
+    private string PageTitle => "Trang Chủ / Chỉnh Sửa Quốc Gia";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var country = await CountryService.GetCountryById(Id);
+        _countryName = country.CountryName;
+    }
+
+    private async Task UpdateCountrys()
+    {
+        var request = new CountryUpdateRequest { ID = Id, CountryName = _countryName };
+        await CountryService.UpdateCountry(Id, request);
+        NavigationManager.NavigateTo("/country-management");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/country-management");
+    }
+}
