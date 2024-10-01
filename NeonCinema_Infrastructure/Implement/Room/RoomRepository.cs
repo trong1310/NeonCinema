@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.Interface.Room;
+using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Twilio.TwiML.Voice;
 
 namespace NeonCinema_Infrastructure.Implement.Room
 {
@@ -18,92 +21,91 @@ namespace NeonCinema_Infrastructure.Implement.Room
         {
             _context = ct;
         }
+
         public async Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken)
         {
-            // Kiểm tra nếu tên phòng đã tồn tại trong cùng một rạp
-            var existingRoom = await _context.Room
-                .Where(r => r.Name == request.Name && r.CinemasID == request.CinemasID)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (existingRoom != null)
+            // Thêm yêu cầu phòng vào DbContext
+            var roomEntity = new NeonCinema_Domain.Database.Entities.Room // Use the Room entity class here
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent($"Room with name '{request.Name}' already exists in the cinema.")
-                };
-            }
-
-            // Validate SeatingCapacity
-            if (request.SeatingCapacity <= 50 || request.SeatingCapacity >= 1000)
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Seating capacity must be between 50 and 1000.")
-                };
-            }
-
-            // Tạo và thêm phòng mới
-            var newRoom = new NeonCinema_Domain.Database.Entities.Room
-            {
-                ID = request.ID != Guid.Empty ? request.ID : Guid.NewGuid(),
+                ID = Guid.NewGuid(),
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
-                CinemasID = request.CinemasID // Add CinemasID
+                Status = request.Status, // Assuming you want to set the status as well
+                CinemasID = request.CinemasID,
             };
 
-            _context.Room.Add(newRoom);
+            _context.Room.Add(roomEntity); // Add the Room entity to the DbSet
+
+            // Save changes to the database
             await _context.SaveChangesAsync(cancellationToken);
 
             return new HttpResponseMessage(HttpStatusCode.Created)
             {
                 Content = new StringContent("Room created successfully.")
             };
-
         }
 
-        public async Task<List<RoomDTO>> GetAllRoom(CancellationToken cancellationToken)
-        {
-            var rooms = await _context.Room
-               .Select(r => new RoomDTO
-               {
-                   ID = r.ID,
-                   Name = r.Name,
-                   SeatingCapacity = r.SeatingCapacity,
-                   CinemasID = r.CinemasID
-               })
-               .ToListAsync(cancellationToken);
+        //public async Task<List<RoomDTO>> GetAllRoom(CancellationToken cancellationToken)
+        //{
+        //    // Lấy tất cả các phòng từ cơ sở dữ liệu và chuyển đổi chúng thành RoomDTO
+        //    var rooms = await _context.Room
+        //        .AsNoTracking() // Không theo dõi thay đổi để tối ưu hóa hiệu suất
+        //        .Select(room => new RoomDTO
+        //        {
+        //            ID = room.ID,
+        //            Name = room.Name,
+        //            SeatingCapacity = room.SeatingCapacity,
+        //            Status = room.Status
+        //            // Thêm các thuộc tính khác cần thiết từ Room sang RoomDTO
+        //        })
+        //        .ToListAsync(cancellationToken); // Chuyển đổi sang danh sách
 
-            return rooms;
+        //    return rooms; // Trả về danh sách các phòng
+        //}
+
+        public async Task<List<RoomDTO>> GetAllRooms(CancellationToken cancellationToken)
+        {
+                var rooms = await _context.Room
+             .AsNoTracking()
+             .Select(room => new RoomDTO
+             {
+                 ID = room.ID,
+                 Name = room.Name,
+                 SeatingCapacity = room.SeatingCapacity,
+                 Status = room.Status // Lấy giá trị Status từ cơ sở dữ liệu
+             })
+             .ToListAsync(cancellationToken);
+
+                return rooms;
         }
 
         public async Task<RoomDTO> GetByIDRoom(Guid id, CancellationToken cancellationToken)
         {
+            // Tìm phòng theo ID
             var room = await _context.Room
-                .Where(r => r.ID == id)
-                .Select(r => new RoomDTO
-                {
-                    ID = r.ID,
-                    Name = r.Name,
-                    SeatingCapacity = r.SeatingCapacity,
-                    CinemasID = r.CinemasID
-                })
-                .FirstOrDefaultAsync(cancellationToken);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.ID == id, cancellationToken); // Tìm phòng
 
-            if (room == null)
+            if (room == null) // Nếu không tìm thấy phòng
             {
-                throw new KeyNotFoundException("Room not found.");
+                throw new KeyNotFoundException("Room not found."); // Ném ra ngoại lệ
             }
 
-            return room;
+            // Chuyển đổi phòng sang RoomDTO và trả về
+            return new RoomDTO
+            {
+                ID = room.ID,
+                Name = room.Name,
+                SeatingCapacity = room.SeatingCapacity,
+                Status= room.Status
+                // Thêm các thuộc tính khác cần thiết từ Room sang RoomDTO
+            };
         }
 
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken)
         {
-            // Kiểm tra xem phòng có tồn tại không
-            var existingRoom = await _context.Room
-                .FirstOrDefaultAsync(r => r.ID == id, cancellationToken);
-
-            if (existingRoom == null)
+            var room = await _context.Room.FirstOrDefaultAsync(r => r.ID == id, cancellationToken);
+            if (room == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
@@ -111,32 +113,10 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 };
             }
 
-            // Kiểm tra tên phòng có bị trùng không trong cùng rạp
-            var duplicateRoom = await _context.Room
-                .Where(r => r.Name == request.Name && r.CinemasID == request.CinemasID && r.ID != id)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (duplicateRoom != null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent($"Room with name '{request.Name}' already exists in the cinema.")
-                };
-            }
-
-            // Validate SeatingCapacity
-            if (request.SeatingCapacity <= 50 || request.SeatingCapacity >= 1000)
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Seating capacity must be between 50 and 1000.")
-                };
-            }
-
-            // Cập nhật thông tin phòng
-            existingRoom.Name = request.Name;
-            existingRoom.SeatingCapacity = request.SeatingCapacity;
-            existingRoom.CinemasID = request.CinemasID;
+            room.Name = request.Name;
+            room.SeatingCapacity = request.SeatingCapacity;
+            room.Status =request.Status;
+            
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -145,5 +125,6 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Content = new StringContent("Room updated successfully.")
             };
         }
+
     }
 }
