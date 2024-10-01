@@ -1,0 +1,165 @@
+﻿@page "/staff-create"
+@using NeonCinema_Application.DataTransferObject.User
+@layout LayoutAdmin
+@using NeonCinema_Client.Data.IServices.User
+@inject IUserServices UserService
+
+<div class="container-fluid mt-5">
+    <h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-3 text-center mb-4 mt-5">
+            <img  src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
+        </div>
+        <div class="col-md-9" style="margin-top:10px;">
+            <form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fullname" class="font-weight-bold">Họ và tên</label>
+                            <input type="text" class="form-control" id="fullname" >
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone" class="font-weight-bold">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phone" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email" class="font-weight-bold">Email</label>
+                            <input type="email" class="form-control" id="email" >
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="dob" class="font-weight-bold">Ngày sinh</label>
+                            <input type="date" class="form-control" id="dob" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Giới tính</label>
+                            <div style="margin-left: -20px; margin-top: 5px">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderMale"  />
+                                    <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px" >Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderFemale"  />
+                                    <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Trạng thái</label>
+                            <select class="form-select">
+                                <option value="Active">Đang hoạt động</option>
+                                <option value="InActive">Không hoạt động</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="form-group">
+                    <label for="address" class="font-weight-bold">Địa chỉ</label>
+                    <textarea class="form-control" id="address" rows="3" ></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserCreateRequest newUser = new UserCreateRequest();
+
+    private async Task HandleSubmit()
+    {
+        // Gọi API để thêm mới nhân viên
+        await UserService.CreateUser(newUser, CancellationToken.None);
+        // Chuyển hướng hoặc thông báo thành công
+    }
+}
+
+
+<style>
+    body {
+        background-color: #f4f4f9;
+    }
+
+    .card {
+        border-radius: 10px;
+        background-color: white;
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    h2 {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    .profile-pic {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid #eaeaea;
+        margin-left: -15px; /* Shift image slightly left */
+    }
+
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-left: -20px; /* Shift input fields slightly left */
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-check {
+        margin-right: 15px; /* Adjust spacing between radio buttons */
+    }
+</style>

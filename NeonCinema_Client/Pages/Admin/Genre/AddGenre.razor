@@ -1,0 +1,31 @@
+﻿@page "/add-genre"
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Client.Data.IServices.Genre
+@inject IGenreService GenreService
+@inject NavigationManager Navigation
+
+<MudContainer>
+    <MudGrid>
+        <MudItem xs="12">
+            <h4>Quản lý thể loại > Tạo mới</h4>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="_genreName" Label="Tên thể loại" Required="true" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton OnClick="CreateGenres" Color="Color.Primary">Thêm thể loại</MudButton>
+            <MudButton OnClick="@(() => Navigation.NavigateTo("/genres"))" Color="Color.Secondary">Hủy</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string _genreName;
+
+    private async Task CreateGenres()
+    {
+        var request = new CreateGenreRequest { GenreName = _genreName };
+        await GenreService.CreateGenre(request, CancellationToken.None);
+        Navigation.NavigateTo("/genres");
+    }
+}
