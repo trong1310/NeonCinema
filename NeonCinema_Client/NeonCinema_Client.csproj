@@ -53,6 +53,8 @@
 
     <Folder Include="wwwroot\imageFlims\" />
 
+    <Folder Include="wwwroot\js\Customer\" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +90,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\IServices\User\IUserServices.cs" />
   </ItemGroup>
 
 </Project>

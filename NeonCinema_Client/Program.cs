@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
-using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
 using NeonCinema_Client.Pages.Admin.Users;
 
@@ -23,6 +22,7 @@ using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Client.Data.IServices.User;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

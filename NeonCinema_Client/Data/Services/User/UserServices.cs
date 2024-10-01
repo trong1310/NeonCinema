@@ -8,10 +8,10 @@ using static System.Net.WebRequestMethods;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
+using NeonCinema_Client.Data.IServices.User;
 
 namespace NeonCinema_Client.Services.User
 {
