@@ -8,22 +8,41 @@
 @inject IFlimUsers _filmsServices
 
 <div class="container text-center">
+	
     <div class="row">
+        <div id="text-2005933767" class="text">
+            <h2 class="title-button">Phim đang chiếu</h2>
+            <style>
+                #text-2005933767 {
+                    font-size: 1.5rem;
+                    color: antiquewhite;
+                    width: 350px;
+                    margin: 20px auto; /* Căn giữa */
+                    text-align: center;
+                    padding: 10px;
+                    border-radius: 15px; /* Bo tròn góc */
+                    border: 2px solid #ffc107; /* Đường viền màu vàng */
+                    background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+                }
+            </style>
+        </div>
+
         <div class="row row-cols-lg-4 g-2 g-lg-3 d-flex justify-content-center">
+           
             @if (movies.Data != null)
             {
                 @foreach (var item in movies.Data)
                 {
-                    <div class="card movie-card" style="width: 18rem;">
+                    <div class="card movie-card p-1" style="width: 18rem; background-color: transparent">
                         <img src="@GetImageUrl(item.Images)" class="card-img-top" loading="lazy">
-                        <div class="card-body">
+                        <div class="card-body" style="background-color: transparent">
                             <div class="tags mb-2">
-                                <span class="badge bg-danger">Độ tuổi: @item.AgeAllowed+</span>
-                                <span class="badge bg-dark">Thời Lượng: @item.Duration</span>
-                                <span class="badge bg-success">Thể loại: @item.GenreName</span>
+                                <span class="badge bg-danger">@item.AgeAllowed+</span>
+                                <span class="badge bg-dark">@item.Duration<text>p</text></span>
+                                <span class="badge bg-success">Sub: @item.LanguareName</span>
                             </div>
-                            <h5 class="card-title">@item.Name</h5>
-                            
+                                <h5 class="card-title">@item.Name</h5>
+                                <p class="card-text">Genre: <span class="genre">@item.GenreName</span></p>
                             <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
@@ -35,7 +54,7 @@
             {
                 @if (isProcessing)
                 {
-                    <div class="spinner-border text-primary" role="status">
+                    <div class="spinner-border text-primary " role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 }
@@ -151,4 +170,7 @@
             background-color: #e04c00;
         }
 
+      .spinner-border {
+          margin: 10px;
+      }
 </style>
