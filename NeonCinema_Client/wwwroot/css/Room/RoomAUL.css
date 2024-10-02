@@ -1,0 +1,57 @@
+﻿/* CSS để thêm hiệu ứng fade-in cho modal */
+.modal.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-dialog {
+    animation: slideDown 0.5s ease-out;
+}
+.search-room-container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+
+
+/* Căn chỉnh modal ở giữa màn hình */
+.modal-dialog {
+    /*display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;*/ /* Chiều cao toàn màn hình */
+    /*margin: 0;*/ /* Bỏ khoảng cách mặc định */
+}
+/* Thay đổi màu khi di chuột vào các hàng trong bảng */
+tr:hover {
+    background-color: #f0f0f0; /* Màu nền khi di chuột */
+    cursor: pointer; /* Thay đổi con trỏ khi di chuột vào hàng */
+}
+/* Đặt thêm kiểu cơ bản cho bảng nếu cần */
+
+
+    
+
+    
+
+    

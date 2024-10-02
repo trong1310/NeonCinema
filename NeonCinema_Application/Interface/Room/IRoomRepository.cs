@@ -10,9 +10,10 @@ namespace NeonCinema_Application.Interface.Room
 {
     public interface IRoomRepository
     {
-        public Task<List<RoomDTO>> GetAllRoom(CancellationToken cancellationToken);
-        public Task<RoomDTO> GetByIDRoom(Guid id, CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken);
+        Task<List<RoomDTO>> GetAllRooms(CancellationToken cancellationToken);
+        Task<RoomDTO> GetByIDRoom(Guid id, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken);
     }
+
 }

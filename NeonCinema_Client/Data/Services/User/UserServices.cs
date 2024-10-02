@@ -8,10 +8,10 @@ using static System.Net.WebRequestMethods;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
-using NeonCinema_Client.Data.IServices.User;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -39,8 +39,11 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
-            var obj = await _httpClient.GetFromJsonAsync<List<UserDTO>>("https://localhost:7211/api/User/get-all");
-            return obj;
+            var response = await _httpClient.GetAsync("api/User/get-all", cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonSerializer.Deserialize<List<UserDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)

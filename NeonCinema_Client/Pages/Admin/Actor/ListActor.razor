@@ -1,0 +1,115 @@
+﻿@page "/listactor"
+@using NeonCinema_Application.DataTransferObject.Actors
+@using NeonCinema_Client.Data.IServices.Actor
+@using NeonCinema_Domain.Enum
+@inject NavigationManager Navi
+@inject IActorService ActorService
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Actor/listactor.css">
+<h3>List of Actors</h3>
+
+@if (actors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (actors.Count == 0)
+{
+    <p>No actors found.</p>
+}
+else
+{
+    <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Full Name</th>
+                <th>Gender</th>
+                <th>Birth Date</th>
+                <th>Address</th>
+                <th>Nationality</th>
+                <th>Biography</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var actor in actors)
+            {
+                <tr>
+                    <td class="image-cell">
+                        <img src="@actor.Images"
+                             alt="@actor.FullName"
+                             style="border-radius: 100%; width: 80px; height: 80px; object-fit: cover;" />
+                    </td>
+                    <td class="table-cell">@actor.FullName</td>
+                    <td class="table-cell">@actor.Gender</td>
+                    <td class="table-cell">@actor.BirthDate.ToShortDateString()</td>
+                    <td class="table-cell">@actor.Address</td>
+                    <td class="table-cell">@actor.Nationality</td>
+                    <td class="table-cell">@actor.Biography</td>
+                    <td class="table-cell">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="flexSwitchCheckDefault_@(actor.Status)"
+                                   checked="@(actor.Status == EntityStatus.Active)"
+                                   @onchange="(e) => ToggleRoomStatus(actor, e)" />
+                            <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
+                                @(actor.Status == EntityStatus.Active ? "" : "")
+                            </label>
+                        </div>
+                    </td>
+                    <td class="table-cell">
+                        <button class="btn btn-primary" @onclick="() => EditActor(actor.ID)">Edit</button>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ActorDTO> actors;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actors = await ActorService.GetAllActor(CancellationToken.None);
+    }
+
+    private void EditActor(Guid actorId)
+    {
+        Navi.NavigateTo($"/updateactor/{actorId}");
+    }
+    private async void ToggleRoomStatus(ActorDTO actor, ChangeEventArgs e)
+    {
+        actor.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+
+        var ActorUpdateRequest = new UpdateActorRequest
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+                Gender = actor.Gender,
+                BirthDate = actor.BirthDate,
+                Address = actor.Address,
+                Nationality = actor.Nationality,
+                Biography = actor.Biography,
+                Images = actor.Images,
+                Status = actor.Status
+            };
+
+        var response = await ActorService.UpdateActor(ActorUpdateRequest.ID, ActorUpdateRequest, CancellationToken.None);
+
+        if (response.IsSuccessStatusCode)
+        {
+            actors = await ActorService.GetAllActor(CancellationToken.None);
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error: {errorContent}");
+        }
+    }
+   
+}
