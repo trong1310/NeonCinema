@@ -1,0 +1,15 @@
+﻿
+.table-cell {
+    vertical-align: middle;
+    text-align: left; /* Change to center if you want to center text horizontally */
+}
+
+/*.image-cell {
+    text-align: center;*/ /* Center the image in its cell */
+/*}*/
+
+
+.table{
+    width: 1200px;
+    margin-left: 70px
+}

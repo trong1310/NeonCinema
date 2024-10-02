@@ -75,7 +75,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
             };
 
             // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
-             _context.Users.Add(newUser);
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync(cancellationToken);
             newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
 
@@ -111,6 +111,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
             user.PhoneNumber = request.PhoneNumber;
             user.Email = request.Email;
             user.Gender = request.Gender;
+            user.Images = request.Images;
             user.Adderss = request.Adderss;
             user.Status = request.Status;
             user.RoleID = request.RoleID;

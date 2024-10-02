@@ -20,12 +20,21 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
         }
         public async Task<HttpResponseMessage> CreateRole(CountrysCreateRequest request, CancellationToken cancellationToken)
         {
-            // Kiểm tra không được để trống CountryName
+            /// Kiểm tra không được để trống CountryName
             if (string.IsNullOrWhiteSpace(request.CountryName))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent("Country name is required.")
+                };
+            }
+
+            // Kiểm tra CountryName có thuộc danh sách quốc gia hợp lệ không
+            if (!IsValidCountryName(request.CountryName))
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Country name is not valid.")
                 };
             }
 
@@ -41,10 +50,10 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                 };
             }
 
-            // Tạo mới country với ID tự động
+            // Tạo mới country
             var newCountry = new NeonCinema_Domain.Database.Entities.Countrys
             {
-                ID = Guid.NewGuid(), // Tự động tạo ID mới
+                ID = request.ID != Guid.Empty ? request.ID : Guid.NewGuid(),
                 CountryName = request.CountryName
             };
 
@@ -56,18 +65,6 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
             {
                 Content = new StringContent("Country created successfully.")
             };
-        }
-
-
-
-        public async Task DeleteID(Guid id)
-        {
-            var findDeletee = await _context.Country.FindAsync(id);
-            if (findDeletee != null)
-            {
-                _context.Country.Remove(findDeletee);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task<List<CountryDTO>> GetAllRole(CancellationToken cancellationToken)
@@ -125,7 +122,14 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                 };
             }
 
-           
+            // Kiểm tra CountryName có thuộc danh sách quốc gia hợp lệ không
+            if (!IsValidCountryName(request.CountryName))
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Country name is not valid.")
+                };
+            }
 
             // Cập nhật thông tin country
             existingCountry.CountryName = request.CountryName;
@@ -138,6 +142,16 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                 Content = new StringContent("Country updated successfully.")
             };
         }
-      
+        private bool IsValidCountryName(string countryName)
+        {
+            // Ví dụ danh sách quốc gia hợp lệ có thể được lưu trữ trong cơ sở dữ liệu hoặc một dịch vụ bên ngoài
+            // Dưới đây là một ví dụ đơn giản với danh sách quốc gia giả lập
+            var validCountryNames = new HashSet<string>
+            {
+                "Vietnam", "USA", "Canada", "Germany", "France", // Danh sách các quốc gia bạn cần
+            };
+
+            return validCountryNames.Contains(countryName);
+        }
     }
 }

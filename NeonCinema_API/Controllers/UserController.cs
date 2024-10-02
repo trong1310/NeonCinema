@@ -20,7 +20,7 @@ namespace NeonCinema_API.Controllers
         {
 
             var result = await _userRepository.CreateUser(request, cancellationToken);
-            
+
             return Ok(result);
         }
         [HttpPut("update/{id}")]
