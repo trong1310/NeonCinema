@@ -27,6 +27,7 @@ using NeonCinema_Client.Data.Services.Genre;
 using NeonCinema_Client.Services;
 using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
+using NeonCinema_Client.Data.IServices.User;
 
 
 internal class Program

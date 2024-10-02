@@ -48,12 +48,12 @@
                             <label>Giới tính</label>
                             <div style="margin-left: -20px; margin-top: 5px">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale" @bind="user.Gender" />
-                                    <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+                                    <input class="form-check-input" type="radio" id="genderMale" value="Nam" checked="@IsMaleChecked" />
+                                    <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderFemale" @bind="user.Gender" />
-                                    <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                                    <input class="form-check-input" type="radio" id="genderFemale" value="Nữ" checked="@IsFemaleChecked" />
+                                    <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
