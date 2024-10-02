@@ -120,6 +120,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 .HasForeignKey(pm => pm.PromotionID);
             SeenDingData(modelBuilder);
 
+            modelBuilder.Entity<Room>()
+    .HasOne(r => r.Cinemas)
+    .WithMany(c => c.Rooms)
+    .HasForeignKey(r => r.CinemasID)
+    .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
+
 
         }
         private void SeenDingData(ModelBuilder modelBuilder)
