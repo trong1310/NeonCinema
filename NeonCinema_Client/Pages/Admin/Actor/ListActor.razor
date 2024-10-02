@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="/css/Actor/listactor.css">
 <h3>List of Actors</h3>
 
+<a class="btn btn-success mb-2" href="/addactor">Add New Actor</a>
+
 @if (actors == null)
 {
     <p><em>Loading...</em></p>
@@ -82,6 +84,11 @@ else
     {
         Navi.NavigateTo($"/updateactor/{actorId}");
     }
+    private void AddActors()
+    {
+        Navi.NavigateTo("/addactor");
+    }
+
     private async void ToggleRoomStatus(ActorDTO actor, ChangeEventArgs e)
     {
         actor.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
