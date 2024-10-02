@@ -16,8 +16,8 @@ namespace NeonCinema_API.Controllers
         {
             _roomRepository = roomRepository;
         }
-        [HttpPost]
-        [Route("create")]
+        // POST: api/Room
+        [HttpPost("create")]
         public async Task<IActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -25,45 +25,43 @@ namespace NeonCinema_API.Controllers
                 return BadRequest("Request cannot be null.");
             }
             // Gán CinemaID mặc định
-            request.CinemasID = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6");
+            request.CinemasID = Guid.Parse("d288fe9d-79fd-4a83-8443-1a6c17ecdc7d");
             var response = await _roomRepository.CreateRoom(request, cancellationToken);
             return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
         }
 
-        [HttpGet]
-        [Route("all")]
+        // GET: api/Room
+        [HttpGet("getall")]
         public async Task<IActionResult> GetAllRooms(CancellationToken cancellationToken)
         {
             var rooms = await _roomRepository.GetAllRooms(cancellationToken);
-            return Ok(rooms); // Trả về danh sách phòng
+            return Ok(rooms);
         }
 
-        [HttpGet]
-        [Route("{id}")]
+        // GET: api/Room/{id}
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetRoomById(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
-                return Ok(room); // Trả về thông tin phòng
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Room with ID {id} not found."); // Trả về 404 nếu không tìm thấy
-            }
+            var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
+            if (room == null)
+                return NotFound();
+
+            return Ok(room);
         }
 
-        [HttpPut]
-        [Route("{id:guid}")]
+        // PUT: api/Room/{id}
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] RoomUpdateRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var response = await _roomRepository.UpdateRoom(id, request, cancellationToken);
-            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok();
+
+            return StatusCode((int)response.StatusCode, response.ReasonPhrase);
         }
 
     }

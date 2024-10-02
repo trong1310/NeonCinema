@@ -13,16 +13,10 @@
 <div class="CTN" style="text-align: center">
     <h2 style="margin-top: 30px">Danh sách phòng chiếu</h2>
 
-    <div class="d-flex justify-content-center align-items-center mb-3 search-room-container" style=" margin-left: 80px; margin-top: 30px">
-        <!-- Ô tìm kiếm với độ rộng lớn hơn -->
-        <input type="text" placeholder="Tìm kiếm theo tên phòng" class="form-control me-2"
-               style="width: 70%;" @bind-value="searchTerm" @bind-value:event="oninput" />
-        <!-- Nút thêm phòng -->
+    <div class="d-flex justify-content-center align-items-center mb-3 search-room-container" style="margin-left: 80px; margin-top: 30px">
+        <input type="text" placeholder="Tìm kiếm theo tên phòng" class="form-control me-2" style="width: 70%;" @bind-value="searchTerm" @bind-value:event="oninput" />
         <button class="btn btn-success" @onclick="ShowCreateRoomModal">Thêm phòng</button>
     </div>
-
-    
-
 </div>
 
 <div class="container" style="width: 1200px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
@@ -57,15 +51,13 @@
                             </div>
                         </td>
                         <td>
-                            <button style=" background-color: #eea90c; border-color: black" class="btn btn-primary" @onclick="@(() => ShowEditRoomModal(room))"><i class="fa-regular fa-pen-to-square" style="color: black;"></i></button>
+                            <button style="background-color: #eea90c; border-color: black" class="btn btn-primary" @onclick="@(() => ShowEditRoomModal(room))"><i class="fa-regular fa-pen-to-square" style="color: black;"></i></button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
     }
-    
-
     else
     {
         <p>Loading...</p>
@@ -182,7 +174,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        rooms = await RoomService.GettAllRooms(CancellationToken.None);
+        rooms = await RoomService.GetAllRooms(CancellationToken.None);
     }
 
     private void ShowCreateRoomModal()
@@ -215,13 +207,13 @@
                     Name = newRoom.Name,
                     SeatingCapacity = newRoom.SeatingCapacity,
                     Status = newRoom.Status,
-                    CinemasID = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6") // Gán CinemaID mặc định
+                    CinemasID = newRoom.ID
                 };
 
-            await RoomService.CreateRoomm(roomCreateRequest, CancellationToken.None);
+            await RoomService.CreateRoom(roomCreateRequest, CancellationToken.None);
 
             isCreateRoomModalVisible = false;
-            rooms = await RoomService.GettAllRooms(CancellationToken.None);
+            rooms = await RoomService.GetAllRooms(CancellationToken.None);
         }
     }
 
@@ -238,11 +230,11 @@
                     // CinemasID = selectedRoom.CinemasID // Thêm nếu cần
                 };
 
-            var response = await RoomService.UpdateRoomm(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
+            var response = await RoomService.UpdateRoom(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
             {
-                rooms = await RoomService.GettAllRooms(CancellationToken.None);
+                rooms = await RoomService.GetAllRooms(CancellationToken.None);
                 isEditRoomModalVisible = false; // Ẩn modal sau khi cập nhật
             }
             else
@@ -265,11 +257,11 @@
                 Status = room.Status,
             };
 
-        var response = await RoomService.UpdateRoomm(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
+        var response = await RoomService.UpdateRoom(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
 
         if (response.IsSuccessStatusCode)
         {
-            rooms = await RoomService.GettAllRooms(CancellationToken.None);
+            rooms = await RoomService.GetAllRooms(CancellationToken.None);
         }
         else
         {
