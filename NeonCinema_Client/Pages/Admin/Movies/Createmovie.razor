@@ -186,13 +186,13 @@
 			await file.OpenReadStream().ReadAsync(buffer);
 
 			// Chuyển đổi IBrowserFile sang IFormFile
-			var formFile = ConvertToIFormFile(file, buffer);
+			//var formFile = ConvertToIFormFile(file, buffer);
 
 			// Bây giờ bạn có thể sử dụng formFile để làm việc với IFormFile
 
 			imageDataUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
 
-			input.Images = formFile;
+			//input.Images = formFile;
 		}
 	}
 

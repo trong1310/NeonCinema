@@ -11,22 +11,23 @@
         </video>
     </div>
     <div class="login-container">
-        <h2>Đăng Nhập</h2>
+        <h1>Đăng Nhập</h1>
         <EditForm Model="@loginModel" OnValidSubmit="LoginAccount">
             <DataAnnotationsValidator />
-            <ValidationSummary />
-          
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <p class="text-danger">@errorMessage</p>
-            }
+            <ValidationSummary />  
             <div class="input-group">
                 <label for="username">Email hoặc số điện thoại</label>
-                <InputText id="username" class="form-control" @bind-Value="loginModel.EmailorPhone" required />
+                <InputText id="username" class="form-control rounded" @bind-Value="loginModel.EmailorPhone" required />
             </div>
             <div class="input-group">
                 <label for="password">Mật Khẩu</label>
-                <InputText id="password" type="password"  class="form-control" @bind-Value="loginModel.Password" required />
+                <InputText id="password" type="password"  class="form-control rounded" @bind-Value="loginModel.Password" required />
+            </div>
+            <div>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <p class="text-danger">@errorMessage</p>
+                }
             </div>
             <div class="d-flex justify-content-center">
                 @if (isProcessing)
@@ -83,6 +84,7 @@
                     var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress").Value;
                     var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
                     var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
+                    var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
                     var images = claim.FirstOrDefault(c => c.Type == "profile_image_url").Value;
                     await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
                     await _localstorgae.SetItemAsync("mobilephone", mobilephone.Trim());
@@ -91,7 +93,12 @@
                     await _localstorgae.SetItemAsync("dateofbirth", dateofbirth.Trim());
                     await _localstorgae.SetItemAsync("gender", gender.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
-                    _navi.NavigateTo("/");
+
+                    if(role.Equals(""))
+                    {
+                        _navi.NavigateTo("/");
+                    }
+                    
                 }
                 catch (Exception ex)
                 {

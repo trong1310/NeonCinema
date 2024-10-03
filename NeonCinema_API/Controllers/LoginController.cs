@@ -63,7 +63,7 @@ namespace NeonCinema_API.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Role, user.RoleName),
+                //new Claim(ClaimTypes.Role, user.RoleName),
                 new Claim(ClaimTypes.StreetAddress, user.Address),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
@@ -122,7 +122,7 @@ namespace NeonCinema_API.Controllers
                     ID = Guid.Parse(user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value),
                     FullName = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value,
                     Email = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value,
-                   // RoleName = user.FindFirst(c => c.Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
+                    RoleName = user.FindFirst(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
                     PhoneNumber = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value,
                     Address = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value,
                     DateOfBirth = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value,
