@@ -91,7 +91,7 @@
                             </span>
                         </td>
                         <td class="text-center align-middle">
-                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToEdit(user.PhoneNumber)">
+                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToEdit(user.ID)">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </td>
@@ -204,9 +204,9 @@
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
     }
-    private async Task NavigateToEdit(string phoneNumber)
+    private async Task NavigateToEdit(Guid id)
     {
-        Navigation.NavigateTo($"/staff-details/{phoneNumber}");
+        Navigation.NavigateTo($"/staff-details/{id}");
     }
     private string GetImageUrl(string imageUrl)
     {
