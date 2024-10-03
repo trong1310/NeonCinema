@@ -68,7 +68,7 @@ namespace NeonCinema_API.Controllers
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
                 new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,
-                new Claim(ClaimTypes.Gender, user.Gender) ,
+				new Claim(ClaimTypes.Gender, user.Gender ? "Nam" : "Nữ") ,
                 new Claim("profile_image_url", user.Images),
 
             };
@@ -126,9 +126,9 @@ namespace NeonCinema_API.Controllers
                     PhoneNumber = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value,
                     Address = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value,
                     DateOfBirth = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value,
-                    Gender = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value
+					Gender = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value == "Nam"
 
-                };
+				};
                 return Ok(userDto);
             }
             return Unauthorized();
