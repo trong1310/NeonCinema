@@ -76,9 +76,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+         //   optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -120,6 +119,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 .WithMany(m => m.BillPromotions)
                 .HasForeignKey(pm => pm.PromotionID);
             SeenDingData(modelBuilder);
+
+            modelBuilder.Entity<Room>()
+    .HasOne(r => r.Cinemas)
+    .WithMany(c => c.Rooms)
+    .HasForeignKey(r => r.CinemasID)
+    .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
 
 
         }

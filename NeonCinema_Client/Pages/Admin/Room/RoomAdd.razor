@@ -1,4 +1,4 @@
-@page "/create-room"
+@* @page "/create-room"
 @using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Client.Data.IServices.IRoom
 @using NeonCinema_Domain.Enum
@@ -51,7 +51,7 @@
                     Name = newRoom.Name,
                     SeatingCapacity = newRoom.SeatingCapacity,
                     Status = newRoom.Status,
-                    CinemasID = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6") // Gán CinemaID mặc định
+                    //CinemasID = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6") // Gán CinemaID mặc định
                 };
 
             // Gọi service để tạo phòng với RoomCreateRequest
@@ -69,3 +69,4 @@
         Navi.NavigateTo("/rooms");
     }
 }
+ *@

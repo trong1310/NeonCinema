@@ -14,7 +14,7 @@ namespace NeonCinema_Application.DataTransferObject.Room
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
         public EntityStatus Status { get; set; }
-        public Guid CinemasID { get; set; } = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6"); // Giá trị mặc định
+        public Guid CinemasID { get; set; } = Guid.Parse("d288fe9d-79fd-4a83-8443-1a6c17ecdc7d");
 
     }
 }

@@ -5,6 +5,7 @@ using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
+using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_Client.Services.MoivesService
 {
@@ -43,16 +44,22 @@ namespace NeonCinema_Client.Services.MoivesService
             return query.ToList();
         }
 
-        public async Task<bool> CreateMovie(CreateMovieRequest input)
+        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest input)
         {
             //chua validate
-            var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
-
-            if (result.IsSuccessStatusCode)
+            try
             {
-                return true;
+                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
+                    return result;
+                
             }
-            return false;
+            catch (Exception ex) 
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
+			}
         }
 
         public async Task<List<GenreDTO>> GetAllGenre()
