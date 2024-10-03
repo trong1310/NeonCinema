@@ -71,13 +71,8 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
-            var content = new StringContent(
-                JsonSerializer.Serialize(request),
-                Encoding.UTF8,
-                "application/json");
-
-            var response = await _httpClient.PostAsync("users", content, cancellationToken);
-            return response;
+            var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
+            return obj;
         }
 
         public async Task<HttpResponseMessage> UpdateUser(Guid id, UserUpdateRequest request, CancellationToken cancellationToken)
