@@ -74,18 +74,14 @@
 
 @code {
     private UserDTO user;
-    private string phoneNumber;
+    private Guid id;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
 
-        if (query.ContainsKey("phoneNumber")) // Đảm bảo tên khóa là 'phoneNumber'
-        {
-            phoneNumber = query["phoneNumber"]; // Lấy số điện thoại
-            user = await UserService.GetByIDUser(phoneNumber, CancellationToken.None); // Tải dữ liệu người dùng
-        }
+        user = await UserService.GetByIDUser(id, CancellationToken.None); // Tải dữ liệu người dùng
     }
 
     private async Task SaveChanges()

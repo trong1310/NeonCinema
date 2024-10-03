@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
 using System;
@@ -15,9 +17,11 @@ namespace NeonCinema_Infrastructure.Implement.Users
     public class UserRepository : IUserRepository
     {
         private readonly NeonCinemasContext _context;
-        public UserRepository(NeonCinemasContext context)
+        private readonly IMapper _map;
+        public UserRepository(NeonCinemasContext context, IMapper map)
         {
             _context = context;
+            _map = map;
         }
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
@@ -128,6 +132,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
             var users = await _context.Users
                 .Select(u => new UserDTO
                 {
+                    ID = u.ID,
                     FullName = u.FullName,
                     PhoneNumber = u.PhoneNumber,
                     Email = u.Email,
@@ -142,30 +147,10 @@ namespace NeonCinema_Infrastructure.Implement.Users
 
             return users;
         }
-        public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
+        public async Task<UserDTO> GetByIDUser(Guid id, CancellationToken cancellationToken)
         {
-            var user = await _context.Users
-         .Where(u => u.PhoneNumber == phoneNumber)
-         .Select(u => new UserDTO
-         {
-             FullName = u.FullName,
-             PhoneNumber = u.PhoneNumber,
-             Email = u.Email,
-             Gender = u.Gender,
-             Images = u.Images,
-             Adderss = u.Adderss,
-             Status = u.Status,
-             RoleID = u.RoleID
-         }).FirstOrDefaultAsync(cancellationToken);
-
-            if (user == null)
-            {
-                throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
-            }
-
-            return user;
-        }
-
-       
+            var obj = await _context.Users.FirstOrDefaultAsync(x=>x.ID == id);
+            return _map.Map<UserDTO>(obj);
+        } 
     }
 }

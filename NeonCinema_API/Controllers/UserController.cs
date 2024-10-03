@@ -56,13 +56,13 @@ namespace NeonCinema_API.Controllers
 
             return Ok(users);
         }
-        [HttpGet("get-by-phone/{phoneNumber}")]
-        public async Task<IActionResult> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetByIDUser(Guid id, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIDUser(phoneNumber, cancellationToken);
+            var user = await _userRepository.GetByIDUser(id, cancellationToken);
             if (user == null)
             {
-                return NotFound($"Không tìm thấy người dùng với số điện thoại {phoneNumber}.");
+                return NotFound($"Không tìm thấy người dùng với số điện thoại {id}.");
             }
            
 
