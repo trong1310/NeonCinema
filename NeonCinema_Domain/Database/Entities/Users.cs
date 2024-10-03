@@ -16,7 +16,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string PassWord { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public string Gender { get; set; }
+        public bool Gender { get; set; }
         public string Images { get; set; }
         public DateTime DateOrBriht { get; set; }
         public string Adderss { get; set; }

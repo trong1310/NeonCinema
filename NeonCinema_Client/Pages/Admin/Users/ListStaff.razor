@@ -100,7 +100,7 @@
     private List<UserDTO> users; // Danh sách người dùng ban đầu
     private List<UserDTO> filteredUsers; // Danh sách người dùng đã lọc
     private string searchPhoneNumber = ""; // Biến để lưu số điện thoại nhập vào
-    private string selectedGender = ""; // Biến để lưu lựa chọn giới tính
+    private bool selectedGender ; // Biến để lưu lựa chọn giới tính
     private Guid roleIdToFilter = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"); // Biến để lưu RoleID cần lọc
     // Phương thức này được gọi khi trang khởi tạo và lấy toàn bộ danh sách người dùng
     protected override async Task OnInitializedAsync()
@@ -132,13 +132,11 @@
                 .ToList();
         }
 
-        // Lọc thêm theo giới tính nếu có lựa chọn
-        if (!string.IsNullOrEmpty(selectedGender))
-        {
+        
             filteredUsers = filteredUsers
                 .Where(user => user.Gender == selectedGender)
                 .ToList();
-        }
+
     }
 
 

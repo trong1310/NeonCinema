@@ -16,96 +16,53 @@ namespace NeonCinema_API.Controllers
         {
             _roomRepository = roomRepository;
         }
-        [HttpGet]
-        
-        public async Task<ActionResult<List<RoomDTO>>> GetAllRooms(CancellationToken cancellationToken)
+        // POST: api/Room
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
         {
-            try
+            if (request == null)
             {
-                var rooms = await _roomRepository.GetAllRoom(cancellationToken);
-                return Ok(rooms);
+                return BadRequest("Request cannot be null.");
             }
-            catch (Exception ex)
-            {
-                // Ghi log lỗi (ex)
-                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi khi lấy danh sách phòng.");
-            }
+            // Gán CinemaID mặc định
+            request.CinemasID = Guid.Parse("d288fe9d-79fd-4a83-8443-1a6c17ecdc7d");
+            var response = await _roomRepository.CreateRoom(request, cancellationToken);
+            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
         }
-        // GET: api/room/{id}
+
+        // GET: api/Room
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAllRooms(CancellationToken cancellationToken)
+        {
+            var rooms = await _roomRepository.GetAllRooms(cancellationToken);
+            return Ok(rooms);
+        }
+
+        // GET: api/Room/{id}
         [HttpGet("{id}")]
-        
-        public async Task<ActionResult<RoomDTO>> GetRoomById(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetRoomById(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
-                return Ok(room);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Phòng không tìm thấy.");
-            }
-            catch (Exception ex)
-            {
-                // Ghi log lỗi (ex)
-                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi khi lấy thông tin phòng.");
-            }
-        }
-        // POST: api/room
-        [HttpPost]
-        
-        public async Task<ActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
+            if (room == null)
+                return NotFound();
 
-            try
-            {
-                var response = await _roomRepository.CreateRoom(request, cancellationToken);
-                if (response.StatusCode == HttpStatusCode.Created)
-                {
-                    return CreatedAtAction(nameof(GetRoomById), new { id = request.ID }, request);
-                }
-                return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
-            }
-            catch (Exception ex)
-            {
-                // Ghi log lỗi (ex)
-                 //Console.WriteLine($"Error occurred: {ex.Message}");
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi khi tạo phòng.");
-            }
+            return Ok(room);
         }
-        // PUT: api/room/{id}
+
+        // PUT: api/Room/{id}
         [HttpPut("{id}")]
-        
-        public async Task<ActionResult> UpdateRoom(Guid id, [FromBody] RoomUpdateRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] RoomUpdateRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            try
-            {
-                var response = await _roomRepository.UpdateRoom(id, request, cancellationToken);
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return Ok("Phòng đã được cập nhật thành công.");
-                }
-                return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Phòng không tìm thấy.");
-            }
-            catch (Exception ex)
-            {
-                // Ghi log lỗi (ex)
-                return StatusCode(StatusCodes.Status500InternalServerError, "Đã xảy ra lỗi khi cập nhật phòng.");
-            }
+            var response = await _roomRepository.UpdateRoom(id, request, cancellationToken);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return Ok();
+
+            return StatusCode((int)response.StatusCode, response.ReasonPhrase);
         }
+
     }
 }

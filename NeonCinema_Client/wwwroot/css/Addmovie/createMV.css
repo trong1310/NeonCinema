@@ -1,0 +1,59 @@
+﻿.image-preview {
+    width: 100%; /* Chiều rộng 100% của cột chứa */
+    max-width: 300px; /* Giới hạn chiều rộng tối đa */
+    height: auto; /* Giữ nguyên tỷ lệ khung hình */
+}
+
+.container {
+    max-width: 1000px; /* Giới hạn chiều rộng container */
+}
+
+.form-group label {
+    font-weight: bold; /* Làm đậm chữ trong label */
+}
+.container mt-5{
+    margin-top: 0px;
+}
+.form-control {
+    border-radius: 5px; /* Làm bo góc cho input */
+}
+
+.mt-5 {
+    margin-top: 3rem; /* Khoảng cách trên */
+}
+
+.mb-3 {
+    margin-bottom: 1rem; /* Khoảng cách dưới */
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.align-items-center {
+    align-items: center;
+}
+.imggg img{
+    height: 400px;
+}
+.up {
+    position: relative;
+    background-color: green;
+    border-radius: 40px;
+    border-color: green;
+}
+
+    .up .btn {
+        width: 100%; /* Để nút chiếm toàn bộ chiều rộng */
+        background-color: green;
+        border-radius: 40px;
+    }
+
+    .up input[type="file"] {
+        display: none; /* Ẩn input tệp gốc */
+        
+    }

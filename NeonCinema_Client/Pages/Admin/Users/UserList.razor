@@ -1,9 +1,10 @@
-﻿@* @page "/updateuser"
+﻿@page "/updateuser"
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.User
 @inject IUserServices UserService
 @inject NavigationManager Navigation
 @using NeonCinema_Domain.Enum
+@layout LayoutAdmin
 
 <div class="container mt-4" style="color: white">
     <h4 class="mb-4">Chỉnh sửa Thông Tin Người Dùng</h4>
@@ -16,7 +17,7 @@
     {
         <form class="form-horizontal" >
             <div class="form-group">
-                 <label for="images"><img src="@user.Images" alt="Ảnh người dùng" class="img-fluid rounded-circle" /></label> 
+               @*  <label for="images"><img src="@user.Images" alt="Ảnh người dùng" class="img-fluid rounded-circle" /></label> *@
             </div>
 
             <div class="form-group">
@@ -41,7 +42,7 @@
                     <option value="Nam" selected="@((user.Gender == "Nam").ToString())">Nam</option>
                     <option value="Nữ" selected="@((user.Gender == "Nữ").ToString())">Nữ</option>
                     <option value="Khác" selected="@((user.Gender == "Khác").ToString())">Khác</option>
-                </select> 
+                </select> *@
             </div>
 
             <div class="form-group">
@@ -73,18 +74,14 @@
 
 @code {
     private UserDTO user;
-    private string phoneNumber;
+    private Guid id;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
 
-        if (query.ContainsKey("phoneNumber")) // Đảm bảo tên khóa là 'phoneNumber'
-        {
-            phoneNumber = query["phoneNumber"]; // Lấy số điện thoại
-            user = await UserService.GetByIDUser(phoneNumber, CancellationToken.None); // Tải dữ liệu người dùng
-        }
+        user = await UserService.GetByIDUser(id, CancellationToken.None); // Tải dữ liệu người dùng
     }
 
     private async Task SaveChanges()
@@ -128,4 +125,3 @@
     }
 
 }
-*@

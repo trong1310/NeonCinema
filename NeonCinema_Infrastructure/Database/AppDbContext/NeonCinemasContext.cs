@@ -74,10 +74,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
+            //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-         //   optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -119,6 +121,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 .WithMany(m => m.BillPromotions)
                 .HasForeignKey(pm => pm.PromotionID);
             SeenDingData(modelBuilder);
+
+            modelBuilder.Entity<Room>()
+    .HasOne(r => r.Cinemas)
+    .WithMany(c => c.Rooms)
+    .HasForeignKey(r => r.CinemasID)
+    .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
 
 
         }
@@ -162,7 +170,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
                 },
                 new Users {
@@ -176,7 +184,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
                 },
                 new Users {
@@ -190,7 +198,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -204,7 +212,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                  new Users {
@@ -218,7 +226,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -232,7 +240,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                   new Users {
@@ -246,7 +254,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                  new Users {
@@ -260,7 +268,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -274,7 +282,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 }
             };

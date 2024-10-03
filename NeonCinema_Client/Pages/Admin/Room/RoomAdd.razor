@@ -1,90 +1,72 @@
+@* @page "/create-room"
+@using NeonCinema_Application.DataTransferObject.Room
+@using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Domain.Enum
+@layout LayoutAdmin
+@inject IRoomService RoomService
+@inject NavigationManager Navi
 
-﻿@* 
+<h3 style="text-align: center">Thêm phòng mới</h3>
+
+<EditForm Model="newRoom" OnValidSubmit="CreateRoom">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="roomName" class="form-label">Tên phòng</label>
+        <InputText id="roomName" class="form-control" @bind-Value="newRoom.Name" />
+        <ValidationMessage For="@(() => newRoom.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="seatingCapacity" class="form-label">Sức chứa</label>
+        <InputNumber id="seatingCapacity" class="form-control" @bind-Value="newRoom.SeatingCapacity" />
+        <ValidationMessage For="@(() => newRoom.SeatingCapacity)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Trạng thái</label>
+        <InputSelect id="status" class="form-control" @bind-Value="newRoom.Status">
+            <option value="@(EntityStatus.Active)">Hoạt động</option>
+            <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => newRoom.Status)" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Tạo phòng</button>
+    <button type="button" class="btn btn-secondary" @onclick="BackToList">Hủy</button>
+</EditForm>
+
+
+@code {
+    private RoomDTO newRoom = new RoomDTO(); // Dữ liệu phòng mới
+
+    private async Task CreateRoom()
+    {
+        if (newRoom != null)
+        {
+            // Tạo đối tượng RoomCreateRequest và gán các giá trị từ newRoom
+            var roomCreateRequest = new RoomCreateRequest
+                {
+                    Name = newRoom.Name,
+                    SeatingCapacity = newRoom.SeatingCapacity,
+                    Status = newRoom.Status,
+                    //CinemasID = Guid.Parse("6cf8d373-0533-484c-bcc3-63801334fff6") // Gán CinemaID mặc định
+                };
+
+            // Gọi service để tạo phòng với RoomCreateRequest
+            await RoomService.CreateRoomm(roomCreateRequest, CancellationToken.None);
+
+            // Điều hướng về trang danh sách phòng sau khi thêm
+            Navi.NavigateTo("/rooms");
+        }
+    }
+    // Điều hướng tới trang tạo phòng
     
-
-
-    <div class="container">
-
-﻿ <div class="container">
-
-        <h3>Thêm Phòng Chiếu Mới</h3>
-        <form class="room-form">
-            <div class="form-group">
-                <label for="roomName">Tên Phòng Chiếu</label>
-                <input type="text" id="roomName" name="roomName" placeholder="Nhập tên phòng chiếu">
-            </div>
-            <div class="form-group">
-                <label for="seatingCapacity">Sức Chứa</label>
-                <input type="number" id="seatingCapacity" name="seatingCapacity" placeholder="Nhập số chỗ ngồi">
-            </div>
-            <button type="submit" class="submit-btn">Thêm Phòng Chiếu</button>
-        </form>
- </div>
-
-
-<style>
-    /* styles.css */
- 
-
-    .container {
-        background: #ffffff;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
+    // Điều hướng trở về trang danh sách phòng nếu người dùng nhấn "Hủy"
+    private void BackToList()
+    {
+        Navi.NavigateTo("/rooms");
     }
-
-    h3 {
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-        color: #333;
-        text-align: center;
-    }
-
-    .room-form {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-            .form-group input:focus {
-                border-color: #007bff;
-                outline: none;
-                box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
-            }
-
-    .submit-btn {
-        background-color: #007bff;
-        color: #ffffff;
-        border: none;
-        padding: 0.75rem;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-        .submit-btn:hover {
-            background-color: #0056b3;
-        }
-
-</style> *@
+}
+ *@

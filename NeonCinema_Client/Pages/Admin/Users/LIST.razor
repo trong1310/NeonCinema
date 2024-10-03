@@ -136,7 +136,7 @@
         if (!string.IsNullOrEmpty(selectedGender))
         {
             filteredUsers = filteredUsers
-                .Where(user => user.Gender == selectedGender)
+                .Where(user => user.Gender.ToString() == selectedGender)
                 .ToList();
         }
     }
