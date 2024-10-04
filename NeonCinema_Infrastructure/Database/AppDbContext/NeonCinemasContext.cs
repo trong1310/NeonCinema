@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
 using Bogus.Hollywood.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
