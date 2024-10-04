@@ -1,0 +1,37 @@
+﻿@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.IdentityModel.Tokens.Jwt
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject ILocalStorageService _localstorage
+
+@code {
+    [Parameter] public string Role { get; set; } // Kiểm tra tên tham số
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    private bool isAuthorized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var token = await _localstorage.GetItemAsync<string>("token");
+            if (token != null)
+            {
+                var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                var role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+
+                isAuthorized = (role.Contains(Role));
+                StateHasChanged(); // Thêm dòng này để cập nhật giao diện
+            }
+        }
+
+        if (!isAuthorized)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}
