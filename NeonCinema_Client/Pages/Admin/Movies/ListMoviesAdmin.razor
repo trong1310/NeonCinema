@@ -1,0 +1,85 @@
+﻿@page "/list-movies-admin"
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@inject IMovieservices _movieservices
+<h2 class="d-flex justify-content-center align-content-center m-auto">Danh Sách Phim</h2>
+
+<MudSimpleTable Hover="@hover" Style="overflow-x: auto;">
+    @if(movieDto.Data != null)
+    {
+        <thead>
+            <tr>
+
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in rows)
+            {
+                <tr>
+                    @foreach (var x in row.Split())
+                    {
+                        <td>@x</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    }
+    else{
+        @if (loading)
+        {
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Không có dữ liệu...</span>
+            </div>
+        }
+    }
+</MudSimpleTable>
+<MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
+    <MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
+</MudBlazor.MudContainer>
+
+@code {
+    private bool loading;
+    private bool hover = true;
+    private int countPage = 1;
+    private ViewMovieRequest request = new ViewMovieRequest();
+    private PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
+    string[] rows = {
+        @"1 Krishna kpartner0@usatoday.com Male 28.25.250.202",
+        @"2 Webb wstitle1@ning.com Male 237.168.134.114",
+        @"3 Nathanil nneal2@cyberchimps.com Male 92.6.0.175",
+        @"4 Adara alockwood3@patch.com Female 182.174.217.152",
+        @"5 Cecilius cchaplin4@shinystat.com Male 195.124.144.18",
+        @"6 Cicely cemerine9@soup.io Female 138.94.191.43",
+    };
+    public async Task LoadMovies()
+    {
+        try
+        {
+            loading = true;
+            movieDto.Data = null;
+            movieDto.PageNumber = countPage;
+            movieDto = await _movieservices.GetAllMovies(request);
+            if (movieDto.HasNext)
+            {
+                countPage += 1;
+            }
+        }
+        catch
+        {
+            loading = false;
+        }
+    }
+    public async Task OnPaginationSelectedChanged(int selectedPage)
+    {
+        countPage = selectedPage;
+        await LoadMovies();
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/Resources/{imageUrl}";
+    }
+
+}
