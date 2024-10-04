@@ -42,7 +42,7 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<List<CountryDTO>> GetAllCountry()
         {
-            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country/get-all");
+            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country");
             return lst;
         }
 
@@ -60,7 +60,7 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
         {
-            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
+            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/Movie/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
             return obj;
         }
 

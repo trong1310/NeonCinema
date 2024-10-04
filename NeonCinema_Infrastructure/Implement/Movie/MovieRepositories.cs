@@ -123,7 +123,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
         }
 
-        public async Task<List<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
             var query = _context.Movies
@@ -141,10 +141,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
 
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataview = (from a in result.Data
+            result.Data = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID 
-                            orderby b.StarTime 
+                            orderby b.StarTime descending
 
                             select new MovieDTO
                             {
@@ -155,6 +155,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Name = b.Name,
                                 Images = b.Images,
                                 Duration = b.Duration,
+                                StarTime = b.StarTime,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
                                 CountryName = b.Countrys.CountryName,
@@ -162,8 +163,13 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 GenreName = b.Genre.GenreName,                       
                                 
                             }).ToList();
-         
- return dataview;
+            return new PaginationResponse<MovieDTO>()
+            {
+                Data = result.Data,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                HasNext = result.HasNext,
+            };
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)

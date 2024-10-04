@@ -85,8 +85,6 @@
 
   <ItemGroup>
 
-    <None Include="Pages\Admin\AddMovies\AddMoviess.razor" />
-
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
   </ItemGroup>
