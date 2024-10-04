@@ -39,18 +39,22 @@
                             <label class="form-check-label" for="all">Tất Cả</label>
                         </div>
                         <div class="form-check me-3 ml-4">
-                            <input class="form-check-input" type="radio" name="status" id="resigned" value="resigned" @onchange="StatusChanged">
-                            <label class="form-check-label" for="resigned">Đã Nghỉ Việc</label>
+                            <input class="form-check-input" type="radio" name="status" id="active" value="active" @onchange="StatusChanged">
+                            <label class="form-check-label" for="resigned">Hoạt động</label>
                         </div>
                     </div>
                     <div class="form-check mt-1">
-                        <input class="form-check-input" type="radio" name="status" id="working" value="working" @onchange="StatusChanged">
-                        <label class="form-check-label" for="working">Đang Làm Việc</label>
+                        <input class="form-check-input" type="radio" name="status" id="pendingConfirmation" value="pendingConfirmation" @onchange="StatusChanged">
+                        <label class="form-check-label" for="resigned">Không hoạt động</label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin: 0 0 15px 1285px" @onclick="NavigateToCreate">
+        <i class="fas fa-plus"></i> Thêm nhân viên
+    </button>
+
 
     <!-- Employee Table -->
     <table class="table table-hover employee-table">
@@ -76,7 +80,17 @@
                 {
                     <tr>
                         <td class="text-center align-middle">@(@filteredUsers.IndexOf(user) + 1)</td>
-                        <td class="text-center align-middle">@user.Gender</td>
+                        <td class="text-center align-middle">
+                            @if (user.Gender)
+                            {
+                                <span>Nam</span>
+                            }
+                            else if(!user.Gender)
+                            {
+                                <span>Nữ</span>
+                            }
+                        </td>
+
                         <td class="text-center align-middle">
                             <img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
                         </td>
@@ -87,7 +101,7 @@
                         <td class="text-center align-middle">@user.Adderss</td>
                         <td class="text-center align-middle">
                             <span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge">
-                                @user.Status.ToString()
+                                @(user.Status == EntityStatus.Active ? "Active" : "Inactive")
                             </span>
                         </td>
                         <td class="text-center align-middle">
@@ -164,15 +178,15 @@
     private void FilterUsers()
     {
         filteredUsers = users.Where(u =>
-            (string.IsNullOrWhiteSpace(selectedGender) ||
-             (selectedGender == "Nam" && u.Gender == "Nam") ||
-             (selectedGender == "Nữ" && u.Gender == "Nữ")) &&
-            (string.IsNullOrWhiteSpace(searchTerm) ||
-             RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
-            (selectedStatus == "all" ||
-             (selectedStatus == "working" && u.Status == EntityStatus.Active) ||
-             (selectedStatus == "resigned" && u.Status != EntityStatus.Active))
-        ).ToList();
+        (string.IsNullOrWhiteSpace(selectedGender) ||
+         (selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
+         (selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
+        (string.IsNullOrWhiteSpace(searchTerm) ||
+         RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
+        (selectedStatus == "all" ||
+         (selectedStatus == "active" && u.Status == EntityStatus.Active) ||
+         (selectedStatus == "pendingConfirmation" && u.Status == EntityStatus.PendingForConfirmation))
+    ).ToList();
 
         currentPage = 1; // Reset current page to 1 after filtering
     }
@@ -207,6 +221,10 @@
     private async Task NavigateToEdit(Guid id)
     {
         Navigation.NavigateTo($"/staff-details/{id}");
+    }
+    private async Task NavigateToCreate()
+    {
+        Navigation.NavigateTo($"/staff-create");
     }
     private string GetImageUrl(string imageUrl)
     {

@@ -27,7 +27,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
         {
             // Kiểm tra các trường thông tin đầu vào
             if (string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.PhoneNumber) ||
-                string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Gender) ||
+                string.IsNullOrEmpty(request.Email) || 
                 string.IsNullOrEmpty(request.Adderss))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
@@ -75,7 +75,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
                 DateOrBriht = request.DateOrBriht,
                 Adderss = request.Adderss,
                 Status = request.Status,
-                RoleID = request.RoleID == Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // Mặc định RoleID
+                RoleID = request.RoleID /*== Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // Mặc định RoleID*/
             };
 
             // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
@@ -102,7 +102,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
             }
 
             if (string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.PhoneNumber) ||
-                string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Gender) ||
+                string.IsNullOrEmpty(request.Email) || 
                 string.IsNullOrEmpty(request.Adderss))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
