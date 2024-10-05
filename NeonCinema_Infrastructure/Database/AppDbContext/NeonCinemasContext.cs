@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
 using Bogus.Hollywood.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -77,6 +79,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
             //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
          //   optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
@@ -168,7 +171,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
                 },
                 new Users {
@@ -182,7 +185,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
                 },
                 new Users {
@@ -196,7 +199,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("25/12/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -210,7 +213,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                  new Users {
@@ -224,7 +227,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -238,7 +241,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                   new Users {
@@ -252,7 +255,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                  new Users {
@@ -266,7 +269,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 },
                 new Users {
@@ -280,7 +283,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     Adderss = "Ba Vi",
                     DateOrBriht= DateTime.Parse("13/10/2004"),
                     Images = "images.jpg",
-                    Gender = "Nam",
+                    Gender = true,
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 }
             };
