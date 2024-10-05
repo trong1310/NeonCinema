@@ -41,8 +41,18 @@ using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Client.Data.IServices.Actor;
 using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.Services.Actor;
+
+//using NeonCinema_Client.Data.IServices.Movie;
+//using NeonCinema_Client.Data.Services.Movie;
+using NeonCinema_Infrastructure.Extention.AutoMapperProfile.Movie;
+using NeonCinema_Client.Data.IServices.Director;
+using NeonCinema_Client.Data.Services.Director;
+using NeonCinema_Application.Interface.Directors;
+using NeonCinema_Infrastructure.Implement.Directors;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using NeonCinema_Client;
+
 
 
 
@@ -58,11 +68,15 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
-
+//builder.Services.AddScoped<IMovieServicee, MovieServicees>();
+builder.Services.AddScoped<IDirectorService, DirectorService>();
+builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddScoped<IActorService, ServiceActor>();
+
+builder.Services.AddAutoMapper(typeof(MovieProfiles));
 
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Directors;
@@ -13,64 +12,71 @@ namespace NeonCinema_API.Controllers
     public class DirectorController : ControllerBase
     {
         private readonly IDirectorRepositories _reps;
-        private readonly IMapper _maps;
-        public DirectorController(IDirectorRepositories reps, IMapper maps)
+        
+        public DirectorController(IDirectorRepositories reps)
         {
-            _maps = maps;
+           
             _reps = reps;
         }
-        [HttpGet("Get-All")]
-        public async Task<IActionResult> GetAll([FromQuery] ViewDirectorRequest request, CancellationToken cancellationToken)
+        [HttpGet]
+        public async Task<IActionResult> GetAllDirectors(CancellationToken cancellationToken)
+        {
+            var directors = await _reps.GetAllDirector(cancellationToken);
+            if (directors == null || directors.Count == 0)
+            {
+                return NotFound(new { message = "No directors found." });
+            }
+            return Ok(directors);
+        }
+
+        // 2. Get Director by ID
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetDirectorById(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var obj = await _reps.GetAllDirector(request, cancellationToken);
-                return Ok(obj);
+                var director = await _reps.GetBiIdDirector(id, cancellationToken);
+                return Ok(director);
             }
-            catch (Exception ex) 
+            catch (KeyNotFoundException)
             {
-                return Content(ex.Message);
+                return NotFound(new { message = $"Director with ID {id} not found." });
             }
-        
         }
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create(CreateDirectorRequest request, CancellationToken cancellationToken)
+
+        // 3. Create Director
+        [HttpPost]
+        public async Task<IActionResult> CreateDirector([FromBody] CreateDirectorRequest directorRequest, CancellationToken cancellationToken)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newDirector = await _reps.CreateDirector(directorRequest, cancellationToken);
+            return CreatedAtAction(nameof(GetDirectorById), new { id = newDirector.ID }, newDirector);
+        }
+
+        // 4. Update Director
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateDirector(Guid id, [FromBody] UpdateDirectorRequest updateDirectorRequest, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var obj = await _reps.CreateDirector(_maps.Map<Director>(request),cancellationToken);
-                return Ok(obj);
+                var updatedDirector = await _reps.UpdateDirector(id, updateDirectorRequest, cancellationToken);
+                return Ok(updatedDirector);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                return Content(ex.Message);
+                return NotFound(new { message = $"Director with ID {id} not found." });
             }
         }
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(UpdateDirectorRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await _reps.UpdateDirector(_maps.Map<Director>(request), cancellationToken);
-                return Ok(obj);
-            }
-            catch (Exception ex)
-            {
-                return Content(ex.Message);
-            }
-        }
-        [HttpDelete]
-        public async Task<IActionResult> Delete(DeleteDirectorRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await _reps.DeleteDirector(_maps.Map<Director>(request), cancellationToken);
-                return Ok(obj);
-            }
-            catch (Exception ex)
-            {
-                return Content(ex.Message);
-            }
-        }
+
+
     }
 }

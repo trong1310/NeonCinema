@@ -5,7 +5,7 @@
 @inject IActorService ActorService
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
-<link rel="stylesheet" href="/css/Actor/AddActor.css">
+<link rel="stylesheet" href="/css/Actor/Actorr.css">
 <h3 class="text-center mb-4">Add New Actor</h3>
 
 <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
@@ -15,7 +15,14 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Gender:</label>
-        <InputText @bind-Value="actor.Gender" class="form-control" />
+        <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
+            <option value="">-- Chọn giới tính --</option>
+            <option value="@(EntityStatus.Men)">Nam</option>
+            <option value="@(EntityStatus.Girl)">Nữ</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => actor.Gender)" />
+
+        <ValidationMessage For="@(() => actor.Gender)" />
     </div>
     <div class="mb-3">
         <label class="form-label">Birth Date:</label>
@@ -85,10 +92,16 @@
    
     private async Task HandleValidSubmit()
     {
+        if (string.IsNullOrEmpty(actor.Gender))
+        {
+            // Gửi thông báo lỗi nếu Gender chưa được chọn
+            throw new InvalidOperationException("Gender is required.");
+        }
+
         var createActorRequest = new CreateActorRequest
             {
                 FullName = actor.FullName,
-                Gender = actor.Gender,
+                Gender = actor.Gender, // Đảm bảo rằng đây không phải là NULL
                 BirthDate = actor.BirthDate,
                 Address = actor.Address,
                 Nationality = actor.Nationality,
@@ -100,6 +113,7 @@
         await ActorService.CreateActor(createActorRequest, CancellationToken.None);
         NavigationManager.NavigateTo("/listactor");
     }
+
 
     private void NavigateBack()
     {
