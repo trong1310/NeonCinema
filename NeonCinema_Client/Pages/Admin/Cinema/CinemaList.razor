@@ -2,7 +2,6 @@
 @using System.Collections.Generic
 @using NeonCinema_Application.DataTransferObject.Cinemas
 @using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.Cinemas
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Domain.Enum
@@ -51,7 +50,7 @@
             <MudTd Class="mud-td-center">@item.DirectorName</MudTd>
             <MudTd Class="mud-td-center">
                 <MudFab Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" />
-                <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="margin-left:15px;"  />
+                <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="margin-left:15px;" />
                 <MudFab Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" style="margin-left: 15px" />
             </MudTd>
         }
@@ -81,12 +80,9 @@
 </style>
 
 @code {
-    private PaginationResponse<MovieDTO> movie = new PaginationResponse<MovieDTO>();
-    ViewMovieRequest request = new ViewMovieRequest();
+    private List<MovieDTO> movie = new List<MovieDTO>();
     protected override async Task OnInitializedAsync()
     {
-
-        movie = await service.GetAllMovies(request);
 
     }
 

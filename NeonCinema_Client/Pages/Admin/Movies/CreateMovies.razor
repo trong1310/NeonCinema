@@ -1,33 +1,44 @@
 ﻿@page "/create-flims"
-@using Microsoft.AspNetCore.Http;
-@using NeonCinema_Application.DataTransferObject.Countrys
-@using NeonCinema_Application.DataTransferObject.Directors
-@using NeonCinema_Application.DataTransferObject.Genre
-@using NeonCinema_Application.DataTransferObject.Language
-@using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Client.Data.IServices.IMoviesServices
 @layout LayoutAdmin
+@using Microsoft.AspNetCore.Http;
+@using NeonCinema_Application.DataTransferObject.Countrys;
+@using NeonCinema_Application.DataTransferObject.Directors;
+@using NeonCinema_Application.DataTransferObject.Genre;
+@using NeonCinema_Application.DataTransferObject.Language;
+@using NeonCinema_Application.DataTransferObject.Movie;
+@using NeonCinema_Client.Data.IServices.IMoviesServices;
 @inject IMovieservices _movieServices
 @inject NavigationManager _navigation
 
+<MudChip T="string">@errorMessage</MudChip>
 <EditForm Model="request">
+	<DataAnnotationsValidator />
 	<div class="container-fluid mt-5">
 		<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Thêm phim mới</h2>
 		<div class="row justify-content-center">
 			<div class="col-md-3 text-center mb-4 mt-5">
-				<img src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
+				
+				<label class="img-select" style="margin: 0px;">
+					<img src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
+					<InputFile>
+
+					</InputFile>
+				</label><div style="margin: 10px 0px 0px; display: none;">
+					<a class="button is-xxsmall secondary" href="#" style="margin: 0px;">Hủy</a>&nbsp;
+					<a href="#" class="button is-xxsmall" style="margin: 0px;">Cập nhật</a>
+				</div>
 			</div>
 			<div class="col-md-9" style="margin-top:10px;">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="fullname" class="font-weight-bold">Tên Phim</label>
-							<input type="text" class="form-control" id="name" @bind-value="@request.Name" />
+							<label for="name" class="font-weight-bold">Tên Phim</label>
+							<input type="text" class="form-control" id="name" @bind-value="request.Name" />
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="phone" class="font-weight-bold">Thời Lượng</label>
+							<label for="Duration" class="font-weight-bold">Thời Lượng</label>
 							<input type="text" class="form-control" id="Duration" @bind-value="request.Duration" />
 						</div>
 					</div>
@@ -36,27 +47,22 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="email" class="font-weight-bold">Trailer</label>
+							<label for="Trailer" class="font-weight-bold">Trailer</label>
 							<input type="text" class="form-control" id="Trailer" @bind-value="request.Trailer" />
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="dob" class="font-weight-bold">Ngày phát hành</label>
-							<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
+							<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+							<input type="datetime-local" class="form-control" id="StarTime" @bind-value="request.StarTime" />
 						</div>
 					</div>
 				</div>
+
 				<div class="row">
-					@* <div class="col-md-6">
-					<div class="form-group">
-					<label for="email" class="font-weight-bold">Images</label>
-					<input type="file" class="form-control" id="Images" @bind-value="request.Images" />
-					</div>
-					</div> *@
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="dob" class="font-weight-bold">Độ tuổi cho phép</label>
+							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
 							<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
 						</div>
 					</div>
@@ -65,7 +71,7 @@
 					<div class="form-group">
 						<label>Genre</label>
 						<InputSelect @bind-Value="request.GenreID" class="form-control">
-							<option selected>Open this select menu</option>
+							<option value="">Chọn thể loại</option>
 							@foreach (var genre in genres)
 							{
 								<option value="@genre.ID">@genre.GenreName</option>
@@ -75,8 +81,8 @@
 
 					<div class="form-group">
 						<label>Language</label>
-						<InputSelect @bind-Value="request.LenguageID" class="form-control">
-							<option value="">Select Language</option>
+						<InputSelect @bind-Value="request.LanguageID" class="form-control">
+							<option value="">Chọn ngôn ngữ</option>
 							@foreach (var language in languages)
 							{
 								<option value="@language.ID">@language.LanguageName</option>
@@ -87,7 +93,7 @@
 					<div class="form-group">
 						<label>Country</label>
 						<InputSelect @bind-Value="request.CountryID" class="form-control">
-							<option value="">Select Country</option>
+							<option value="">Chọn quốc gia</option>
 							@foreach (var country in countries)
 							{
 								<option value="@country.ID">@country.CountryName</option>
@@ -98,7 +104,7 @@
 					<div class="form-group">
 						<label>Director</label>
 						<InputSelect @bind-Value="request.DirectorID" class="form-control">
-							<option value="">Select Director</option>
+							<option value="">Chọn đạo diễn</option>
 							@foreach (var director in directors)
 							{
 								<option value="@director.ID">@director.FullName</option>
@@ -106,39 +112,66 @@
 						</InputSelect>
 					</div>
 				</div>
+
 				<div class="form-group">
-					<label for="address" class="font-weight-bold">Địa chỉ</label>
-					<textarea class="form-control" id="address" rows="3"></textarea>
+					<label for="address" class="font-weight-bold">Mô tả</label>
+					<textarea class="form-control" id="address" rows="3" @bind="request.Description"></textarea>
 				</div>
+
 				<div class="text-center">
-					<button @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
+					<MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@HandleSubmit">Thêm mới</MudButton>
+
 				</div>
 			</div>
 		</div>
 	</div>
 </EditForm>
-
 @code {
-	private CreateMovieRequest request = new CreateMovieRequest();
-	NeonCinema_Domain.Database.Entities.Movies movies = new NeonCinema_Domain.Database.Entities.Movies();
-	private async Task HandleSubmit()
-	{
-		await _movieServices.CreateMovie(request);
-		_navigation.NavigateTo("/list-movies-admin");
+	[Inject] private IDialogService DialogService { get; set; }
 
-	}
+	private CreateMovieRequest request = new CreateMovieRequest();
 	List<GenreDTO> genres = new List<GenreDTO>();
 	List<LanguageDTO> languages = new List<LanguageDTO>();
 	List<CountryDTO> countries = new List<CountryDTO>();
 	List<DirectorDTO> directors = new List<DirectorDTO>();
-
+	private string errorMessage;
 
 	protected override async Task OnInitializedAsync()
 	{
-		genres = await _movieServices.GetAllGenre();
-		languages = await _movieServices.GetAllLanguage();
-		countries = await _movieServices.GetAllCountry();
-		directors = await _movieServices.GetAllDirector();
+		try
+		{
+			genres = await _movieServices.GetAllGenre();
+			languages = await _movieServices.GetAllLanguage();
+			countries = await _movieServices.GetAllCountry();
+			directors = await _movieServices.GetAllDirector();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(genres);
+			Console.WriteLine(languages);
+			Console.WriteLine(countries);
+			Console.WriteLine(directors);
+		}
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			var result = await _movieServices.CreateMovie(request);
+			if (result.IsSuccessStatusCode)
+			{
+				_navigation.NavigateTo("/list-movies-admin");
+			}
+			else
+			{
+				errorMessage = $"Lỗi khi tạo phim: {result.ReasonPhrase}";
+			}
+		}
+		catch (Exception ex)
+		{
+		
+		}
 	}
 }
 
