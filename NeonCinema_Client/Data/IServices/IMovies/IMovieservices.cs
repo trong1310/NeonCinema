@@ -1,4 +1,4 @@
-﻿    using NeonCinema_Application.DataTransferObject.Countrys;
+using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
@@ -18,3 +18,4 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
         public Task<HttpResponseMessage> CreateMovie(CreateMovieRequest input);
     }
 }
+

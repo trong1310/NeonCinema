@@ -14,7 +14,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
         public EntityStatus Status { get; set; }
-        public Guid CinemasID { get; set; }
+        public Guid CinemasID { get; set; } = new Guid("a1093f2c-a2cb-4b65-a9f9-9bf7d8f9845d");
 
         // 
         public virtual Cinemas? Cinemas { get; set; }
