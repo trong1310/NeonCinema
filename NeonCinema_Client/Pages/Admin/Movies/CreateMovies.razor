@@ -49,10 +49,10 @@
 				</div>
 				<div class="row">
 					@* <div class="col-md-6">
-						<div class="form-group">
-							<label for="email" class="font-weight-bold">Images</label>
-							<input type="file" class="form-control" id="Images" @bind-value="request.Images" />
-						</div>
+					<div class="form-group">
+					<label for="email" class="font-weight-bold">Images</label>
+					<input type="file" class="form-control" id="Images" @bind-value="request.Images" />
+					</div>
 					</div> *@
 					<div class="col-md-6">
 						<div class="form-group">
@@ -127,10 +127,10 @@
 		_navigation.NavigateTo("/list-movies-admin");
 
 	}
-	 List<GenreDTO> genres = new List<GenreDTO>();
-	 List<LanguageDTO> languages = new List<LanguageDTO>();
-	 List<CountryDTO> countries = new List<CountryDTO>();
-	 List<DirectorDTO> directors = new List<DirectorDTO>();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
 
 
 	protected override async Task OnInitializedAsync()
