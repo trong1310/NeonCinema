@@ -64,7 +64,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					AgeAllowed = request.AgeAllowed,
 					Status = MovieStatus.Comingsoon,
 					GenreID = request.GenreID,
-					LenguageID = request.LenguageID,
+					LenguageID = request.LanguageID,
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,

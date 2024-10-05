@@ -25,7 +25,8 @@ namespace NeonCinema_Infrastructure.Implement.Languages
         // Lấy tất cả ngôn ngữ
         public async Task<List<LanguageDTO>> GetAllLanguages(CancellationToken cancellationToken)
         {
-            var languages = await _context.Lenguages.ToListAsync(cancellationToken);
+            var query =  _context.Lenguages.AsNoTracking();
+            var languages = await query.ToListAsync();
             return _mapper.Map<List<LanguageDTO>>(languages);
         }
 

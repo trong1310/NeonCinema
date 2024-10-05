@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;
@@ -15,10 +16,12 @@ namespace NeonCinema_Infrastructure.Implement.Directors
 {
     public class DirectorRepositories : IDirectorRepositories
     {
+        private readonly IMapper _map;
         private readonly NeonCinemasContext _context;
-        public DirectorRepositories(NeonCinemasContext context)
+        public DirectorRepositories(NeonCinemasContext context,IMapper map)
         {
             _context = context;
+            _map = map;
         }
         public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest director, CancellationToken cancellationToken)
         {
@@ -57,21 +60,11 @@ namespace NeonCinema_Infrastructure.Implement.Directors
 
         public async Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken)
         {
-            var directors = await _context.Directors.ToListAsync(cancellationToken);
+            var directors =  _context.Directors.AsNoTracking();
+            var obj = await directors.ToListAsync();
+            return _map.Map<List<DirectorDTO>>(obj);
 
-            // Map the list of Director entities to a list of DirectorDTOs
-            return directors.Select(d => new DirectorDTO
-            {
-                ID = d.ID,
-                FullName = d.FullName,
-                Gender = d.Gender,
-                BirthDate = d.BirthDate,
-                Address = d.Address,
-                Nationality = d.Nationality,
-                Biography = d.Biography,
-                Images = d.Images,
-                Status = d.Status
-            }).ToList();
+          
         }
 
         public async Task<DirectorDTO> GetBiIdDirector(Guid id, CancellationToken cancellationToken)

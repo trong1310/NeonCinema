@@ -28,7 +28,7 @@ namespace NeonCinema_Client.Services.MoivesService
                     return result;
                 
             }
-            catch (Exception ex) r
+            catch (Exception ex) 
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
@@ -38,7 +38,6 @@ namespace NeonCinema_Client.Services.MoivesService
 			}
 
         }
-
         public async Task<List<GenreDTO>> GetAllGenre()
         {
             var lst = await _httpClient.GetFromJsonAsync<List<GenreDTO>>("https://localhost:7211/api/Genre/get-all-genre");
@@ -59,7 +58,7 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<List<DirectorDTO>> GetAllDirector()
         {
-            var lst = await _httpClient.GetFromJsonAsync<List<DirectorDTO>>("https://localhost:7211/api/Director/Get-All");
+            var lst = await _httpClient.GetFromJsonAsync<List<DirectorDTO>>("https://localhost:7211/api/Director");
             return lst;
         }
 

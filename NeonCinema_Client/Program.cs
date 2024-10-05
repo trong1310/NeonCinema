@@ -7,9 +7,6 @@ using NeonCinema_Client.Data;
 using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
 using NeonCinema_Client.Pages.Admin.Users;
-
-/*using NeonCinema_Client.Services; */// Đảm bảo rằng dịch vụ UserService nằm trong namespace này
-
 using AutoMapper; // Ensure this is included
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile.Actors;
 using NeonCinema_Application.DataTransferObject.Utilities;
@@ -19,7 +16,6 @@ using NeonCinema_Client.Data.IServices.Cinemas;
 using NeonCinema_Client.Data.IServices.FlimsUser;
 using NeonCinema_Client.Data.Services.FilmUsers;
 using MudBlazor.Services;
-//////////
 using NeonCinema_Client.Data.IServices.IRoom;
 using NeonCinema_Client.Data.Services.Room;
 using NeonCinema_Application.Interface.Room;
@@ -30,20 +26,10 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
-using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Client.Data.IServices.Genre;
-using NeonCinema_Client.Data.Services.Genre;
-using NeonCinema_Client.Services;
-using NeonCinema_Client.Data.IServices.Country;
-using NeonCinema_Client.Data.Services.Country;
-using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Client.Data.IServices.Actor;
 using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.Services.Actor;
-
-//using NeonCinema_Client.Data.IServices.Movie;
-//using NeonCinema_Client.Data.Services.Movie;
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile.Movie;
 using NeonCinema_Client.Data.IServices.Director;
 using NeonCinema_Client.Data.Services.Director;
