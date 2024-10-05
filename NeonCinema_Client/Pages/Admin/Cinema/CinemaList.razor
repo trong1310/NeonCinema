@@ -81,10 +81,7 @@
 
 @code {
     private List<MovieDTO> movie = new List<MovieDTO>();
-    protected override async Task OnInitializedAsync()
-    {
-        movie = await service.GetAllMovies();
-    }
+
 
     private string GetImageUrl(string imageUrl)
     {
