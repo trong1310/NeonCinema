@@ -1,117 +1,99 @@
-﻿@page "/list-movie-admin"
+﻿@page "/list-movies-admin"
 @using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Client.Data.IServices.FlimsUser
+@using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.IMoviesServices
-@using NeonCinema_Client.Data.Services.FilmUsers
-@using NeonCinema_Client.DataTransferObject.MovieData
-@layout LayoutAdmin
-@inject IMovieservices _moviesv
+@inject IMovieservices _movieservices
 
-<AuthorizeView Roles="Admin">
-	<Authorized>
-		<div class="p-5">
-			<div class="col-12">
-				<div class="row">
-					<div class="col-10"></div>
-					<div class="col-2"><a href="/create-movie" class="btn btn-success">Add new</a></div>
-				</div>
-				<div class="row mt-3">
-					<div class="boxchoosefilter">
-						<form action="">
-							<div class="col-12">
-								<div class="row">
-									<div class="col-3">
-										<label for="" class="form-label">Search</label>
-										<input class="form-control" type="text" placeholder="Search by name">
-									</div>
-									<div class="col-8 offset-1">
-										<div class="row">
-											<div class="col-3">
-												<label for="" class="form-label">Genre</label>
-												<select name="" id="" class="form-select" style="width: 200px;">
-													<option value="">All</option>
-												</select>
-											</div>
-											<div class="col-3">
-												<label for="" class="form-label">AgeAllow</label>
-												<select name="" id="" class="form-select" style="width: 200px;">
-													<option value="">All</option>
-												</select>
-											</div>
-											<div class="col-3">
-												<label for="" class="form-label">Country</label>
-												<select name="" id="" class="form-select" style="width: 300px;">
-													<option value="">All</option>
-												</select>
-											</div>
-										</div>
-									</div>
-								</div>
-								<hr>
-								<div class="row">
-									<div class="boxfilter">
-										<button class="btn filteritem">Genre <i class="fa-solid fa-x"></i></button>
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<h4>List movie</h4>
-				<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">Name</th>
-							<th scope="col">Genre</th>
-							<th scope="col">AgeAllow</th>
-							<th scope="col">Country</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var item in _lstMovie)
-						{
-							stt++;
-							<tr>
-								<th scope="row">@stt</th>
-								<td>@item.Name</td>
-								<td>@item.GenreName</td>
-								<td>@item.AgeAllowed+</td>
-								<td>@item.CountryName</td>
-								<td>
-									<button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</Authorized>
-	<NotAuthorized>
-		<p>You are not authorized to view this page</p>
-	</NotAuthorized>
+<h2 class="d-flex justify-content-center align-content-center m-auto">Danh Sách Phim</h2>
 
-</AuthorizeView>
-	
+<MudSimpleTable Hover="@hover" Style="overflow-x: auto;">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Ngày phát hành</th>
+            <th>Độ tuổi</th>
+            <th>Trạng thái</th>
+            <th>Ảnh</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
 
+    @if (movieDto.Data != null)
+    {
+        <tbody>
+            @foreach (var item in movieDto.Data)
+            {
+                <tr>
+                    <td>@stt</td> <!-- Tăng stt trong vòng lặp -->
+                    <td>@item.Name</td>
+                    <td class="text-center align-middle">@item.StarTime.ToString("dd/MM/yyyy")</td>
+                    <td>@item.AgeAllowed</td>
+                    <td>@item.Status</td>
+                    <td><img src="@GetImageUrl(item.Images)" alt="Alternate Text" style="height: 45px; width: 45px" /></td>
+                    <td>
+                    </td>
+                </tr>
+                stt++;
+                <!-- Tăng số thứ tự trong vòng lặp -->
+            }
+        </tbody>
+    }
+    else
+    {
+        @if (loading)
+        {
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Không có dữ liệu...</span>
+            </div>
+        }
+    }
+</MudSimpleTable>
 
-
+<MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
+    <MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
+</MudBlazor.MudContainer>
 
 @code {
-	int stt = 0;
-	private List<MovieDTO> _lstMovie = new List<MovieDTO>();
+    private bool loading;
+    private bool hover = true;
+    private int countPage = 1;
+    private int stt = 1;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMovie();
-	}
+    private string errorMessage;
+    ViewMovieRequest request = new ViewMovieRequest();
+    PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
 
-	public async Task LoadMovie()
-	{
-		_lstMovie = await _moviesv.GetAllMovies();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovies();
+    }
+
+    public async Task LoadMovies()
+    {
+        loading = true;
+        stt = 1; // Đặt lại stt trước khi lặp
+        try
+        {
+            movieDto.Data = null;
+            request.PageNumber = countPage; // Sử dụng request để truyền số trang
+            movieDto = await _movieservices.GetAllMovies(request);
+            loading = false;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Có lỗi xảy ra: {ex.Message}";
+        }
+    }
+
+    public async Task OnPaginationSelectedChanged(int selectedPage)
+    {
+        countPage = selectedPage;
+        await LoadMovies();
+    }
+
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/Resources/{imageUrl}"; // Thay localhost bằng URL API nếu cần
+    }
 }
