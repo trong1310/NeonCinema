@@ -15,7 +15,7 @@ namespace NeonCinema_API.Controllers
             _repo = repo;
         }
         [HttpGet]
-        public async Task<ActionResult<List<CinemasDTO>>> GetAllCinemas(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<CinemasDTO>>> GetAllCinemas([FromQuery ]CancellationToken cancellationToken)
         {
             var cinemas = await _repo.GetAllCinemas(cancellationToken);
             return Ok(cinemas);

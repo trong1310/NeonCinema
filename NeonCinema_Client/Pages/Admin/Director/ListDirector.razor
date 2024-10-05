@@ -1,0 +1,73 @@
+﻿@page "/ListDirector"
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Client.Data.IServices.Director
+@inject IDirectorService SV
+@inject NavigationManager Navi
+<h3>ListDirector</h3>
+<button @onclick="NavigateToAddDirector" class="btn btn-primary">Add Director</button>
+<div>
+    @if (directo != null && directo.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Birth Date</th>
+                    <th>Address</th>
+                    <th>Nationality</th>
+                    <th>Biography</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var director in directo)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(director.Images))
+                            {
+                                <img src="@director.Images" alt="Director Image" style="width:100px; height:auto;" />
+                            }
+                            else
+                            {
+                                <span>No Image</span>
+                            }
+                        </td>
+                        <td>@director.FullName</td>
+                        <td>@director.Gender</td>
+                        <td>@director.BirthDate.ToShortDateString()</td>
+                        <td>@director.Address</td>
+                        <td>@director.Nationality</td>
+                        <td>@director.Biography</td>
+                        <td>
+                            <button @onclick="() => NavigateToUpdateDirector(director.ID)" class="btn btn-warning">Update</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No directors found.</p>
+    }
+</div>
+@code {
+    private List<DirectorDTO> directo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        directo = await SV.GetAllDirector(CancellationToken.None);
+    }
+    private void NavigateToAddDirector()
+    {
+        Navi.NavigateTo("/AddDirector"); // Replace with your actual route for adding a director
+    }
+
+    private void NavigateToUpdateDirector(Guid id)
+    {
+        Navi.NavigateTo($"/UpdateDirector/{id}"); // Replace with your actual route for updating a director
+    }
+}

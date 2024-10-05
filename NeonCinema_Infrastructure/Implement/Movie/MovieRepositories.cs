@@ -36,9 +36,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         {
             try
             {
-
-               
-               
                 string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
                 if (!Directory.Exists(fileRoot))
                 {
@@ -47,20 +44,22 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
                 string trailerfile = Guid.NewGuid() + Path.GetExtension(request.Images.FileName);
                 string trailerFilePath = Path.Combine(fileRoot, trailerfile);
+
+                // Save the file
                 using (var fileStream = new FileStream(trailerFilePath, FileMode.Create))
                 {
-                    request.Images.CopyTo(fileStream);
+                    await request.Images.CopyToAsync(fileStream);
                 }
+
                 var movies = new Movies()
                 {
                     ID = Guid.NewGuid(),
-
                     Duration = request.Duration,
                     Name = request.Name,
                     Trailer = request.Trailer,
                     Description = request.Description,
                     StarTime = request.StarTime,
-                    Images = $"{trailerfile}",
+                    Images = trailerfile, // Correctly assign the image filename
                     AgeAllowed = request.AgeAllowed,
                     Status = MovieStatus.Comingsoon,
                     GenreID = request.GenreID,
@@ -68,21 +67,20 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
-
                 };
+
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
                     Content = new StringContent("Thêm thành công")
-
                 };
             }
             catch (Exception ex)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                    Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
                 };
             }
         }
@@ -128,6 +126,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             var query = _context.Movies
                             .Include(x => x.Genre)
+                            
                             .Include(x => x.Screening)
                             .Include(x => x.Director)
                             .Include(x => x.Lenguage)
@@ -163,7 +162,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 
                             }).ToList();
          
- return dataview;
+                            return dataview;
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
