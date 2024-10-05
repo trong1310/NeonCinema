@@ -1,0 +1,130 @@
+﻿@* @page "/showtime"
+@using NeonCinema_Application.DataTransferObject.ShowTime
+@using NeonCinema_Client.Data.IServices.Screenning
+@using MudBlazor
+@using NeonCinema_Domain.Enum
+@using static MudBlazor.Icons.Material
+@inject IShowTimeService ShowTimeService
+@inject NavigationManager Navigation
+
+<MudCard>
+    <MudCardContent>
+        <MudTable Items="@showTimes" Striped="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Start Time</MudTh>
+                <MudTh>End Time</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="StartTime">@context.StartTime</MudTd>
+                <MudTd DataLabel="EndTime">@context.EndTime</MudTd>
+                <MudTd DataLabel="Status">@context.Status</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButton Variant="Outlined" Color="Color.Primary" OnClick="() => OpenEditDialog(context.ID)">Edit</MudButton>
+                    <MudButton Variant="Outlined" Color="Color.Error" OnClick="() => DeleteShowTime(context.ID)">Delete</MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Outlined" Color="Color.Primary" OnClick="OpenCreateDialog">Create New ShowTime</MudButton>
+    </MudCardActions>
+</MudCard>
+
+<MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
+    <DialogContent>
+        <MudForm Model="@showTimeModel" @ref="form">
+            <MudTextField T="DateTime" Label="Start Time" @bind-Value="showTimeModel.StartTime" />
+            <MudTextField T="DateTime" Label="End Time" @bind-Value="showTimeModel.EndTime" />
+            <MudSelect T="EntityStatus" Label="Status" @bind-Value="showTimeModel.Status">
+                <MudSelectItem Value="EntityStatus.Active">Active</MudSelectItem>
+                <MudSelectItem Value="EntityStatus.Inactive">Inactive</MudSelectItem>
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Text" Color="Color.Primary" OnClick="SaveShowTime">Save</MudButton>
+        <MudButton Variant="Text" OnClick="CloseDialog">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<ShowTimeDTO> showTimes;
+    private ShowTimeCreateRequest showTimeModel = new();
+    private MudForm form;
+    private bool isDialogVisible;
+    private Guid editingShowTimeId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadShowTimes();
+    }
+
+    private async Task LoadShowTimes()
+    {
+        showTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
+    }
+
+    private void OpenCreateDialog()
+    {
+        showTimeModel = new ShowTimeCreateRequest();
+        isDialogVisible = true;
+    }
+
+    private void OpenEditDialog(Guid id)
+    {
+        editingShowTimeId = id;
+        LoadShowTimeForEdit(id);
+        isDialogVisible = true;
+    }
+
+    private async Task LoadShowTimeForEdit(Guid id)
+    {
+        var showTime = await ShowTimeService.GetShowTimeById(id, CancellationToken.None);
+        if (showTime != null)
+        {
+            showTimeModel.StartTime = showTime.StartTime;
+            showTimeModel.EndTime = showTime.EndTime;
+            showTimeModel.Status = showTime.Status;
+        }
+    }
+
+    private async Task SaveShowTime()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            if (editingShowTimeId == Guid.Empty)
+            {
+                await ShowTimeService.CreateShowTime(showTimeModel, CancellationToken.None);
+            }
+            else
+            {
+                await ShowTimeService.UpdateShowTime(editingShowTimeId, new ShowTimeUpdateRequest
+                    {
+                        ID = editingShowTimeId,
+                        StartTime = showTimeModel.StartTime,
+                        EndTime = showTimeModel.EndTime,
+                        Status = showTimeModel.Status
+                    });
+            }
+
+            isDialogVisible = false;
+            await LoadShowTimes();
+        }
+    }
+
+    private async Task DeleteShowTime(Guid id)
+    {
+        await ShowTimeService.DeleteShowTime(id, CancellationToken.None);
+        await LoadShowTimes();
+    }
+
+    private void CloseDialog()
+    {
+        isDialogVisible = false;
+    }
+}
+ *@
