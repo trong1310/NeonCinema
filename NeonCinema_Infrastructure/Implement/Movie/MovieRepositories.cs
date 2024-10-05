@@ -36,6 +36,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         {
             try
             {
+
+
+
                 string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
                 if (!Directory.Exists(fileRoot))
                 {
@@ -44,22 +47,20 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
                 string trailerfile = Guid.NewGuid() + Path.GetExtension(request.Images.FileName);
                 string trailerFilePath = Path.Combine(fileRoot, trailerfile);
-
-                // Save the file
                 using (var fileStream = new FileStream(trailerFilePath, FileMode.Create))
                 {
-                    await request.Images.CopyToAsync(fileStream);
+                    request.Images.CopyTo(fileStream);
                 }
-
                 var movies = new Movies()
                 {
                     ID = Guid.NewGuid(),
+
                     Duration = request.Duration,
                     Name = request.Name,
                     Trailer = request.Trailer,
                     Description = request.Description,
                     StarTime = request.StarTime,
-                    Images = trailerfile, // Correctly assign the image filename
+                    Images = $"{trailerfile}",
                     AgeAllowed = request.AgeAllowed,
                     Status = MovieStatus.Comingsoon,
                     GenreID = request.GenreID,
@@ -67,20 +68,21 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
                     CreatedTime = DateTime.Now,
-                };
 
+                };
                 await _context.Movies.AddAsync(movies);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
                     Content = new StringContent("Thêm thành công")
+
                 };
             }
             catch (Exception ex)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
                 };
             }
         }
@@ -121,12 +123,11 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
         }
 
-        public async Task<List<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
             var query = _context.Movies
                             .Include(x => x.Genre)
-                            
                             .Include(x => x.Screening)
                             .Include(x => x.Director)
                             .Include(x => x.Lenguage)
@@ -140,29 +141,35 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
 
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataview = (from a in result.Data
-                            join b in query on a.ID
-                            equals b.ID 
-                            orderby b.StarTime 
+            result.Data = (from a in result.Data
+                           join b in query on a.ID
+                           equals b.ID
+                           orderby b.StarTime descending
 
-                            select new MovieDTO
-                            {
-                                ID = b.ID,
-                                AgeAllowed = b.AgeAllowed,
-                                Trailer = b.Trailer,
-                                Status = b.Status,
-                                Name = b.Name,
-                                Images = b.Images,
-                                Duration = b.Duration,
-                                Description = b.Description,
-                                LanguareName = b.Lenguage.LanguageName,
-                                CountryName = b.Countrys.CountryName,
-                                DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,                       
-                                
-                            }).ToList();
-         
-                            return dataview;
+                           select new MovieDTO
+                           {
+                               ID = b.ID,
+                               AgeAllowed = b.AgeAllowed,
+                               Trailer = b.Trailer,
+                               Status = b.Status,
+                               Name = b.Name,
+                               Images = b.Images,
+                               Duration = b.Duration,
+                               StarTime = b.StarTime,
+                               Description = b.Description,
+                               LanguareName = b.Lenguage.LanguageName,
+                               CountryName = b.Countrys.CountryName,
+                               DirectorName = b.Director.FullName,
+                               GenreName = b.Genre.GenreName,
+
+                           }).ToList();
+            return new PaginationResponse<MovieDTO>()
+            {
+                Data = result.Data,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                HasNext = result.HasNext,
+            };
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
@@ -170,7 +177,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             try
             {
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if(obj.Deleted == true && obj == null)
+                if (obj.Deleted == true && obj == null)
                 {
 
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)

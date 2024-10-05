@@ -288,9 +288,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 }
             };
             modelBuilder.Entity<Users>(b => { b.HasData(userData); });
-         
-         
-         
+
+
+
             // Create new GUIDs
             var promotionCodeTet2024Id = Guid.NewGuid();
             var promotionCodeVIP2024Id = Guid.NewGuid();

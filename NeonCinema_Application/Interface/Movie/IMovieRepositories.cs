@@ -12,10 +12,10 @@ namespace NeonCinema_Application.Interface.Movie
 {
     public interface IMovieRepositories
     {
-        public Task<List<MovieDTO>> GetAll(ViewMovieRequest request,CancellationToken cancellationToken);
-    
-        public Task<HttpResponseMessage> Create (CreateMovieRequest request,CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> Update (Movies request,CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> Delete (Movies request,CancellationToken cancellationToken);
+        public Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken);
+
+        public Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken);
     }
 }
