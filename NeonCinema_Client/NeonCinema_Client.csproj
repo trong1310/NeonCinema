@@ -59,6 +59,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Pages\Admin\Movies\CreatedMovies" />
+  </ItemGroup>
+
+  <ItemGroup>
 
     <Folder Include="wwwroot\imageFlims\" />
 
@@ -100,6 +104,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\Admin\Movies\CreatedMovies" />
   </ItemGroup>
 
 </Project>
