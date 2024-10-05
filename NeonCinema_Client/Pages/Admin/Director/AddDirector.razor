@@ -1,0 +1,97 @@
+﻿@page "/AddDirector"
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Client.Data.IServices.Director
+@inject IDirectorService SV
+@inject NavigationManager Navi
+
+<h3>Add Director</h3>
+
+<EditForm Model="newDirector" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <InputText id="fullName" class="form-control" @bind-Value="newDirector.FullName" />
+    </div>
+
+    <div class="form-group">
+        <label for="gender">Gender</label>
+        <InputText id="gender" class="form-control" @bind-Value="newDirector.Gender" />
+    </div>
+
+    <div class="form-group">
+        <label for="birthDate">Birth Date</label>
+        <InputDate id="birthDate" class="form-control" @bind-Value="newDirector.BirthDate" />
+    </div>
+
+    <div class="form-group">
+        <label for="address">Address</label>
+        <InputText id="address" class="form-control" @bind-Value="newDirector.Address" />
+    </div>
+
+    <div class="form-group">
+        <label for="nationality">Nationality</label>
+        <InputText id="nationality" class="form-control" @bind-Value="newDirector.Nationality" />
+    </div>
+
+    <div class="form-group">
+        <label for="biography">Biography</label>
+        <InputTextArea id="biography" class="form-control" @bind-Value="newDirector.Biography" />
+    </div>
+
+    <div class="form-group">
+        <label for="imageUpload">Select Image</label>
+        <InputFile OnChange="HandleFileSelected" class="form-control" />
+        <div class="mt-2">
+            @if (!string.IsNullOrEmpty(temporaryImageUrl))
+            {
+                <img src="@temporaryImageUrl" alt="Selected Image" class="img-thumbnail" width="150" height="150" />
+            }
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Director</button>
+</EditForm>
+
+@code {
+    private CreateDirectorRequest newDirector = new CreateDirectorRequest();
+    private string temporaryImageUrl;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null && file.ContentType.StartsWith("image/"))
+        {
+            // Prepare a preview URL for the selected image
+            using var stream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 2 * 1024 * 1024).CopyToAsync(stream);
+            temporaryImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(stream.ToArray())}";
+
+            // Save the file to the server
+            string directoryPath = Path.Combine("wwwroot", "images", "director");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Prepare the file path
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name); // Generate a unique file name
+            var filePath = Path.Combine(directoryPath, fileName);
+
+            // Save the file
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            await file.OpenReadStream().CopyToAsync(fileStream);
+
+            // Set the newDirector.Images to the relative URL after saving
+            newDirector.Images = $"/images/director/{fileName}";
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await SV.CreateDirector(newDirector, CancellationToken.None);
+        Navi.NavigateTo("/ListDirector");
+    }
+}

@@ -68,6 +68,10 @@
 
     <Folder Include="wwwroot\images\Actor\" />
 
+    <Folder Include="wwwroot\images\movies\" />
+
+    <Folder Include="wwwroot\images\directors\" />
+
   </ItemGroup>
 
   <ItemGroup>

@@ -37,8 +37,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             try
             {
 
-               
-               
+
+
                 string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
                 if (!Directory.Exists(fileRoot))
                 {
@@ -142,27 +142,28 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             result.Data = (from a in result.Data
-                            join b in query on a.ID
-                            equals b.ID 
-                            orderby b.StarTime descending
+                           join b in query on a.ID
+                           equals b.ID
+                           orderby b.StarTime descending
 
-                            select new MovieDTO
-                            {
-                                ID = b.ID,
-                                AgeAllowed = b.AgeAllowed,
-                                Trailer = b.Trailer,
-                                Status = b.Status,
-                                Name = b.Name,
-                                Images = b.Images,
-                                Duration = b.Duration,
-                                StarTime = b.StarTime,
-                                Description = b.Description,
-                                LanguareName = b.Lenguage.LanguageName,
-                                CountryName = b.Countrys.CountryName,
-                                DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,                       
-                                
-                            }).ToList();
+                           select new MovieDTO
+                           {
+                               ID = b.ID,
+                               AgeAllowed = b.AgeAllowed,
+                               Trailer = b.Trailer,
+                               Status = b.Status,
+                               Name = b.Name,
+                               Images = b.Images,
+                               Duration = b.Duration,
+                               StarTime = b.StarTime,
+                               Description = b.Description,
+                               LanguareName = b.Lenguage.LanguageName,
+                               CountryName = b.Countrys.CountryName,
+                               DirectorName = b.Director.FullName,
+                               GenreName = b.Genre.GenreName,
+
+                           }).ToList();
+
             return new PaginationResponse<MovieDTO>()
             {
                 Data = result.Data,
@@ -177,7 +178,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             try
             {
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if(obj.Deleted == true && obj == null)
+                if (obj.Deleted == true && obj == null)
                 {
 
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
