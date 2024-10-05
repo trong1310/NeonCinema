@@ -11,7 +11,9 @@ namespace NeonCinema_Client.Services.MoivesService
 {
     public class MoviesServices : IMovieservices
     {
-        private  readonly HttpClient _httpClient;
+
+        private readonly HttpClient _httpClient;
+
         public MoviesServices()
         {
             _httpClient = new HttpClient();
@@ -22,16 +24,19 @@ namespace NeonCinema_Client.Services.MoivesService
             try
             {
                 var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
+
                     return result;
                 
             }
-            catch (Exception ex) 
+            catch (Exception ex) r
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent("Có lỗi : " + ex.Message)
                 };
+
 			}
+
         }
 
         public async Task<List<GenreDTO>> GetAllGenre()
@@ -65,4 +70,6 @@ namespace NeonCinema_Client.Services.MoivesService
         }
 
     }
+
 }
+
