@@ -21,13 +21,8 @@ else
         </div>
         <div class="mb-3">
             <label class="form-label">Gender:</label>
-            <InputSelect id="editgender" class="form-control" @bind-Value="actor.Gender">
-                <option value="@(EntityStatus.Men)">Nam</option>
-                <option value="@(EntityStatus.Girl)">Nữ</option>
-            </InputSelect>
-            <ValidationMessage For="@(() => actor.Gender)" />
+            <InputText @bind-Value="actor.Gender" class="form-control" />
         </div>
-       
         <div class="mb-3">
             <label class="form-label">Birth Date:</label>
             <InputDate @bind-Value="actor.BirthDate" class="form-control" />

@@ -26,10 +26,10 @@ namespace NeonCinema_Infrastructure.Implement.Genres
         }
         public async Task<List<GenreDTO>> GetAllGenres(CancellationToken cancellationToken)
         {
-            var query =  _context.Genres.AsNoTracking();
-            var genres = await query.ToListAsync();
+            var genres = await _context.Genres.ToListAsync(cancellationToken);
             return _mapper.Map<List<GenreDTO>>(genres);
         }
+
         public async Task<GenreDTO> GetGenreById(Guid id, CancellationToken cancellationToken)
         {
             var genre = await _context.Genres.FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
