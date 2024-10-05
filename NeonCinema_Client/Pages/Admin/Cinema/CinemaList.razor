@@ -85,7 +85,9 @@
     ViewMovieRequest request = new ViewMovieRequest();
     protected override async Task OnInitializedAsync()
     {
+
         movie = await service.GetAllMovies(request);
+
     }
 
     private string GetImageUrl(string imageUrl)
