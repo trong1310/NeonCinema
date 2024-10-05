@@ -174,7 +174,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        rooms = await RoomService.GettAllRooms(CancellationToken.None);
+        rooms = await RoomService.GetAllRooms(CancellationToken.None);
     }
 
     private void ShowCreateRoomModal()
@@ -204,16 +204,17 @@
         {
             var roomCreateRequest = new RoomCreateRequest
                 {
+                    ID = newRoom.ID,
                     Name = newRoom.Name,
                     SeatingCapacity = newRoom.SeatingCapacity,
                     Status = newRoom.Status,
                     CinemasID = newRoom.ID
                 };
 
-            await RoomService.CreateRoomm(roomCreateRequest, CancellationToken.None);
+            await RoomService.CreateRoom(roomCreateRequest, CancellationToken.None);
 
             isCreateRoomModalVisible = false;
-            rooms = await RoomService.GettAllRooms(CancellationToken.None);
+            rooms = await RoomService.GetAllRooms(CancellationToken.None);
         }
     }
 
@@ -230,11 +231,11 @@
                     // CinemasID = selectedRoom.CinemasID // Thêm nếu cần
                 };
 
-            var response = await RoomService.UpdateRoomm(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
+            var response = await RoomService.UpdateRoom(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
 
             if (response.IsSuccessStatusCode)
             {
-                rooms = await RoomService.GettAllRooms(CancellationToken.None);
+                rooms = await RoomService.GetAllRooms(CancellationToken.None);
                 isEditRoomModalVisible = false; // Ẩn modal sau khi cập nhật
             }
             else
@@ -257,11 +258,11 @@
                 Status = room.Status,
             };
 
-        var response = await RoomService.UpdateRoomm(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
+        var response = await RoomService.UpdateRoom(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
 
         if (response.IsSuccessStatusCode)
         {
-            rooms = await RoomService.GettAllRooms(CancellationToken.None);
+            rooms = await RoomService.GetAllRooms(CancellationToken.None);
         }
         else
         {

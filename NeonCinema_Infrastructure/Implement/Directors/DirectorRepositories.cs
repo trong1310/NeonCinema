@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;
@@ -17,120 +16,116 @@ namespace NeonCinema_Infrastructure.Implement.Directors
     public class DirectorRepositories : IDirectorRepositories
     {
         private readonly NeonCinemasContext _context;
-        private readonly IMapper _map;
-        public DirectorRepositories(IMapper map)
+        public DirectorRepositories(NeonCinemasContext context)
         {
-            _map = map;
-            _context = new NeonCinemasContext();
+            _context = context;
         }
-        public async Task<HttpResponseMessage> CreateDirector(Director director, CancellationToken cancellationToken)
+        public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest director, CancellationToken cancellationToken)
         {
-            try
+            var directo = new Director
             {
-                director.ID = Guid.NewGuid();
-                director.CreatedTime = DateTime.Now;
-                director.Status = EntityStatus.Active;
-                await _context.Directors.AddAsync(director);
-                await _context.SaveChangesAsync(cancellationToken);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Them Thanh Cong")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Co Loi xay ra" + ex.Message)
-                };
-            }
+                ID = Guid.NewGuid(), // Generate a new unique ID for the director
+                FullName = director.FullName,
+                Gender = director.Gender,
+                BirthDate = director.BirthDate,
+                Address = director.Address,
+                Nationality = director.Nationality,
+                Biography = director.Biography,
+                Images = director.Images,
+                Status = director.Status,
+               
+            };
 
-        }
+            // Add the director entity to the context and save changes
+            await _context.Directors.AddAsync(directo, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
-        public async Task<HttpResponseMessage> DeleteDirector(Director director, CancellationToken cancellationToken)
-        {
-            try
+            // Return a DTO representation of the newly created director
+            return new DirectorDTO
             {
-                var obj = await _context.Directors.FirstOrDefaultAsync(x => x.ID == director.ID);
-                if (obj == null)
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("không tìm thấy")
-                    };
-                }
-                else
-                {
-                    obj.DeletedTime = DateTime.UtcNow;
-                    obj.Deleted = true;
-                    _context.Directors.Update(obj);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("xóa thành công")
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("Có lỗi" + ex.Message)
-                };
-            }
-
+                ID = director.ID,
+                FullName = director.FullName,
+                Gender = director.Gender,
+                BirthDate = director.BirthDate,
+                Address = director.Address,
+                Nationality = director.Nationality,
+                Biography = director.Biography,
+                Images = director.Images,
+                Status = director.Status
+            };
         }
 
-        public async Task<List<DirectorDTO>> GetAllDirector(ViewDirectorRequest request, CancellationToken cancellationToken)
+        public async Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken)
         {
-            var query =  _context.Directors.AsNoTracking();
-            if (!String.IsNullOrWhiteSpace(request.SearchName)) 
+            var directors = await _context.Directors.ToListAsync(cancellationToken);
+
+            // Map the list of Director entities to a list of DirectorDTOs
+            return directors.Select(d => new DirectorDTO
             {
-                query =  query.Where(x => x.FullName.Contains(request.SearchName.ToLower()));
-            }
-            var obj = await query.ToListAsync();
-            return _map.Map < List<DirectorDTO>>(obj.Where(x => x.Deleted == null));
+                ID = d.ID,
+                FullName = d.FullName,
+                Gender = d.Gender,
+                BirthDate = d.BirthDate,
+                Address = d.Address,
+                Nationality = d.Nationality,
+                Biography = d.Biography,
+                Images = d.Images,
+                Status = d.Status
+            }).ToList();
         }
 
-        public async Task<HttpResponseMessage> UpdateDirector(Director director, CancellationToken cancellationToken)
+        public async Task<DirectorDTO> GetBiIdDirector(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var obj = await _context.Directors.FirstOrDefaultAsync(x => x.ID == director.ID);
-                if (obj != null)
-                {
-                    director.ModifiedTime = DateTime.UtcNow;
-                    obj.Status = director.Status;
-                    obj.FullName = director.FullName;
-                    obj.Address = director.Address;
-                    obj.Gender = director.Gender;
-                    obj.Biography = director.Biography;
-                    obj.Images = director.Images;
-                    obj.Nationality = director.Nationality;
+            var directo = await _context.Directors.FirstOrDefaultAsync(d => d.ID == id, cancellationToken);
 
-                    _context.Directors.Update(obj);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("Sửa thành công")
-                    };
-                }
-                else
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy")
-                    };
-                }
-            }
-            catch (Exception ex)
+            if (directo == null)
             {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("Có lỗi" + ex.Message)
-                };
+                throw new KeyNotFoundException("Director not found");
             }
+
+            // Return a DTO representation of the director
+            return new DirectorDTO
+            {
+                ID = directo.ID,
+                FullName = directo.FullName,
+                Gender = directo.Gender,
+                BirthDate = directo.BirthDate,
+                Address = directo.Address,
+                Nationality = directo.Nationality,
+                Biography = directo.Biography,
+                Images = directo.Images,
+                Status = directo.Status
+            };
         }
 
+        public async Task<HttpRequestMessage> UpdateDirector(Guid id, UpdateDirectorRequest director, CancellationToken cancellationToken)
+        {
+            var directo = await _context.Directors.FirstOrDefaultAsync(d => d.ID == id, cancellationToken);
+
+            if (director == null)
+            {
+                throw new KeyNotFoundException("Director not found");
+            }
+
+            // Update the director entity's properties
+            director.FullName = director.FullName;
+            director.Gender = director.Gender;
+            director.BirthDate = director.BirthDate;
+            director.Address = director.Address;
+            director.Nationality = director.Nationality;
+            director.Biography = director.Biography;
+            director.Images = director.Images;
+            director.Status = director.Status;
+            
+
+            // Save the updated director back to the database
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // Return a confirmation message
+            return new HttpRequestMessage
+            {
+                Content = new StringContent($"Director {directo.FullName} updated successfully.")
+            };
+        }
     }
 }
