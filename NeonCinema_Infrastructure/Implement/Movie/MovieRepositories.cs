@@ -163,6 +163,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                GenreName = b.Genre.GenreName,
 
                            }).ToList();
+
             return new PaginationResponse<MovieDTO>()
             {
                 Data = result.Data,
