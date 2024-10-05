@@ -68,7 +68,7 @@ namespace NeonCinema_API.Controllers
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
                 new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,
-                new Claim(ClaimTypes.Gender, user.Gender) ,
+				new Claim(ClaimTypes.Gender, user.Gender ? "Nam" : "Nữ") ,
                 new Claim("profile_image_url", user.Images),
 
             };
@@ -122,13 +122,13 @@ namespace NeonCinema_API.Controllers
                     ID = Guid.Parse(user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value),
                     FullName = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value,
                     Email = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value,
-                   // RoleName = user.FindFirst(c => c.Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
+                    RoleName = user.FindFirst(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value,
                     PhoneNumber = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value,
                     Address = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value,
                     DateOfBirth = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value,
-                    Gender = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value
+					Gender = user.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value == "Nam"
 
-                };
+				};
                 return Ok(userDto);
             }
             return Unauthorized();

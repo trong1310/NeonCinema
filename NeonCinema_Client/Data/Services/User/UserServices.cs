@@ -46,21 +46,12 @@ namespace NeonCinema_Client.Services.User
             return JsonSerializer.Deserialize<List<UserDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<UserDTO> GetByIDUser(string phoneNumber, CancellationToken cancellationToken)
+        public async Task<UserDTO> GetByIDUser(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"api/User/get-by-phone/{phoneNumber}", cancellationToken);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    throw new Exception("Không tìm thấy người dùng với số điện thoại này.");
-                }
-
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonSerializer.Deserialize<UserDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var response = await _httpClient.GetFromJsonAsync<UserDTO>($"https://localhost:7211/api/User/get-by-id?id={id}", cancellationToken);
+                return response;
             }
             catch (HttpRequestException ex)
             {
