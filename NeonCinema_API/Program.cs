@@ -1,7 +1,8 @@
-
+﻿
 using Com.CloudRail.SI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -56,6 +57,10 @@ builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IActorRepositories,ActorRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // Giới hạn kích thước file upload (10MB)
+});
 var key = builder.Configuration.GetSection("Jwt:Key").Value;
 builder.Services.AddAuthentication(x =>
 {
@@ -128,12 +133,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "Resources")),
-    RequestPath = new PathString("/Resources")
-});
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(
+//        Path.Combine(builder.Environment.ContentRootPath, "Resources")),
+//    RequestPath = new PathString("/Resources")
+//});
+app.UseStaticFiles(); // Kích hoạt phục vụ file tĩnh
+
 app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 

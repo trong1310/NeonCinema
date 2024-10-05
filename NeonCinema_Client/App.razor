@@ -3,7 +3,7 @@
 @using NeonCinema_Client.Pages.Admin
 @using NeonCinema_Client.Pages.Client
 
-<CascadingAuthenticationState>
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)" />
@@ -16,5 +16,4 @@
         </LayoutView>
     </NotFound>
 </Router>
-</CascadingAuthenticationState>
 

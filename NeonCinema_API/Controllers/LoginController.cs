@@ -63,7 +63,7 @@ namespace NeonCinema_API.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Role, user.RoleName),
+                //new Claim(ClaimTypes.Role, user.RoleName),
                 new Claim(ClaimTypes.StreetAddress, user.Address),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
