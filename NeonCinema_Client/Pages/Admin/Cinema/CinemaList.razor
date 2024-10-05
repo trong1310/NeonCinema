@@ -2,6 +2,7 @@
 @using System.Collections.Generic
 @using NeonCinema_Application.DataTransferObject.Cinemas
 @using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.Cinemas
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Domain.Enum
@@ -80,8 +81,12 @@
 </style>
 
 @code {
-    private List<MovieDTO> movie = new List<MovieDTO>();
-
+    private PaginationResponse<MovieDTO> movie = new PaginationResponse<MovieDTO>();
+    ViewMovieRequest request = new ViewMovieRequest();
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await service.GetAllMovies(request);
+    }
 
     private string GetImageUrl(string imageUrl)
     {
