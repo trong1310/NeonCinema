@@ -41,6 +41,8 @@ using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Client.Data.IServices.Actor;
 using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.Services.Actor;
+using NeonCinema_Client.Data.IServices.Screenning;
+using NeonCinema_Client.Data.Services.Screenning;
 
 
 
@@ -86,6 +88,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
