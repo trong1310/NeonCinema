@@ -1,97 +1,140 @@
-﻿@page "/AddDirector"
+﻿@page "/addDirector"
+
 @using NeonCinema_Application.DataTransferObject.Directors
 @using NeonCinema_Client.Data.IServices.Director
+@using NeonCinema_Domain.Enum
 @inject IDirectorService SV
-@inject NavigationManager Navi
+@inject NavigationManager NavigationManager
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Director/Directorr.css">
+<h3 class="text-center mb-4">Add New Director</h3>
 
-<h3>Add Director</h3>
-
-<EditForm Model="newDirector" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="form-group">
-        <label for="fullName">Full Name</label>
-        <InputText id="fullName" class="form-control" @bind-Value="newDirector.FullName" />
-    </div>
-
-    <div class="form-group">
-        <label for="gender">Gender</label>
-        <InputText id="gender" class="form-control" @bind-Value="newDirector.Gender" />
-    </div>
-
-    <div class="form-group">
-        <label for="birthDate">Birth Date</label>
-        <InputDate id="birthDate" class="form-control" @bind-Value="newDirector.BirthDate" />
-    </div>
-
-    <div class="form-group">
-        <label for="address">Address</label>
-        <InputText id="address" class="form-control" @bind-Value="newDirector.Address" />
-    </div>
-
-    <div class="form-group">
-        <label for="nationality">Nationality</label>
-        <InputText id="nationality" class="form-control" @bind-Value="newDirector.Nationality" />
-    </div>
-
-    <div class="form-group">
-        <label for="biography">Biography</label>
-        <InputTextArea id="biography" class="form-control" @bind-Value="newDirector.Biography" />
-    </div>
-
-    <div class="form-group">
-        <label for="imageUpload">Select Image</label>
-        <InputFile OnChange="HandleFileSelected" class="form-control" />
-        <div class="mt-2">
-            @if (!string.IsNullOrEmpty(temporaryImageUrl))
-            {
-                <img src="@temporaryImageUrl" alt="Selected Image" class="img-thumbnail" width="150" height="150" />
-            }
+<div class="CL0">
+    <div class="CL1">
+        <div class="mb-3">
+            <label class="form-label">Image:</label>
+            <div class="mb-2">
+                <img src="@(!string.IsNullOrEmpty(temporaryImageUrl) ? temporaryImageUrl : "")" alt="@actor.FullName" class="img-thumbnail" width="150" height="150" />
+            </div>
+            <InputFile OnChange="HandleFileSelected" class="form-control" />
         </div>
     </div>
+    <div class="CL2">
+        <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
+            <div class="CL3">
+                <div class="mb-3">
+                    <label class="form-label">Full Name:</label>
+                    <InputText @bind-Value="actor.FullName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Gender:</label>
+                    <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
+                        <option value="">-- Chọn giới tính --</option>
+                        <option value="@(EntityStatus.Men)">Nam</option>
+                        <option value="@(EntityStatus.Girl)">Nữ</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => actor.Gender)" />
+                </div>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Add Director</button>
-</EditForm>
+
+            <div class="CL4">
+                <div class="mb-3">
+                    <label class="form-label">Birth Date:</label>
+                    <InputDate @bind-Value="actor.BirthDate" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nationality:</label>
+                    <InputText @bind-Value="actor.Nationality" class="form-control" />
+                </div>
+            </div>
+
+           
+            <div class="CL5">
+                <div class="mb-3">
+                    <label class="form-label">Biography:</label>
+                    <InputTextArea @bind-Value="actor.Biography" class="form-control" rows="3" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status:</label>
+                    <InputSelect id="status" class="form-select" @bind-Value="actor.Status">
+                        <option value="@(EntityStatus.Active)">Hoạt động</option>
+                        <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => actor.Status)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Address:</label>
+                <InputText @bind-Value="actor.Address" class="form-control" />
+            </div>
+            
+            
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
+        </EditForm>
+   </div>
+</div>
 
 @code {
-    private CreateDirectorRequest newDirector = new CreateDirectorRequest();
+    private DirectorDTO actor = new DirectorDTO();
+    private IBrowserFile selectedFile;
     private string temporaryImageUrl;
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        var file = e.File;
+        selectedFile = e.File;
 
-        if (file != null && file.ContentType.StartsWith("image/"))
+        if (selectedFile != null)
         {
-            // Prepare a preview URL for the selected image
-            using var stream = new MemoryStream();
-            await file.OpenReadStream(maxAllowedSize: 2 * 1024 * 1024).CopyToAsync(stream);
-            temporaryImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(stream.ToArray())}";
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedFile.Name)}";
+            var filePath = Path.Combine("wwwroot/images/Director", fileName);
 
-            // Save the file to the server
-            string directoryPath = Path.Combine("wwwroot", "images", "director");
-            if (!Directory.Exists(directoryPath))
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                Directory.CreateDirectory(directoryPath);
+                await selectedFile.OpenReadStream().CopyToAsync(stream);
             }
 
-            // Prepare the file path
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name); // Generate a unique file name
-            var filePath = Path.Combine(directoryPath, fileName);
+            actor.Images = $"/images/Director/{fileName}";
 
-            // Save the file
-            using var fileStream = new FileStream(filePath, FileMode.Create);
-            await file.OpenReadStream().CopyToAsync(fileStream);
+            using (var stream = new MemoryStream())
+            {
+                await selectedFile.OpenReadStream().CopyToAsync(stream);
+                temporaryImageUrl = $"data:image/png;base64,{Convert.ToBase64String(stream.ToArray())}";
+            }
 
-            // Set the newDirector.Images to the relative URL after saving
-            newDirector.Images = $"/images/director/{fileName}";
+            StateHasChanged();
         }
     }
 
     private async Task HandleValidSubmit()
     {
-        await SV.CreateDirector(newDirector, CancellationToken.None);
-        Navi.NavigateTo("/ListDirector");
+        if (string.IsNullOrEmpty(actor.Gender))
+        {
+            // Gửi thông báo lỗi nếu Gender chưa được chọn
+            throw new InvalidOperationException("Director is required.");
+        }
+
+        var createActorRequest = new CreateDirectorRequest
+            {
+                FullName = actor.FullName,
+                Gender = actor.Gender, // Đảm bảo rằng đây không phải là NULL
+                BirthDate = actor.BirthDate,
+                Address = actor.Address,
+                Nationality = actor.Nationality,
+                Biography = actor.Biography,
+                Images = actor.Images,
+                Status = actor.Status
+            };
+
+        await SV.CreateDirector(createActorRequest, CancellationToken.None);
+        NavigationManager.NavigateTo("/listDirector");
+    }
+
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/listDirector");
     }
 }

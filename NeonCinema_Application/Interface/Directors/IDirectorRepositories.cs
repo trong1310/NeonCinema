@@ -11,10 +11,11 @@ namespace NeonCinema_Application.Interface.Directors
 {
     public interface IDirectorRepositories
     {
-        public Task<List<DirectorDTO>> GetAllDirector( CancellationToken cancellationToken);
-        public Task<DirectorDTO> GetBiIdDirector( Guid id, CancellationToken cancellationToken);
-        public Task<DirectorDTO> CreateDirector(CreateDirectorRequest director, CancellationToken cancellationToken);
-        public Task<HttpRequestMessage> UpdateDirector(Guid id,UpdateDirectorRequest director, CancellationToken cancellationToken);
-        
+        public Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken);
+        public Task<DirectorDTO> GetDirectorById(Guid id, CancellationToken cancellationToken);
+        public Task<DirectorDTO> CreateDirector(CreateDirectorRequest request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> UpdateDirector(Guid id, UpdateDirectorRequest request, CancellationToken cancellationToken);
+       
+
     }
 }

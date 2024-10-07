@@ -1,73 +1,183 @@
-﻿@page "/ListDirector"
+﻿@page "/listDirector"
 @using NeonCinema_Application.DataTransferObject.Directors
 @using NeonCinema_Client.Data.IServices.Director
-@inject IDirectorService SV
+@using NeonCinema_Domain.Enum
 @inject NavigationManager Navi
-<h3>ListDirector</h3>
-<button @onclick="NavigateToAddDirector" class="btn btn-primary">Add Director</button>
-<div>
-    @if (directo != null && directo.Count > 0)
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Full Name</th>
-                    <th>Gender</th>
-                    <th>Birth Date</th>
-                    <th>Address</th>
-                    <th>Nationality</th>
-                    <th>Biography</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var director in directo)
-                {
-                    <tr>
-                        <td>
-                            @if (!string.IsNullOrEmpty(director.Images))
-                            {
-                                <img src="@director.Images" alt="Director Image" style="width:100px; height:auto;" />
-                            }
-                            else
-                            {
-                                <span>No Image</span>
-                            }
-                        </td>
-                        <td>@director.FullName</td>
-                        <td>@director.Gender</td>
-                        <td>@director.BirthDate.ToShortDateString()</td>
-                        <td>@director.Address</td>
-                        <td>@director.Nationality</td>
-                        <td>@director.Biography</td>
-                        <td>
-                            <button @onclick="() => NavigateToUpdateDirector(director.ID)" class="btn btn-warning">Update</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No directors found.</p>
-    }
-</div>
-@code {
-    private List<DirectorDTO> directo;
+@inject IDirectorService SV
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Director/ListDirector.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+<h2 style="text-align: center; margin-top: 40px">DANH SÁCH ĐẠO DIỄN</h2>
+
+
+<div class="Actionn" style="display:flex">
+    <div class="cl1">
+        <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
+    </div>
+    <div class="cl2">
+        <label>
+            <input type="radio" name="genderFilter" value="All" @onchange="OnGenderChanged" checked />
+            All
+        </label>
+        <label>
+            <input type="radio" name="genderFilter" value="Men" @onchange="OnGenderChanged" />
+            Men
+        </label>
+        <label>
+            <input type="radio" name="genderFilter" value="Girl" @onchange="OnGenderChanged" />
+            Girl
+        </label>
+    </div>
+    <div class="cl3">
+        <a class="btn btn-success mb-2" href="/addDirector"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>  Thêm đạo diễn</a>
+    </div>
+</div>
+@if (filteredDirectors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (filteredDirectors.Count == 0)
+{
+    <p>No directors found.</p>
+}
+else
+{
+    <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+        <thead>
+            <tr>
+                <th>Ảnh cá nhân</th>
+                <th>Tên</th>
+                <th>Gender</th>
+                <th>Ngày sinh</th>
+                <th>Địa chỉ</th>
+                <th>Quốc tịch</th>
+                <th>Tiểu sử</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var actor in filteredDirectors)
+            {
+                <tr>
+                    <td class="image-cell">
+                        <img src="@actor.Images"
+                             alt="@actor.FullName"
+                             style="border-radius: 100%; width: 80px; height: 80px; object-fit: cover;" />
+                    </td>
+                    <td class="table-cell">@actor.FullName</td>
+                    <td class="table-cell">@actor.Gender</td>
+                    <td class="table-cell">@actor.BirthDate.ToShortDateString()</td>
+                    <td class="table-cell">@actor.Address</td>
+                    <td class="table-cell">@actor.Nationality</td>
+                    <td class="table-cell">@actor.Biography</td>
+                    <td class="table-cell">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="flexSwitchCheckDefault_@(actor.Status)"
+                                   checked="@(actor.Status == EntityStatus.Active)"
+                                   @onchange="(e) => ToggleRoomStatus(actor, e)" />
+                            <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
+                                @(actor.Status == EntityStatus.Active ? "" : "")
+                            </label>
+                        </div>
+                    </td>
+                    <td class="table-cell">
+                        <button style="background-color: #eea90c; border-color: black" class="btn btn-primary" @onclick="() => EditDirector(actor.ID)"><i class="fa-regular fa-pen-to-square" style="color: black;"></i></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<DirectorDTO> director;
+    private List<DirectorDTO> filteredDirectors;
+    private string searchText = string.Empty;
+    private string selectedGender = "All";
     protected override async Task OnInitializedAsync()
     {
-        directo = await SV.GetAllDirector(CancellationToken.None);
-    }
-    private void NavigateToAddDirector()
-    {
-        Navi.NavigateTo("/AddDirector"); // Replace with your actual route for adding a director
+        director = await SV.GetAllDirector(CancellationToken.None);
+        filteredDirectors = director; // Khởi tạo danh sách được lọc ban đầu là toàn bộ đạo diễn
     }
 
-    private void NavigateToUpdateDirector(Guid id)
+    private void EditDirector(Guid drtId)
     {
-        Navi.NavigateTo($"/UpdateDirector/{id}"); // Replace with your actual route for updating a director
+        Navi.NavigateTo($"/updateDirector/{drtId}");
     }
+
+    private void AddDirectors()
+    {
+        Navi.NavigateTo("/addDirector");
+    }
+
+    private async void ToggleRoomStatus(DirectorDTO drt, ChangeEventArgs e)
+    {
+        drt.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+
+        var DirecUpdateRequest = new UpdateDirectorRequest
+            {
+                ID = drt.ID,
+                FullName = drt.FullName,
+                Gender = drt.Gender,
+                BirthDate = drt.BirthDate,
+                Address = drt.Address,
+                Nationality = drt.Nationality,
+                Biography = drt.Biography,
+                Images = drt.Images,
+                Status = drt.Status
+            };
+
+        var response = await SV.UpdateDirector(DirecUpdateRequest.ID, DirecUpdateRequest, CancellationToken.None);
+
+        if (response.IsSuccessStatusCode)
+        {
+            director = await SV.GetAllDirector(CancellationToken.None);
+            filteredDirectors = director; // Cập nhật lại danh sách được lọc
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error: {errorContent}");
+        }
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value.ToString();
+        FilterDirectors();
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredDirectors = director; // Nếu không có gì nhập, hiển thị toàn bộ
+        }
+        else
+        {
+            filteredDirectors = director
+                .Where(d => d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList(); // Lọc danh sách theo tên
+        }
+    }
+   
+    private void FilterDirectors()
+    {
+        // Cập nhật lọc theo giới tính
+        filteredDirectors = director
+            .Where(d => string.IsNullOrWhiteSpace(searchText) || d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(d => selectedGender == "All"
+                         || (selectedGender == "Men" && d.Gender == "Men") // So sánh với chuỗi "Men"
+                         || (selectedGender == "Girl" && d.Gender == "Girl")) // So sánh với chuỗi "Girl"
+            .ToList(); // Lọc danh sách theo tên và giới tính
+    }
+
+
+    private void OnGenderChanged(ChangeEventArgs e)
+    {
+        selectedGender = e.Value.ToString();
+        FilterDirectors();
+    }
+
 }

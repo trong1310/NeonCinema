@@ -28,7 +28,7 @@ namespace NeonCinema_Client.Services.MoivesService
                     return result;
                 
             }
-            catch (Exception ex) r
+            catch (Exception ex) 
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {

@@ -52,6 +52,10 @@ using NeonCinema_Infrastructure.Implement.Directors;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using NeonCinema_Client;
+using NeonCinema_Client.Data.IServices.IMovieType;
+using NeonCinema_Client.Data.Services.MovieType;
+using NeonCinema_Application.Interface.Movie;
+using NeonCinema_Infrastructure.Implement.Movie;
 
 
 
@@ -69,6 +73,11 @@ builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 //builder.Services.AddScoped<IMovieServicee, MovieServicees>();
+
+builder.Services.AddScoped<IMovieTypeService, MovieTypeService>(); 
+builder.Services.AddScoped<IMovieTypeRepositories, MovieTypeRepositories>();
+
+
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.AddScoped<IRoomService, RoomService>();

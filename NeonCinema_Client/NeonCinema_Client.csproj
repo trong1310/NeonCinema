@@ -16,10 +16,16 @@
 
     <Compile Remove="Pages\Staff\**" />
 
+    <Compile Remove="wwwroot\images\directors\**" />
+
+    <Compile Remove="wwwroot\images\movies\**" />
+
     <Content Remove="Dialog\**" />
     <Content Remove="Pages\Employees\**" />
     <Content Remove="Pages\Img\**" />
     <Content Remove="Pages\Staff\**" />
+    <Content Remove="wwwroot\images\directors\**" />
+    <Content Remove="wwwroot\images\movies\**" />
     <EmbeddedResource Remove="Dialog\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
 
@@ -32,6 +38,8 @@
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
     <EmbeddedResource Remove="Pages\Staff\**" />
+    <EmbeddedResource Remove="wwwroot\images\directors\**" />
+    <EmbeddedResource Remove="wwwroot\images\movies\**" />
     <None Remove="Dialog\**" />
     <None Remove="Pages\abc\**" />
     <Compile Remove="Pages\Employees\**" />
@@ -49,6 +57,12 @@
 
 
     <None Remove="Pages\Staff\**" />
+
+
+    <None Remove="wwwroot\images\directors\**" />
+
+
+    <None Remove="wwwroot\images\movies\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,10 +77,6 @@
     <Folder Include="wwwroot\imageFlims\" />
 
     <Folder Include="wwwroot\images\Actor\" />
-
-    <Folder Include="wwwroot\images\movies\" />
-
-    <Folder Include="wwwroot\images\directors\" />
 
   </ItemGroup>
 

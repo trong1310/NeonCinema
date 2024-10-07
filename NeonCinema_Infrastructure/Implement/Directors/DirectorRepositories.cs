@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;
@@ -20,111 +21,113 @@ namespace NeonCinema_Infrastructure.Implement.Directors
         {
             _context = context;
         }
-        public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest director, CancellationToken cancellationToken)
+
+        public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest request, CancellationToken cancellationToken)
         {
-            var directo = new Director
+            var DRT = new Director
             {
-                ID = Guid.NewGuid(), // Generate a new unique ID for the director
-                FullName = director.FullName,
-                Gender = director.Gender,
-                BirthDate = director.BirthDate,
-                Address = director.Address,
-                Nationality = director.Nationality,
-                Biography = director.Biography,
-                Images = director.Images,
-                Status = director.Status,
-               
+                ID = Guid.NewGuid(), // Generate a new ID
+                FullName = request.FullName,
+                Gender = request.Gender,
+                BirthDate = request.BirthDate,
+                Address = request.Address,
+                Nationality = request.Nationality,
+                Biography = request.Biography,
+                Images = request.Images,
+                Status = EntityStatus.Active // Example status
             };
 
-            // Add the director entity to the context and save changes
-            await _context.Directors.AddAsync(directo, cancellationToken);
+            // Add the actor to the context and save changes
+            await _context.Directors.AddAsync(DRT, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            // Return a DTO representation of the newly created director
-            return new DirectorDTO
+            // Manually map the Actor entity to ActorDTO
+            var directorDTO = new DirectorDTO
             {
-                ID = director.ID,
-                FullName = director.FullName,
-                Gender = director.Gender,
-                BirthDate = director.BirthDate,
-                Address = director.Address,
-                Nationality = director.Nationality,
-                Biography = director.Biography,
-                Images = director.Images,
-                Status = director.Status
+                ID = DRT.ID,
+                FullName = DRT.FullName,
+                Gender = DRT.Gender,
+                BirthDate = DRT.BirthDate,
+                Address = DRT.Address,
+                Nationality = DRT.Nationality,
+                Biography = DRT.Biography,
+                Images = DRT.Images,
+                Status = DRT.Status
             };
+
+            return directorDTO;
         }
 
         public async Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken)
         {
-            var directors = await _context.Directors.ToListAsync(cancellationToken);
+            var drt = await _context.Directors.ToListAsync(cancellationToken);
 
-            // Map the list of Director entities to a list of DirectorDTOs
-            return directors.Select(d => new DirectorDTO
+            // Manually map the list of Actor entities to a list of ActorDTOs
+            var direcDTOs = drt.Select(drtt => new DirectorDTO
             {
-                ID = d.ID,
-                FullName = d.FullName,
-                Gender = d.Gender,
-                BirthDate = d.BirthDate,
-                Address = d.Address,
-                Nationality = d.Nationality,
-                Biography = d.Biography,
-                Images = d.Images,
-                Status = d.Status
+                ID = drtt.ID,
+                FullName = drtt.FullName,
+                Gender = drtt.Gender,
+                BirthDate = drtt.BirthDate,
+                Address = drtt.Address,
+                Nationality = drtt.Nationality,
+                Biography = drtt.Biography,
+                Images = drtt.Images,
+                Status = drtt.Status
             }).ToList();
+
+            return direcDTOs;
         }
 
-        public async Task<DirectorDTO> GetBiIdDirector(Guid id, CancellationToken cancellationToken)
+        public async Task<DirectorDTO> GetDirectorById(Guid id, CancellationToken cancellationToken)
         {
-            var directo = await _context.Directors.FirstOrDefaultAsync(d => d.ID == id, cancellationToken);
-
-            if (directo == null)
+            var DRT = await _context.Directors.FindAsync(new object[] { id }, cancellationToken);
+            if (DRT == null)
             {
-                throw new KeyNotFoundException("Director not found");
+                return null;
             }
 
-            // Return a DTO representation of the director
-            return new DirectorDTO
+            // Manually map the Actor entity to ActorDTO
+            var direcDTO = new DirectorDTO
             {
-                ID = directo.ID,
-                FullName = directo.FullName,
-                Gender = directo.Gender,
-                BirthDate = directo.BirthDate,
-                Address = directo.Address,
-                Nationality = directo.Nationality,
-                Biography = directo.Biography,
-                Images = directo.Images,
-                Status = directo.Status
+                ID = DRT.ID,
+                FullName = DRT.FullName,
+                Gender = DRT.Gender,
+                BirthDate = DRT.BirthDate,
+                Address = DRT.Address,
+                Nationality = DRT.Nationality,
+                Biography = DRT.Biography,
+                Images = DRT.Images,
+                Status = DRT.Status
             };
+
+            return direcDTO;
         }
 
-        public async Task<HttpRequestMessage> UpdateDirector(Guid id, UpdateDirectorRequest director, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> UpdateDirector(Guid id, UpdateDirectorRequest request, CancellationToken cancellationToken)
         {
-            var directo = await _context.Directors.FirstOrDefaultAsync(d => d.ID == id, cancellationToken);
-
-            if (director == null)
+            var DRT = await _context.Directors.FindAsync(new object[] { id }, cancellationToken);
+            if (DRT == null)
             {
-                throw new KeyNotFoundException("Director not found");
+                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("director not found.")
+                };
             }
 
-            // Update the director entity's properties
-            director.FullName = director.FullName;
-            director.Gender = director.Gender;
-            director.BirthDate = director.BirthDate;
-            director.Address = director.Address;
-            director.Nationality = director.Nationality;
-            director.Biography = director.Biography;
-            director.Images = director.Images;
-            director.Status = director.Status;
-            
-
-            // Save the updated director back to the database
+            // Update the properties
+            DRT.FullName = request.FullName;
+            DRT.Gender = request.Gender;
+            DRT.BirthDate = request.BirthDate;
+            DRT.Address = request.Address;
+            DRT.Nationality = request.Nationality;
+            DRT.Biography = request.Biography;
+            DRT.Images = request.Images;
+            DRT.Status = request.Status;
             await _context.SaveChangesAsync(cancellationToken);
-
-            // Return a confirmation message
-            return new HttpRequestMessage
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
-                Content = new StringContent($"Director {directo.FullName} updated successfully.")
+                Content = new StringContent("director updated successfully.")
             };
         }
     }
