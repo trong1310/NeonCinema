@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
         public DbSet<Director> Directors { get; set; }
-        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Category> Genres { get; set; }
         public DbSet<Language> Lenguages { get; set; }
         public DbSet<RankMember> RankMembers { get; set; }
         public DbSet<Movies> Movies { get; set; }
@@ -70,8 +70,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+          //  optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -307,27 +307,27 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 }
             };
             modelBuilder.Entity<Director>(a => { a.HasData(directorData); });
-            var genreData = new List<Genre>()
+            var genreData = new List<Category>()
             {
-                new Genre()
+                new Category()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Kịch tính",
 
                 },
-                   new Genre()
+                   new Category()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Tình cảm",
 
                 },
-                      new Genre()
+                      new Category()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "2D",
 
                 },
-                         new Genre()
+                         new Category()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Hoạt hình",
@@ -335,7 +335,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
 
             };
-            modelBuilder.Entity<Genre>(x => { x.HasData(genreData); });
+            modelBuilder.Entity<Category>(x => { x.HasData(genreData); });
             var countryData = new List<Countrys>()
             {
                 new Countrys()
