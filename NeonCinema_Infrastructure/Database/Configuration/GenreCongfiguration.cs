@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.Configuration
 {
-    public class GenreCongfiguration : IEntityTypeConfiguration<Genre>
+    public class GenreCongfiguration : IEntityTypeConfiguration<Category>
     {
-        public void Configure(EntityTypeBuilder<Genre> builder)
+        public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.ToTable("Genre");
             builder.HasKey(x => x.ID);
