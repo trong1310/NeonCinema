@@ -11,55 +11,32 @@ namespace NeonCinema_Client.Services.MoivesService
 {
     public class MoviesServices : IMovieservices
     {
-        private  readonly HttpClient _httpClient;
+
+        private readonly HttpClient _httpClient;
+
         public MoviesServices()
         {
             _httpClient = new HttpClient();
         }
-
-        public async Task<List<MovieDTO>> FilMovie(List<MovieDTO> lst, Func<MovieDTO, bool> dk1 = null, Func<MovieDTO, bool> dk2 = null, Func<MovieDTO, bool> dk3 = null, Func<MovieDTO, bool> dk4 = null)
-        {
-            var query = lst.AsQueryable();
-
-            if (dk1 != null)
-            {
-                query = query.Where(dk1).AsQueryable();
-            }
-
-            if (dk2 != null)
-            {
-                query = query.Where(dk2).AsQueryable();
-            }
-
-            if (dk3 != null)
-            {
-                query = query.Where(dk3).AsQueryable();
-            }
-
-            if (dk4 != null)
-            {
-                query = query.Where(dk4).AsQueryable();
-            }
-
-            return query.ToList();
-        }
-
         public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest input)
         {
             //chua validate
             try
             {
                 var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
-                    return result;
-                
+
+                return result;
+
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent("Có lỗi : " + ex.Message)
                 };
-			}
+
+            }
+
         }
 
         public async Task<List<GenreDTO>> GetAllGenre()
@@ -70,7 +47,7 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<List<CountryDTO>> GetAllCountry()
         {
-            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country/get-all");
+            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country");
             return lst;
         }
 
@@ -86,11 +63,12 @@ namespace NeonCinema_Client.Services.MoivesService
             return lst;
         }
 
-        public async Task<List<MovieDTO>> GetAllMovies()
+        public async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
         {
-            var obj = await _httpClient.GetFromJsonAsync<List<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
+            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/Movie/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
             return obj;
         }
 
     }
+
 }
