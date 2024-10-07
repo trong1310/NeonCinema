@@ -14,6 +14,8 @@ namespace NeonCinema_Domain.Database.Entities
         public string code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
         public double Amount { get; set; } // giảm theo %
+        public DateTime TimeStar { get; set; }
+        public DateTime TimeEnd { get; set; }
         public EntityStatus Status { get; set; }
         public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
        
