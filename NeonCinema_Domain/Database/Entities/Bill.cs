@@ -18,6 +18,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public virtual Users? Users { get; set; }
 		public virtual ICollection<FoodCombo>? FoodCombos { get; set; }
         // Quan hệ với khuyến mãi đã áp dụng
-      
+        public virtual ICollection<BillPromotion>? BillPromotions { get; set; }
     }
 }
