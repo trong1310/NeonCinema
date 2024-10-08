@@ -54,6 +54,8 @@ using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Application.Interface.UserFlims;
 using NeonCinema_Infrastructure.Implement.UserMovies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+
 
 
 
@@ -66,7 +68,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddDbContext<NeonCinemasContext>(options =>
             {
 
-                options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
+                //options.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
+                options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
               //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
     
              });
@@ -101,7 +104,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
             services.AddTransient<IUserMovies, UserMoviess>();
-            
+
+
             return services;
         }
     }

@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using Microsoft.AspNetCore.Http;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public DateTime StarTime { get; set; }
         public string Trailer { get; set; }
         public int AgeAllowed { get; set; }
-        public List<string> Images { get; set; }
+        public IFormFile Images { get; set; }
         public MovieStatus Status { get; set; } = MovieStatus.Active;
         public Guid GenreID { get; set; }
         public Guid LenguageID { get; set; }

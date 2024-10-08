@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Genre;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.DataTransferObject.Point;
 using NeonCinema_Application.Interface.Genre;
 using NeonCinema_Domain.Database.Entities;
@@ -47,7 +48,7 @@ namespace NeonCinema_Infrastructure.Implement.Genres
         }
         public async Task CreateGenre(CreateGenreRequest request, CancellationToken cancellationToken)
         {
-            var genre = _mapper.Map<Category>(request);
+            var genre = _mapper.Map<Genre>(request);
             _context.Genres.Add(genre);
             await _context.SaveChangesAsync(cancellationToken);
         }

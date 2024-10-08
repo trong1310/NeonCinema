@@ -8,6 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.MovieTypes
 {
     public class UpdateMovieTypeRequest
     {
+        public Guid ID { get; set; }
         public string MovieTypeName { get; set; }
     }
 }

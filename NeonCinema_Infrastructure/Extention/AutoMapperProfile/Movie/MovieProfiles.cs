@@ -13,8 +13,11 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Movie
     {
         public MovieProfiles()
         {
-            CreateMap<Movies, MovieDTO>().ReverseMap();
-            CreateMap<Movies,CreateMovieRequest>().ReverseMap();
+            CreateMap<CreateMovieRequest, Movies>();
+            CreateMap<Movies, MovieDTO>().ForMember(dest => dest.GenreName, opt => opt.MapFrom(src => src.Genre.GenreName))
+            .ForMember(dest => dest.LanguareName, opt => opt.MapFrom(src => src.Lenguage.LanguageName))
+            .ForMember(dest => dest.DirectorName, opt => opt.MapFrom(src => src.Director.FullName))
+            .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.Countrys.CountryName)); ;
             CreateMap<Movies,UpdateMovieRequest>().ReverseMap();
             CreateMap<Movies,DeleteMovieRequest>().ReverseMap();
             CreateMap<Movies,ViewMovieRequest>().ReverseMap();
