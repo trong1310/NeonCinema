@@ -9,9 +9,9 @@ namespace NeonCinema_Application.DataTransferObject.ShowTime
 {
     public class ShowTimeDTO
     {
-        
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public Guid ID { get; set; }
+        public TimeSpan StartTime { get; set; }  // Lưu trữ thời gian trong ngày
+        public TimeSpan EndTime { get; set; }
         public EntityStatus Status { get; set; }
     }
 }
