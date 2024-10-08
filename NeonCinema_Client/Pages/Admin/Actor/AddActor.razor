@@ -5,7 +5,7 @@
 @inject IActorService ActorService
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
-<link rel="stylesheet" href="/css/Actor/Actorr.css">
+<link rel="stylesheet" href="/css/Actor/AddActor.css">
 <h3 class="text-center mb-4">Add New Actor</h3>
 
 <div class="CL0">
@@ -107,16 +107,10 @@
    
     private async Task HandleValidSubmit()
     {
-        if (string.IsNullOrEmpty(actor.Gender))
-        {
-            // Gửi thông báo lỗi nếu Gender chưa được chọn
-            throw new InvalidOperationException("Gender is required.");
-        }
-
         var createActorRequest = new CreateActorRequest
             {
                 FullName = actor.FullName,
-                Gender = actor.Gender, // Đảm bảo rằng đây không phải là NULL
+                Gender = actor.Gender,
                 BirthDate = actor.BirthDate,
                 Address = actor.Address,
                 Nationality = actor.Nationality,
@@ -128,7 +122,6 @@
         await ActorService.CreateActor(createActorRequest, CancellationToken.None);
         NavigationManager.NavigateTo("/listactor");
     }
-
 
     private void NavigateBack()
     {

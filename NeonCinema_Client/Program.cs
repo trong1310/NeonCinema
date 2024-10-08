@@ -56,7 +56,8 @@ using NeonCinema_Client.Data.IServices.IMovieType;
 using NeonCinema_Client.Data.Services.MovieType;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Infrastructure.Implement.Movie;
-
+using NeonCinema_Client.Data.IServices.Screenning;
+using NeonCinema_Client.Data.Services.Screenning;
 
 
 
@@ -68,7 +69,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
@@ -84,9 +84,6 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddScoped<IActorService, ServiceActor>();
-
-builder.Services.AddAutoMapper(typeof(MovieProfiles));
-
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
@@ -113,12 +110,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
-
-
-
 
 var app = builder.Build();
 

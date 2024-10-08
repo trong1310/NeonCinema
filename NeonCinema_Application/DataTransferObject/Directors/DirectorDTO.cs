@@ -17,6 +17,7 @@ namespace NeonCinema_Application.DataTransferObject.Directors
         public string Nationality { get; set; }
         public string? Biography { get; set; }
         public string Images { get; set; }
+
         public EntityStatus Status { get; set; }
     }
 }

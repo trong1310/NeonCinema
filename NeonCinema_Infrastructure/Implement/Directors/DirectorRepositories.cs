@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
@@ -17,9 +18,11 @@ namespace NeonCinema_Infrastructure.Implement.Directors
     public class DirectorRepositories : IDirectorRepositories
     {
         private readonly NeonCinemasContext _context;
-        public DirectorRepositories(NeonCinemasContext context)
+        private readonly IMapper _map;
+        public DirectorRepositories(IMapper map)
         {
-            _context = context;
+            _map = map;
+            _context = new NeonCinemasContext();
         }
 
         public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest request, CancellationToken cancellationToken)
@@ -114,6 +117,9 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                     Content = new StringContent("director not found.")
                 };
             }
+            var obj = await query.ToListAsync();
+            return _map.Map < List<DirectorDTO>>(obj.Where(x => x.Deleted == null));
+        }
 
             // Update the properties
             DRT.FullName = request.FullName;

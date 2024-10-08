@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Actors;
@@ -14,91 +15,64 @@ namespace NeonCinema_API.Controllers
     public class DirectorController : ControllerBase
     {
         private readonly IDirectorRepositories _reps;
-
-        public DirectorController(IDirectorRepositories rep)
+        private readonly IMapper _maps;
+        public DirectorController(IDirectorRepositories reps, IMapper maps)
         {
-            _reps = rep;
+            _maps = maps;
+            _reps = reps;
         }
         [HttpGet("Get-All")]
         public async Task<IActionResult> GetAll([FromQuery] ViewDirectorRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var drts = await _reps.GetAllDirector(cancellationToken);
-                return Ok(drts);
+                var obj = await _reps.GetAllDirector(request, cancellationToken);
+                return Ok(obj);
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return Content(ex.Message);
             }
+        
         }
-
-        // 2. Get Director by ID
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetDirectorById(Guid id, CancellationToken cancellationToken)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(CreateDirectorRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var DRT = await _reps.GetDirectorById(id, cancellationToken);
-                if (DRT == null)
-                {
-                    return NotFound($"director with ID {id} not found.");
-                }
-                return Ok(DRT);
+                var obj = await _reps.CreateDirector(_maps.Map<Director>(request),cancellationToken);
+                return Ok(obj);
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return Content(ex.Message);
             }
         }
-
-        // 3. Create Director
-        [HttpPost("CreateDirector")]
-        public async Task<IActionResult> CreateDirector([FromBody] CreateDirectorRequest request, CancellationToken cancellationToken)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(UpdateDirectorRequest request, CancellationToken cancellationToken)
         {
-            // Validate the request
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                // Directly pass the request to the repository without mapping
-                var createDRTResponse = await _reps.CreateDirector(request, cancellationToken);
-
-                return CreatedAtAction(nameof(GetDirectorById), new { id = createDRTResponse.ID }, createDRTResponse);
+                var obj = await _reps.UpdateDirector(_maps.Map<Director>(request), cancellationToken);
+                return Ok(obj);
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return Content(ex.Message);
             }
         }
-
-        // 4. Update Director
-        [HttpPut("UpdateDirector/{id}")]
-        public async Task<IActionResult> UpdateDirector(Guid id, [FromBody] UpdateDirectorRequest request, CancellationToken cancellationToken)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(DeleteDirectorRequest request, CancellationToken cancellationToken)
         {
-            if (id != request.ID || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                var updatedDRTrResponse = await _reps.UpdateDirector(id, request, cancellationToken);
-                return Ok(updatedDRTrResponse);
+                var obj = await _reps.DeleteDirector(_maps.Map<Director>(request), cancellationToken);
+                return Ok(obj);
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return Content(ex.Message);
             }
         }
-
-
     }
 }
