@@ -1,5 +1,4 @@
 ﻿using NeonCinema_Application.DataTransferObject.Genre;
-using NeonCinema_Application.DataTransferObject.MovieTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

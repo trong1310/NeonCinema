@@ -50,7 +50,7 @@
             <MudTd Class="mud-td-center">@item.DirectorName</MudTd>
             <MudTd Class="mud-td-center">
                 <MudFab Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" />
-                <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="margin-left:15px;" />
+                <MudFab Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" Style="margin-left:15px;"  />
                 <MudFab Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" style="margin-left: 15px" />
             </MudTd>
         }
@@ -83,7 +83,7 @@
     private List<MovieDTO> movie = new List<MovieDTO>();
     protected override async Task OnInitializedAsync()
     {
-
+        movie = await service.GetAllMovies();
     }
 
     private string GetImageUrl(string imageUrl)

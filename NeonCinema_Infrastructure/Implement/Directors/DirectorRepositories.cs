@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;
@@ -24,117 +23,114 @@ namespace NeonCinema_Infrastructure.Implement.Directors
             _map = map;
             _context = new NeonCinemasContext();
         }
-
-        public async Task<DirectorDTO> CreateDirector(CreateDirectorRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateDirector(Director director, CancellationToken cancellationToken)
         {
-            var DRT = new Director
+            try
             {
-                ID = Guid.NewGuid(), // Generate a new ID
-                FullName = request.FullName,
-                Gender = request.Gender,
-                BirthDate = request.BirthDate,
-                Address = request.Address,
-                Nationality = request.Nationality,
-                Biography = request.Biography,
-                Images = request.Images,
-                Status = EntityStatus.Active // Example status
-            };
-
-            // Add the actor to the context and save changes
-            await _context.Directors.AddAsync(DRT, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            // Manually map the Actor entity to ActorDTO
-            var directorDTO = new DirectorDTO
+                director.ID = Guid.NewGuid();
+                director.CreatedTime = DateTime.Now;
+                director.Status = EntityStatus.Active;
+                await _context.Directors.AddAsync(director);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Them Thanh Cong")
+                };
+            }
+            catch (Exception ex)
             {
-                ID = DRT.ID,
-                FullName = DRT.FullName,
-                Gender = DRT.Gender,
-                BirthDate = DRT.BirthDate,
-                Address = DRT.Address,
-                Nationality = DRT.Nationality,
-                Biography = DRT.Biography,
-                Images = DRT.Images,
-                Status = DRT.Status
-            };
-
-            return directorDTO;
-        }
-
-        public async Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken)
-        {
-            var drt = await _context.Directors.ToListAsync(cancellationToken);
-
-            // Manually map the list of Actor entities to a list of ActorDTOs
-            var direcDTOs = drt.Select(drtt => new DirectorDTO
-            {
-                ID = drtt.ID,
-                FullName = drtt.FullName,
-                Gender = drtt.Gender,
-                BirthDate = drtt.BirthDate,
-                Address = drtt.Address,
-                Nationality = drtt.Nationality,
-                Biography = drtt.Biography,
-                Images = drtt.Images,
-                Status = drtt.Status
-            }).ToList();
-
-            return direcDTOs;
-        }
-
-        public async Task<DirectorDTO> GetDirectorById(Guid id, CancellationToken cancellationToken)
-        {
-            var DRT = await _context.Directors.FindAsync(new object[] { id }, cancellationToken);
-            if (DRT == null)
-            {
-                return null;
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Co Loi xay ra" + ex.Message)
+                };
             }
 
-            // Manually map the Actor entity to ActorDTO
-            var direcDTO = new DirectorDTO
-            {
-                ID = DRT.ID,
-                FullName = DRT.FullName,
-                Gender = DRT.Gender,
-                BirthDate = DRT.BirthDate,
-                Address = DRT.Address,
-                Nationality = DRT.Nationality,
-                Biography = DRT.Biography,
-                Images = DRT.Images,
-                Status = DRT.Status
-            };
-
-            return direcDTO;
         }
 
-        public async Task<HttpResponseMessage> UpdateDirector(Guid id, UpdateDirectorRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteDirector(Director director, CancellationToken cancellationToken)
         {
-            var DRT = await _context.Directors.FindAsync(new object[] { id }, cancellationToken);
-            if (DRT == null)
+            try
             {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                var obj = await _context.Directors.FirstOrDefaultAsync(x => x.ID == director.ID);
+                if (obj == null)
                 {
-                    Content = new StringContent("director not found.")
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("không tìm thấy")
+                    };
+                }
+                else
+                {
+                    obj.DeletedTime = DateTime.UtcNow;
+                    obj.Deleted = true;
+                    _context.Directors.Update(obj);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("xóa thành công")
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("Có lỗi" + ex.Message)
                 };
+            }
+
+        }
+
+        public async Task<List<DirectorDTO>> GetAllDirector(ViewDirectorRequest request, CancellationToken cancellationToken)
+        {
+            var query =  _context.Directors.AsNoTracking();
+            if (!String.IsNullOrWhiteSpace(request.SearchName)) 
+            {
+                query =  query.Where(x => x.FullName.Contains(request.SearchName.ToLower()));
             }
             var obj = await query.ToListAsync();
             return _map.Map < List<DirectorDTO>>(obj.Where(x => x.Deleted == null));
         }
 
-            // Update the properties
-            DRT.FullName = request.FullName;
-            DRT.Gender = request.Gender;
-            DRT.BirthDate = request.BirthDate;
-            DRT.Address = request.Address;
-            DRT.Nationality = request.Nationality;
-            DRT.Biography = request.Biography;
-            DRT.Images = request.Images;
-            DRT.Status = request.Status;
-            await _context.SaveChangesAsync(cancellationToken);
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        public async Task<HttpResponseMessage> UpdateDirector(Director director, CancellationToken cancellationToken)
+        {
+            try
             {
-                Content = new StringContent("director updated successfully.")
-            };
+                var obj = await _context.Directors.FirstOrDefaultAsync(x => x.ID == director.ID);
+                if (obj != null)
+                {
+                    director.ModifiedTime = DateTime.UtcNow;
+                    obj.Status = director.Status;
+                    obj.FullName = director.FullName;
+                    obj.Address = director.Address;
+                    obj.Gender = director.Gender;
+                    obj.Biography = director.Biography;
+                    obj.Images = director.Images;
+                    obj.Nationality = director.Nationality;
+
+                    _context.Directors.Update(obj);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Sửa thành công")
+                    };
+                }
+                else
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy")
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("Có lỗi" + ex.Message)
+                };
+            }
         }
+
     }
 }

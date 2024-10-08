@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Directors;
-using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;
 
