@@ -13,9 +13,9 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.GenreProfile
     {
         public GenreProfile()
         {
-            CreateMap<Category, GenreDTO>().ReverseMap();
-            CreateMap<CreateGenreRequest, Category>();
-            CreateMap<UpdateGenreRequest, Category>();
+            CreateMap<Genre, GenreDTO>().ReverseMap();
+            CreateMap<CreateGenreRequest, Genre>();
+            CreateMap<UpdateGenreRequest, Genre>();
         }
     }
 }

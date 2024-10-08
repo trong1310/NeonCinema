@@ -1,0 +1,86 @@
+﻿
+.table-cell {
+    vertical-align: middle;
+    text-align: left; /* Change to center if you want to center text horizontally */
+}
+
+/*.image-cell {
+    text-align: center;*/ /* Center the image in its cell */
+/*}*/
+
+
+.table {
+    width: 1200px;
+    margin-left: 70px
+}
+/* Định dạng chung cho tiêu đề */
+h3 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Định dạng cho phần chứa các hành động tìm kiếm và lọc */
+.Actionn {
+    margin-top: 30px;
+    margin-left: 70px;
+    width: 700px;
+    display: flex;
+    justify-content: space-between; /* Tạo khoảng cách đều giữa các phần tử */
+    align-items: center; /* Căn giữa theo trục dọc */
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+    /* Định dạng cho cột 1 - input tìm kiếm */
+    .Actionn .cl1 {
+        flex: 1;
+        margin-right: 5px;
+    }
+
+    /* Định dạng cho cột 2 - chọn lọc theo giới tính */
+    .Actionn .cl2 {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+        .Actionn .cl2 label {
+            margin-right: 5px;
+            font-size: 16px;
+        }
+
+    /* Định dạng cho cột 3 - nút thêm mới */
+    .Actionn .cl3 {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+        .Actionn .cl3 .btn-success {
+            background-color: #28a745;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+            .Actionn .cl3 .btn-success:hover {
+                background-color: #218838;
+            }
+
+/* Định dạng cho các input radio */
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+label {
+    font-size: 16px;
+}

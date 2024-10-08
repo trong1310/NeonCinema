@@ -1,9 +1,12 @@
 @page "/login"
+@using NeonCinema_Client.Data
 @using NeonCinema_Client.Pages.Client
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
+@* @inject CustomAuthenticationStateProvider _authenticationStateProvider *@
 @inject NavigationManager _navi
-@inject Blazored.LocalStorage.ILocalStorageService _localstorgae
+@inject Blazored.LocalStorage.ILocalStorageService _localstorage
+
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
@@ -62,8 +65,10 @@
     private string pass;
     HttpClient _http = new HttpClient();
 
+
     public async Task LoginAccount()
     {
+        _localstorage.ClearAsync();
         isProcessing = true;
         errorMessage = null;
 
@@ -74,9 +79,15 @@
             {
                 try
                 {
+                    
+                    
                     var content = await login.Content.ReadAsStringAsync();
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
                     var claim = token.Claims;
+
+                    // // Gọi NotifyUserAuthentication để xác nhận người dùng đã đăng nhập
+                    // _authenticationStateProvider.NotifyUserAuthentication(content);
+
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                     var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
@@ -86,19 +97,24 @@
                     var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
                     var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
                     var images = claim.FirstOrDefault(c => c.Type == "profile_image_url").Value;
-                    await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
-                    await _localstorgae.SetItemAsync("mobilephone", mobilephone.Trim());
-                    await _localstorgae.SetItemAsync("email", email.Trim());
-                    await _localstorgae.SetItemAsync("address", address.Trim());
-                    await _localstorgae.SetItemAsync("dateofbirth", dateofbirth.Trim());
-                    await _localstorgae.SetItemAsync("gender", gender.Trim());
-                    await _localstorgae.SetItemAsync("name", name.Trim());
+                    await _localstorage.SetItemAsync("token", content);
+                    await _localstorage.SetItemAsync("userId", nameidentifier.Trim());
+                    await _localstorage.SetItemAsync("mobilephone", mobilephone.Trim());
+                    await _localstorage.SetItemAsync("email", email.Trim());
+                    await _localstorage.SetItemAsync("address", address.Trim());
+                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth.Trim());
+                    await _localstorage.SetItemAsync("gender", gender.Trim());
+                    await _localstorage.SetItemAsync("name", name.Trim());
 
-                    if(role.Equals(""))
+                    if(role.Equals("Admin"))
+                    {
+                        _navi.NavigateTo("/list-movie-admin");
+                    }
+                    else if(role.Equals("Customer"))
                     {
                         _navi.NavigateTo("/");
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {

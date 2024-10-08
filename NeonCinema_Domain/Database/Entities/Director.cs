@@ -18,8 +18,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public string Nationality { get; set; }
 		public string? Biography { get; set; }
 		public string Images { get; set; }
-	   
-
 		public EntityStatus Status { get; set; }
 		public virtual ICollection<Movies>? Movies { get; set; }
     }

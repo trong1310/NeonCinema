@@ -1,6 +1,7 @@
 ﻿	using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
@@ -12,37 +13,84 @@ namespace NeonCinema_API.Controllers.Movie
 	public class MovieTypeController : ControllerBase
 	{
 		private readonly IMovieTypeRepositories _reps;
-		private readonly IMapper _map;
-        public MovieTypeController(IMovieTypeRepositories reps, IMapper map)
-		{
-            _reps = reps;
-			_map = map;
+
+        public MovieTypeController(IMovieTypeRepositories repo)
+        {
+            _reps = repo;
         }
-		[HttpGet("Get-All")]
-		public async Task<IActionResult> GetAll(MovieTypeDTO request, CancellationToken cancellationToken) 
-		{
-			var obj = await _reps.GetAll(request, cancellationToken);
-			return Ok(obj);
-		}
-		[HttpPost("Create")]
-		public async Task<IActionResult> Create(CreateMovieTypeRequest request, CancellationToken cancellationToken) 
-		{
-			var obj = await _reps.Create(_map.Map<MovieType>(request), cancellationToken);
-			return Ok(obj);
+        [HttpGet("Get-All")]
+        public async Task<IActionResult> GetAll([FromQuery] CancellationToken cancellationToken)
+        {
+            try
+            {
+                var mvt = await _reps.GetAllMovieType(cancellationToken);
+                return Ok(mvt);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here for further analysis
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost("CreateMovieType")]
+        public async Task<IActionResult> CreateMovieType([FromBody] CreateMovieTypeRequest request, CancellationToken cancellationToken)
+        {
+            // Validate the request
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-		}
-		[HttpPut("Update")]
-		public async Task<IActionResult> Update(UpdateMovieTypeRequest request, CancellationToken cancellationToken)
-		{
-			var obj = await _reps.Update(_map.Map<MovieType>(request), cancellationToken);
-			return Ok(obj);
-		}
-		[HttpDelete]
-		public async Task<IActionResult> Delete(DeleteMovieTypeRequest request, CancellationToken cancellationToken)
-		{
-			var obj = await _reps.Delete(_map.Map<MovieType>(request), cancellationToken);
-			return Ok(obj);
+            try
+            {
+                // Directly pass the request to the repository without mapping
+                var createMovieTypeResponse = await _reps.CreateMovieType(request, cancellationToken);
 
-		}
-	}
+                return CreatedAtAction(nameof(GetMovieeTypeById), new { id = createMovieTypeResponse.ID }, createMovieTypeResponse);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here for further analysis
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetMovieeTypeById(Guid id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var MVT = await _reps.GetMovieTypeById(id, cancellationToken);
+                if (MVT == null)
+                {
+                    return NotFound($"Actor with ID {id} not found.");
+                }
+                return Ok(MVT);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here for further analysis
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPut("UpdateMovieTYpe/{id}")]
+        public async Task<IActionResult> UpdateMVT(Guid id, [FromBody] UpdateMovieTypeRequest request, CancellationToken cancellationToken)
+        {
+            if (id != request.ID || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var updatedActorResponse = await _reps.UpdateMovieType(id, request, cancellationToken);
+                return Ok(updatedActorResponse);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here for further analysis
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+    }
 }
