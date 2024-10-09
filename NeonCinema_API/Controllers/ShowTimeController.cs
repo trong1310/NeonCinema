@@ -41,6 +41,7 @@ namespace NeonCinema_API.Controllers
 
             try
             {
+
                 var response = await _showTimeRepository.CreateShowTime(request, cancellationToken);
                 return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
             }

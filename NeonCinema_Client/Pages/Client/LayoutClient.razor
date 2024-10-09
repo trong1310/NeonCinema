@@ -4,7 +4,6 @@
 @inject IUserServices Service
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @inject NavigationManager NavigationManager
-@attribute [Authorize(Roles = "Customer")]
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -116,7 +115,6 @@
         username = await _localStorage.GetItemAsync<string>("name");
         otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
         isLoggedIn = !string.IsNullOrEmpty(username);
-
         isLoginPage = NavigationManager.Uri.Contains("/login");
     }
 
@@ -125,8 +123,6 @@
         await _localStorage.RemoveItemAsync("nameidentifier");
         await _localStorage.RemoveItemAsync("name");
         await _localStorage.RemoveItemAsync("mobilephone");
-        await _localStorage.ClearAsync();
-        isLoggedIn = false;
         NavigationManager.NavigateTo("/login");
     }
 

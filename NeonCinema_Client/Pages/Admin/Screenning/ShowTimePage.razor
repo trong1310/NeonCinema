@@ -1,0 +1,263 @@
+﻿@page "/showtimes"
+@using NeonCinema_Application.DataTransferObject.ShowTime
+@using NeonCinema_Client.Data.IServices.Screenning
+@using NeonCinema_Domain.Enum
+@inject IShowTimeService ShowTimeService
+
+<h3>Quản Lý ShowTimes</h3>
+
+<button class="icon-button add border border-primary" @onclick="ShowCreateModal">
+    <i class="fas fa-plus-circle"></i> Thêm 
+</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var showTime in ShowTimes)
+        {
+            <tr>
+                <td>@showTime.StartTime</td>
+                <td>@showTime.EndTime</td>
+                <td>@showTime.Status</td>
+                <td>
+                    <button class="icon-button edit" @onclick="() => ShowEditModal(showTime.ID)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-button delete" @onclick="() => DeleteShowTime(showTime.ID)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (IsModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseModal">&times;</span>
+            <h3>@(IsEditMode ? "Cập Nhật ShowTime" : "Thêm ShowTime")</h3>
+
+            <form>
+                <label>Start Time</label>
+                <input type="time" value="@ShowTimeRequest.StartTime.ToString(@"hh\:mm")" @onchange="e => ShowTimeRequest.StartTime = TimeSpan.Parse(e.Value.ToString())" />
+
+                <label>End Time</label>
+                <input type="time" value="@ShowTimeRequest.EndTime.ToString(@"hh\:mm")" @onchange="e => ShowTimeRequest.EndTime = TimeSpan.Parse(e.Value.ToString())" />
+
+                <label>Status</label>
+                <select @bind="ShowTimeRequest.Status">
+                    <option value="@EntityStatus.Active">Hoạt Động</option>
+                    <option value="@EntityStatus.Inactive">Ngưng hoạt động</option>
+                </select>
+
+                <button class="icon-button save" type="button" @onclick="SaveShowTime">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+
+
+<style>
+    /* Table and Button Styles */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+    .icon-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        margin-right: 10px;
+        display: inline-flex;
+        align-items: center;
+        padding: 5px;
+    }
+
+        .icon-button.add {
+            color: #4CAF50;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .icon-button.edit {
+            color: #ff9800;
+        }
+
+        .icon-button.delete {
+            color: #f44336;
+        }
+
+        .icon-button.save {
+            color: #4CAF50;
+            background-color: #fff;
+            border: 1px solid #4CAF50;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+    /* Modal Styles */
+    .modal {
+        display: block;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: auto;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #888;
+        width: 40%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    /* Form Styling */
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+        form label {
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input, form select {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+    /* Adjusts for Menu */
+    body {
+        padding-right: 300px;
+    }
+</style>
+
+@code {
+    private List<ShowTimeDTO> ShowTimes = new();
+    private bool IsModalOpen = false;
+    private bool IsEditMode = false;
+    private ShowTimeCreateRequest ShowTimeRequest = new();
+
+    private Guid SelectedShowTimeId;
+    private ShowTimeUpdateRequest showTimeUpdate = new ShowTimeUpdateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadShowTimes();
+    }
+
+    private async Task LoadShowTimes()
+    {
+        ShowTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
+    }
+
+    private void ShowCreateModal()
+    {
+        IsEditMode = false;
+        ShowTimeRequest = new ShowTimeCreateRequest();
+        IsModalOpen = true;
+    }
+
+    private async Task ShowEditModal(Guid showTimeId)
+    {
+        IsEditMode = true;
+        var showTime = await ShowTimeService.GetShowTimeById(showTimeId, CancellationToken.None);
+        
+        showTimeUpdate = new ShowTimeUpdateRequest
+            {
+                StartTime = showTime.StartTime,
+                EndTime = showTime.EndTime,
+                Status = showTime.Status
+            };
+        SelectedShowTimeId = showTimeId;
+        IsModalOpen = true;
+    }
+
+    private async Task SaveShowTime()
+    {
+        try
+        {
+            if (!IsEditMode)
+            {
+                await ShowTimeService.CreateShowTime(ShowTimeRequest, CancellationToken.None);
+            }
+            else
+            {
+               
+                await ShowTimeService.UpdateShowTime(SelectedShowTimeId, new ShowTimeUpdateRequest
+                    {
+                        StartTime = ShowTimeRequest.StartTime,
+                        EndTime = ShowTimeRequest.EndTime,
+                        Status = ShowTimeRequest.Status
+                    });
+            }
+
+            await LoadShowTimes();
+            CloseModal();
+        }
+        catch (Exception ex)
+        {
+            // Xử lý lỗi ở đây, có thể hiển thị thông báo cho người dùng
+            Console.WriteLine($"Error saving show time: {ex.Message}");
+        }
+    }
+
+
+    private async Task DeleteShowTime(Guid showTimeId)
+    {
+        await ShowTimeService.DeleteShowTime(showTimeId, CancellationToken.None);
+        await LoadShowTimes();
+    }
+
+    private void CloseModal()
+    {
+        IsModalOpen = false;
+        ShowTimeRequest = new ShowTimeCreateRequest();
+    }
+}

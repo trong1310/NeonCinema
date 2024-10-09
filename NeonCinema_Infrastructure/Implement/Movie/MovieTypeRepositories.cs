@@ -1,10 +1,9 @@
-﻿
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -17,92 +16,98 @@ namespace NeonCinema_Infrastructure.Implement.Movie
     public class MovieTypeRepositories : IMovieTypeRepositories
     {
         private readonly NeonCinemasContext _context;
-        
-        public MovieTypeRepositories(NeonCinemasContext context)
+        private readonly IMapper _map;
+        public MovieTypeRepositories(IMapper map)
         {
-			_context = context;
-           
+            _context = new NeonCinemasContext();
+            _map = map; 
+        }
+        public async Task<HttpResponseMessage> Create(MovieType movieType, CancellationToken cancellationToken)
+        {
+            try
+            {
+                movieType.ID = Guid.NewGuid();
+                movieType.CreatedTime = DateTime.Now;
+                await _context.MoviesType.AddAsync(movieType);
+                await _context.SaveChangesAsync(cancellationToken);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Thêm thành công")
+				};
+			}
+            catch(Exception ex) 
+            {
+				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+				{	
+					Content = new StringContent("có lỗi xảy ra"+ex.Message)
+				};
+			}
         }
 
-        public async Task<MovieTypeDTO> CreateMovieType(CreateMovieTypeRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Delete(MovieType movieType, CancellationToken cancellationToken)
         {
-            var MVT = new MovieType
-            {
-                ID = Guid.NewGuid(), // Generate a new ID
-                MovieTypeName = request.MovieTypeName,
-                 // Example status
-            };
+			try
+			{
+				var obj = await _context.MoviesType.FindAsync(movieType.ID);
+				if (obj != null)
+				{
+					obj.Deleted = true;
+					obj.DeletedTime = DateTime.Now;
 
-            // Add the actor to the context and save changes
-            await _context.MoviesType.AddAsync(MVT, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+				}
+				_context.MoviesType.Update(obj);
+				await _context.SaveChangesAsync(cancellationToken);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Xóa thành công")
+				};
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+				{
+					Content = new StringContent("có lỗi xảy ra" + ex.Message)
+				};
+			}
+		}
 
-            // Manually map the Actor entity to ActorDTO
-            var MVTDTO = new MovieTypeDTO
-            {
-                ID = MVT.ID,
-                MovieTypeName = MVT.MovieTypeName,
-                
-            };
-
-            return MVTDTO;
-        }
-
-        public async Task<List<MovieTypeDTO>> GetAllMovieType(CancellationToken cancellationToken)
+        public async Task<List<MovieTypeDTO>> GetAll(MovieTypeDTO movieTypeDTO, CancellationToken cancellationToken)
         {
-            var MVT = await _context.MoviesType.ToListAsync(cancellationToken);
+			var query = _context.MoviesType.AsNoTracking();
+			if (!String.IsNullOrWhiteSpace(movieTypeDTO.MovieTypeName))
+			{
+				query = query.Where(x => x.MovieTypeName.Contains(movieTypeDTO.MovieTypeName.ToLower()));
+			}
 
-            // Manually map the list of Actor entities to a list of ActorDTOs
-            var actorDTOs = MVT.Select(MoViE => new MovieTypeDTO
-            {
-                ID = MoViE.ID,
-                MovieTypeName = MoViE.MovieTypeName,
-               
-            }).ToList();
+			var obj = await query.ToListAsync();
+			return _map.Map<List<MovieTypeDTO>>(obj.Where(x => x.Deleted == false));
+		}
 
-            return actorDTOs;
-        }
-
-        public async Task<MovieTypeDTO> GetMovieTypeById(Guid id, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(MovieType movieType, CancellationToken cancellationToken)
         {
-            var MVT = await _context.MoviesType.FindAsync(new object[] { id }, cancellationToken);
-            if (MVT == null)
-            {
-                return null;
-            }
+			try
+			{
+				var obj = await _context.MoviesType.FindAsync(movieType.ID);
+				if (obj != null)
+				{
+					movieType.MovieTypeName = obj.MovieTypeName;
+					movieType.ModifiedTime = DateTime.Now;
 
-            // Manually map the Actor entity to ActorDTO
-            var DTO = new MovieTypeDTO
-            {
-                ID = MVT.ID,
-                MovieTypeName = MVT.MovieTypeName,
-               
-            };
-
-            return DTO;
-        }
-
-        public async Task<HttpResponseMessage> UpdateMovieType(Guid id, UpdateMovieTypeRequest request, CancellationToken cancellationToken)
-        {
-            var MVT = await _context.MoviesType.FindAsync(new object[] { id }, cancellationToken);
-            if (MVT == null)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
-                {
-                    Content = new StringContent("MOvie Type not found.")
-                };
-            }
-
-            // Update the properties
-       
-            MVT.MovieTypeName = request.MovieTypeName;
-            
-
-            await _context.SaveChangesAsync(cancellationToken);
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-            {
-                Content = new StringContent("movietype updated successfully.")
-            };
-        }
+				}
+				_context.MoviesType.Update(obj);
+				await _context.SaveChangesAsync(cancellationToken);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Sửa Thành Công")
+				};
+			}
+			catch (Exception ex) 
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+				{
+					Content = new StringContent("Có lỗi xảy ra"+ex.Message)
+				};
+			}
+		}
     }
 }
