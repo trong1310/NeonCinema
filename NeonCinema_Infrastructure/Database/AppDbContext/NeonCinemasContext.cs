@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
         public DbSet<Director> Directors { get; set; }
-        public DbSet<Category> Genres { get; set; }
+        public DbSet<Genre> Genres { get; set; }
         public DbSet<Language> Lenguages { get; set; }
         public DbSet<RankMember> RankMembers { get; set; }
         public DbSet<Movies> Movies { get; set; }
@@ -63,25 +63,72 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
+        public DbSet<PromotionMovie> PromotionMovies { get; set; }
+        public DbSet<PromotionCode> PromotionCodes { get; set; }
+      
+        public DbSet<PromotionType> promotionTypes { get; set; }
+        public DbSet<BillPromotion> billPromotions { get; set; }
+       
+        
+
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-          //  optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-			SeenDingData(modelBuilder);
-		}
-		private void SeenDingData(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.Entity<Promotion>()
+        .HasOne(p => p.PromotionType)  // Một Promotion có một PromotionType
+        .WithMany(pt => pt.Promotions)  // Một PromotionType có nhiều Promotion
+        .HasForeignKey(p => p.PromotionTypeID)  // Promotion có khóa ngoại PromotionTypeID
+        .OnDelete(DeleteBehavior.Cascade);  // Xóa PromotionType sẽ xóa các Promotion liên quan
+            modelBuilder.Entity<PromotionUsers>()
+         .HasOne(pu => pu.Promotion)
+         .WithMany(p => p.PromotionUsers)
+         .HasForeignKey(pu => pu.PromotionID);
+
+            modelBuilder.Entity<PromotionUsers>()
+                .HasOne(pu => pu.User)
+                .WithMany(u => u.PromotionUsers)
+                .HasForeignKey(pu => pu.UserID);
+
+
+            modelBuilder.Entity<PromotionMovie>()
+                .HasOne(pm => pm.Promotion)
+                .WithMany(p => p.PromotionMovies)
+                .HasForeignKey(pm => pm.PromotionID);
+
+            modelBuilder.Entity<PromotionMovie>()
+                .HasOne(pm => pm.Movies)
+                .WithMany(m => m.PromotionMovies)
+                .HasForeignKey(pm => pm.MovieID);
+            modelBuilder.Entity<BillPromotion>()
+                .HasOne(pm => pm.Bill)
+                .WithMany(m => m.BillPromotions)
+                .HasForeignKey(pm => pm.BillID); 
+            modelBuilder.Entity<BillPromotion>()
+                .HasOne(pm => pm.Promotion)
+                .WithMany(m => m.BillPromotions)
+                .HasForeignKey(pm => pm.PromotionID);
+            SeenDingData(modelBuilder);
+
+            modelBuilder.Entity<Room>()
+    .HasOne(r => r.Cinemas)
+    .WithMany(c => c.Rooms)
+    .HasForeignKey(r => r.CinemasID)
+    .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
+
+
+        }
+        private void SeenDingData(ModelBuilder modelBuilder)
         {
             var roleData = new List<Roles>()
             {
@@ -238,6 +285,110 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 }
             };
             modelBuilder.Entity<Users>(b => { b.HasData(userData); });
+         
+         
+         
+            // Create new GUIDs
+            var promotionCodeTet2024Id = Guid.NewGuid();
+            var promotionCodeVIP2024Id = Guid.NewGuid();
+
+            var promotionUsersId1 = Guid.NewGuid();
+            var promotionUsersId2 = Guid.NewGuid();
+            var promotionUsersPromotionId1 = Guid.NewGuid(); // Link to a promotion
+            var promotionUsersPromotionId2 = Guid.NewGuid(); // Link to another promotion
+            var userId1 = Guid.NewGuid(); // User 1 ID
+            var userId2 = Guid.NewGuid(); // User 2 ID
+
+            var promotionTypePercentageId = Guid.NewGuid();
+            var promotionTypeFixedAmountId = Guid.NewGuid();
+            var promotionTypeBuyOneGetOneId = Guid.NewGuid();
+
+            var promotionTetId = Guid.NewGuid();
+            var promotionVIPId = Guid.NewGuid();
+
+            var promotionMovieId = Guid.NewGuid(); // Link to a promotion
+
+            // Seed PromotionCode
+            modelBuilder.Entity<PromotionCode>().HasData(new List<PromotionCode>
+    {
+        new PromotionCode
+        {
+            ID = promotionCodeTet2024Id,
+            Code = "TET2024",
+            StartDate = new DateTime(2024, 1, 1),
+            EndDate = new DateTime(2024, 1, 31),
+            MaxUsage = 100
+        },
+        new PromotionCode
+        {
+            ID = promotionCodeVIP2024Id,
+            Code = "VIP2024",
+            StartDate = new DateTime(2024, 2, 1),
+            EndDate = new DateTime(2024, 12, 31),
+            MaxUsage = 50
+        }
+    });
+
+          
+
+
+            // Seed PromotionType
+            modelBuilder.Entity<PromotionType>().HasData(new List<PromotionType>
+    {
+        new PromotionType
+        {
+            ID = promotionTypePercentageId,
+            Name = "Giảm giá phần trăm",
+            Description = "Giảm giá theo phần trăm tổng hóa đơn"
+        },
+        new PromotionType
+        {
+            ID = promotionTypeFixedAmountId,
+            Name = "Giảm giá cố định",
+            Description = "Giảm giá một số tiền cụ thể trên hóa đơn"
+        },
+        new PromotionType
+        {
+            ID = promotionTypeBuyOneGetOneId,
+            Name = "Mua 1 tặng 1",
+            Description = "Khuyến mãi mua một sản phẩm, tặng kèm một sản phẩm khác"
+        }
+    });
+
+            // Seed Promotion
+            modelBuilder.Entity<Promotion>().HasData(new List<Promotion>
+    {
+        new Promotion
+        {
+            ID = promotionTetId,
+            Name = "Khuyến mãi Tết Nguyên Đán",
+            Description = "Giảm giá 20% cho tất cả khách hàng vào dịp Tết Nguyên Đán",
+            DiscountAmount = 20,
+            PromotionTypeID = promotionTypeFixedAmountId,
+            StartDate = new DateTime(2024, 1, 10),
+            EndDate = new DateTime(2024, 1, 31),
+            IsActive = true,
+            UserID = null,
+            PromotionCodeID = promotionCodeTet2024Id
+        },
+        new Promotion
+        {
+            ID = promotionVIPId,
+            Name = "Giảm giá khách hàng VIP",
+            Description = "Giảm giá 30% cho khách hàng VIP",
+            DiscountAmount = 30,
+            PromotionTypeID = promotionTypePercentageId,
+            StartDate = new DateTime(2024, 2, 1),
+            EndDate = new DateTime(2024, 12, 31),
+            IsActive = true,
+            UserID = userId1,
+            PromotionCodeID = promotionCodeVIP2024Id
+        }
+    });
+
+            
+        
+
             var languageData = new List<Language>()
              { new Language(){
                 ID = Guid.NewGuid(),
@@ -307,27 +458,27 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 }
             };
             modelBuilder.Entity<Director>(a => { a.HasData(directorData); });
-            var genreData = new List<Category>()
+            var genreData = new List<Genre>()
             {
-                new Category()
+                new Genre()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Kịch tính",
 
                 },
-                   new Category()
+                   new Genre()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Tình cảm",
 
                 },
-                      new Category()
+                      new Genre()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "2D",
 
                 },
-                         new Category()
+                         new Genre()
                 {
                     ID = Guid.NewGuid(),
                     GenreName = "Hoạt hình",
@@ -335,7 +486,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
 
             };
-            modelBuilder.Entity<Category>(x => { x.HasData(genreData); });
+            modelBuilder.Entity<Genre>(x => { x.HasData(genreData); });
             var countryData = new List<Countrys>()
             {
                 new Countrys()
