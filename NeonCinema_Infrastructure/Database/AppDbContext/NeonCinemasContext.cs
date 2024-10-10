@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
         public DbSet<Director> Directors { get; set; }
-        public DbSet<Category> Genres { get; set; }
+        public DbSet<Genre> Genres { get; set; }
         public DbSet<Language> Lenguages { get; set; }
         public DbSet<RankMember> RankMembers { get; set; }
         public DbSet<Movies> Movies { get; set; }
@@ -63,6 +63,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
+        public DbSet<PromotionMovie> PromotionMovies { get; set; }
+        public DbSet<PromotionCode> PromotionCodes { get; set; }
+      
+        public DbSet<PromotionType> promotionTypes { get; set; }
+        public DbSet<BillPromotion> billPromotions { get; set; }
+       
+        
+
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -75,9 +83,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 
         }
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.Entity<Promotion>()
+        .HasOne(p => p.PromotionType)  // Một Promotion có một PromotionType
+        .WithMany(pt => pt.Promotions)  // Một PromotionType có nhiều Promotion
+        .HasForeignKey(p => p.PromotionTypeID)  // Promotion có khóa ngoại PromotionTypeID
+        .OnDelete(DeleteBehavior.Cascade);  // Xóa PromotionType sẽ xóa các Promotion liên quan
+            modelBuilder.Entity<PromotionUsers>()
+         .HasOne(pu => pu.Promotion)
+         .WithMany(p => p.PromotionUsers)
+         .HasForeignKey(pu => pu.PromotionID);
 
 			SeenDingData(modelBuilder);
 		}

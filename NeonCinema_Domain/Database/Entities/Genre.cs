@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Database.Entities
 {
-    public class Category : EntityBase
+    public class Genre : EntityBase
     {
         public Guid ID { get; set; }
         public string GenreName { get; set; }
