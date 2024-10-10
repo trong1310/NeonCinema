@@ -87,8 +87,31 @@
 
     <None Include="Pages\Admin\AddMovies\AddMoviess.razor" />
 
+    <None Include="Pages\Admin\Director\AddDirector.razor" />
+
+    <None Include="Pages\Admin\Director\ListDirector.razor" />
+
+    <None Include="Pages\Admin\Director\UpdateDirector.razor" />
+
+    <None Include="Pages\Admin\MovieType\AddMovieType.razor" />
+
+    <None Include="Pages\Admin\MovieType\ListMovieType.razor" />
+
+    <None Include="Pages\Admin\MovieType\UpdateMovieType.razor" />
+
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
+    <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />
+    <None Include="wwwroot\images\Director\3acdf00f-7296-458e-969d-1e07f1281f99.webp" />
+    <None Include="wwwroot\images\Director\5084231f-b6bd-4d72-834c-7e2d51f3c1be.webp" />
+    <None Include="wwwroot\images\Director\53c47650-3e9c-4f22-b05d-c09779b6cf21.webp" />
+    <None Include="wwwroot\images\Director\62500a62-f9b0-44d7-8064-b98fc9006c82.webp" />
+    <None Include="wwwroot\images\Director\7adc0cda-e964-4ddb-a8a1-99cdec2734de.webp" />
+    <None Include="wwwroot\images\Director\a029f640-19dd-4dda-9040-ef56203ab5e6.webp" />
+    <None Include="wwwroot\images\Director\a2c2a28d-f0ac-48d6-af03-1b3b6f5ce229.webp" />
+    <None Include="wwwroot\images\Director\ava4-1489222338817.gif.webp" />
+    <None Include="wwwroot\images\Director\d7b9993a-0086-408e-8282-26ab6b339508.webp" />
+    <None Include="wwwroot\images\Director\dc6bbbb8-6355-4435-b6ee-1ece6fef9ffc.webp" />
   </ItemGroup>
 
   <ItemGroup>

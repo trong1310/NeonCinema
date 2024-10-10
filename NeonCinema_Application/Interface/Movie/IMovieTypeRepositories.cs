@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.DataTransferObject.MovieTypes;
+﻿using NeonCinema_Application.DataTransferObject.Actors;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,10 @@ namespace NeonCinema_Application.Interface.Movie
 {
     public interface IMovieTypeRepositories
     {
-        public Task<List<MovieTypeDTO>> GetAll(MovieTypeDTO movieTypeDTO, CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> Create(MovieType movieType, CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> Update(MovieType movieType, CancellationToken cancellationToken);
-        public Task<HttpResponseMessage> Delete(MovieType movieType, CancellationToken cancellationToken);
+        public Task<List<MovieTypeDTO>> GetAllMovieType(CancellationToken cancellationToken);
+        public Task<MovieTypeDTO> GetMovieTypeById(Guid id, CancellationToken cancellationToken);
+        public Task<MovieTypeDTO> CreateMovieType(CreateMovieTypeRequest request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> UpdateMovieType(Guid id, UpdateMovieTypeRequest request, CancellationToken cancellationToken);
+
     }
 }
