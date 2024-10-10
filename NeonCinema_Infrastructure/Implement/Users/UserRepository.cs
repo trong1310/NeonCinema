@@ -76,7 +76,6 @@ namespace NeonCinema_Infrastructure.Implement.Users
                 Adderss = request.Adderss,
                 Status = request.Status,
                 RoleID = request.RoleID /*== Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // Mặc định RoleID*/
-                
             };
 
             // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
@@ -150,8 +149,8 @@ namespace NeonCinema_Infrastructure.Implement.Users
         }
         public async Task<UserDTO> GetByIDUser(Guid id, CancellationToken cancellationToken)
         {
-            var obj = await _context.Users.FirstOrDefaultAsync(x => x.ID == id);
+            var obj = await _context.Users.FirstOrDefaultAsync(x=>x.ID == id);
             return _map.Map<UserDTO>(obj);
-        }
+        } 
     }
 }

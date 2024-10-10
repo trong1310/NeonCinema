@@ -1,0 +1,130 @@
+﻿@page "/listMovieType"
+
+@using NeonCinema_Application.DataTransferObject.MovieTypes
+@using NeonCinema_Client.Data.IServices.IMovieType
+@inject NavigationManager Navi
+@inject IMovieTypeService SV
+@layout LayoutAdmin
+@* <link rel="stylesheet" href="/css/Actor/listactor.css"> *@
+<h3>List of MovieType</h3>
+
+<a class="btn btn-success mb-2" @onclick="ShowAddModal">Add New MovieType</a>
+
+@if (movie == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (movie.Count == 0)
+{
+    <p>No movie types found.</p>
+}
+else
+{
+   <div class="CL1" style="width:400px; margin-left: 300px">
+        <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in movie)
+                {
+                    <tr>
+                        <td class="table-cell">@item.MovieTypeName</td>
+                        <td class="table-cell">
+                            <button class="btn btn-primary" @onclick="() => ShowEditModal(item.ID)">Edit</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+   </div>
+}
+
+<!-- Add/Edit MovieType Modal -->
+@if (isModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@((isEditMode ? "Edit MovieType" : "Add MovieType"))</h5>
+                    <button type="button" class="btn-close" @onclick="HideModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="movietype" OnValidSubmit="HandleValidSubmit">
+                        <div class="mb-3">
+                            <label class="form-label">Movie Type Name:</label>
+                            <InputText @bind-Value="movietype.MovieTypeName" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary ms-2" @onclick="HideModal">Cancel</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<MovieTypeDTO> movie;
+    private MovieTypeDTO movietype = new MovieTypeDTO();
+    private bool isModalVisible = false;
+    private bool isEditMode = false;
+    private Guid? selectedMvtId = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await SV.GetAllMovieType(CancellationToken.None);
+    }
+
+    // Show modal for adding new MovieType
+    private void ShowAddModal()
+    {
+        isEditMode = false;
+        movietype = new MovieTypeDTO(); // Reset form
+        isModalVisible = true;
+    }
+
+    // Show modal for editing MovieType
+    private async Task ShowEditModal(Guid mvtId)
+    {
+        isEditMode = true;
+        selectedMvtId = mvtId;
+        movietype = await SV.GetMovieTypeById(mvtId, CancellationToken.None); // Fetch MovieType by ID
+        isModalVisible = true;
+    }
+
+    // Handle form submit for both adding and editing
+    private async Task HandleValidSubmit()
+    {
+        if (isEditMode && selectedMvtId.HasValue)
+        {
+            var updateMVTRequest = new UpdateMovieTypeRequest
+                {
+                    MovieTypeName = movietype.MovieTypeName,
+                };
+            await SV.UpdateMovieType(selectedMvtId.Value, updateMVTRequest, CancellationToken.None); // Update MovieType
+        }
+        else
+        {
+            var createMVTRequest = new CreateMovieTypeRequest
+                {
+                    MovieTypeName = movietype.MovieTypeName,
+                };
+            await SV.CreateMovieType(createMVTRequest, CancellationToken.None); // Create new MovieType
+        }
+
+        // Refresh list and close modal
+        movie = await SV.GetAllMovieType(CancellationToken.None);
+        isModalVisible = false;
+    }
+
+    // Hide modal
+    private void HideModal()
+    {
+        isModalVisible = false;
+    }
+}
