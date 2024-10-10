@@ -10,8 +10,8 @@ namespace NeonCinema_Application.DataTransferObject.ShowTime
     public class ShowTimeDeleteRequest
     {
         public Guid ID { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public TimeSpan StartTime { get; set; }  // Lưu trữ thời gian trong ngày
+        public TimeSpan EndTime { get; set; }
         public EntityStatus Status { get; set; }
     }
 }
