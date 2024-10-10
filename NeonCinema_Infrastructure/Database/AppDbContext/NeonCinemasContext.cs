@@ -74,11 +74,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
@@ -87,46 +87,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            modelBuilder.Entity<Promotion>()
-        .HasOne(p => p.PromotionType)  // Một Promotion có một PromotionType
-        .WithMany(pt => pt.Promotions)  // Một PromotionType có nhiều Promotion
-        .HasForeignKey(p => p.PromotionTypeID)  // Promotion có khóa ngoại PromotionTypeID
-        .OnDelete(DeleteBehavior.Cascade);  // Xóa PromotionType sẽ xóa các Promotion liên quan
-            modelBuilder.Entity<PromotionUsers>()
-         .HasOne(pu => pu.Promotion)
-         .WithMany(p => p.PromotionUsers)
-         .HasForeignKey(pu => pu.PromotionID);
-
-            modelBuilder.Entity<PromotionUsers>()
-                .HasOne(pu => pu.User)
-                .WithMany(u => u.PromotionUsers)
-                .HasForeignKey(pu => pu.UserID);
-
-
-            modelBuilder.Entity<PromotionMovie>()
-                .HasOne(pm => pm.Promotion)
-                .WithMany(p => p.PromotionMovies)
-                .HasForeignKey(pm => pm.PromotionID);
-
-            modelBuilder.Entity<PromotionMovie>()
-                .HasOne(pm => pm.Movies)
-                .WithMany(m => m.PromotionMovies)
-                .HasForeignKey(pm => pm.MovieID);
-            modelBuilder.Entity<BillPromotion>()
-                .HasOne(pm => pm.Bill)
-                .WithMany(m => m.BillPromotions)
-                .HasForeignKey(pm => pm.BillID); 
-            modelBuilder.Entity<BillPromotion>()
-                .HasOne(pm => pm.Promotion)
-                .WithMany(m => m.BillPromotions)
-                .HasForeignKey(pm => pm.PromotionID);
             SeenDingData(modelBuilder);
 
             modelBuilder.Entity<Room>()
-    .HasOne(r => r.Cinemas)
-    .WithMany(c => c.Rooms)
-    .HasForeignKey(r => r.CinemasID)
-    .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
+                .HasOne(r => r.Cinemas)
+                .WithMany(c => c.Rooms)
+                .HasForeignKey(r => r.CinemasID)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
 
 
         }
