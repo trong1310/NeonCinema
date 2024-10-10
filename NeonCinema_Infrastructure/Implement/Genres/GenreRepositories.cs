@@ -47,7 +47,7 @@ namespace NeonCinema_Infrastructure.Implement.Genres
         }
         public async Task CreateGenre(CreateGenreRequest request, CancellationToken cancellationToken)
         {
-            var genre = _mapper.Map<Category>(request);
+            var genre = _mapper.Map<Genre>(request);
             _context.Genres.Add(genre);
             await _context.SaveChangesAsync(cancellationToken);
         }
