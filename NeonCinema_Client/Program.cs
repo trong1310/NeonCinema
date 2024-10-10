@@ -43,6 +43,8 @@ using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.Services.Actor;
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
+using NeonCinema_Client.Data.IServices.Promotion;
+using NeonCinema_Client.Data.Services.Promotion;
 
 
 
@@ -66,6 +68,7 @@ builder.Services.AddDbContext<NeonCinemasContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
+builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 
 
 

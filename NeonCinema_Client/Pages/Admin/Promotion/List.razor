@@ -1,102 +1,186 @@
 ﻿@page "/list-promotion-admin"
+@using NeonCinema_Application.DataTransferObject.Promotions
+@using NeonCinema_Client.Data.IServices.Promotion
 @layout LayoutAdmin
+@inherits PromotionBase
+@inject NavigationManager _nav
+@inject IPromotionServices _prosv
+
 
 <div>
-        <div class="col-12 p-5">
-            <button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button>
-            <h6 style="display: inline;">Promotion Manage</h6>
-            <hr>
-            <div class="row boxfilter p-2">
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="Search">Search</label>
-                        <input type="text" class="form-control" style="width: 500px;" placeholder="Search by name">
-                    </div>
-                    <div class="form-check">
-                        <div class="row mt-3">
-                            <div class="col-2">
-                                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
-                                    value="option1" checked>
-                                <label class="form-check-label" for="exampleRadio1">
-                                    Lựa chọn 1
-                                </label>
-                            </div>
-                            <div class="col-2">
-                                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
-                                    value="option2">
-                                <label class="form-check-label" for="exampleRadio2">
-                                    Lựa chọn 2
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <label for="StartDate">Start date</label>
-                    <input type="datetime-local" class="form-control" name="" id="">
-                </div>
-                <div class="col-3">
-                    <label for="EndDate">End date</label>
-                    <input type="datetime-local" class="form-control" name="" id="">
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-11"></div>
-                <div class="col-1">
-                    <button class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #63E6BE;"></i></button>
-                </div>
-            </div>
-            <div class="row mt-2 table-promotion">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Code</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Start date</th>
-                            <th>End date</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Ưu đãi tài khoản mới</td>
-                            <td></td>
-                            <td>20%</td>
-                            <td>1/10/2024</td>
-                            <td>31/10/2024</td>
-                            <td><span class="bg-success text-white rounded">Applying</span></td>
-                            <td>
-                                <button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
-                                <button class="btn"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Ưu đãi cuối tuần</td>
-                            <td></td>
-                            <td>20%</td>
-                            <td>6/10/2024</td>
-                            <td>7/10/2024</td>
-                            <td><span class="bg-danger text-white rounded">Expired</span></td>
-                            <td>
-                                <button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
-                                <button class="btn"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-                            </td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+	<div class="col-12 p-5">
+		<button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button>
+		<h6 style="display: inline;">Trang chủ</h6>
+		<hr>
+		<div class="row boxfilter p-2">
+			<div class="col-6">
+				<div class="form-group">
+					<label for="Search">Tìm kiếm</label>
+					<input type="text" class="form-control" style="width: 500px;" placeholder="Search by name">
+				</div>
+				<div class="form-check">
+					<div class="row mt-3">
+						<div class="col-2">
+							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
+								   value="option1" checked>
+							<label class="form-check-label" for="exampleRadio1">
+								Lựa chọn 1
+							</label>
+						</div>
+						<div class="col-2">
+							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
+								   value="option2">
+							<label class="form-check-label" for="exampleRadio2">
+								Lựa chọn 2
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-3">
+				<label for="StartDate">Ngày bắt đầu</label>
+				<input type="datetime-local" class="form-control" name="" id="">
+			</div>
+			<div class="col-3">
+				<label for="EndDate">Ngày kết thúc</label>
+				<input type="datetime-local" class="form-control" name="" id="">
+			</div>
+		</div>
+		<div class="row mt-5">
+			<div class="col-11"></div>
+			<div class="col-1">
+				<button @onclick="OpenModal" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
+				<!-- Modal--> 
+				@if (isModalVisible)
+				{
+					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="col-5">
+												<h6>Tạo mã khuyến mại</h6>
+											</div>
+										</div>
+	
+									</div>
+								</div>
+								<div class="modal-body">
+									<form>
+										<div class="mb-3">
+											<label for="" class="form-label">Mã khuyến mại</label>
+											<InputText @bind-Value="input.code" class="form-control"/>
+										</div>
+										<div class="mb-3">
+											<label for="" class="form-label">Mô tả</label>
+											<InputText @bind-Value="input.Description" class="form-control"/>
+										</div>
+										<div class="mb-3">
+											<label for="" class="form-label">Phần trăm giảm giá</label>
+											<InputNumber @bind-Value="input.Amount" class="form-control"/>
+										</div>
+										<div class="mb-3">
+											<label for="" class="form-label">Ngày bắt đầu</label>
+											<InputDate @bind-Value="input.TimeStar" class="form-control"/>
+										</div>
+										<div class="mb-3">
+											<label for="" class="form-label">Ngày kết thúc</label>
+											<InputDate @bind-Value="input.TimeEnd" class="form-control"/>
+										</div>
+										
 
+										<button type="submit" class="btn btn-primary">Submit</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="row mt-2 table-promotion">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Code</th>
+						<th>Description</th>
+						<th>Amount</th>
+						<th>Start date</th>
+						<th>End date</th>
+						<th>Status</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in _lstpro)
+					{
+						<tr>
+							<td>@stt</td>
+							<td>@item.code</td>
+							<td>@item.Description</td>
+							<td>@item.Amount%</td>
+							<td>@item.TimeStar.ToShortDateString()</td>
+							<td>@item.TimeEnd.ToShortDateString()</td>
+							<td><span class="bg-success text-white rounded">@item.Status</span></td> <!--Đoạn này cần if else để css màu-->
+							<td>
+								<button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
+								<button class="btn"><i class="fa-solid fa-pen"></i></button>
+								<button class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<style>
+	td {
+		text-align: center
+	}
+
+	th {
+		text-align: center
+	}
+
+	.modal{
+		top: 10%;
+	}
+</style>
 
 @code {
+	int stt;
+	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
+	private PromotionCreateRequest input = new PromotionCreateRequest();
 
+	protected override async Task OnInitializedAsync()
+	{
+		stt = 1;
+		await LoadPromotion();
+	}
+
+	private async Task LoadPromotion()
+	{
+		_lstpro = await _prosv.GetPromotionListAsync();
+	}
+
+	private bool isModalVisible = false;
+
+	private void OpenModal()
+	{
+		isModalVisible = true;
+	}
+
+	private void CloseModal()
+	{
+		isModalVisible = false;
+	}
 }

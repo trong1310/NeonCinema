@@ -94,9 +94,9 @@
                     await _localstorgae.SetItemAsync("gender", gender.Trim());
                     await _localstorgae.SetItemAsync("name", name.Trim());
 
-                    if(role.Equals(""))
+                    if(role.Equals("Admin"))
                     {
-                        _navi.NavigateTo("/");
+                        _navi.NavigateTo("/listuser");
                     }
                     
                 }
