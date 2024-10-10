@@ -63,11 +63,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
-        public DbSet<PromotionMovie> PromotionMovies { get; set; }
-        public DbSet<PromotionCode> PromotionCodes { get; set; }
-      
-        public DbSet<PromotionType> promotionTypes { get; set; }
-        public DbSet<BillPromotion> billPromotions { get; set; }
+ 
        
         
 
@@ -253,111 +249,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 }
             };
-            modelBuilder.Entity<Users>(b => { b.HasData(userData); });
-         
-         
-         
-            // Create new GUIDs
-            var promotionCodeTet2024Id = Guid.NewGuid();
-            var promotionCodeVIP2024Id = Guid.NewGuid();
-
-            var promotionUsersId1 = Guid.NewGuid();
-            var promotionUsersId2 = Guid.NewGuid();
-            var promotionUsersPromotionId1 = Guid.NewGuid(); // Link to a promotion
-            var promotionUsersPromotionId2 = Guid.NewGuid(); // Link to another promotion
-            var userId1 = Guid.NewGuid(); // User 1 ID
-            var userId2 = Guid.NewGuid(); // User 2 ID
-
-            var promotionTypePercentageId = Guid.NewGuid();
-            var promotionTypeFixedAmountId = Guid.NewGuid();
-            var promotionTypeBuyOneGetOneId = Guid.NewGuid();
-
-            var promotionTetId = Guid.NewGuid();
-            var promotionVIPId = Guid.NewGuid();
-
-            var promotionMovieId = Guid.NewGuid(); // Link to a promotion
-
-            // Seed PromotionCode
-            modelBuilder.Entity<PromotionCode>().HasData(new List<PromotionCode>
-    {
-        new PromotionCode
-        {
-            ID = promotionCodeTet2024Id,
-            Code = "TET2024",
-            StartDate = new DateTime(2024, 1, 1),
-            EndDate = new DateTime(2024, 1, 31),
-            MaxUsage = 100
-        },
-        new PromotionCode
-        {
-            ID = promotionCodeVIP2024Id,
-            Code = "VIP2024",
-            StartDate = new DateTime(2024, 2, 1),
-            EndDate = new DateTime(2024, 12, 31),
-            MaxUsage = 50
-        }
-    });
-
-          
-
-
-            // Seed PromotionType
-            modelBuilder.Entity<PromotionType>().HasData(new List<PromotionType>
-    {
-        new PromotionType
-        {
-            ID = promotionTypePercentageId,
-            Name = "Giảm giá phần trăm",
-            Description = "Giảm giá theo phần trăm tổng hóa đơn"
-        },
-        new PromotionType
-        {
-            ID = promotionTypeFixedAmountId,
-            Name = "Giảm giá cố định",
-            Description = "Giảm giá một số tiền cụ thể trên hóa đơn"
-        },
-        new PromotionType
-        {
-            ID = promotionTypeBuyOneGetOneId,
-            Name = "Mua 1 tặng 1",
-            Description = "Khuyến mãi mua một sản phẩm, tặng kèm một sản phẩm khác"
-        }
-    });
-
-            // Seed Promotion
-            modelBuilder.Entity<Promotion>().HasData(new List<Promotion>
-    {
-        new Promotion
-        {
-            ID = promotionTetId,
-            Name = "Khuyến mãi Tết Nguyên Đán",
-            Description = "Giảm giá 20% cho tất cả khách hàng vào dịp Tết Nguyên Đán",
-            DiscountAmount = 20,
-            PromotionTypeID = promotionTypeFixedAmountId,
-            StartDate = new DateTime(2024, 1, 10),
-            EndDate = new DateTime(2024, 1, 31),
-            IsActive = true,
-            UserID = null,
-            PromotionCodeID = promotionCodeTet2024Id
-        },
-        new Promotion
-        {
-            ID = promotionVIPId,
-            Name = "Giảm giá khách hàng VIP",
-            Description = "Giảm giá 30% cho khách hàng VIP",
-            DiscountAmount = 30,
-            PromotionTypeID = promotionTypePercentageId,
-            StartDate = new DateTime(2024, 2, 1),
-            EndDate = new DateTime(2024, 12, 31),
-            IsActive = true,
-            UserID = userId1,
-            PromotionCodeID = promotionCodeVIP2024Id
-        }
-    });
-
-            
-        
-
+            modelBuilder.Entity<Users>(b => { b.HasData(userData); });      
             var languageData = new List<Language>()
              { new Language(){
                 ID = Guid.NewGuid(),
