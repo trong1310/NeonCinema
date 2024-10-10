@@ -18,12 +18,12 @@ namespace NeonCinema_Client.Services.MoivesService
         {
             _httpClient = new HttpClient();
         }
-        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest input)
+        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request)
         {
             //chua validate
             try
             {
-                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
+                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", request);
 
                 return result;
 
