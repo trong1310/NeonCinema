@@ -54,6 +54,7 @@ using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Application.Interface.UserFlims;
 using NeonCinema_Infrastructure.Implement.UserMovies;
 using Microsoft.AspNetCore.Identity;
+using NeonCinema_Infrastructure.Implement.Promotion_R;
 
 
 
@@ -101,6 +102,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IMovieRepositories, MovieRepositories>();
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
             services.AddTransient<IUserMovies, UserMoviess>();
+            services.AddScoped<IEntityRepository<Promotion>, PromotionRepository>();
             
             return services;
         }

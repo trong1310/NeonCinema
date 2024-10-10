@@ -43,6 +43,16 @@ using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.Services.Actor;
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
+using NeonCinema_Client.Data.IServices.Promotion;
+using NeonCinema_Client.Data.Services.Promotion;
+using NeonCinema_Application.Interface.Movie;
+using NeonCinema_Client.Data.IServices.IMovieType;
+using NeonCinema_Client.Data.Services.MovieType;
+using NeonCinema_Infrastructure.Implement.Movie;
+using NeonCinema_Application.Interface.Directors;
+using NeonCinema_Client.Data.IServices.Director;
+using NeonCinema_Client.Data.Services.Director;
+using NeonCinema_Infrastructure.Implement.Directors;
 
 
 
@@ -58,6 +68,14 @@ builder.Services.AddScoped<ICinemasService, CinemasService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 
+
+builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
+builder.Services.AddScoped<IMovieTypeRepositories, MovieTypeRepositories>();
+builder.Services.AddScoped<IDirectorService, DirectorService>();
+builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
+
+
+
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
@@ -66,6 +84,7 @@ builder.Services.AddDbContext<NeonCinemasContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
+builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 
 
 
