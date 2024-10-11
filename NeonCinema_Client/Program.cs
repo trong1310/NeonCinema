@@ -38,9 +38,9 @@ using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
 using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.Interface.Actors;
-using NeonCinema_Client.Data.IServices.Actor;
+
 using NeonCinema_Infrastructure.Implement.Actors;
-using NeonCinema_Client.Data.Services.Actor;
+
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
@@ -63,7 +63,7 @@ builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
-builder.Services.AddScoped<IActorService, ServiceActor>();
+
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
