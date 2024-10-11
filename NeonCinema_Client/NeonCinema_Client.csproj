@@ -8,11 +8,21 @@
 
   <ItemGroup>
 
+    <Compile Remove="Dialog\**" />
+
+    <Compile Remove="Pages\Admin\AddMovies\**" />
+
     <Compile Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\Img\**" />
+
+    <Content Remove="Dialog\**" />
+
+    <Content Remove="Pages\Admin\AddMovies\**" />
     <Content Remove="Pages\Employees\**" />
     <Content Remove="Pages\Img\**" />
+    <EmbeddedResource Remove="Dialog\**" />
+    <EmbeddedResource Remove="Pages\Admin\AddMovies\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
 
     <Compile Remove="Pages\abc\**" />
@@ -23,6 +33,7 @@
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
+    <None Remove="Dialog\**" />
     <None Remove="Pages\abc\**" />
     <Compile Remove="Pages\Employees\**" />
     <Content Remove="Pages\abc\**" />
@@ -30,6 +41,7 @@
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <None Remove="Pages\abc\**" />
+    <None Remove="Pages\Admin\AddMovies\**" />
 
 
     <None Remove="Pages\Employees\**" />
@@ -46,8 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <Folder Include="Dialog\RoomDialog\" />
 
     <Folder Include="Pages\Staff\" />
 
@@ -84,20 +94,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <None Include="Pages\Admin\AddMovies\AddMoviess.razor" />
-
-    <None Include="Pages\Admin\Director\AddDirector.razor" />
-
-    <None Include="Pages\Admin\Director\ListDirector.razor" />
-
-    <None Include="Pages\Admin\Director\UpdateDirector.razor" />
-
-    <None Include="Pages\Admin\MovieType\AddMovieType.razor" />
-
-    <None Include="Pages\Admin\MovieType\ListMovieType.razor" />
-
-    <None Include="Pages\Admin\MovieType\UpdateMovieType.razor" />
 
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
