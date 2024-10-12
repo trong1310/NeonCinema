@@ -108,7 +108,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
         }
 
-        public async Task<List<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
             var query = _context.Movies
@@ -148,7 +148,13 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
                             }).ToList();
 
-            return dataview;
+            return new PaginationResponse<MovieDTO>() 
+            {
+                Data = dataview,
+                HasNext = result.HasNext,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
+            };
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
