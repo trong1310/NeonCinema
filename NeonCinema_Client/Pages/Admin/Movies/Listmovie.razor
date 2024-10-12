@@ -41,12 +41,13 @@
 	}
 	else
 	{
-		@if (loading)
+		<span>khoong co du lieu</span>
+	@* 	@if (loading)
 		{
 			<div class="spinner-border text-primary" role="status">
 				<span class="visually-hidden">Không có dữ liệu...</span>
 			</div>
-		}
+		} *@
 	}
 </MudSimpleTable>
 
@@ -71,13 +72,13 @@
 
 	public async Task LoadMovies()
 	{
-		loading = true;
+	//	loading = true;
 		try
 		{
 			movieDto.Data = null;
 			request.PageNumber = countPage;
 			movieDto = await _movieservices.GetAllMovies(request);
-			loading = false;
+			//loading = false;
 		}
 		catch (Exception ex)
 		{

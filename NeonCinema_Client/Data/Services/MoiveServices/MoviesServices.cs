@@ -64,8 +64,15 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
         {
-            var obj = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/Movie/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
-            return obj;
+            try
+            {
+                var results = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/Movie/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
+                return results;
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception("co loi xay ra : " + ex.Message);
+            }
         }
 
     }
