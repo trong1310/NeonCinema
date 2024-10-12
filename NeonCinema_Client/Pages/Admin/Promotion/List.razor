@@ -2,15 +2,14 @@
 @using NeonCinema_Application.DataTransferObject.Promotions
 @using NeonCinema_Client.Data.IServices.Promotion
 @layout LayoutAdmin
-@inherits PromotionBase
 @inject NavigationManager _nav
 @inject IPromotionServices _prosv
 
 
 <div>
 	<div class="col-12 p-5">
-		<button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button>
-		<h6 style="display: inline;">Trang chủ</h6>
+		@* <button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button> *@
+		<h6 style="display: inline;">Danh sách khuyến mại</h6>
 		<hr>
 		<div class="row boxfilter p-2">
 			<div class="col-6">
@@ -49,9 +48,11 @@
 		<div class="row mt-5">
 			<div class="col-11"></div>
 			<div class="col-1">
-				<button @onclick="OpenModal" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
+				<button @onclick="OpenModal1" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
+
+
 				<!-- Modal--> 
-				@if (isModalVisible)
+				@if (isModalVisible == 1)
 				{
 					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
 						<div class="modal-dialog" role="document">
@@ -72,10 +73,12 @@
 									</div>
 								</div>
 								<div class="modal-body">
-									<form>
+									<EditForm Model="@input" OnValidSubmit="AddPromotion">
+										<DataAnnotationsValidator/>
 										<div class="mb-3">
 											<label for="" class="form-label">Mã khuyến mại</label>
 											<InputText @bind-Value="input.code" class="form-control"/>
+											<ValidationMessage For="@(() => input.code)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Mô tả</label>
@@ -84,24 +87,78 @@
 										<div class="mb-3">
 											<label for="" class="form-label">Phần trăm giảm giá</label>
 											<InputNumber @bind-Value="input.Amount" class="form-control"/>
+											<ValidationMessage For="@(() => input.Amount)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Ngày bắt đầu</label>
 											<InputDate @bind-Value="input.TimeStar" class="form-control"/>
+											<ValidationMessage For="@(() => input.TimeStar)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Ngày kết thúc</label>
 											<InputDate @bind-Value="input.TimeEnd" class="form-control"/>
+											<ValidationMessage For="@(() => input.TimeEnd)" />
 										</div>
-										
+										@if(messageString == "Thêm thành công")
+										{
+											<p class="alert alert-success">@messageString</p>
+										}
+										else if(messageString == "Thêm thất bại")
+										{
+										    <p class="alert alert-danger">@messageString</p>
+										}
 
-										<button type="submit" class="btn btn-primary">Submit</button>
-									</form>
+										<button type="submit" class="btn btn-primary">Thêm</button>
+									</EditForm>
 								</div>
 							</div>
 						</div>
 					</div>
 				}
+				else if(isModalVisible == 2)
+				{
+
+				}
+				else if(isModalVisible == 3)
+				{
+					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="col-5">
+												<h6>Xác nhận</h6>
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<div class="modal-body">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-3 offset-3">
+												<button style="width: 100px" @onclick=" async () => await DeletePromotion(idActive)" class="btn btn-primary">Đồng ý</button>
+											</div>
+											<div class="col-6">
+												<button style="width: 100px" @onclick="BackList" class="btn btn-danger">Hủy</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+				<!--End modal-->
+
+
+
 			</div>
 		</div>
 		<div class="row mt-2 table-promotion">
@@ -109,13 +166,13 @@
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Code</th>
-						<th>Description</th>
-						<th>Amount</th>
-						<th>Start date</th>
-						<th>End date</th>
-						<th>Status</th>
-						<th></th>
+						<th>Mã</th>
+						<th>Mô tả</th>
+						<th>Phần trăm giảm</th>
+						<th>Ngày bắt đầu</th>
+						<th>Ngày kết thúc</th>
+						<th>Trạng thái</th>
+						<th>Hành động</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -132,7 +189,7 @@
 							<td>
 								<button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 								<button class="btn"><i class="fa-solid fa-pen"></i></button>
-								<button class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+								<button @onclick="async () => await OpenModal3(item.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
 							</td>
 						</tr>
 					}
@@ -160,6 +217,9 @@
 	int stt;
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private PromotionCreateRequest input = new PromotionCreateRequest();
+	private string messageString = null;
+	private Guid idActive;
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -172,15 +232,68 @@
 		_lstpro = await _prosv.GetPromotionListAsync();
 	}
 
-	private bool isModalVisible = false;
+	private int isModalVisible = 0;
 
-	private void OpenModal()
+	private void OpenModal1()
 	{
-		isModalVisible = true;
+		isModalVisible = 1;
 	}
 
 	private void CloseModal()
 	{
-		isModalVisible = false;
+		isModalVisible = 0;
+	}
+
+	private void OpenModal2()
+	{
+		isModalVisible = 2;
+	}
+
+
+	private async Task OpenModal3(Guid id)
+	{
+		idActive = id;
+		isModalVisible = 3;
+	}
+
+
+	//Add
+	public async Task AddPromotion()
+	{
+		var check = await _prosv.CreatePromotionAsync(input);
+
+		if (check)
+		{
+			messageString = "Thêm thành công";
+			input = new PromotionCreateRequest();
+			await LoadPromotion();
+
+		}
+		else
+		{
+			messageString = "Thêm thất bại";
+		}
+	}
+
+	//back
+	public void BackList()
+	{
+		_nav.NavigateTo("/list-promotion-admin");
+		CloseModal();
+	}
+
+
+	//Delete
+	public async Task DeletePromotion(Guid id)
+	{
+		var check = await _prosv.DeletePromotionAsync(id);
+
+		if(check)
+		{
+			_nav.NavigateTo("/list-promotion-admin");
+		}
+
+		CloseModal();
+		await LoadPromotion();
 	}
 }
