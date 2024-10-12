@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.DataTransferObject.Countrys;
+﻿using Bogus.Hollywood.Models;
+using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
@@ -20,13 +21,11 @@ namespace NeonCinema_Client.Services.MoivesService
         }
         public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request)
         {
-            //chua validate
+            
             try
             {
                 var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", request);
-
                 return result;
-
             }
             catch (Exception ex)
             {
