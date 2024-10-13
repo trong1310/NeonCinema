@@ -4,6 +4,7 @@ using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Domain.Database.Entities;
@@ -75,6 +76,15 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
+        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserDTO> GetMovieById(Guid id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
