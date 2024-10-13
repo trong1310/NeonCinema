@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.ShowDate;
+
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.ShowTime;
