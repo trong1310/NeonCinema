@@ -18,31 +18,8 @@ namespace NeonCinema_API.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromForm] UserCreateRequest request, CancellationToken cancellationToken)
         {
-
             var result = await _userRepository.CreateUser(request, cancellationToken);
-
             return Ok(result);
-        }
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserUpdateRequest request, CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _userRepository.UpdateUser(id, request, cancellationToken);
-            if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return NotFound(result.Content.ReadAsStringAsync().Result);
-            }
-
-            if (result.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                return BadRequest(result.Content.ReadAsStringAsync().Result);
-            }
-
-            return Ok("Cập nhật người dùng thành công!");
         }
         [HttpGet("get-all")]
         
