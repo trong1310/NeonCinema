@@ -1,28 +1,32 @@
 ﻿@page "/staff-create"
+@using Microsoft.AspNetCore.Http;
 @using NeonCinema_Application.DataTransferObject.User
-@layout LayoutAdmin
 @using NeonCinema_Client.Data.IServices.User
+@layout LayoutAdmin
+@using System.Text.Json
 @inject IUserServices UserService
+@inject NavigationManager _navigation
+@inject HttpClient _http
 
-<div class="container-fluid mt-5">
-    <h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Thêm nhân viên</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-3 text-center mb-4 mt-5">
-            <img src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
-        </div>
-        <div class="col-md-9" style="margin-top:10px;">
-            <form>
+<EditForm Model="request">
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-3 text-center mb-4 mt-5">
+                <img src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
+            </div>
+            <div class="col-md-9" style="margin-top:10px;">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="fullname" class="font-weight-bold">Họ và tên</label>
-                            <input type="text" class="form-control" id="fullname">
+                            <label for="name" class="font-weight-bold">Họ và tên</label>
+                            <input type="text" class="form-control" id="name" @bind-value="request.FullName"/>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="phone" class="font-weight-bold">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone">
+                            <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber">
                         </div>
                     </div>
                 </div>
@@ -31,13 +35,22 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="email" class="font-weight-bold">Email</label>
-                            <input type="email" class="form-control" id="email">
+                            <input type="email" class="form-control" id="email" @bind-value="request.Email">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="dob" class="font-weight-bold">Ngày sinh</label>
-                            <input type="date" class="form-control" id="dob">
+                            <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="images" class="font-weight-bold">Images</label>
+                            <InputFile OnChange="HandleSelected" />
                         </div>
                     </div>
                 </div>
@@ -48,11 +61,11 @@
                             <label>Giới tính</label>
                             <div style="margin-left: -20px; margin-top: 5px">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale" />
+                                    <input class="form-check-input" type="radio" id="genderMale"  @bind="request.Gender"/>
                                     <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderFemale" />
+                                    <input class="form-check-input" type="radio" id="genderFemale"  @bind="request.Gender"/>
                                     <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                                 </div>
                             </div>
@@ -69,33 +82,77 @@
                     </div>
                 </div>
 
-
-
-
                 <div class="form-group">
-                    <label for="address" class="font-weight-bold">Địa chỉ</label>
-                    <textarea class="form-control" id="address" rows="3"></textarea>
+                    <label for="Description" class="font-weight-bold">Mô tả</label>
+                    <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss"></textarea>
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="button" @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
+</EditForm>
 
 @code {
-    private UserCreateRequest newUser = new UserCreateRequest();
+    private UserCreateRequest request = new UserCreateRequest();
+    private IBrowserFile selectedFile;
+
+    private async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
 
     private async Task HandleSubmit()
     {
-        // Gọi API để thêm mới nhân viên
-        await UserService.CreateUser(newUser, CancellationToken.None);
-        // Chuyển hướng hoặc thông báo thành công
+        try
+        {
+            if (selectedFile == null)
+            {
+                return;
+            }
+
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+            content.Add(fileContent, "file", selectedFile.Name);
+            var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var jsonDoc = JsonDocument.Parse(jsonResponse);
+                var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+                var fileName = Path.GetFileName(fileUrl);
+                request.Images = fileName;
+
+                Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+            }
+            else
+            {
+                Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+                return;
+            }
+
+            var userResponse = await UserService.CreateUser(request);
+            if (userResponse.IsSuccessStatusCode)
+            {
+                _navigation.NavigateTo("/staff");
+            }
+            else
+            {
+                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {userResponse.Content}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi: {ex.Message}");
+            Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+        }
     }
 }
-
 
 <style>
     body {
@@ -119,7 +176,7 @@
         height: 200px;
         object-fit: cover;
         border: 3px solid #eaeaea;
-        margin-left: -15px; /* Shift image slightly left */
+        margin-left: -15px;
     }
 
     label {
@@ -131,7 +188,7 @@
         border-radius: 5px;
         border: 1px solid #ccc;
         padding: 10px;
-        margin-left: -20px; /* Shift input fields slightly left */
+        margin-left: -20px;
     }
 
     .form-control:focus {
@@ -160,6 +217,6 @@
     }
 
     .form-check {
-        margin-right: 15px; /* Adjust spacing between radio buttons */
+        margin-right: 15px;
     }
 </style>
