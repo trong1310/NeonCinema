@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Promotions;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Client.Data.IServices.Promotion;
 
 namespace NeonCinema_Client.Data.Services.Promotion
@@ -56,6 +57,13 @@ namespace NeonCinema_Client.Data.Services.Promotion
 			}
 		}
 
+		public async Task<List<UserDTO>> GetAllUserAsync()
+		{
+			var result = await _client.GetFromJsonAsync<List<UserDTO>>("https://localhost:7211/api/User/get-all");
+
+			return result;
+		}
+
 		public async Task<List<PromotionDTO>> GetPromotionListAsync()
         {
             
@@ -63,5 +71,10 @@ namespace NeonCinema_Client.Data.Services.Promotion
 
             return result;
         }
+
+		public Task<List<PromotionDTO>> SearchProByNameAsync(string input)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

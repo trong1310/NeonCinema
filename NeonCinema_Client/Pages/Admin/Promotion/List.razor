@@ -1,5 +1,6 @@
 ﻿@page "/list-promotion-admin"
 @using NeonCinema_Application.DataTransferObject.Promotions
+@using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Promotion
 @layout LayoutAdmin
 @inject NavigationManager _nav
@@ -117,7 +118,61 @@
 				}
 				else if(isModalVisible == 2)
 				{
-
+					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content" style="width: 1000px; right: 40%;">
+								<div class="modal-header">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="col-5">
+												<h6>Thêm khuyến mãi cho khách hàng</h6>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-body">
+									<div class="col-12">
+										<div class="row">
+											<input class="form-control" type="type" name="name" placeholder="Tìm kiếm theo tên" value=""/>
+										</div>
+										<div class="row p-1 rounded border-1 mt-3">
+											<table class="table">
+												<thead>
+													<tr>
+														<th><input class="" type="checkbox"> Tất cả</th>
+														<th>Tên đầy đủ</th>
+														<th>Số điện thoại</th>
+														<th>Email</th>
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var item in _lstuser)
+													{
+														<tr>
+															<td><input class="" type="checkbox"/></td>
+															<td>@item.FullName</td>
+															<td>@item.PhoneNumber</td>
+															<td>@item.Email</td>
+														</tr>
+													}
+												</tbody>
+											</table>
+										</div>
+										<div class="row mt-3">
+											<div class="col-9"></div>
+											<div class="col-1"><button @onclick="CloseModal" class="btn btn-danger">Hủy</button></div>
+											<div class="col-2"><button class="btn btn-success">Lưu</button></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				}
 				else if(isModalVisible == 3)
 				{
@@ -187,7 +242,7 @@
 							<td>@item.TimeEnd.ToShortDateString()</td>
 							<td><span class="bg-success text-white rounded">@item.Status</span></td> <!--Đoạn này cần if else để css màu-->
 							<td>
-								<button class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
+								<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
 								<button class="btn"><i class="fa-solid fa-pen"></i></button>
 								<button @onclick="async () => await OpenModal3(item.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
 							</td>
@@ -216,6 +271,7 @@
 @code {
 	int stt;
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
+	private List<UserDTO> _lstuser = new List<UserDTO>();
 	private PromotionCreateRequest input = new PromotionCreateRequest();
 	private string messageString = null;
 	private Guid idActive;
@@ -225,12 +281,21 @@
 	{
 		stt = 1;
 		await LoadPromotion();
+		await LoadUser();
 	}
 
+	//Get All promotion
 	private async Task LoadPromotion()
 	{
 		_lstpro = await _prosv.GetPromotionListAsync();
 	}
+
+	//Get all user
+	private async Task LoadUser()
+	{
+		_lstuser = await _prosv.GetAllUserAsync();
+	}
+
 
 	private int isModalVisible = 0;
 
