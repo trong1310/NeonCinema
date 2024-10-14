@@ -15,6 +15,6 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
         public double Amount { get; set; } // giảm theo %
         public DateTime TimeStar { get; set; }
         public DateTime TimeEnd { get; set; }
-        public EntityStatus Status { get; set; }
+        public PromotionStatus Status { get; set; }
     }
 }

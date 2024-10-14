@@ -1,4 +1,6 @@
-﻿using NeonCinema_Application.DataTransferObject.Promotions;
+﻿using MudBlazor;
+using NeonCinema_Application.DataTransferObject.Promotions;
+using NeonCinema_Application.DataTransferObject.Roles;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Client.Data.IServices.Promotion;
 
@@ -57,11 +59,19 @@ namespace NeonCinema_Client.Data.Services.Promotion
 			}
 		}
 
-		public async Task<List<UserDTO>> GetAllUserAsync()
+		public async Task<List<UserDTO>> GetAllUserAsync(string input)
 		{
+			var lst = new List<UserDTO>();
 			var result = await _client.GetFromJsonAsync<List<UserDTO>>("https://localhost:7211/api/User/get-all");
+			var lstrole = await _client.GetFromJsonAsync<List<RolesDTO>>("https://localhost:7211/api/Roles/get-all");
 
-			return result;
+			if(result != null && lstrole != null)
+			{
+				RolesDTO role = lstrole.FirstOrDefault(x => x.RoleName == "Customer");
+				lst = result.Where(x => x.RoleID == role.ID && x.FullName.Trim().ToLower().Contains(input.Trim().ToLower())).ToList();
+			}
+
+			return lst;
 		}
 
 		public async Task<List<PromotionDTO>> GetPromotionListAsync()
@@ -76,5 +86,6 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		{
 			throw new NotImplementedException();
 		}
+
 	}
 }

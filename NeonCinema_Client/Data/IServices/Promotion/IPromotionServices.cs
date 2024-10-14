@@ -9,7 +9,7 @@ namespace NeonCinema_Client.Data.IServices.Promotion
         Task<List<PromotionDTO>> SearchProByNameAsync(string input);
         Task<bool> CreatePromotionAsync(PromotionCreateRequest input);
         Task<bool> DeletePromotionAsync(Guid id);
-        Task<List<UserDTO>> GetAllUserAsync();
+        Task<List<UserDTO>> GetAllUserAsync(string input);
         //Task<string> Validate(PromotionCreateRequest input);
     }
 }
