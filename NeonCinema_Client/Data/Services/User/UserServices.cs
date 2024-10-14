@@ -12,6 +12,7 @@ using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
+using NeonCinema_Application.DataTransferObject.Actors;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -20,16 +21,18 @@ namespace NeonCinema_Client.Services.User
     {
         private readonly HttpClient _httpClient;
         private readonly LoginModel _loginModel;
-        public UserServices(HttpClient httpClient)
+        public UserServices()
         {
             _loginModel = new LoginModel();
-            _httpClient = httpClient;
+            var handler = CreateHttpClientHandler();
+            _httpClient = new HttpClient();
         }
 
-        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request)
+        private static HttpClientHandler CreateHttpClientHandler()
         {
-            var repones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
-            return repones;
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            return handler;
         }
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
@@ -55,6 +58,23 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-       
+        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request)
+        {
+            try
+            {
+                var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
+
+            }
+        }
+
+
     }
 }
