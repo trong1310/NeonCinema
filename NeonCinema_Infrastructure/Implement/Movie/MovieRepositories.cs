@@ -160,28 +160,44 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             };
         }
 
-        public Task<MovieDTO> GetMovieById(Guid id)
+
+        public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var movie = await _context.Movies
+                .Include(x => x.Genre)
+                .Include(x => x.Screening)
+                .Include(x => x.Director)
+                .Include(x => x.Lenguage)
+                .Include(x => x.Countrys)
+                .Include(x => x.TicketSeats)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
+
+            if (movie == null)
+            {
+                return null; // Hoặc bạn có thể ném ra một exception nếu cần
+            }
+
+            var movieDTO = new MovieDTO
+            {
+                ID = movie.ID,
+                AgeAllowed = movie.AgeAllowed,
+                Trailer = movie.Trailer,
+                Status = movie.Status,
+                Name = movie.Name,
+                Images = movie.Images,
+                StarTime = movie.StarTime,
+                Duration = movie.Duration,
+                Description = movie.Description,
+                LanguareName = movie.Lenguage.LanguageName,
+                CountryName = movie.Countrys.CountryName,
+                DirectorName = movie.Director.FullName,
+                GenreName = movie.Genre.GenreName,
+            };
+
+            return movieDTO;
         }
 
-        //public async Task<MovieDTO> GetMovieById(Guid id)
-        //{
-
-        //    var query = _context.Movies
-        //                    .Include(x => x.Genre)
-        //                    .Include(x => x.Screening)
-        //                    .Include(x => x.Director)
-        //                    .Include(x => x.Lenguage)
-        //                    .Include(x => x.Countrys)
-        //                    .Include(x => x.TicketSeats)
-        //                    .AsNoTracking();
-
-
-        //        query = query.Where(x => x.ID == id);
-
-
-        //}
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
         {
             try
