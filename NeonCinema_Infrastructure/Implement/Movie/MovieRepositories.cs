@@ -160,24 +160,28 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             };
         }
 
-        public async Task<MovieDTO> GetMovieById(Guid id)
+        public Task<MovieDTO> GetMovieById(Guid id)
         {
-
-            var query = _context.Movies
-                            .Include(x => x.Genre)
-                            .Include(x => x.Screening)
-                            .Include(x => x.Director)
-                            .Include(x => x.Lenguage)
-                            .Include(x => x.Countrys)
-                            .Include(x => x.TicketSeats)
-                            .AsNoTracking();
-
-  
-                query = query.Where(x => x.ID == id);
-            
-         
+            throw new NotImplementedException();
         }
 
+        //public async Task<MovieDTO> GetMovieById(Guid id)
+        //{
+
+        //    var query = _context.Movies
+        //                    .Include(x => x.Genre)
+        //                    .Include(x => x.Screening)
+        //                    .Include(x => x.Director)
+        //                    .Include(x => x.Lenguage)
+        //                    .Include(x => x.Countrys)
+        //                    .Include(x => x.TicketSeats)
+        //                    .AsNoTracking();
+
+
+        //        query = query.Where(x => x.ID == id);
+
+
+        //}
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
         {
             try

@@ -12,7 +12,6 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
     public interface IMovieservices
     {
         public Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request);
-		public Task<MovieDTO> GetByID(Guid id, CancellationToken cancellationToken);
 		public Task<List<GenreDTO>> GetAllGenre();
         public Task<List<CountryDTO>> GetAllCountry();
         public Task<List<DirectorDTO>> GetAllDirector();
