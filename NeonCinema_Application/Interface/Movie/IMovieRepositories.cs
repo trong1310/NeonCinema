@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;

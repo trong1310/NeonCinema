@@ -25,7 +25,13 @@ namespace NeonCinema_API.Controllers.Movie
             var obj = await _reps.GetAll(request, cancellationToken);
             return Ok(obj);
         }
-        [HttpPost ("Create")]
+		[HttpGet("GetByID")]
+		public async Task<IActionResult> GetByID(Guid id, CancellationToken cancellationToken)
+		{
+            var obj = await _reps.GetByID(id, cancellationToken);
+			return Ok(obj);
+		}
+		[HttpPost ("Create")]
         public async Task <IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
         {
             var obj = await _reps.Create(request,cancellationToken);

@@ -1,0 +1,217 @@
+﻿@page "/edit-movie"
+
+<div class="container movie-detail-container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="poster">
+                <img src="/images/Client/cam.jpg" class="img-fluid rounded shadow" alt="CÁM" />
+            </div>
+        </div>
+        <div class="col-md-8" style="margin-top:15px">
+            <h1 class="movie-title text-success font-weight-bold mb-3 fs-2">CÁM</h1>
+            <p class="movie-description text-muted fs-5">Dị bản kinh dị đẫm máu lấy cảm hứng từ truyện cổ tích nổi tiếng Tấm Cám, nội dung chính của phim xoay quanh Cám – em gái cùng cha khác mẹ của Tấm.</p>
+            <p class="fs-5">
+                <strong>Phân loại:</strong>
+                <span class="badge bg-danger">T18</span>
+                <span class="text-muted">Phim phổ biến đến người xem từ 18 tuổi trở lên</span>
+            </p>
+            <p class="fs-5">
+                <strong>Định dạng:</strong>
+                <span class="badge bg-success">2D</span>
+            </p>
+            <p class="fs-5"><strong>Đạo diễn:</strong> <span class="text-info">Trần Hữu Tấn</span></p>
+            <p class="fs-5"><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p>
+            <p class="fs-5"><strong>Khởi chiếu:</strong> <span class="text-info">20/09/2024</span></p>
+            <p class="fs-5"><strong>Thể loại:</strong> <span class="text-info">Horror</span></p>
+            <p class="fs-5"><strong>Thời lượng:</strong> <span class="text-info">122 phút</span></p>
+            <p class="fs-5"><strong>Ngôn ngữ:</strong> <span class="text-info">Phụ đề</span></p>
+
+            <button type="button" class="btn-edit" @onclick="ToggleEdit">Chỉnh sửa</button>
+
+        </div>
+
+    </div>
+</div>
+
+@if (isEditing) // Kiểm tra biến isEditing để hiển thị phần sửa thông tin
+{
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-md-3 text-center mb-4 mt-5">
+                <img src="/images/Client/cam.jpg" alt="Profile" class="img-fluid profile-pic">
+            </div>
+            <div class="col-md-9" style="margin-top:10px">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name" class="font-weight-bold">Tên Phim</label>
+                            <input type="text" class="form-control" id="name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Duration" class="font-weight-bold">Thời Lượng</label>
+                            <input type="text" class="form-control" id="Duration" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Trailer" class="font-weight-bold">Trailer</label>
+                            <input type="text" class="form-control" id="Trailer" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+                            <input type="date" class="form-control" id="StarTime" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="images" class="font-weight-bold">Hình ảnh</label>
+                            <InputFile class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+                            <input type="number" class="form-control" id="AgeAllowed" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Genre" class="font-weight-bold">Thể loại</label>
+                            <select class="form-control">
+                                <option value="" disabled selected>Chọn thể loại</option>
+                                <!-- Các lựa chọn thể loại sẽ được thêm ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+                            <select class="form-control">
+                                <option value="" disabled selected>Chọn ngôn ngữ</option>
+                                <!-- Các lựa chọn ngôn ngữ sẽ được thêm ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Country" class="font-weight-bold">Quốc gia</label>
+                            <select class="form-control">
+                                <option value="" disabled selected>Chọn quốc gia</option>
+                                <!-- Các lựa chọn quốc gia sẽ được thêm ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Director" class="font-weight-bold">Đạo diễn</label>
+                            <select class="form-control">
+                                <option value="" disabled selected>Chọn đạo diễn</option>
+                                <!-- Các lựa chọn đạo diễn sẽ được thêm ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="Description" class="font-weight-bold">Mô tả</label>
+                        <textarea class="form-control" id="Description" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="button" class="btn btn-success btn-lg">Sửa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isEditing = false; // Biến để kiểm soát trạng thái hiển thị
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing; // Chuyển đổi trạng thái hiển thị
+    }
+}
+
+
+<style>
+    .movie-detail-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .poster {
+        margin-right: 50px; /* Thêm khoảng cách giữa ảnh và phần thông tin */
+    }
+    .movie-title {
+        color: #28a745;
+    }
+
+    .movie-description {
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .poster img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .social-share a {
+        text-decoration: none;
+    }
+
+        .social-share a:hover {
+            opacity: 0.8;
+        }
+
+    .btn-edit {
+        background-color: #fd7e14; /* Màu nền xanh */
+        color: white; /* Màu chữ trắng */
+        border: none; /* Không có viền */
+        padding: 10px 20px; /* Padding cho nút */
+        font-size: 1rem; /* Kích thước chữ */
+        border-radius: 5px; /* Bo tròn góc */
+        cursor: pointer; /* Hiển thị con trỏ như bàn tay khi hover */
+        transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển tiếp */
+    }
+
+        .btn-edit:hover {
+            background-color: #e36800; /* Màu nền khi hover */
+            transform: scale(1.05); /* Phóng to một chút khi hover */
+        }
+
+        .btn-edit:focus {
+            outline: none; /* Không có viền khi nhấn */
+        }
+    .row{
+        margin: 15px;
+    }
+    .btn-success{
+        margin-top: 10px
+    }
+
+</style>
