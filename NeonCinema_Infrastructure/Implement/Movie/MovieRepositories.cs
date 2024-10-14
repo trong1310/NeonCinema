@@ -140,6 +140,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Status = b.Status,
                                 Name = b.Name,
                                 Images = b.Images,
+                                StarTime = b.StarTime,
                                 Duration = b.Duration,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,

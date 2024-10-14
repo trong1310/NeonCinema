@@ -91,4 +91,5 @@ namespace NeonCinema_Client.Services.MoivesService
 		}
 	}
 
+
 }

@@ -1,0 +1,107 @@
+﻿@page "/movies-dialog"
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using System.Text.Json
+@inject IMovieservices _movieServices
+@inject HttpClient _http
+@inject NavigationManager _navigation
+<body>
+    <div class="container-fluid">
+        <div class="row movie-detail-background">
+            <div class="col-md-4">
+                <!-- Điều chỉnh col-md-4 để ảnh chiếm 1/3 kích thước -->
+                <div class="img-movie-detail">
+                    <img src="/images/Client/cam.jpg" alt="Movie Poster" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- Thông tin phim bên phải -->
+            <div class="col-md-8">
+                <!-- Điều chỉnh col-md-8 để phần chữ chiếm nhiều không gian hơn -->
+                <h2 class="title">CÁM</h2>
+                <p class="description">Dị bản kinh dị đẫm máu lấy cảm hứng từ truyện cổ tích nổi tiếng Tấm Cám, nội dung chính của phim xoay quanh Cám – em gái cùng cha khác mẹ của Tấm.</p>
+                <p>
+                    <strong>Phân loại:</strong>
+                    <span class="badge bg-danger">T18</span>
+                    <span class="text-muted">Phim phổ biến đến người xem từ 18 tuổi trở lên</span>
+                </p>
+                <p>
+                    <strong>Định dạng:</strong>
+                    <span class="badge bg-success">2D</span>
+                </p>
+                <p><strong>Đạo diễn:</strong> <span class="text-info">Trần Hữu Tấn</span></p>
+                <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p>
+                <p><strong>Khởi chiếu:</strong> <span class="text-info">20/09/2024</span></p>
+                <p><strong>Thể loại:</strong> <span class="text-info">Horror</span></p>
+                <p><strong>Thời lượng:</strong> <span class="text-info">122 phút</span></p>
+                <p><strong>Ngôn ngữ:</strong> <span class="text-info">Phụ đề</span></p>
+            </div>
+        </div>
+
+        <!-- Trailer phim -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4 class="trailer-title">Trailer</h4>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="w-100" height="1000" src="https://www.youtube.com/embed/6A0nJ_sJzCk" frameborder="0" allowfullscreen></iframe> <!-- Điều chỉnh height -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+@code{
+    private ViewMovieRequest request = new ViewMovieRequest();
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+}
+<style>
+    .movie-detail-background {
+        margin-top: 20px;
+    }
+
+    .img-movie-detail img {
+        width: 100%; /* Chiếm 100% của cột chứa ảnh, nên ảnh sẽ nhỏ hơn 1/3 */
+        height: auto;
+    }
+
+    .col-md-8 {
+        padding-left: 30px; /* Thêm khoảng cách giữa ảnh và phần chữ */
+    }
+
+    .title {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .description {
+        font-size: 1.2rem;
+    }
+
+    .trailer-title {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .embed-responsive-16by9 {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-height: 800px; /* Chiều cao tối đa của trailer */
+    }
+
+        .embed-responsive-16by9 iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+        }
+
+</style>
