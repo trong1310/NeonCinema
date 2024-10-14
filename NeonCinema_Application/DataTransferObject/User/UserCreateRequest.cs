@@ -24,8 +24,6 @@ namespace NeonCinema_Application.DataTransferObject.User
         public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }//mặc định role = 3(khách hàng)
 
-        public Guid PromotionUserID { get; set; }
-
 
     }
      

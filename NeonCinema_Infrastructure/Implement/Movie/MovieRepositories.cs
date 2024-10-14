@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
@@ -140,6 +141,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Status = b.Status,
                                 Name = b.Name,
                                 Images = b.Images,
+                                StarTime = b.StarTime,
                                 Duration = b.Duration,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
@@ -158,17 +160,28 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             };
         }
 
-		public async Task<MovieDTO> GetByID(Guid id, CancellationToken cancellationToken)
-		{
-			var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == id);
-			return _maps.Map<MovieDTO>(obj);
-		}
-
-		public async Task<MovieDTO> GetByIDMovie(Guid id, CancellationToken cancellationToken)
+        public Task<MovieDTO> GetMovieById(Guid id)
         {
-            var obj = await _context.Users.FirstOrDefaultAsync(x => x.ID == id);
-            return _maps.Map<MovieDTO>(obj);
+            throw new NotImplementedException();
         }
+
+        //public async Task<MovieDTO> GetMovieById(Guid id)
+        //{
+
+        //    var query = _context.Movies
+        //                    .Include(x => x.Genre)
+        //                    .Include(x => x.Screening)
+        //                    .Include(x => x.Director)
+        //                    .Include(x => x.Lenguage)
+        //                    .Include(x => x.Countrys)
+        //                    .Include(x => x.TicketSeats)
+        //                    .AsNoTracking();
+
+
+        //        query = query.Where(x => x.ID == id);
+
+
+        //}
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
         {
             try

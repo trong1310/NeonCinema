@@ -39,8 +39,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     DateOrBriht = request.DateOrBriht,
                     Adderss = request.Adderss,
                     Status = request.Status,
-                    RoleID = request.RoleID, /*== Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // Mặc định RoleID*/
-                    PromotionUserID = request.PromotionUserID,
+                    RoleID = request.RoleID, 
                 };
 
                 // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi

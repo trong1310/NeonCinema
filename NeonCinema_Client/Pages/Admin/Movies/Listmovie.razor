@@ -79,9 +79,9 @@
                             </span>
                         </td>
                         <td class="text-center align-middle">
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </button>                         
+                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToDetail(item.ID)">
+                                <i class="fa-light fa-circle-info"></i>
+                            </button>
                         </td>
                     </tr>
                     stt++;
@@ -108,7 +108,7 @@
     private int countPage = 1;
     private int stt = 1;
     private string errorMessage;
-    
+
     ViewMovieRequest request = new ViewMovieRequest();
     PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
 
@@ -144,6 +144,10 @@
     private async Task NavigateToCreate()
     {
         Navigation.NavigateTo($"/create-flims");
+    }
+    private async Task NavigateToDetail(Guid id)
+    {
+        Navigation.NavigateTo($"/movies-dialog/{id}");
     }
 }
 
