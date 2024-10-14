@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
@@ -157,6 +158,17 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             };
         }
 
+		public async Task<MovieDTO> GetByID(Guid id, CancellationToken cancellationToken)
+		{
+			var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == id);
+			return _maps.Map<MovieDTO>(obj);
+		}
+
+		public async Task<MovieDTO> GetByIDMovie(Guid id, CancellationToken cancellationToken)
+        {
+            var obj = await _context.Users.FirstOrDefaultAsync(x => x.ID == id);
+            return _maps.Map<MovieDTO>(obj);
+        }
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
         {
             try
