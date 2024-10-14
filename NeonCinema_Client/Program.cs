@@ -53,6 +53,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
+builder.Services.AddTransient<IUserServices, UserServices>();
 
 
 

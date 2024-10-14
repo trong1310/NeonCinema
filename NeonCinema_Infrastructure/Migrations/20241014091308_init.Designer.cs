@@ -12,8 +12,8 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 namespace NeonCinema_Infrastructure.Migrations
 {
     [DbContext(typeof(NeonCinemasContext))]
-    [Migration("20241014085423_inisss")]
-    partial class inisss
+    [Migration("20241014091308_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -365,22 +365,22 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("befa556b-1ea3-4e88-a595-2e3f79bdd7f8"),
+                            ID = new Guid("4a321400-43c7-4f6e-a325-5a387c7183eb"),
                             CountryName = "Nhật Bản"
                         },
                         new
                         {
-                            ID = new Guid("b0ed92d9-0318-4307-8236-6f5746da588f"),
+                            ID = new Guid("7100dcf4-b749-4b1d-b3d5-60e4d1bdd18a"),
                             CountryName = "Vương Quốc Anh"
                         },
                         new
                         {
-                            ID = new Guid("e05e5d6d-45fe-45ff-a6a2-c9469129f859"),
+                            ID = new Guid("a6fde8bc-49ae-4582-b8dd-26b0b13f02ff"),
                             CountryName = "Trung Quốc"
                         },
                         new
                         {
-                            ID = new Guid("9ef84d37-0738-42ca-9cd8-0b16870dc545"),
+                            ID = new Guid("a9606d4c-4d7f-4ffd-8103-87fa67f2a723"),
                             CountryName = "Việt Nam"
                         });
                 });
@@ -452,7 +452,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("0e8a2d68-9705-456f-87a9-5fe9593565a0"),
+                            ID = new Guid("5a2bf194-33cd-4b77-aee9-e79851ace095"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -464,7 +464,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("9d38b83b-c27a-429c-a2ad-7c94e4feba78"),
+                            ID = new Guid("02e0e21f-30c8-4a09-81cb-6be417e70ce0"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -476,7 +476,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("c49ad196-f767-48c1-ba98-8ec2c30f31bd"),
+                            ID = new Guid("9951eef9-4af0-4d31-8295-d7c7f2edd685"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -488,7 +488,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("b1db68a0-eef7-4118-a5fa-b2355b589f73"),
+                            ID = new Guid("ef89833f-22c7-4ac7-bf8d-c4bd57c3629e"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -590,22 +590,22 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("bbeacd8a-a52d-4bde-ad5c-aa9258b7f00c"),
+                            ID = new Guid("b310fdc1-779b-4e39-a9c0-8df8f8d374b1"),
                             GenreName = "Kịch tính"
                         },
                         new
                         {
-                            ID = new Guid("a49a0d3c-b24a-4c2c-939f-d75f3ab6ee04"),
+                            ID = new Guid("489af402-33ba-430b-946d-ac1da19e9de8"),
                             GenreName = "Tình cảm"
                         },
                         new
                         {
-                            ID = new Guid("4b5b6b11-868b-41b3-bb95-b194c4709531"),
+                            ID = new Guid("80d5d618-a80b-48f8-bf01-ee5c100ffd1e"),
                             GenreName = "2D"
                         },
                         new
                         {
-                            ID = new Guid("ab9f16b4-865d-4b86-b5bb-21e1a76ef45c"),
+                            ID = new Guid("9262af58-2902-4d18-b09e-8daad5ef1ad8"),
                             GenreName = "Hoạt hình"
                         });
                 });
@@ -650,17 +650,17 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("d9749153-ee14-4694-b592-1fa96e217bf8"),
+                            ID = new Guid("716e9227-d220-4cfd-85ec-e5c2e911d189"),
                             LanguageName = "en"
                         },
                         new
                         {
-                            ID = new Guid("cfbd1260-5afa-4476-aa89-94b3ea32ecdc"),
+                            ID = new Guid("f5dbce8a-59f9-4a8b-8b47-57185ebbb9d2"),
                             LanguageName = "vi"
                         },
                         new
                         {
-                            ID = new Guid("4ed10591-e65e-49b5-aa27-11f935ceb2c9"),
+                            ID = new Guid("1339c32f-ae11-4446-b5f6-a2b7582c7549"),
                             LanguageName = "ja"
                         });
                 });
@@ -1049,21 +1049,21 @@ namespace NeonCinema_Infrastructure.Migrations
                         new
                         {
                             ID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8007),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(6894),
                             RoleName = "Admin",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8029),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(6915),
                             RoleName = "Client",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8031),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(6920),
                             RoleName = "Staff",
                             Status = 1
                         });
@@ -1743,9 +1743,9 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("e922feb3-ba0e-46a1-881a-21b41c37a27d"),
+                            ID = new Guid("37742562-6b7c-490b-a9f4-6fdcf5c96c8d"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8137),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7006),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "giapptph39723@fpt.edu.vn",
                             FullName = "Phùng Tiến Giáp",
@@ -1758,9 +1758,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("00430755-b6e3-4b04-a501-db53cae1f261"),
+                            ID = new Guid("8aeff7cd-7d9a-4e32-91be-b81ab58b0241"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8536),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7389),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FullName = "Admin",
@@ -1773,9 +1773,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("40a1a1e7-eccd-4e22-a22b-edbcf23723f7"),
+                            ID = new Guid("f7f5112f-197c-4b2e-8b57-c6a6e533d5b8"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8561),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7443),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "client@gmail.com",
                             FullName = "Client",
@@ -1788,9 +1788,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("d110efa4-a3ae-453a-a7e0-709d8aec50cb"),
+                            ID = new Guid("996fd5f4-b7a4-4807-96ab-b4d26591129c"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8580),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7466),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vantrongvt1310@gmail.com",
                             FullName = "Nguyễn Văn Trọng",
@@ -1803,9 +1803,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("4d831f89-f7ac-487e-9221-dffdecc66e31"),
+                            ID = new Guid("b740d4c3-659d-41e5-8d3c-71c34f26a4b4"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8600),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7487),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Phongdxph35748@fpt.edu.vn",
                             FullName = "Đặng Xuân Phong",
@@ -1818,9 +1818,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("cee1d3e1-d5e1-43d0-b730-510046aaedf1"),
+                            ID = new Guid("2ef058a3-f741-4ae6-b1db-3a85866a5c16"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8632),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7508),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cuongddpc07789@fpt.edu.vn",
                             FullName = "Đặng Đức Cường",
@@ -1833,9 +1833,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("25fc168a-a072-440e-8325-aa6d5b5b58c7"),
+                            ID = new Guid("a83e1020-8843-4885-8c8f-115357250fcc"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8651),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7534),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vantrongvt1310@gmail.com",
                             FullName = "Nguyễn Văn Trọng",
@@ -1848,9 +1848,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("8e0a2a65-0c45-4f48-87c5-01d204a129d6"),
+                            ID = new Guid("6c5d51c6-9f38-4c20-b3d2-485dd7388c5e"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8678),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7564),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Phongdxph35748@fpt.edu.vn",
                             FullName = "Đặng Xuân Phong",
@@ -1863,9 +1863,9 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("fe96d1b7-4aea-4f1e-87e1-03eb26294c4d"),
+                            ID = new Guid("b04a806b-103b-4585-906c-67958bdb0980"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 14, 15, 54, 23, 326, DateTimeKind.Local).AddTicks(8698),
+                            CreatedTime = new DateTime(2024, 10, 14, 16, 13, 8, 622, DateTimeKind.Local).AddTicks(7584),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cuongddpc07789@fpt.edu.vn",
                             FullName = "Đặng Đức Cường",

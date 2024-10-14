@@ -15,12 +15,17 @@ namespace NeonCinema_API.Controllers
         {
             _userRepository = us;
         }
+
+
+      
+        
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromForm] UserCreateRequest request, CancellationToken cancellationToken)
         {
             var result = await _userRepository.CreateUser(request, cancellationToken);
             return Ok(result);
         }
+
         [HttpGet("get-all")]
         
         public async Task<IActionResult> GetAllUser(CancellationToken cancellationToken)

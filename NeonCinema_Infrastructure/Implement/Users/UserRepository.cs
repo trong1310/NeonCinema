@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
 using System;
@@ -38,14 +40,14 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     Images = request.Images, // Lưu tên hình ảnh
                     DateOrBriht = request.DateOrBriht,
                     Adderss = request.Adderss,
-                    Status = request.Status,
-                    RoleID = request.RoleID, 
+                    Status = NeonCinema_Domain.Enum.EntityStatus.Active,
+                    RoleID = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D"), 
                 };
 
                 // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync(cancellationToken);
-                newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
+             //   newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
 
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -85,6 +87,11 @@ namespace NeonCinema_Infrastructure.Implement.Users
         {
             var obj = await _context.Users.FirstOrDefaultAsync(x=>x.ID == id);
             return _map.Map<UserDTO>(obj);
-        } 
+        }
+
+
+        //Create Client
+
+       
     }
 }
