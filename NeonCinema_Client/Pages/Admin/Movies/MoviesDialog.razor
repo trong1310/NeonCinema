@@ -1,4 +1,4 @@
-﻿@page "/movies-dialog"
+﻿@page "/movies-dialog/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.Countrys
 @using NeonCinema_Application.DataTransferObject.Directors
 @using NeonCinema_Application.DataTransferObject.Genre
@@ -23,22 +23,22 @@
             <div class="col-md-8">
                 <!-- Điều chỉnh col-md-8 để phần chữ chiếm nhiều không gian hơn -->
                 <h2 class="title">CÁM</h2>
-                <p class="description">Dị bản kinh dị đẫm máu lấy cảm hứng từ truyện cổ tích nổi tiếng Tấm Cám, nội dung chính của phim xoay quanh Cám – em gái cùng cha khác mẹ của Tấm.</p>
+                <p class="description">@movieDto.Description</p>
                 <p>
                     <strong>Phân loại:</strong>
-                    <span class="badge bg-danger">T18</span>
-                    <span class="text-muted">Phim phổ biến đến người xem từ 18 tuổi trở lên</span>
+                    @* <span class="badge bg-danger">T18</span> *@
+                    <span class="text-muted">Phim phổ biến đến người xem từ @movieDto.AgeAllowed trở lên</span>
                 </p>
                 <p>
-                    <strong>Định dạng:</strong>
+                    <strong>Kiểu phim</strong>
                     <span class="badge bg-success">2D</span>
                 </p>
-                <p><strong>Đạo diễn:</strong> <span class="text-info">Trần Hữu Tấn</span></p>
-                <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p>
-                <p><strong>Khởi chiếu:</strong> <span class="text-info">20/09/2024</span></p>
-                <p><strong>Thể loại:</strong> <span class="text-info">Horror</span></p>
-                <p><strong>Thời lượng:</strong> <span class="text-info">122 phút</span></p>
-                <p><strong>Ngôn ngữ:</strong> <span class="text-info">Phụ đề</span></p>
+                <p><strong>Đạo diễn:</strong> <span class="text-info">@movieDto.DirectorName</span></p>
+                @* <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p> *@
+                <p><strong>Khởi chiếu:</strong> <span class="text-info">@movieDto.StarTime</span></p>
+                <p><strong>Thể loại:</strong> <span class="text-info">@movieDto.GenreName</span></p>
+                <p><strong>Thời lượng:</strong> <span class="text-info">@movieDto.Duration</span></p>
+                <p><strong>Ngôn ngữ:</strong> <span class="text-info">@movieDto.LanguareName</span></p>
             </div>
         </div>
 
@@ -54,10 +54,13 @@
     </div>
 </body>
 @code{
-    private ViewMovieRequest request = new ViewMovieRequest();
-    protected override Task OnInitializedAsync()
+    [Parameter]
+    public Guid id { get; set; }
+    private MovieDTO movieDto = new MovieDTO();
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+         movieDto = await _movieServices.GetMovieById(id);
+
     }
 }
 <style>

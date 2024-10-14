@@ -76,20 +76,17 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
-		public async Task<MovieDTO> GetByID(Guid id, CancellationToken cancellationToken)
-		{
-			try
-			{
-				var response = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetByID?id={id}", cancellationToken);
-				return response;
-			}
-			catch (HttpRequestException ex)
-			{
-				// Xử lý lỗi yêu cầu HTTP
-				throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
-			}
-		}
-	}
+        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<MovieDTO> GetMovieById(Guid id)
+        {
+            var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
+            return respones;
+        }
+    }
 
 
 }
