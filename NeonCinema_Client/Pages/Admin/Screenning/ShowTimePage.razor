@@ -1,60 +1,133 @@
-﻿@* @page "/showtime"
+﻿@page "/showtimes"
 @using NeonCinema_Application.DataTransferObject.ShowTime
 @using NeonCinema_Client.Data.IServices.Screenning
-@using MudBlazor
 @using NeonCinema_Domain.Enum
-@using static MudBlazor.Icons.Material
+@using Twilio.TwiML.Messaging
+@inject IJSRuntime JSRuntime
+
 @inject IShowTimeService ShowTimeService
-@inject NavigationManager Navigation
 
-<MudCard>
-    <MudCardContent>
-        <MudTable Items="@showTimes" Striped="true" Hover="true">
-            <HeaderContent>
-                <MudTh>Start Time</MudTh>
-                <MudTh>End Time</MudTh>
-                <MudTh>Status</MudTh>
-                <MudTh>Actions</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="StartTime">@context.StartTime</MudTd>
-                <MudTd DataLabel="EndTime">@context.EndTime</MudTd>
-                <MudTd DataLabel="Status">@context.Status</MudTd>
-                <MudTd DataLabel="Actions">
-                    <MudButton Variant="Outlined" Color="Color.Primary" OnClick="() => OpenEditDialog(context.ID)">Edit</MudButton>
-                    <MudButton Variant="Outlined" Color="Color.Error" OnClick="() => DeleteShowTime(context.ID)">Delete</MudButton>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Outlined" Color="Color.Primary" OnClick="OpenCreateDialog">Create New ShowTime</MudButton>
-    </MudCardActions>
-</MudCard>
+<h3>Quản Lý ShowTimes</h3>
 
-<MudDialog @bind-IsVisible="isDialogVisible" MaxWidth="MaxWidth.Medium">
-    <DialogContent>
-        <MudForm Model="@showTimeModel" @ref="form">
-            <MudTextField T="DateTime" Label="Start Time" @bind-Value="showTimeModel.StartTime" />
-            <MudTextField T="DateTime" Label="End Time" @bind-Value="showTimeModel.EndTime" />
-            <MudSelect T="EntityStatus" Label="Status" @bind-Value="showTimeModel.Status">
-                <MudSelectItem Value="EntityStatus.Active">Active</MudSelectItem>
-                <MudSelectItem Value="EntityStatus.Inactive">Inactive</MudSelectItem>
-            </MudSelect>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Variant="Text" Color="Color.Primary" OnClick="SaveShowTime">Save</MudButton>
-        <MudButton Variant="Text" OnClick="CloseDialog">Cancel</MudButton>
-    </DialogActions>
-</MudDialog>
+<button class="icon-button add border border-primary" @onclick="ShowCreateModal">
+    <i class="fas fa-plus-circle"></i> Thêm
+</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var showTime in ShowTimes)
+        {
+            <tr>
+                <td>@showTime.StartTime</td>
+                <td>@showTime.EndTime</td>
+                <td>@showTime.Status</td>
+
+                <td>
+                    <button class="icon-button edit" @onclick="() => ShowEditModal(showTime.ID)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-button delete" @onclick="() => DeleteShowTime(showTime.ID)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (IsCreateModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseCreateModal">&times;</span>
+            <h3>Thêm ShowTime</h3>
+
+            <form>
+                <label>Start Time</label>
+                <input type="time" value="@ShowTimeRequest.StartTime.ToString(@"hh\:mm")"
+                       @onchange="e => ShowTimeRequest.StartTime = TimeSpan.Parse(e.Value.ToString())" />
+                @if (!string.IsNullOrEmpty(ErrorMessages[0]))
+                {
+                    <div class="error-message">@ErrorMessages[0]</div>
+                }
+
+                <label>End Time</label>
+                <input type="time" value="@ShowTimeRequest.EndTime.ToString(@"hh\:mm")"
+                       @onchange="e => ShowTimeRequest.EndTime = TimeSpan.Parse(e.Value.ToString())" />
+                @if (!string.IsNullOrEmpty(ErrorMessages[1]))
+                {
+                    <div class="error-message">@ErrorMessages[1]</div>
+                }
+
+                <label>Status</label>
+                <select @bind="ShowTimeRequest.Status">
+                    <option value="@EntityStatus.Active">Hoạt Động</option>
+                    <option value="@EntityStatus.Inactive">Ngưng hoạt động</option>
+                </select>
+
+                <button class="icon-button save" type="button" @onclick="SaveShowTime">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (IsEditModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseEditModal">&times;</span>
+            <h3>Cập Nhật ShowTime</h3>
+
+            <form>
+                <label>Start Time</label>
+                <input type="time" value="@showTimeUpdate.StartTime.ToString(@"hh\:mm")"
+                       @onchange="e => showTimeUpdate.StartTime = TimeSpan.Parse(e.Value.ToString())" />
+                @if (!string.IsNullOrEmpty(ErrorMessages[0]))
+                {
+                    <div class="error-message">@ErrorMessages[0]</div>
+                }
+
+                <label>End Time</label>
+                <input type="time" value="@showTimeUpdate.EndTime.ToString(@"hh\:mm")"
+                       @onchange="e => showTimeUpdate.EndTime = TimeSpan.Parse(e.Value.ToString())" />
+                @if (!string.IsNullOrEmpty(ErrorMessages[1]))
+                {
+                    <div class="error-message">@ErrorMessages[1]</div>
+                }
+
+                <label>Status</label>
+                <select @bind="showTimeUpdate.Status">
+                    <option value="@EntityStatus.Active">Hoạt Động</option>
+                    <option value="@EntityStatus.Inactive">Ngưng hoạt động</option>
+                </select>
+
+                <button class="icon-button save" type="button" @onclick="UpdateShowTime">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </form>
+        </div>
+    </div>
+}
 
 @code {
-    private List<ShowTimeDTO> showTimes;
-    private ShowTimeCreateRequest showTimeModel = new();
-    private MudForm form;
-    private bool isDialogVisible;
-    private Guid editingShowTimeId;
+    private List<ShowTimeDTO> ShowTimes = new();
+    private bool IsCreateModalOpen = false;
+    private bool IsEditModalOpen = false;
+    private ShowTimeCreateRequest ShowTimeRequest = new();
+    private Guid SelectedShowTimeId;
+    private ShowTimeUpdateRequest showTimeUpdate = new ShowTimeUpdateRequest();
+    private string[] ErrorMessages = new string[3]; // 0: Start Time, 1: End Time, 2: Overall error
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,68 +136,279 @@
 
     private async Task LoadShowTimes()
     {
-        showTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
+        ShowTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
     }
 
-    private void OpenCreateDialog()
+    private void ShowCreateModal()
     {
-        showTimeModel = new ShowTimeCreateRequest();
-        isDialogVisible = true;
+        ShowTimeRequest = new ShowTimeCreateRequest();
+        IsCreateModalOpen = true;
     }
 
-    private void OpenEditDialog(Guid id)
+    private async Task ShowEditModal(Guid showTimeId)
     {
-        editingShowTimeId = id;
-        LoadShowTimeForEdit(id);
-        isDialogVisible = true;
-    }
-
-    private async Task LoadShowTimeForEdit(Guid id)
-    {
-        var showTime = await ShowTimeService.GetShowTimeById(id, CancellationToken.None);
-        if (showTime != null)
+        var showTime = await ShowTimeService.GetShowTimeById(showTimeId, CancellationToken.None);
+        showTimeUpdate = new ShowTimeUpdateRequest
         {
-            showTimeModel.StartTime = showTime.StartTime;
-            showTimeModel.EndTime = showTime.EndTime;
-            showTimeModel.Status = showTime.Status;
-        }
+            StartTime = showTime.StartTime,
+            EndTime = showTime.EndTime,
+            Status = showTime.Status
+        };
+        SelectedShowTimeId = showTimeId;
+        IsEditModalOpen = true;
     }
 
     private async Task SaveShowTime()
     {
-        await form.Validate();
-
-        if (form.IsValid)
+        if (!IsValidShowTime(ShowTimeRequest))
         {
-            if (editingShowTimeId == Guid.Empty)
-            {
-                await ShowTimeService.CreateShowTime(showTimeModel, CancellationToken.None);
-            }
-            else
-            {
-                await ShowTimeService.UpdateShowTime(editingShowTimeId, new ShowTimeUpdateRequest
-                    {
-                        ID = editingShowTimeId,
-                        StartTime = showTimeModel.StartTime,
-                        EndTime = showTimeModel.EndTime,
-                        Status = showTimeModel.Status
-                    });
-            }
+            return; // Skip saving if invalid
+        }
+        try
+        {
+            await ShowTimeService.CreateShowTime(ShowTimeRequest, CancellationToken.None);
+            await LoadShowTimes();
+            CloseCreateModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving show time: {ex}");
+        }
+    }
 
-            isDialogVisible = false;
+    private async Task UpdateShowTime()
+    {
+        if (showTimeUpdate == null)
+        {
+            Console.WriteLine("showTimeUpdate is null. Cannot update.");
+            return;
+        }
+
+        if (!IsValidShowTime(showTimeUpdate))
+        {
+            return; // Skip updating if invalid
+        }
+
+        try
+        {
+            await ShowTimeService.UpdateShowTime(SelectedShowTimeId, showTimeUpdate, CancellationToken.None);
+            await LoadShowTimes();
+            CloseEditModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating show time: {ex}");
+        }
+    }
+
+    private async Task DeleteShowTime(Guid showTimeId)
+    {
+        var confirmResult = await JSRuntime.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa ShowTime này?");
+        if (confirmResult)
+        {
+            await ShowTimeService.DeleteShowTime(showTimeId, CancellationToken.None);
             await LoadShowTimes();
         }
     }
 
-    private async Task DeleteShowTime(Guid id)
+
+    private void CloseCreateModal()
     {
-        await ShowTimeService.DeleteShowTime(id, CancellationToken.None);
-        await LoadShowTimes();
+        IsCreateModalOpen = false;
+        ShowTimeRequest = new ShowTimeCreateRequest();
     }
 
-    private void CloseDialog()
+    private void CloseEditModal()
     {
-        isDialogVisible = false;
+        IsEditModalOpen = false;
+        showTimeUpdate = new ShowTimeUpdateRequest();
+    }
+
+    private bool IsValidShowTime(ShowTimeCreateRequest showTimeRequest)
+    {
+        bool isValid = true;
+        ErrorMessages[0] = string.IsNullOrEmpty(showTimeRequest.StartTime.ToString()) ? "Start Time không được để trống." : null;
+        ErrorMessages[1] = string.IsNullOrEmpty(showTimeRequest.EndTime.ToString()) ? "End Time không được để trống." : null;
+
+        if (showTimeRequest.EndTime <= showTimeRequest.StartTime)
+        {
+            ErrorMessages[1] = "End Time phải lớn hơn Start Time.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private bool IsValidShowTime(ShowTimeUpdateRequest showTimeUpdate)
+    {
+        bool isValid = true;
+        ErrorMessages[0] = string.IsNullOrEmpty(showTimeUpdate.StartTime.ToString()) ? "Start Time không được để trống." : null;
+        ErrorMessages[1] = string.IsNullOrEmpty(showTimeUpdate.EndTime.ToString()) ? "End Time không được để trống." : null;
+
+        if (showTimeUpdate.EndTime <= showTimeUpdate.StartTime)
+        {
+            ErrorMessages[1] = "End Time phải lớn hơn Start Time.";
+            isValid = false;
+        }
+
+        return isValid;
     }
 }
- *@
+
+<style>
+   body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4; /* Màu nền nhẹ nhàng */
+    margin: 0;
+    padding: 20px;
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white; /* Nền trắng cho bảng */
+    border-radius: 8px; /* Bo góc cho bảng */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Bóng cho bảng */
+}
+
+.table th, .table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #007bff; /* Màu nền cho header */
+    color: white; /* Màu chữ cho header */
+}
+
+.table tr:hover {
+    background-color: #f1f1f1; /* Màu nền khi hover */
+}
+
+/* Button Styles */
+.icon-button {
+    background-color: #007bff; /* Màu nền button chính */
+    color: white; /* Màu chữ button */
+    border: none;
+    border-radius: 5px; /* Bo góc cho button */
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+    padding: 8px 12px; /* Padding cho button */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển đổi màu nền */
+}
+
+.icon-button:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+}
+
+.icon-button.add {
+    background-color: #28a745; /* Màu nền cho nút thêm */
+}
+
+.icon-button.add:hover {
+    background-color: #218838; /* Màu nền khi hover cho nút thêm */
+}
+
+.icon-button.edit {
+    background-color: #ffc107; /* Màu nền cho nút sửa */
+}
+
+.icon-button.edit:hover {
+    background-color: #e0a800; /* Màu nền khi hover cho nút sửa */
+}
+
+.icon-button.delete {
+    background-color: #dc3545; /* Màu nền cho nút xóa */
+}
+
+.icon-button.delete:hover {
+    background-color: #c82333; /* Màu nền khi hover cho nút xóa */
+}
+
+/* Modal Styles */
+    .modal {
+        display: block; /* Hiện modal */
+        position: fixed; /* Ở vị trí cố định */
+        z-index: 1000; /* Ở trên cùng */
+        left: 0;
+        top: 0;
+        width: 100%; /* Chiều rộng đầy đủ */
+        height: 100%; /* Chiều cao đầy đủ */
+        background-color: rgba(0, 0, 0, 0.5); /* Nền tối với độ mờ */
+        padding-top: 60px; /* Có thể thay đổi tùy thuộc vào menu của bạn */
+    }
+
+    .modal-content {
+        background-color: #fefefe; /* Nền cho nội dung modal */
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px; /* Bo góc cho modal */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Bóng cho modal */
+        width: 50%; /* Giảm chiều rộng xuống 50% */
+        max-width: 600px; /* Đặt chiều rộng tối đa */
+    }
+
+
+/* Close Button Style */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Error Message Styles */
+.error-message {
+    color: red;
+    font-size: 14px; /* Kích thước chữ lớn hơn để dễ đọc */
+    margin-top: 5px; /* Khoảng cách với các trường input */
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+}
+
+form label {
+    margin-top: 15px; /* Khoảng cách trên cho các label */
+    font-weight: bold; /* Chữ đậm cho các label */
+}
+
+form input[type="time"],
+form select {
+    padding: 10px; /* Padding cho các input và select */
+    border: 1px solid #ccc; /* Đường viền cho các input và select */
+    border-radius: 5px; /* Bo góc cho input và select */
+    margin-top: 5px; /* Khoảng cách trên cho input và select */
+}
+
+/* Responsive Styles */
+
+    Media
+    (max-width: 768px) {
+    .modal-content {
+        width: 95%; /* Chiều rộng cho modal trên thiết bị nhỏ */
+    }
+
+    .table th, .table td {
+        padding: 10px; /* Padding nhỏ hơn cho bảng trên thiết bị nhỏ */
+    }
+
+    .icon-button {
+        font-size: 14px; /* Kích thước chữ nhỏ hơn cho button trên thiết bị nhỏ */
+        padding: 6px 10px; /* Padding nhỏ hơn cho button trên thiết bị nhỏ */
+    }
+}
+</style>

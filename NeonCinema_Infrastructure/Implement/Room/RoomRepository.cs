@@ -31,7 +31,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
                 Status = request.Status, // Assuming you want to set the status as well
-                CinemasID = request.CinemasID,
+                CinemasID = Guid.Parse("4e83a487-e153-44d1-93d9-5675a97ac7d1")
             };
 
             _context.Room.Add(roomEntity); // Add the Room entity to the DbSet

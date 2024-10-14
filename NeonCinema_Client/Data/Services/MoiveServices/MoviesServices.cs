@@ -1,68 +1,45 @@
-﻿using NeonCinema_Application.DataTransferObject.Countrys;
+﻿using Bogus.Hollywood.Models;
+using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_Client.Services.MoivesService
 {
-    public class MoviesServices : IMovieservices
+	public class MoviesServices : IMovieservices
     {
-        private  readonly HttpClient _httpClient;
+
+        private readonly HttpClient _httpClient;
+
         public MoviesServices()
         {
             _httpClient = new HttpClient();
         }
-
-        public async Task<List<MovieDTO>> FilMovie(List<MovieDTO> lst, Func<MovieDTO, bool> dk1 = null, Func<MovieDTO, bool> dk2 = null, Func<MovieDTO, bool> dk3 = null, Func<MovieDTO, bool> dk4 = null)
+        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request)
         {
-            var query = lst.AsQueryable();
-
-            if (dk1 != null)
-            {
-                query = query.Where(dk1).AsQueryable();
-            }
-
-            if (dk2 != null)
-            {
-                query = query.Where(dk2).AsQueryable();
-            }
-
-            if (dk3 != null)
-            {
-                query = query.Where(dk3).AsQueryable();
-            }
-
-            if (dk4 != null)
-            {
-                query = query.Where(dk4).AsQueryable();
-            }
-
-            return query.ToList();
-        }
-
-        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest input)
-        {
-            //chua validate
+            
             try
             {
-                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", input);
-                    return result;
-                
+                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", request);
+                return result;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent("Có lỗi : " + ex.Message)
                 };
-			}
-        }
 
-        public async Task<List<GenreDTO>> GetAllGenre()
+            }
+
+        }
+		
+		public async Task<List<GenreDTO>> GetAllGenre()
         {
             var lst = await _httpClient.GetFromJsonAsync<List<GenreDTO>>("https://localhost:7211/api/Genre/get-all-genre");
             return lst;
@@ -70,7 +47,7 @@ namespace NeonCinema_Client.Services.MoivesService
 
         public async Task<List<CountryDTO>> GetAllCountry()
         {
-            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country/get-all");
+            var lst = await _httpClient.GetFromJsonAsync<List<CountryDTO>>("https://localhost:7211/api/Country");
             return lst;
         }
 
@@ -86,11 +63,30 @@ namespace NeonCinema_Client.Services.MoivesService
             return lst;
         }
 
-        public async Task<List<MovieDTO>> GetAllMovies()
+        public async Task<PaginationResponse<MovieDTO>> GetAllMovies(ViewMovieRequest request)
         {
-            var obj = await _httpClient.GetFromJsonAsync<List<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
-            return obj;
+            try
+            {
+                var results = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/Movie/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
+                return results;
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception("co loi xay ra : " + ex.Message);
+            }
         }
 
+        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<MovieDTO> GetMovieById(Guid id)
+        {
+            var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
+            return respones;
+        }
     }
+
+
 }

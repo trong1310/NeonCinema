@@ -9,16 +9,16 @@ namespace NeonCinema_Domain.Enum
     public enum EntityStatus
     {
         Active = 1, // dang hoat dong
-         // KHÔNG HOẠT ĐỘNG
+        Inactive = 2, // KHÔNG HOẠT ĐỘNG
 
-        PendingForConfirmation = 2, // cho xac nhan 
-        PendingForApproval = 3, // cho phe duyet
-        Locked = 4, // da khoa
-        Men = 5,//Nam
-        Girl = 6,//Nữ
-        ABC = 7,// Khác
-        HD= 8, //trang thai hoat d
-        KHD = 9
+        PendingForConfirmation = 3, // cho xac nhan 
+        PendingForApproval = 4, // cho phe duyet
+        Locked = 5, // da khoa
+        Men = 6,//Nam
+        Girl = 7,//Nữ
+        ABC = 8,// Khác
+        HD= 9, //trang thai hoat d
+        KHD = 10
     }
 }
 

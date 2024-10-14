@@ -23,7 +23,6 @@ namespace NeonCinema_Domain.Database.Entities
         public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }
         //
-
     
         public virtual Roles? Roles { get; set; }
         public virtual ICollection<Bill>? Bills { get; set; }

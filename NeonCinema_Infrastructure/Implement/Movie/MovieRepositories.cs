@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
@@ -16,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
@@ -36,21 +38,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         {
             try
             {
-
-               
-               
-                string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
-                if (!Directory.Exists(fileRoot))
-                {
-                    Directory.CreateDirectory(fileRoot);
-                }
-
-                string trailerfile = Guid.NewGuid() + Path.GetExtension(request.Images.FileName);
-                string trailerFilePath = Path.Combine(fileRoot, trailerfile);
-                using (var fileStream = new FileStream(trailerFilePath, FileMode.Create))
-                {
-                    request.Images.CopyTo(fileStream);
-                }
                 var movies = new Movies()
                 {
                     ID = Guid.NewGuid(),
@@ -60,7 +47,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     Trailer = request.Trailer,
                     Description = request.Description,
                     StarTime = request.StarTime,
-                    Images = $"{trailerfile}",
+                    Images = request.Images,
                     AgeAllowed = request.AgeAllowed,
                     Status = MovieStatus.Comingsoon,
                     GenreID = request.GenreID,
@@ -123,7 +110,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             }
         }
 
-        public async Task<List<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
             var query = _context.Movies
@@ -143,8 +130,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             var dataview = (from a in result.Data
                             join b in query on a.ID
-                            equals b.ID 
-                            orderby b.StarTime 
+                            equals b.ID
+                            orderby b.StarTime
 
                             select new MovieDTO
                             {
@@ -154,24 +141,53 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Status = b.Status,
                                 Name = b.Name,
                                 Images = b.Images,
+                                StarTime = b.StarTime,
                                 Duration = b.Duration,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,                       
-                                
+                                GenreName = b.Genre.GenreName,
+
                             }).ToList();
-         
- return dataview;
+
+            return new PaginationResponse<MovieDTO>() 
+            {
+                Data = dataview,
+                HasNext = result.HasNext,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
+            };
         }
 
+        public Task<MovieDTO> GetMovieById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        //public async Task<MovieDTO> GetMovieById(Guid id)
+        //{
+
+        //    var query = _context.Movies
+        //                    .Include(x => x.Genre)
+        //                    .Include(x => x.Screening)
+        //                    .Include(x => x.Director)
+        //                    .Include(x => x.Lenguage)
+        //                    .Include(x => x.Countrys)
+        //                    .Include(x => x.TicketSeats)
+        //                    .AsNoTracking();
+
+
+        //        query = query.Where(x => x.ID == id);
+
+
+        //}
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
         {
             try
             {
                 var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if(obj.Deleted == true && obj == null)
+                if (obj.Deleted == true && obj == null)
                 {
 
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)

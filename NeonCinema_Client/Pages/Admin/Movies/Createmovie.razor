@@ -1,127 +1,296 @@
-﻿@* @page "/create-movie"
-@using Microsoft.AspNetCore.Http
-@using NeonCinema_Application.DataTransferObject.Countrys
-@using NeonCinema_Application.DataTransferObject.Directors
-@using NeonCinema_Application.DataTransferObject.Genre
-@using NeonCinema_Application.DataTransferObject.Language
-@using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Client.Data.IServices.IMoviesServices
-@inject HttpClient Http
-@inject IMovieservices _movie
-@inject NavigationManager Navigation
+﻿@page "/create-flims"
+@using Microsoft.AspNetCore.Http;
+@using NeonCinema_Application.DataTransferObject.Countrys;
+@using NeonCinema_Application.DataTransferObject.Directors;
+@using NeonCinema_Application.DataTransferObject.Genre;
+@using NeonCinema_Application.DataTransferObject.Language;
+@using NeonCinema_Application.DataTransferObject.Movie;
+@using NeonCinema_Client.Data.IServices.IMoviesServices;
+@using System.Text.Json
+@layout LayoutAdmin
+@inject IMovieservices _movieServices
+@inject NavigationManager _navigation
+@inject HttpClient _http
 
-<h3>Create New Movie</h3>
+<EditForm Model="request">
+	<div class="container-fluid mt-5">
+		<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
+		<span>@errorMessage</span>
+		<div class="row justify-content-center">
+			<div class="col-md-3 text-center mb-4 mt-5">
+				<img src="/images/Client/cam.jpg" alt="Profile" class="" img-fluid profile-pic">
+			</div>
+			<div class="col-md-9" style="margin-top:10px;">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="name" class="font-weight-bold">Tên Phim</label>
+							<input type="text" class="form-control" id="name" @bind-value="request.Name" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Duration" class="font-weight-bold">Thời Lượng</label>
+							<input type="text" class="form-control" id="Duration" @bind-value="request.Duration" />
+						</div>
+					</div>
+				</div>
 
-<EditForm Model="movie" OnValidSubmit="CreateMovie">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Trailer" class="font-weight-bold">Trailer</label>
+							<input type="text" class="form-control" id="Trailer" @bind-value="request.Trailer" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+							<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
+						</div>
+					</div>
+				</div>
 
-    <div class="form-group">
-        <label>Name</label>
-        <InputText @bind-Value="movie.Name" class="form-control" />
-    </div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="images" class="font-weight-bold">Images</label>
+							<InputFile OnChange="HandleSelected" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+							<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
+						</div>
+					</div>
+				</div>
 
-    <div class="form-group">
-        <label>Description</label>
-        <InputTextArea @bind-Value="movie.Description" class="form-control" />
-    </div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Genre" class="font-weight-bold">Thể loại</label>
+							<select @onchange="(e) => request.GenreID =  Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn ngôn ngữ</option>
+								@foreach (var genre in genres)
+								{
+									<option value="@genre.ID">@genre.GenreName</option>
+								}
+							</select>
 
-    <div class="form-group">
-        <label>Duration (minutes)</label>
-        <InputNumber @bind-Value="movie.Duration" class="form-control" />
-    </div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+							<select @onchange="(e) => request.LenguageID =  Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn ngôn ngữ</option>
+								@foreach (var language in languages)
+								{
+									<option value="@language.ID">@language.LanguageName</option>
+								}
+							</select>
 
-    <div class="form-group">
-        <label>Start Time</label>
-        <InputDate @bind-Value="movie.StarTime" class="form-control" />
-    </div>
+						</div>
+					</div>
+				</div>
 
-    <div class="form-group">
-        <label>Trailer</label>
-        <InputText @bind-Value="movie.Trailer" class="form-control" />
-    </div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Country" class="font-weight-bold">Quốc gia</label>
+							<select @onchange="(e) => request.CountryID =  Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn quốc gia</option>
+								@foreach (var country in countries)
+								{
+									<option value="@country.ID">@country.CountryName</option>
+								}
+							</select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Director" class="font-weight-bold">Đạo diễn</label>
 
-    <div class="form-group">
-        <label>Age Allowed</label>
-        <InputNumber @bind-Value="movie.AgeAllowed" class="form-control" />
-    </div>
+							<select @onchange="(e) => request.DirectorID = Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn đạo diễn</option>
+								@foreach (var director in directors)
+								{
+									<option value="@director.ID">@director.FullName</option>
+								}
+							</select>
+						</div>
+					</div>
+				</div>
 
-    <div class="form-group">
-        <label>Genre</label>
-        <InputSelect @bind-Value="movie.GenreID" class="form-control">
-            <option value="">Select Genre</option>
-            @foreach (var genre in genres)
-            {
-                <option value="@genre.ID">@genre.Name</option>
-            }
-        </InputSelect>
-    </div>
+				<div class="form-group">
+					<label for="Description" class="font-weight-bold">Mô tả</label>
+					<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
+				</div>
 
-    <div class="form-group">
-        <label>Language</label>
-        <InputSelect @bind-Value="movie.LenguageID" class="form-control">
-            <option value="">Select Language</option>
-            @foreach (var language in languages)
-            {
-                <option value="@language.ID">@language.Name</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="form-group">
-        <label>Country</label>
-        <InputSelect @bind-Value="movie.CountryID" class="form-control">
-            <option value="">Select Country</option>
-            @foreach (var country in countries)
-            {
-                <option value="@country.ID">@country.Name</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="form-group">
-        <label>Director</label>
-        <InputSelect @bind-Value="movie.DirectorID" class="form-control">
-            <option value="">Select Director</option>
-            @foreach (var director in directors)
-            {
-                <option value="@director.ID">@director.Name</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="form-group">
-        <label>Image</label>
-        <InputFile OnChange="OnInputFileChange" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create Movie</button>
+				<div class="text-center">
+					<button type="button" @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </EditForm>
 
 @code {
-    private CreateMovieRequest movie = new CreateMovieRequest();
-    private List<GenreDTO> genres = new List<GenreDTO>();
-    private List<LanguageDTO> languages = new List<LanguageDTO>();
-    private List<CountryDTO> countries = new List<CountryDTO>();
-    private List<DirectorDTO> directors = new List<DirectorDTO>();
-    private IFormFile selectedImage;
+	private CreateMovieRequest request = new CreateMovieRequest();
+	private IBrowserFile selectedFile;
+	private string errorMessage;
 
-    protected override async Task OnInitializedAsync()
-    {
-        genres = await _movie.GetAllGenre();
-        languages = await _movie.GetAllLanguage();
-        countries = await _movie.GetAllCountry();
-        directors = await _movie.GetAllDirector();
-    }
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
 
-    private async Task CreateMovie()
-    {
-        
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+	}
 
-    private void OnInputFileChange(InputFileChangeEventArgs e)
-    {
-        selectedImage = e.File;
-    }
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			if (selectedFile == null || string.IsNullOrEmpty(request.GenreID.ToString()) || string.IsNullOrEmpty(request.Name) ||
+					string.IsNullOrEmpty(request.Duration.ToString()) || string.IsNullOrEmpty(request.Description) ||
+					string.IsNullOrEmpty(request.Trailer) || string.IsNullOrEmpty(request.AgeAllowed.ToString()) ||
+					string.IsNullOrEmpty(request.CountryID.ToString()) || string.IsNullOrEmpty(request.DirectorID.ToString()) ||
+					string.IsNullOrEmpty(request.LenguageID.ToString()))
+			{
+				errorMessage = "Vui lòng nhập đầy đủ thông tin";
+				return;
+			}
+
+			var content = new MultipartFormDataContent();
+
+			// Tạo nội dung tệp từ selectedFile
+			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+			content.Add(fileContent, "file", selectedFile.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				var fileName = Path.GetFileName(fileUrl);
+				request.Images = fileName;
+
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+
+
+			var flimsResponse = await _movieServices.CreateMovie(request);
+			if (flimsResponse.IsSuccessStatusCode)
+			{
+				Console.WriteLine(request.GenreID);
+				Console.WriteLine(request.LenguageID);
+				Console.WriteLine(request.CountryID);
+				Console.WriteLine(request.DirectorID);
+				_navigation.NavigateTo("/list-movie-admin");
+			}
+			else
+			{
+				Console.WriteLine($"Có lỗi xảy ra khi tạo phim.{flimsResponse.Content}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+			errorMessage = "Có lỗi xảy ra. Vui lòng thử lại." + ex.Message;
+		}
+	}
 }
- *@
+
+
+<style>
+	body {
+		background-color: #f4f4f9;
+	}
+
+	.card {
+		border-radius: 10px;
+		background-color: white;
+		max-width: 1000px;
+		margin: auto;
+	}
+
+	h2 {
+		font-family: 'Arial', sans-serif;
+		color: #333;
+	}
+
+	.profile-pic {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border: 3px solid #eaeaea;
+		margin-left: -15px; /* Shift image slightly left */
+	}
+
+	label {
+		font-size: 14px;
+		color: #555;
+	}
+
+	input, select, textarea {
+		border-radius: 5px;
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin-left: -20px; /* Shift input fields slightly left */
+	}
+
+	.form-control:focus {
+		border-color: #007bff;
+		box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+	}
+
+	textarea {
+		resize: none;
+	}
+
+	.btn-primary {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+		}
+
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-check {
+		margin-right: 15px; /* Adjust spacing between radio buttons */
+	}
+	img{
+		margin-top: 20px;
+		width: 270px;
+		height: 400px;
+	}
+</style>

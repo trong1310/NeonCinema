@@ -25,108 +25,42 @@ namespace NeonCinema_Infrastructure.Implement.Users
         }
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
-            // Kiểm tra các trường thông tin đầu vào
-            if (string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.PhoneNumber) ||
-                string.IsNullOrEmpty(request.Email) || 
-                string.IsNullOrEmpty(request.Adderss))
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                var newUser = new NeonCinema_Domain.Database.Entities.Users
                 {
-                    Content = new StringContent("Các trường không được để trống!")
+                    ID = Guid.NewGuid(),
+                    FullName = request.FullName,
+                    PassWord = Hash.Encrypt(request.PassWord),
+                    PhoneNumber = request.PhoneNumber,
+                    Email = request.Email,
+                    Gender = request.Gender,
+                    Images = request.Images, // Lưu tên hình ảnh
+                    DateOrBriht = request.DateOrBriht,
+                    Adderss = request.Adderss,
+                    Status = request.Status,
+                    RoleID = request.RoleID, 
+                };
+
+                // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync(cancellationToken);
+                newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Tạo người dùng thành công!")
                 };
             }
-
-            // Kiểm tra nếu người dùng đã tồn tại
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber || u.Email == request.Email, cancellationToken);
-
-            if (existingUser != null)
+            catch (Exception ex)
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent("Số điện thoại hoặc email đã tồn tại!")
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
                 };
             }
-
-            // Tạo thư mục để lưu trữ hình ảnh nếu chưa tồn tại
-            string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
-            if (!Directory.Exists(fileRoot))
-            {
-                Directory.CreateDirectory(fileRoot);
-            }
-
-            // Lưu hình ảnh người dùng
-            string userImageFileName = Guid.NewGuid() + Path.GetExtension(request.Images.FileName);
-            string userImagePath = Path.Combine(fileRoot, userImageFileName);
-            using (var fileStream = new FileStream(userImagePath, FileMode.Create))
-            {
-                await request.Images.CopyToAsync(fileStream);
-            }
-
-            // Tạo đối tượng người dùng mới
-            var newUser = new NeonCinema_Domain.Database.Entities.Users
-            {
-                FullName = request.FullName,
-                PassWord = Hash.Encrypt(request.PassWord),
-                PhoneNumber = request.PhoneNumber,
-                Email = request.Email,
-                Gender = request.Gender,
-                Images = $"{userImageFileName}", // Lưu tên hình ảnh
-                DateOrBriht = request.DateOrBriht,
-                Adderss = request.Adderss,
-                Status = request.Status,
-                RoleID = request.RoleID /*== Guid.Empty ? new Guid("25d7afcb-949b-4717-a961-b50f2e18657d") : request.RoleID // Mặc định RoleID*/
-            };
-
-            // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync(cancellationToken);
-            newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("Tạo người dùng thành công!")
-            };
         }
 
-        public async Task<HttpResponseMessage> UpdateUser(Guid id, UserUpdateRequest request, CancellationToken cancellationToken)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    Content = new StringContent("Người dùng không tồn tại!")
-                };
-            }
-
-            if (string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.PhoneNumber) ||
-                string.IsNullOrEmpty(request.Email) || 
-                string.IsNullOrEmpty(request.Adderss))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Các trường không được để trống!")
-                };
-            }
-
-            user.FullName = request.FullName;
-            user.PhoneNumber = request.PhoneNumber;
-            user.Email = request.Email;
-            user.Gender = request.Gender;
-            user.Images = request.Images;
-            user.Adderss = request.Adderss;
-            user.Status = request.Status;
-            user.RoleID = request.RoleID;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("Cập nhật người dùng thành công!")
-            };
-        }
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
             var users = await _context.Users
