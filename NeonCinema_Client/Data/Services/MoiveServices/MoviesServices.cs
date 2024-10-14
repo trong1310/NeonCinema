@@ -11,7 +11,7 @@ using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_Client.Services.MoivesService
 {
-    public class MoviesServices : IMovieservices
+	public class MoviesServices : IMovieservices
     {
 
         private readonly HttpClient _httpClient;
@@ -38,8 +38,8 @@ namespace NeonCinema_Client.Services.MoivesService
             }
 
         }
-
-        public async Task<List<GenreDTO>> GetAllGenre()
+		
+		public async Task<List<GenreDTO>> GetAllGenre()
         {
             var lst = await _httpClient.GetFromJsonAsync<List<GenreDTO>>("https://localhost:7211/api/Genre/get-all-genre");
             return lst;
@@ -76,15 +76,20 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
-        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
-        {
-            throw new NotImplementedException();
-        }
+		public async Task<MovieDTO> GetByID(Guid id, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var response = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetByID?id={id}", cancellationToken);
+				return response;
+			}
+			catch (HttpRequestException ex)
+			{
+				// Xử lý lỗi yêu cầu HTTP
+				throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
+			}
+		}
+	}
 
-        public Task<UserDTO> GetMovieById(Guid id, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
 }
