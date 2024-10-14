@@ -20,21 +20,16 @@ namespace NeonCinema_Client.Services.User
     {
         private readonly HttpClient _httpClient;
         private readonly LoginModel _loginModel;
-        public UserServices()
+        public UserServices(HttpClient httpClient)
         {
             _loginModel = new LoginModel();
-            var handler = CreateHttpClientHandler();
-            _httpClient = new HttpClient(handler)
-            {
-                BaseAddress = new Uri("https://localhost:7211")
-            };
+            _httpClient = httpClient;
         }
 
-        private static HttpClientHandler CreateHttpClientHandler()
+        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request)
         {
-            var handler = new HttpClientHandler();
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-            return handler;
+            var repones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
+            return repones;
         }
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
@@ -57,23 +52,6 @@ namespace NeonCinema_Client.Services.User
             {
                 // Xử lý lỗi yêu cầu HTTP
                 throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
-            }
-        }
-
-        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request)
-        {
-            try
-            {
-                var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
-                return obj;
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Có lỗi : " + ex.Message)
-                };
-
             }
         }
 
