@@ -4,6 +4,7 @@
 @using NeonCinema_Client.Data.IServices.User
 @layout LayoutAdmin
 @using System.Text.Json
+@using NeonCinema_Domain.Enum
 @inject IUserServices UserService
 @inject NavigationManager _navigation
 @inject HttpClient _http
@@ -53,30 +54,36 @@
                             <InputFile OnChange="HandleSelected" />
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="pass" class="font-weight-bold">Mật khẩu</label>
+                            <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
+                        </div>
+                    </div>
                 </div>
+               
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Giới tính</label>
-                            <div style="margin-left: -20px; margin-top: 5px">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale"  @bind="request.Gender"/>
-                                    <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderFemale"  @bind="request.Gender"/>
-                                    <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
-                                </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="genderMale" name="gender" @bind="@request.Gender"  />
+                                <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="genderFemale" name="gender" @bind="@request.Gender"/>
+                                <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                             </div>
                         </div>
+
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Trạng thái</label>
-                            <select class="form-select">
-                                <option value="Active">Đang hoạt động</option>
-                                <option value="InActive">Không hoạt động</option>
+                            <select class="form-select" @bind="request.Status">
+                                <option value="@(EntityStatus.Active)">Đang hoạt động</option>
+                                <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
                             </select>
                         </div>
                     </div>
@@ -143,7 +150,8 @@
             }
             else
             {
-                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {userResponse.Content}");
+                var errorContent = await userResponse.Content.ReadAsStringAsync();
+                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
             }
         }
         catch (Exception ex)
@@ -200,7 +208,7 @@
         resize: none;
     }
 
-    .btn-primary {
+    .btn-success {
         background-color: #007bff;
         border: none;
         padding: 10px 20px;
@@ -208,7 +216,7 @@
         font-size: 16px;
     }
 
-        .btn-primary:hover {
+        .btn-success:hover {
             background-color: #0056b3;
         }
 

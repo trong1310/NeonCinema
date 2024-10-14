@@ -11,6 +11,7 @@ namespace NeonCinema_Application.DataTransferObject.User
 {
     public class UserCreateRequest
     {
+        public Guid Id { get; set; }
         public string FullName { get; set; }
         public string PassWord { get; set; }
         public string PhoneNumber { get; set; }
@@ -18,12 +19,9 @@ namespace NeonCinema_Application.DataTransferObject.User
         public bool Gender { get; set; }
         public string Images { get; set; }
         public DateTime DateOrBriht { get; set; }// ngày sinh nhật
-        public string? ConfirmCode { get; set; }//mã xác nhận
         public string Adderss { get; set; }
 
         public EntityStatus Status { get; set; }
-        public Guid RoleID { get; set; }//mặc định role = 3(khách hàng)
-
 
     }
      
