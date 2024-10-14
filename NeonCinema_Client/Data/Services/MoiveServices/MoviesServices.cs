@@ -81,9 +81,10 @@ namespace NeonCinema_Client.Services.MoivesService
             throw new NotImplementedException();
         }
 
-        public Task<UserDTO> GetMovieById(Guid id, CancellationToken cancellationToken)
+        public async Task<MovieDTO> GetMovieById(Guid id)
         {
-            throw new NotImplementedException();
+            var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
+            return respones;
         }
     }
 

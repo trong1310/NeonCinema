@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
@@ -156,6 +157,24 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 PageNumber = result.PageNumber,
                 PageSize = result.PageSize
             };
+        }
+
+        public async Task<MovieDTO> GetMovieById(Guid id)
+        {
+
+            var query = _context.Movies
+                            .Include(x => x.Genre)
+                            .Include(x => x.Screening)
+                            .Include(x => x.Director)
+                            .Include(x => x.Lenguage)
+                            .Include(x => x.Countrys)
+                            .Include(x => x.TicketSeats)
+                            .AsNoTracking();
+
+  
+                query = query.Where(x => x.ID == id);
+            
+         
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
