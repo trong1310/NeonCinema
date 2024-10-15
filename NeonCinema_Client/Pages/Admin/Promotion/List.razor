@@ -132,7 +132,7 @@
 												</button>
 											</div>
 											<div class="col-5">
-												<h6>Thêm khuyến mãi cho khách hàng</h6>
+												<h6>Thêm khuyến mại cho khách hàng</h6>
 											</div>
 										</div>
 									</div>
@@ -235,40 +235,40 @@
 									</div>
 								</div>
 								<div class="modal-body">
-									<EditForm Model="@inputUpdate" OnValidSubmit="async () => await UpdatePromotion(idActive)">
+									<EditForm Model="@inputUpdate" OnValidSubmit="async () => await UpdatePromotion()">
 										<DataAnnotationsValidator />
 										<div class="mb-3">
 											<label for="" class="form-label">Mã khuyến mại</label>
-											<InputText @bind-Value="input.Code" class="form-control" />
-											<ValidationMessage For="@(() => input.Code)" />
+											<InputText @bind-Value="inputUpdate.Code" class="form-control" />
+											<ValidationMessage For="@(() => inputUpdate.Code)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Mô tả</label>
-											<InputText @bind-Value="input.Description" class="form-control" />
+											<InputText @bind-Value="inputUpdate.Description" class="form-control" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Phần trăm giảm giá</label>
-											<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
-											<ValidationMessage For="@(() => input.DiscountAmount)" />
+											<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
+											<ValidationMessage For="@(() => inputUpdate.DiscountAmount)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Ngày bắt đầu</label>
-											<InputDate @bind-Value="input.StartDate" class="form-control" />
-											<ValidationMessage For="@(() => input.StartDate)" />
+											<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
+											<ValidationMessage For="@(() => inputUpdate.StartDate)" />
 										</div>
 										<div class="mb-3">
 											<label for="" class="form-label">Ngày kết thúc</label>
-											<InputDate @bind-Value="input.EndDate" class="form-control" />
-											<ValidationMessage For="@(() => input.EndDate)" />
+											<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" />
+											<ValidationMessage For="@(() => inputUpdate.EndDate)" />
 										</div>
 										<div class="mb-3">
 											<!--Status-->
 										</div>
-										@if (messageString == "Thêm thành công")
+										@if (messageString == "Sửa thành công")
 										{
 											<p class="alert alert-success">@messageString</p>
 										}
-										else if (messageString == "Thêm thất bại")
+										else if (messageString == "Sửa thất bại")
 										{
 											<p class="alert alert-danger">@messageString</p>
 										}
@@ -301,20 +301,20 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var item in _lstpro)
+					@foreach (var item in _lstpro.Select((value, index) => new { value, index }))
 					{
 						<tr>
-							<td>@stt</td>
-							<td>@item.Code</td>
-							<td>@item.Description</td>
-							<td>@item.DiscountAmount%</td>
-							<td>@item.StartDate.ToShortDateString()</td>
-							<td>@item.EndDate.ToShortDateString()</td>
-							<td><span class="bg-success text-white rounded">@item.Status</span></td> <!--Đoạn này cần if else để css màu-->
+							<td>@(item.index + 1)</td>
+							<td>@item.value.Code</td>
+							<td>@item.value.Description</td>
+							<td>@item.value.DiscountAmount%</td>
+							<td>@item.value.StartDate.ToShortDateString()</td>
+							<td>@item.value.EndDate.ToShortDateString()</td>
+							<td><span class="bg-success text-white rounded">@item.value.Status</span></td> <!--Đoạn này cần if else để css màu-->
 							<td>
 								<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
-								<button @onclick="async () => await OpenModal4(item.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
-								<button @onclick="async () => await OpenModal3(item.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
+								<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
 							</td>
 						</tr>
 					}
@@ -339,7 +339,7 @@
 </style>
 
 @code {
-	int stt;
+	int stt = 1;
 	private string inputSearchUser = "";
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<UserDTO> _lstuser = new List<UserDTO>();
@@ -351,7 +351,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		stt = 1;
 		await LoadPromotion();
 		await LoadUser();
 	}
@@ -386,6 +385,7 @@
 	private void CloseModal()
 	{
 		isModalVisible = 0;
+		inputUpdate = new PromotionDTO();
 	}
 
 	private void OpenModal2()
@@ -403,6 +403,7 @@
 	private async Task OpenModal4(Guid id)
 	{
 		idActive = id;
+		inputUpdate = await _prosv.GetPromotionByIdAsync(id);
 		isModalVisible = 4;
 	}
 
@@ -449,8 +450,19 @@
 	}
 
 	//Update
-	public async Task UpdatePromotion(Guid id)
+	public async Task UpdatePromotion()
 	{
-		inputUpdate = await _prosv.GetPromotionByIdAsync(id);
+		var check = await _prosv.UpdatePromotionAsync(inputUpdate);
+
+		if (check)
+		{
+			messageString = "Sửa thành công";
+			await LoadPromotion();
+
+		}
+		else
+		{
+			messageString = "Sửa thất bại";
+		}
 	}
 }

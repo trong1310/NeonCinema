@@ -103,5 +103,26 @@ namespace NeonCinema_Client.Data.Services.Promotion
 			throw new NotImplementedException();
 		}
 
+		public async Task<bool> UpdatePromotionAsync(PromotionDTO input)
+		{
+			try
+			{
+				var result = await _client.PutAsJsonAsync("https://localhost:7211/api/Promotion/put", input);
+
+
+				if (result.IsSuccessStatusCode)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
 	}
 }

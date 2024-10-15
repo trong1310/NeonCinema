@@ -62,7 +62,7 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpPost("put")]
+        [HttpPut("put")]
         public async Task<IActionResult> Put([FromBody] PromotionDTO input, CancellationToken cancellationToken)
         {
             try
