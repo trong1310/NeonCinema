@@ -175,7 +175,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             if (movie == null)
             {
-                return null; // Hoặc bạn có thể ném ra một exception nếu cần
+                return null; 
             }
 
             var movieDTO = new MovieDTO

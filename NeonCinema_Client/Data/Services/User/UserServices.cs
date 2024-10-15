@@ -75,6 +75,6 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-       
+
     }
 }
