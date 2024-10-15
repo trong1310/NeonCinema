@@ -44,11 +44,10 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     RoleID = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D"), 
                 };
 
-                // Thêm người dùng vào cơ sở dữ liệu và lưu thay đổi
+                
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync(cancellationToken);
-             //   newUser.PassWord = ""; // Đặt lại mật khẩu trước khi trả về phản hồi
-
+            
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("Tạo người dùng thành công!")
