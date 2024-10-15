@@ -26,7 +26,7 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
             try
             {
                 entity.ID = Guid.NewGuid();
-                entity.Status = EntityStatus.PendingForConfirmation;
+                entity.Status = PromotionStatus.NotYetApplied;
 
                 _context.Promotions.Add(entity);
                 await _context.SaveChangesAsync();
