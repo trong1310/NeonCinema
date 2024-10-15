@@ -34,7 +34,7 @@ namespace NeonCinema_Application.DataTransferObject.User
         public string PassWord { get; set; }
 
         [Required(ErrorMessage = "Giới tính không được để trống")]
-        public bool Gender { get; set; }
+        public bool? Gender { get; set; }
 
         [Required(ErrorMessage = "Địa chỉ không được để trống")]
         public string Adderss { get; set; }

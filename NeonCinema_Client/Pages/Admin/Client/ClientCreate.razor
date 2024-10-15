@@ -1,4 +1,4 @@
-﻿@page "/staff-create"
+﻿@page "/client-create"
 @using Microsoft.AspNetCore.Http;
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.User
@@ -8,15 +8,16 @@
 @inject IUserServices UserService
 @inject NavigationManager _navigation
 @inject HttpClient _http
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <div class="container-fluid mt-5">
-        <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
+        <h2 class="text-center mb-4 font-weight-bold">Thêm khách hàng mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
-                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic">
                 <label class="custom-file-upload">
                     <span style="margin-left:-5px">
                         <i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
@@ -24,8 +25,6 @@
                     <InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
                     <span>Chọn ảnh</span>
                 </label>
-
-
             </div>
             <div class="col-md-9" style="margin-top:10px;">
                 <div class="row">
@@ -84,25 +83,34 @@
                         <div class="form-group">
                             <label>Giới tính</label>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
+                                <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)"  />
                                 <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" @onchange="@((e) => request.Gender = false)" />
                                 <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                             </div>
+                            <ValidationMessage For="@(() => request.Gender)" />
                         </div>
-                        <ValidationMessage For="@(() => request.Gender)" />
+
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                            <input type="text" class="form-control" id="pass" @bind="request.PassWord" />
+                            <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
                             <ValidationMessage For="@(() => request.PassWord)" />
                         </div>
                     </div>
+                    @*     <div class="col-md-6">
+                    <div class="form-group">
+                    <label>Trạng thái</label>
+                    <select class="form-select" @bind="request.Status">
+                    <option value="@(EntityStatus.Active)">Đang hoạt động</option>
+                    <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+                    </select>
+                    </div>
+                    </div> *@
                 </div>
-
 
                 <div class="form-group">
                     <label for="Description" class="font-weight-bold">Địa chỉ</label>
@@ -185,10 +193,10 @@
                 return;
             }
 
-            var userResponse = await UserService.CreateUser(request);
+            var userResponse = await UserService.CreateClient(request);
             if (userResponse.IsSuccessStatusCode)
             {
-                _navigation.NavigateTo("/staff");
+                _navigation.NavigateTo("/client");
             }
             else
             {
@@ -204,8 +212,10 @@
     }
     private async Task NavigateToStaff()
     {
-        _navigation.NavigateTo("/staff");
+        // _navigation.NavigateTo("/staff"); 
+        _navigation.NavigateTo("/client"); 
     }
+
 }
 
 <style>
@@ -256,8 +266,6 @@
         .custom-file-upload:hover {
             background-color: #8f8f8f; /* Màu nền khi hover */
         }
-
-
     label {
         font-size: 14px;
         color: #555;
