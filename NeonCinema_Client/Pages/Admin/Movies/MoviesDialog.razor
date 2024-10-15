@@ -22,7 +22,7 @@
             <!-- Thông tin phim bên phải -->
             <div class="col-md-8">
                 <!-- Điều chỉnh col-md-8 để phần chữ chiếm nhiều không gian hơn -->
-                <h2 class="title">CÁM</h2>
+                <h2 class="title">@movieDto.Name</h2>
                 <p class="description">@movieDto.Description</p>
                 <p>
                     <strong>Phân loại:</strong>
@@ -33,25 +33,137 @@
                     <strong>Kiểu phim</strong>
                     <span class="badge bg-success">2D</span>
                 </p>
-                <p><strong>Đạo diễn:</strong> <span class="text-info">@movieDto.DirectorName</span></p>
+            
                 @* <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p> *@
                 <p><strong>Khởi chiếu:</strong> <span class="text-info">@movieDto.StarTime</span></p>
                 <p><strong>Thể loại:</strong> <span class="text-info">@movieDto.GenreName</span></p>
                 <p><strong>Thời lượng:</strong> <span class="text-info">@movieDto.Duration</span></p>
                 <p><strong>Ngôn ngữ:</strong> <span class="text-info">@movieDto.LanguareName</span></p>
             </div>
-        </div>
-
-        <!-- Trailer phim -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <h4 class="trailer-title">Trailer</h4>
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="w-100" height="1000" src="https://www.youtube.com/embed/6A0nJ_sJzCk" frameborder="0" allowfullscreen></iframe> <!-- Điều chỉnh height -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="trailer-title">Trailer</h4>
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="w-100" height="700" src="https://www.youtube.com/embed/6A0nJ_sJzCk" frameborder="0" allowfullscreen></iframe> <!-- Điều chỉnh height -->
+                    </div>
                 </div>
             </div>
         </div>
+        <button type="button" class="btn-edit" @onclick="ToggleEdit">Chỉnh sửa</button>
+        <!-- Trailer phim -->
+      
     </div>
+    @if (isEditing) // Kiểm tra biến isEditing để hiển thị phần sửa thông tin
+    {
+        <div class="container-fluid mt-5">
+            <h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
+
+            <div class="row justify-content-center">
+                <div class="col-md-3 text-center mb-4 mt-5">
+                    <img src="/images/Client/cam.jpg" alt="Profile" class="img-fluid profile-pic">
+                </div>
+                <div class="col-md-9" style="margin-top:10px">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name" class="font-weight-bold">Tên Phim</label>
+                                <input type="text" class="form-control" id="name" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Duration" class="font-weight-bold">Thời Lượng</label>
+                                <input type="text" class="form-control" id="Duration" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Trailer" class="font-weight-bold">Trailer</label>
+                                <input type="text" class="form-control" id="Trailer" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+                                <input type="date" class="form-control" id="StarTime" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="images" class="font-weight-bold">Hình ảnh</label>
+                                <InputFile class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+                                <input type="number" class="form-control" id="AgeAllowed" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Genre" class="font-weight-bold">Thể loại</label>
+                                <select class="form-control">
+                                    <option value="" disabled selected>Chọn thể loại</option>
+                                    <!-- Các lựa chọn thể loại sẽ được thêm ở đây -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+                                <select class="form-control">
+                                    <option value="" disabled selected>Chọn ngôn ngữ</option>
+                                    <!-- Các lựa chọn ngôn ngữ sẽ được thêm ở đây -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Country" class="font-weight-bold">Quốc gia</label>
+                                <select class="form-control">
+                                    <option value="" disabled selected>Chọn quốc gia</option>
+                                    <!-- Các lựa chọn quốc gia sẽ được thêm ở đây -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Director" class="font-weight-bold">Đạo diễn</label>
+                                <select class="form-control">
+                                    <option value="" disabled selected>Chọn đạo diễn</option>
+                                    <!-- Các lựa chọn đạo diễn sẽ được thêm ở đây -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="Description" class="font-weight-bold">Mô tả</label>
+                            <textarea class="form-control" id="Description" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success btn-lg">Sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
 </body>
 @code{
     [Parameter]
@@ -61,6 +173,12 @@
     {
          movieDto = await _movieServices.GetMovieById(id);
 
+    }
+    private bool isEditing = false; // Biến để kiểm soát trạng thái hiển thị
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing; // Chuyển đổi trạng thái hiển thị
     }
 }
 <style>
