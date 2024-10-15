@@ -62,7 +62,7 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpPost("put")]
+        [HttpPut("put")]
         public async Task<IActionResult> Put([FromBody] PromotionDTO input, CancellationToken cancellationToken)
         {
             try
@@ -86,19 +86,29 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromBody] PromotionDeleteRequest input, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _repos.Delete(_mapper.Map<Promotion>(input), cancellationToken);
+                var entity = await _repos.GetById(id, cancellationToken);
 
-                if (result.IsSuccessStatusCode)
+                if(entity != null)
                 {
-                    return Ok(result.Content);
-                }
+					var result = await _repos.Delete(entity, cancellationToken);
+
+					if (result.IsSuccessStatusCode)
+					{
+						return Ok(result.Content);
+					}
+					else
+					{
+						return BadRequest(result.Content);
+					}
+				}
+                
                 else
                 {
-                    return BadRequest(result.Content);
+                    return BadRequest("Not Found");
                 }
             }
             catch (Exception ex)
