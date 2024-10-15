@@ -1,0 +1,105 @@
+﻿using NeonCinema_Application.DataTransferObject.Room;
+using NeonCinema_Application.DataTransferObject.Seats;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
+using NeonCinema_Application.Pagination;
+using NeonCinema_Client.Data.IServices.Seat;
+using System.Text.Json;
+using System.Threading;
+
+namespace NeonCinema_Client.Data.Services.Seat
+{
+    public class SeatService : ISeatService
+    {
+        private readonly HttpClient _client;
+        public SeatService(HttpClient httpclient)
+        {
+            _client = httpclient;
+        }
+        public async Task CreateSeat(CreateSeatDTO request)
+        {
+            await _client.PostAsJsonAsync("api/Seat/create", request);
+        }
+
+        public async Task<List<SeatDTO>> GetAllSeat()
+        {
+            // Thay đổi kiểu trả về thành List<SeatDTO> để phù hợp với deserialization
+            var seats = await _client.GetFromJsonAsync<List<SeatDTO>>("api/Seat/get-all");
+            return seats;  // Không cần chuyển đổi từ ICollection sang List
+        }
+
+        public async Task<PaginationResponse<SeatDTO>> GetAllSeat(PaginationRequest request)
+        {
+            var response = await _client.GetFromJsonAsync<PaginationResponse<SeatDTO>>($"api/Seat/get-all?pageNumber={request.PageNumber}&pageSize={request.PageSize}");
+            return response;
+        }
+
+        public async Task<SeatDTO> GetByIdSeat(Guid id)
+        {
+            return await _client.GetFromJsonAsync<SeatDTO>($"api/Seat/get-by-id/{id}");
+        }
+
+        public async Task UpdateSeat(Guid id, UpdateSeatDTO request)
+        {
+            await _client.PutAsJsonAsync($"api/Seat/Update/{id}", request);
+        }
+        public async Task<List<RoomDTO>> GetAllRooms()
+        {
+            try
+            {
+                var response = await _client.GetAsync("api/rooms");
+
+                // Kiểm tra mã trạng thái HTTP
+                response.EnsureSuccessStatusCode();
+
+                // Đọc và kiểm tra nội dung
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    // Chuyển đổi nội dung thành danh sách RoomDTO
+                    return JsonSerializer.Deserialize<List<RoomDTO>>(content);
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"HTTP Error: {httpEx.Message}");
+                // Xử lý lỗi HTTP nếu cần
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"JSON Error: {jsonEx.Message}");
+                // Xử lý lỗi JSON nếu cần
+            }
+
+            return new List<RoomDTO>();
+        }
+
+        public async Task<List<SeatTypeDTO>> GetAllSeatTypes()
+        {
+            try
+            {
+                var response = await _client.GetAsync("api/SeatType/Get-all");
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response content: {content}"); // Log the content
+
+                if (!string.IsNullOrEmpty(content))
+                {
+                    return JsonSerializer.Deserialize<List<SeatTypeDTO>>(content);
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"HTTP Error: {httpEx.Message}");
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"JSON Error: {jsonEx.Message}");
+            }
+
+            return new List<SeatTypeDTO>();
+        }
+
+
+    }
+}

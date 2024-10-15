@@ -15,5 +15,6 @@ namespace NeonCinema_Application.Interface.Seats
         Task AddAsync(Seat seat);
         Task UpdateAsync(Seat seat);
         Task DeleteAsync(Guid id);
+        
     }
 }
