@@ -1,0 +1,84 @@
+﻿@page "/seats/add"
+@using NeonCinema_Application.DataTransferObject.Room
+@using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Application.DataTransferObject.Seats
+@using NeonCinema_Client.Data.IServices.Seat
+@inject ISeatService SeatService
+@inject NavigationManager Navi
+<h3>Add Seat</h3>
+
+@if (rooms == null || seatTypes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="newSeat" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="seatNumber">Seat Number</label>
+            <InputText id="seatNumber" class="form-control" @bind-Value="newSeat.SeatNumber" />
+            <ValidationMessage For="@(() => newSeat.SeatNumber)" />
+        </div>
+
+        <div class="form-group">
+            <label for="row">Row</label>
+            <InputText id="row" class="form-control" @bind-Value="newSeat.Row" />
+            <ValidationMessage For="@(() => newSeat.Row)" />
+        </div>
+
+        <div class="form-group">
+            <label for="column">Column</label>
+            <InputText id="column" class="form-control" @bind-Value="newSeat.Column" />
+            <ValidationMessage For="@(() => newSeat.Column)" />
+        </div>
+
+        <div class="form-group">
+            <label for="room">Room</label>
+            <select id="room" class="form-control" @bind="newSeat.RoomID">
+                <option value="">Select a room</option>
+                @foreach (var room in rooms)
+                {
+                    <option value="@room.ID">@room.Name</option>
+                }
+            </select>
+            <ValidationMessage For="@(() => newSeat.RoomID)" />
+        </div>
+
+        <div class="form-group">
+            <label for="seatType">Seat Type</label>
+            <select id="seatType" class="form-control" @bind="newSeat.SeatTypeID">
+                <option value="">Select a seat type</option>
+                @foreach (var seatType in seatTypes)
+                {
+                    <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                }
+            </select>
+            <ValidationMessage For="@(() => newSeat.SeatTypeID)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Seat</button>
+    </EditForm>
+}
+
+@code {
+    private CreateSeatDTO newSeat = new CreateSeatDTO();
+    private List<RoomDTO> rooms;
+    private List<SeatTypeDTO> seatTypes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy danh sách các Room và SeatType từ API
+        rooms = await SeatService.GetAllRooms();
+        seatTypes = await SeatService.GetAllSeatTypes();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await SeatService.CreateSeat(newSeat);
+        // Chuyển hướng hoặc thông báo thành công
+        Navi.NavigateTo("/seats"); // Điều hướng về trang danh sách ghế
+    }
+}

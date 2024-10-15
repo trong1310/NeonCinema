@@ -1,0 +1,67 @@
+﻿@page "/listSeatType"
+@using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.IServices.SeatType
+@using NeonCinema_Client.Pages.Admin
+@inject NavigationManager Navi
+@inject ISeatTypeService SV
+@layout LayoutAdmin
+
+<h3>List of SeatType</h3>
+
+<a class="btn btn-success mb-2" href="/AddSeatType">Add New SeatType</a>
+
+@if (seatTypes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (seatTypes.Count == 0)
+{
+    <p>No seat types found.</p>
+}
+else
+{
+    <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+        <thead>
+            <tr>
+                <th>Seat Type Name</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in seatTypes)
+            {
+                <tr>
+                    <td class="table-cell">@item.SeatTypeName</td>
+                    <td class="table-cell">@item.Price</td>
+                    <td class="table-cell">
+                        <button class="btn btn-primary" @onclick="() => EditSeatType(item.ID)">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private PaginationResponse<SeatTypeDTO> seatTypePagination;
+    private List<SeatTypeDTO> seatTypes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var paginationRequest = new PaginationRequest { PageNumber = 1, PageSize = 10 };
+        seatTypePagination = await SV.GetAllSeatType(paginationRequest);
+        seatTypes = seatTypePagination.Data.ToList();
+    }
+
+    private void EditSeatType(Guid seatTypeId)
+    {
+        Navi.NavigateTo($"/UpdateSeatType/{seatTypeId}");
+    }
+
+    private void AddSeatType()
+    {
+        Navi.NavigateTo("/AddSeatType");
+    }
+}
