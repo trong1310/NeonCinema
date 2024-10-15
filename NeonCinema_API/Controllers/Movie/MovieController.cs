@@ -44,9 +44,9 @@ namespace NeonCinema_API.Controllers.Movie
             return Ok(obj);
         }
         [HttpGet("GetById")]
-       public async Task<IActionResult> GetMoviesById(Guid id)
+       public async Task<IActionResult> GetMoviesById(Guid id,CancellationToken cancellationToken)
         {
-            var obj = await _reps.GetMovieById(id);
+            var obj = await _reps.GetById(id,cancellationToken);
             return Ok(obj);
         }
         
