@@ -74,6 +74,22 @@ namespace NeonCinema_Client.Data.Services.Promotion
 			return lst;
 		}
 
+		public async Task<PromotionDTO> GetPromotionByIdAsync(Guid id)
+		{
+			var lst = await GetPromotionListAsync();
+
+			var promotion = lst.Find(x => x.ID == id);
+
+			if(promotion != null)
+			{
+				return promotion;
+			}
+			else
+			{
+				throw new Exception("Not Found");
+			}
+		}
+
 		public async Task<List<PromotionDTO>> GetPromotionListAsync()
         {
             

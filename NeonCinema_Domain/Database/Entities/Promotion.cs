@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Enum;
+﻿using NeonCinema_Domain.Database.Base;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace NeonCinema_Domain.Database.Entities
     public class Promotion : EntityBase
     {
         public Guid ID { get; set; }  // Khóa chính
-        public string code { get; set; }  // Tên khuyến mãi
+        public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
-        public double Amount { get; set; } // giảm theo %
-        public DateTime TimeStar { get; set; }
-        public DateTime TimeEnd { get; set; }
+        public double DiscountAmount { get; set; } // giảm theo %
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public PromotionStatus Status { get; set; }
         public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
        
