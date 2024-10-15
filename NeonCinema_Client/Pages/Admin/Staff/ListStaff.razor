@@ -61,12 +61,12 @@
         <thead>
             <tr>
                 <th class="text-center">STT</th>
-                <th class="text-center">Giới Tính</th>
                 <th class="text-center">Hình Ảnh</th>
                 <th class="text-center">Tên</th>
                 <th class="text-center">Ngày Sinh</th>
                 <th class="text-center">Số Điện Thoại</th>
                 <th class="text-center">Email</th>
+                <th class="text-center">Giới Tính</th>
                 <th class="text-center">Địa Chỉ</th>
                 <th class="text-center">Trạng Thái</th>
                 <th class="text-center">Hành Động</th>
@@ -80,16 +80,7 @@
                 {
                     <tr>
                         <td class="text-center align-middle">@(@filteredUsers.IndexOf(user) + 1)</td>
-                        <td class="text-center align-middle">
-                            @if (user.Gender)
-                            {
-                                <span>Nam</span>
-                            }
-                            else if(!user.Gender)
-                            {
-                                <span>Nữ</span>
-                            }
-                        </td>
+
 
                         <td class="text-center align-middle">
                             <img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
@@ -98,6 +89,16 @@
                         <td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>
                         <td class="text-center align-middle">@user.PhoneNumber</td>
                         <td class="text-center align-middle">@user.Email</td>
+                        <td class="text-center align-middle">
+                            @if (user.Gender)
+                            {
+                                <span>Nam</span>
+                            }
+                            else if (!user.Gender)
+                            {
+                                <span>Nữ</span>
+                            }
+                        </td>
                         <td class="text-center align-middle">@user.Adderss</td>
                         <td class="text-center align-middle">
                             <span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge">
@@ -148,14 +149,37 @@
     private string selectedStatus = "all";
     private int currentPage = 1;
     private const int pageSize = 5;
+    private Guid roleIdToFilter = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D");
 
     protected override async Task OnInitializedAsync()
     {
-        users = await UserService.GetAllUser(CancellationToken.None);
-        var roleIdToFilter = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D");
-        filteredUsers = users.ToList();
-        currentPage = 1; // Reset current page to 1 after filtering
+        try
+        {
+            users = await UserService.GetAllUser(CancellationToken.None);
+            // Kiểm tra nếu không có người dùng nào
+            if (users == null || !users.Any())
+            {
+                filteredUsers = new List<UserDTO>(); // Hoặc hiển thị thông báo không có dữ liệu
+                return;
+            }
+
+            // Filter users by the specified Role ID when initializing
+            filteredUsers = users.Where(u => u.RoleID == roleIdToFilter).ToList();
+            currentPage = 1; // Reset current page to 1 after filtering
+        }
+        catch (HttpRequestException httpRequestException)
+        {
+            // Xử lý lỗi 404 hoặc các lỗi khác tại đây
+            Console.WriteLine($"Lỗi khi lấy dữ liệu người dùng: {httpRequestException.Message}");
+            // Có thể hiển thị thông báo cho người dùng nếu cần
+        }
+        catch (Exception ex)
+        {
+            // Xử lý các lỗi khác
+            Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+        }
     }
+
 
     private void SearchUsers(ChangeEventArgs e)
     {
@@ -178,14 +202,15 @@
     private void FilterUsers()
     {
         filteredUsers = users.Where(u =>
-        (string.IsNullOrWhiteSpace(selectedGender) ||
-         (selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
-         (selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
-        (string.IsNullOrWhiteSpace(searchTerm) ||
-         RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
-        (selectedStatus == "all" ||
-         (selectedStatus == "active" && u.Status == EntityStatus.Active) ||
-         (selectedStatus == "pendingConfirmation" && u.Status == EntityStatus.PendingForConfirmation))
+             u.RoleID == roleIdToFilter &&
+             (string.IsNullOrWhiteSpace(selectedGender) ||
+             (selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
+             (selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
+             (string.IsNullOrWhiteSpace(searchTerm) ||
+             RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
+             (selectedStatus == "all" ||
+             (selectedStatus == "active" && u.Status == EntityStatus.Active) ||
+             (selectedStatus == "pendingConfirmation" && u.Status == EntityStatus.PendingForConfirmation))
     ).ToList();
 
         currentPage = 1; // Reset current page to 1 after filtering
@@ -228,7 +253,7 @@
     }
     private string GetImageUrl(string imageUrl)
     {
-        return $"https://localhost:7211/Resources/{imageUrl}";
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
     }
 
 }

@@ -16,11 +16,14 @@
 
     <Compile Remove="Pages\Img\**" />
 
+    <Compile Remove="Pages\Staff\**" />
+
     <Content Remove="Dialog\**" />
 
     <Content Remove="Pages\Admin\AddMovies\**" />
     <Content Remove="Pages\Employees\**" />
     <Content Remove="Pages\Img\**" />
+    <Content Remove="Pages\Staff\**" />
     <EmbeddedResource Remove="Dialog\**" />
     <EmbeddedResource Remove="Pages\Admin\AddMovies\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
@@ -33,6 +36,7 @@
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
+    <EmbeddedResource Remove="Pages\Staff\**" />
     <None Remove="Dialog\**" />
     <None Remove="Pages\abc\**" />
     <Compile Remove="Pages\Employees\**" />
@@ -48,6 +52,9 @@
 
 
     <None Remove="Pages\Img\**" />
+
+
+    <None Remove="Pages\Staff\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,8 +65,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <Folder Include="Pages\Staff\" />
 
     <Folder Include="wwwroot\imageFlims\" />
 

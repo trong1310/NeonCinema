@@ -12,6 +12,7 @@ using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
+using NeonCinema_Application.DataTransferObject.Actors;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -24,10 +25,7 @@ namespace NeonCinema_Client.Services.User
         {
             _loginModel = new LoginModel();
             var handler = CreateHttpClientHandler();
-            _httpClient = new HttpClient(handler)
-            {
-                BaseAddress = new Uri("https://localhost:7211")
-            };
+            _httpClient = new HttpClient();
         }
 
         private static HttpClientHandler CreateHttpClientHandler()
@@ -39,7 +37,7 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync("api/User/get-all", cancellationToken);
+            var response = await _httpClient.GetAsync("https://localhost:7211/api/User/get-all", cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -60,20 +58,38 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request)
         {
-            var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
-            return obj;
+            try
+            {
+                var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create", request);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
+
+            }
+        }
+        public async Task<HttpResponseMessage> CreateClient(UserCreateRequest request)
+        {
+            try
+            {
+                var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create-client", request);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
+
+            }
         }
 
-        public async Task<HttpResponseMessage> UpdateUser(Guid id, UserUpdateRequest request, CancellationToken cancellationToken)
-        {
-            var content = new StringContent(
-                JsonSerializer.Serialize(request),
-                Encoding.UTF8,
-                "application/json");
-            var response = await _httpClient.PutAsync($"users/{id}", content, cancellationToken);
-            return response;
-        }
     }
 }

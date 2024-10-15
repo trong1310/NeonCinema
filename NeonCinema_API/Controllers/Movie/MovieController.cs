@@ -25,7 +25,7 @@ namespace NeonCinema_API.Controllers.Movie
             var obj = await _reps.GetAll(request, cancellationToken);
             return Ok(obj);
         }
-        [HttpPost ("Create")]
+		[HttpPost ("Create")]
         public async Task <IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
         {
             var obj = await _reps.Create(request,cancellationToken);
@@ -43,7 +43,12 @@ namespace NeonCinema_API.Controllers.Movie
             var obj = await _reps.Delete(_map.Map<NeonCinema_Domain.Database.Entities.Movies>(request), cancellationToken);
             return Ok(obj);
         }
-       
-       
+        [HttpGet("GetById")]
+       public async Task<IActionResult> GetMoviesById(Guid id,CancellationToken cancellationToken)
+        {
+            var obj = await _reps.GetById(id,cancellationToken);
+            return Ok(obj);
+        }
+        
     }
 }

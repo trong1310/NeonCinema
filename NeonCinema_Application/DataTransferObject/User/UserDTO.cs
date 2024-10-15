@@ -11,6 +11,7 @@ namespace NeonCinema_Application.DataTransferObject.User
     {
         public Guid ID { get; set; }
         public string FullName { get; set; }
+        public string PassWord { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public bool Gender { get; set; }

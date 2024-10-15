@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿    using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.User;
@@ -15,35 +15,23 @@ namespace NeonCinema_API.Controllers
         {
             _userRepository = us;
         }
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromForm] UserCreateRequest request, CancellationToken cancellationToken)
+
+
+        [HttpPost("create-client")]
+        public async Task<IActionResult> CreateClient([FromBody] UserCreateRequest request, CancellationToken cancellationToken)
         {
-
-            var result = await _userRepository.CreateUser(request, cancellationToken);
-
+            var result = await _userRepository.CreateClient(request, cancellationToken);
             return Ok(result);
         }
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserUpdateRequest request, CancellationToken cancellationToken)
+
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _userRepository.UpdateUser(id, request, cancellationToken);
-            if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return NotFound(result.Content.ReadAsStringAsync().Result);
-            }
-
-            if (result.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                return BadRequest(result.Content.ReadAsStringAsync().Result);
-            }
-
-            return Ok("Cập nhật người dùng thành công!");
+            var result = await _userRepository.CreateUser(request, cancellationToken);
+            return Ok(result);
         }
+
         [HttpGet("get-all")]
         
         public async Task<IActionResult> GetAllUser(CancellationToken cancellationToken)

@@ -4,13 +4,14 @@ using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_Client.Services.MoivesService
 {
-    public class MoviesServices : IMovieservices
+	public class MoviesServices : IMovieservices
     {
 
         private readonly HttpClient _httpClient;
@@ -37,8 +38,8 @@ namespace NeonCinema_Client.Services.MoivesService
             }
 
         }
-
-        public async Task<List<GenreDTO>> GetAllGenre()
+		
+		public async Task<List<GenreDTO>> GetAllGenre()
         {
             var lst = await _httpClient.GetFromJsonAsync<List<GenreDTO>>("https://localhost:7211/api/Genre/get-all-genre");
             return lst;
@@ -75,6 +76,17 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
+        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<MovieDTO> GetMovieById(Guid id)
+        {
+            var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
+            return respones;
+        }
     }
+
 
 }

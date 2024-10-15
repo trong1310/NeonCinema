@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
@@ -16,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
@@ -139,6 +141,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 Status = b.Status,
                                 Name = b.Name,
                                 Images = b.Images,
+                                StarTime = b.StarTime,
                                 Duration = b.Duration,
                                 Description = b.Description,
                                 LanguareName = b.Lenguage.LanguageName,
@@ -155,6 +158,44 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 PageNumber = result.PageNumber,
                 PageSize = result.PageSize
             };
+        }
+
+
+        public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var movie = await _context.Movies
+                .Include(x => x.Genre)
+                .Include(x => x.Screening)
+                .Include(x => x.Director)
+                .Include(x => x.Lenguage)
+                .Include(x => x.Countrys)
+                .Include(x => x.TicketSeats)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
+
+            if (movie == null)
+            {
+                return null; 
+            }
+
+            var movieDTO = new MovieDTO
+            {
+                ID = movie.ID,
+                AgeAllowed = movie.AgeAllowed,
+                Trailer = movie.Trailer,
+                Status = movie.Status,
+                Name = movie.Name,
+                Images = movie.Images,
+                StarTime = movie.StarTime,
+                Duration = movie.Duration,
+                Description = movie.Description,
+                LanguareName = movie.Lenguage.LanguageName,
+                CountryName = movie.Countrys.CountryName,
+                DirectorName = movie.Director.FullName,
+                GenreName = movie.Genre.GenreName,
+            };
+
+            return movieDTO;
         }
 
         public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)

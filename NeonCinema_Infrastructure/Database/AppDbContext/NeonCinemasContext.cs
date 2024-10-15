@@ -59,7 +59,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
-        public DbSet<ShowDate> ShowDate { get; set; }
+       
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
@@ -71,11 +71,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-        optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+       //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
           //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
+          optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -110,7 +108,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     ID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                     CreatedTime = DateTime.Now,
                     Status = EntityStatus.Active,
-                    RoleName = "Client",
+                    RoleName = "Customer",
                 },  new Roles
                 {
                     ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),

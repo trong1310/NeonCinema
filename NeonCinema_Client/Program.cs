@@ -68,6 +68,7 @@ builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 builder.Services.AddScoped<ISeatService, SeatService>();
+builder.Services.AddTransient<IUserServices, UserServices>();
 
 
 
