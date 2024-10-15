@@ -20,7 +20,7 @@ namespace NeonCinema_API.Controllers
       
         
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromForm] UserCreateRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest request, CancellationToken cancellationToken)
         {
             var result = await _userRepository.CreateUser(request, cancellationToken);
             return Ok(result);
