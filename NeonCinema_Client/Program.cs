@@ -74,6 +74,7 @@ builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
+builder.Services.AddScoped<IScreeningService, ScreeningService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();

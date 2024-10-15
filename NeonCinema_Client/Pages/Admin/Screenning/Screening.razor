@@ -1,0 +1,237 @@
+﻿@page "/screenings"
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.DataTransferObject.Room
+@using NeonCinema_Application.DataTransferObject.Screening
+@using NeonCinema_Application.DataTransferObject.ShowTime
+@using NeonCinema_Client.Data.IServices.Screenning
+@using NeonCinema_Client.Data.Services.Room
+@using NeonCinema_Domain.Enum
+@inject IJSRuntime JSRuntime
+@inject IScreeningService ScreeningService
+
+<h3>Quản Lý Lịch Chiếu</h3>
+
+<button class="icon-button add border border-primary" @onclick="ShowCreateModal">
+    <i class="fas fa-plus-circle"></i> Thêm
+</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>ShowTime</th>
+            <th>Ngày chiếu</th>
+            <th>Room</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var screening in Screenings)
+        {
+            var movie = Movies.FirstOrDefault(m => m.ID == screening.MovieID);
+            var room = Rooms.FirstOrDefault(r => r.ID == screening.RoomID);
+            var showTime = ShowTimes.FirstOrDefault(s => s.ID == screening.ShowTimeID);
+
+            <tr>
+                <td>@(movie?.Name ?? "Không xác định")</td>
+                <td>@(showTime != null ? $"{showTime.StartTime:HH:mm} - {showTime.EndTime:HH:mm}" : "Không xác định")</td>
+                <td>@screening.ShowDate.ToString("dd/MM/yyyy")</td>
+                <td>@(room?.Name ?? "Không xác định")</td>
+                <td>@(screening.Status == EntityStatus.Active ? "Hoạt Động" : "Ngưng hoạt động")</td>
+                <td>
+                    <button class="icon-button edit" @onclick="() => ShowEditModal(screening.ID)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-button delete" @onclick="() => DeleteScreening(screening.ID)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (IsCreateModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseCreateModal">&times;</span>
+            <h3>Thêm Lịch Chiếu</h3>
+
+            <form>
+                <label>Movie</label>
+                <select @bind="ScreeningRequest.MovieID">
+                    @foreach (var movie in Movies)
+                    {
+                        <option value="@movie.ID">@movie.Name</option>
+                    }
+                </select>
+
+                <label>ShowTime</label>
+                <select @bind="ScreeningRequest.ShowTimeID">
+                    @foreach (var showTime in ShowTimes)
+                    {
+                        <option value="@showTime.ID">@showTime.StartTime - @showTime.EndTime</option>
+                    }
+                </select>
+                <label>Ngày Chiếu</label>
+                <input type="date" @bind="ScreeningRequest.ShowDate" />
+                <label>Room</label>
+                <select @bind="ScreeningRequest.RoomID">
+                    @foreach (var room in Rooms)
+                    {
+                        <option value="@room.ID">@room.Name</option>
+                    }
+                </select>
+
+                <label>Status</label>
+                <select @bind="ScreeningRequest.Status">
+                    <option value="@EntityStatus.Active">Hoạt Động</option>
+                    <option value="@EntityStatus.Inactive">Ngưng hoạt động</option>
+                </select>
+
+                <button class="icon-button save" type="button" @onclick="SaveScreening">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (IsEditModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseEditModal">&times;</span>
+            <h3>Cập Nhật Lịch Chiếu</h3>
+
+            <form>
+                <label>Movie</label>
+                <select @bind="screeningUpdate.MovieID">
+                    @foreach (var movie in Movies)
+                    {
+                        <option value="@movie.ID">@movie.Name</option>
+                    }
+                </select>
+
+                <label>ShowTime</label>
+                <select @bind="screeningUpdate.ShowTimeID">
+                    @foreach (var showTime in ShowTimes)
+                    {
+                        <option value="@showTime.ID">@showTime.StartTime - @showTime.EndTime</option>
+                    }
+                </select>
+                <label>Ngày Chiếu</label>
+                <input type="date" @bind="screeningUpdate.ShowDate" />
+                <label>Room</label>
+                <select @bind="screeningUpdate.RoomID">
+                    @foreach (var room in Rooms)
+                    {
+                        <option value="@room.ID">@room.Name</option>
+                    }
+                </select>
+
+                <label>Status</label>
+                <select @bind="screeningUpdate.Status">
+                    <option value="@EntityStatus.Active">Hoạt Động</option>
+                    <option value="@EntityStatus.Inactive">Ngưng hoạt động</option>
+                </select>
+
+                <button class="icon-button save" type="button" @onclick="UpdateScreening">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ScreeningDTO> Screenings = new();
+    private bool IsCreateModalOpen = false;
+    private bool IsEditModalOpen = false;
+    private ScreeningCreateRequest ScreeningRequest = new();
+    private Guid SelectedScreeningId;
+    private ScreeningUpdateRequest screeningUpdate = new ScreeningUpdateRequest();
+    private List<MovieDTO> Movies = new();
+    private List<ShowTimeDTO> ShowTimes = new();
+    private List<RoomDTO> Rooms = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadScreenings();
+        await LoadMovies();
+        await LoadShowTimes();
+        await LoadRooms();
+    }
+
+    private async Task LoadScreenings()
+    {
+        Screenings = await ScreeningService.GetAllScreenings(CancellationToken.None);
+    }
+
+    private async Task LoadMovies()
+    {
+        Movies = await ScreeningService.GetAllMovies(CancellationToken.None);
+    }
+
+    private async Task LoadShowTimes()
+    {
+        ShowTimes = await ScreeningService.GetAllShowTimes(CancellationToken.None);
+    }
+
+    private async Task LoadRooms()
+    {
+        Rooms = await ScreeningService.GetAllRooms(CancellationToken.None);
+    }
+
+    private void ShowCreateModal()
+    {
+        IsCreateModalOpen = true;
+    }
+
+    private void CloseCreateModal()
+    {
+        IsCreateModalOpen = false;
+    }
+
+    private void ShowEditModal(Guid id)
+    {
+        IsEditModalOpen = true;
+        SelectedScreeningId = id;
+        var screening = Screenings.FirstOrDefault(s => s.ID == id);
+        if (screening != null)
+        {
+            screeningUpdate.MovieID = screening.MovieID;
+            screeningUpdate.ShowTimeID = screening.ShowTimeID;
+            screeningUpdate.RoomID = screening.RoomID;
+            screeningUpdate.ShowDate = screening.ShowDate; // Thêm dòng này
+            screeningUpdate.Status = screening.Status;
+        }
+    }
+
+
+    private void CloseEditModal()
+    {
+        IsEditModalOpen = false;
+    }
+
+    private async Task SaveScreening()
+    {
+        await ScreeningService.CreateScreening(ScreeningRequest, CancellationToken.None);
+        await LoadScreenings();
+        CloseCreateModal();
+    }
+
+    private async Task UpdateScreening()
+    {
+        await ScreeningService.UpdateScreening(SelectedScreeningId, screeningUpdate, CancellationToken.None);
+        await LoadScreenings();
+        CloseEditModal();
+    }
+
+    private async Task DeleteScreening(Guid id)
+    {
+        await ScreeningService.DeleteScreening(id, CancellationToken.None);
+        await LoadScreenings();
+    }
+}
