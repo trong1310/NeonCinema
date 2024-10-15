@@ -25,6 +25,42 @@ namespace NeonCinema_Infrastructure.Implement.Users
             _context = context;
             _map = map;
         }
+        public async Task<HttpResponseMessage> CreateClient(UserCreateRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var newUser = new NeonCinema_Domain.Database.Entities.Users
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = request.FullName,
+                    PassWord = Hash.Encrypt(request.PassWord),
+                    PhoneNumber = request.PhoneNumber,
+                    Email = request.Email,
+                    Gender = request.Gender ?? true,
+                    Images = request.Images, // Lưu tên hình ảnh
+                    DateOrBriht = request.DateOrBriht,
+                    Adderss = request.Adderss,
+                    Status = NeonCinema_Domain.Enum.EntityStatus.Active,
+                    RoleID = Guid.Parse("BA820C64-1A81-4C44-80EA-47038C930C3B"),
+                };
+
+
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Tạo người dùng thành công!")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                };
+            }
+        }
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
             try
@@ -36,7 +72,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
                     PassWord = Hash.Encrypt(request.PassWord),
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
-                    Gender = request.Gender,
+                    Gender = request.Gender ?? true,
                     Images = request.Images, // Lưu tên hình ảnh
                     DateOrBriht = request.DateOrBriht,
                     Adderss = request.Adderss,

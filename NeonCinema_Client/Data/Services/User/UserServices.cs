@@ -74,7 +74,22 @@ namespace NeonCinema_Client.Services.User
 
             }
         }
+        public async Task<HttpResponseMessage> CreateClient(UserCreateRequest request)
+        {
+            try
+            {
+                var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/create-client", request);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
 
+            }
+        }
 
     }
 }

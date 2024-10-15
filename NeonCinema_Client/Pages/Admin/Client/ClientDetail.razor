@@ -1,0 +1,212 @@
+﻿@page "/client-details/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.User
+@layout LayoutAdmin
+@using NeonCinema_Client.Data.IServices.User
+@using System.Globalization
+@inject IUserServices UserService
+
+<div class="container-fluid mt-5">
+	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
+	<div class="row justify-content-center">
+		<div class="col-md-3 text-center mb-4 mt-5">
+			<img src=@GetImageUrl(user.Images) alt="Profile" class="rounded-circle img-fluid profile-pic">
+		</div>
+		<div class="col-md-9" style="margin-top:10px;">
+			<form>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="fullname" class="font-weight-bold">Họ và tên</label>
+							<input type="text" class="form-control" id="fullname" @bind-value="user.FullName">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="phone" class="font-weight-bold">Số điện thoại</label>
+							<input type="text" class="form-control" id="phone" @bind-value="user.PhoneNumber">
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="email" class="font-weight-bold">Email</label>
+							<input type="email" class="form-control" id="email" @bind-value="user.Email">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="dob" class="font-weight-bold">Ngày sinh</label>
+							<input type="text" class="form-control" id="dob" @bind-value="formattedDate" @oninput="OnDateChanged" />
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="gender" class="font-weight-bold">Giới tính</label>
+								<div style="margin-left: -20px; margin-top: 5px">
+									@if (user.Gender == true)
+									{
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" id="genderMale" checked />
+											<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" id="genderFemale" />
+											<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+										</div>
+									}
+									else
+									{
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" id="genderMale" />
+											<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" id="genderFemale" checked />
+											<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+										</div>
+									}
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Trạng thái</label>
+							<select class="form-select" @bind="status">
+								<option value="Active">Đang hoạt động</option>
+								<option value="PendingForConfirmation">Không hoạt động</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="address" class="font-weight-bold">Địa chỉ</label>
+					<textarea class="form-control" id="address" rows="3" @bind="user.Adderss"></textarea>
+				</div>
+
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary btn-lg">Lưu</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	private string? gender;
+	private DateTime? age;
+	private string status; // Biến để lưu trạng thái
+	private string formattedDate;
+
+	private UserDTO user = new UserDTO();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var userDto = await UserService.GetByIDUser(id, CancellationToken.None);
+
+		if (userDto != null)
+		{
+			user.FullName = userDto.FullName;
+			user.PhoneNumber = userDto.PhoneNumber;
+			user.Email = userDto.Email;
+			formattedDate = userDto.DateOrBriht.ToString("dd-MM-yyyy"); // Gán ngày sinh vào biến age
+			user.Gender = userDto.Gender;
+			status = userDto.Status.ToString(); // Gán trạng thái
+			user.Adderss = userDto.Adderss;
+			user.Images = userDto.Images;
+		}
+	}
+	private void OnDateChanged(ChangeEventArgs e)
+	{
+		formattedDate = e.Value?.ToString() ?? string.Empty;
+		if (DateTime.TryParseExact(formattedDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+		{
+			age = date; // Lưu giá trị DateTime vào user
+		}
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+}
+
+<style>
+	body {
+		background-color: #f4f4f9;
+	}
+
+	.card {
+		border-radius: 10px;
+		background-color: white;
+		max-width: 1000px;
+		margin: auto;
+	}
+
+	h2 {
+		font-family: 'Arial', sans-serif;
+		color: #333;
+	}
+
+	.profile-pic {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border: 3px solid #eaeaea;
+		margin-left: -15px; /* Shift image slightly left */
+	}
+
+	label {
+		font-size: 14px;
+		color: #555;
+	}
+
+	input, select, textarea {
+		border-radius: 5px;
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin-left: -20px; /* Shift input fields slightly left */
+	}
+
+	.form-control:focus {
+		border-color: #007bff;
+		box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+	}
+
+	textarea {
+		resize: none;
+	}
+
+	.btn-primary {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+		}
+
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-check {
+		margin-right: 15px; /* Adjust spacing between radio buttons */
+	}
+
+	label {
+		margin-left: -17px;
+	}
+</style>
