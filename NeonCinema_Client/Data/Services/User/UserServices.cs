@@ -37,7 +37,7 @@ namespace NeonCinema_Client.Services.User
 
         public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
         {
-            var response = await _httpClient.GetAsync("api/User/get-all", cancellationToken);
+            var response = await _httpClient.GetAsync("https://localhost:7211/api/User/get-all", cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
