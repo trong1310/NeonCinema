@@ -11,6 +11,7 @@
 @inject IMovieservices _movieServices
 @inject NavigationManager _navigation
 @inject HttpClient _http
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <EditForm Model="request">
 	<div class="container-fluid mt-5">
@@ -18,7 +19,16 @@
 		<span>@errorMessage</span>
 		<div class="row justify-content-center">
 			<div class="col-md-3 text-center mb-4 mt-5">
-				<img src="/images/Client/cam.jpg" alt="Profile" class="" img-fluid profile-pic">
+				<img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+				<label class="custom-file-upload">
+					<span style="margin-left:-5px">
+						<i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
+					</span>
+					<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+					<span>Chọn ảnh</span>
+				</label>
+
+
 			</div>
 			<div class="col-md-9" style="margin-top:10px;">
 				<div class="row">
@@ -51,13 +61,7 @@
 					</div>
 				</div>
 
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label for="images" class="font-weight-bold">Images</label>
-							<InputFile OnChange="HandleSelected" />
-						</div>
-					</div>
+				<div class="row">					
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
@@ -130,6 +134,7 @@
 
 				<div class="text-center">
 					<button type="button" @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
+					<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
 				</div>
 			</div>
 		</div>
@@ -140,6 +145,7 @@
 	private CreateMovieRequest request = new CreateMovieRequest();
 	private IBrowserFile selectedFile;
 	private string errorMessage;
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
 
 	List<GenreDTO> genres = new List<GenreDTO>();
 	List<LanguageDTO> languages = new List<LanguageDTO>();
@@ -157,6 +163,29 @@
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
 		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
 	}
 
 	private async Task HandleSubmit()
@@ -219,6 +248,10 @@
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 			errorMessage = "Có lỗi xảy ra. Vui lòng thử lại." + ex.Message;
 		}
+	}
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo("/list-movie-admin");
 	}
 }
 
@@ -292,5 +325,47 @@
 		margin-top: 20px;
 		width: 270px;
 		height: 400px;
+	}
+
+	.custom-file-upload {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		margin-top: 10px;
+		margin-left: 90px;
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+	}
+
+		.custom-file-upload span {
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
+
+		.custom-file-upload:hover {
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
+
+	.btn-success {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-success:hover {
+			background-color: #0056b3;
+		}
+	.btn-warning {
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
 	}
 </style>

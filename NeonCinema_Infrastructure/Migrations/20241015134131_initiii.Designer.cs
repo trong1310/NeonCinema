@@ -12,8 +12,8 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 namespace NeonCinema_Infrastructure.Migrations
 {
     [DbContext(typeof(NeonCinemasContext))]
-    [Migration("20241013011118_JQK")]
-    partial class JQK
+    [Migration("20241015134131_initiii")]
+    partial class initiii
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -365,22 +365,22 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("3d894d30-012a-45ea-8af0-be800f937024"),
+                            ID = new Guid("bd879053-0056-41b5-9270-52de0e561b2d"),
                             CountryName = "Nhật Bản"
                         },
                         new
                         {
-                            ID = new Guid("a3a7df6d-ccc3-4f0c-ae0a-229df4312e5a"),
+                            ID = new Guid("7cb8e0ab-edf4-4383-9ef6-e47ee202589a"),
                             CountryName = "Vương Quốc Anh"
                         },
                         new
                         {
-                            ID = new Guid("94967227-b83f-4c78-9dba-99070789e86b"),
+                            ID = new Guid("a14b8cb1-70a9-4cae-ac1a-d4cecf6b85f9"),
                             CountryName = "Trung Quốc"
                         },
                         new
                         {
-                            ID = new Guid("962a88c4-2ac9-4741-bfd1-719be17932d0"),
+                            ID = new Guid("61f8c7cd-72db-4114-8501-f7a5e7de7e02"),
                             CountryName = "Việt Nam"
                         });
                 });
@@ -452,7 +452,7 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("b4ce5bfc-f11d-4975-a8e4-718c7e2c0b5c"),
+                            ID = new Guid("dd617524-15c2-4db8-9efc-c450054e96bc"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -464,7 +464,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("defc3ada-3b32-4d64-af5a-6d2d4ef549de"),
+                            ID = new Guid("023e4e3a-efbd-49d3-bb2e-ad8831692dba"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -476,7 +476,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("bdc27532-9586-41d4-96e1-492dd38f0290"),
+                            ID = new Guid("4563d193-4ce3-4b85-92f3-995c6e121e33"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -488,7 +488,7 @@ namespace NeonCinema_Infrastructure.Migrations
                         },
                         new
                         {
-                            ID = new Guid("8ade9a40-a59c-4518-9874-1e93343a4d46"),
+                            ID = new Guid("404c5eea-7fd3-4696-af1d-e4d49e9d1780"),
                             Address = "Hà Nội",
                             Biography = "Có",
                             BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -590,22 +590,22 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("53edf227-c21a-460d-b78e-f7e6832a487f"),
+                            ID = new Guid("50ac44fb-ef20-467f-a19e-9ac65dac976a"),
                             GenreName = "Kịch tính"
                         },
                         new
                         {
-                            ID = new Guid("b80e075b-d7a3-4815-bd9a-d766510b3b39"),
+                            ID = new Guid("6cd45453-229d-487c-9970-7d73cf7245eb"),
                             GenreName = "Tình cảm"
                         },
                         new
                         {
-                            ID = new Guid("2605987a-79e7-45e0-8194-ed47f18814c3"),
+                            ID = new Guid("4dbb14d9-f225-4086-a547-d69f5deb27aa"),
                             GenreName = "2D"
                         },
                         new
                         {
-                            ID = new Guid("8dfc7f7b-bcfe-43fb-a4f5-ec28f453785e"),
+                            ID = new Guid("3b83aca8-e2c2-42d5-adc0-4bf2c7c37a28"),
                             GenreName = "Hoạt hình"
                         });
                 });
@@ -650,17 +650,17 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("3ac0267f-a400-4d40-9861-8683c6f86c47"),
+                            ID = new Guid("b0f52a45-e33c-47d6-9982-5c54a0cea3d1"),
                             LanguageName = "en"
                         },
                         new
                         {
-                            ID = new Guid("7b31371b-7e71-4fce-a470-02029b4c9d70"),
+                            ID = new Guid("dd0ddc5a-efd2-45ef-a572-b98690f28e9e"),
                             LanguageName = "vi"
                         },
                         new
                         {
-                            ID = new Guid("52542ba8-f5f0-46b6-b0a3-f0dee569c0cf"),
+                            ID = new Guid("a35bc5b8-40fd-4641-9b25-66964790160a"),
                             LanguageName = "ja"
                         });
                 });
@@ -887,30 +887,42 @@ namespace NeonCinema_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("DiscountAmount")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("PromotionCodeID")
+                    b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PromotionTypeID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTimeOffset?>("ModifiedTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("UserID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
@@ -1058,21 +1070,21 @@ namespace NeonCinema_Infrastructure.Migrations
                         new
                         {
                             ID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(4763),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(2917),
                             RoleName = "Admin",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(4829),
-                            RoleName = "Client",
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(2940),
+                            RoleName = "Customer",
                             Status = 1
                         },
                         new
                         {
                             ID = new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(4832),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(2942),
                             RoleName = "Staff",
                             Status = 1
                         });
@@ -1162,8 +1174,8 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<Guid>("RoomID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ShowDateID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("ShowDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("ShowTimeID")
                         .HasColumnType("uniqueidentifier");
@@ -1176,8 +1188,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasIndex("MovieID");
 
                     b.HasIndex("RoomID");
-
-                    b.HasIndex("ShowDateID");
 
                     b.HasIndex("ShowTimeID");
 
@@ -1432,44 +1442,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasIndex("WorkShiftID");
 
                     b.ToTable("ShiftChange", (string)null);
-                });
-
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.ShowDate", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreatedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("DeletedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("ModifiedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTime>("StarDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("ShowDate");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.ShowTime", b =>
@@ -1777,9 +1749,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         .HasColumnType("nchar(10)")
                         .IsFixedLength();
 
-                    b.Property<Guid>("PromotionUserID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RoleID")
                         .HasColumnType("uniqueidentifier");
 
@@ -1795,9 +1764,9 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            ID = new Guid("ed0a2ac5-a4b3-442a-8c32-c1d91371b75f"),
+                            ID = new Guid("ef044a9f-8f28-4e5f-a75d-26d2d352403c"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(4951),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3032),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "giapptph39723@fpt.edu.vn",
                             FullName = "Phùng Tiến Giáp",
@@ -1805,15 +1774,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0862774830",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("ef961a07-9307-43dc-8227-3a71ad8d5db1"),
+                            ID = new Guid("8a7523a8-f763-47f7-87cd-b3d7ac8efec2"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5366),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3457),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@gmail.com",
                             FullName = "Admin",
@@ -1821,15 +1789,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "CNGfZLm8IgV4PLYHIuAxaA==",
                             PhoneNumber = "0334555555",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("68135373-38e6-4e87-9642-32df7d797f02"),
+                            ID = new Guid("4661c237-8438-4875-9eef-dc6727960963"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5424),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3502),
                             DateOrBriht = new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "client@gmail.com",
                             FullName = "Client",
@@ -1837,15 +1804,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "uwIZujummuxfCG/M104Pww==",
                             PhoneNumber = "0334555555",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("b4151026-27cd-4d41-93e1-dc5f62fac0cb"),
+                            ID = new Guid("c5e171e2-e879-4594-bf73-c7aa4be96f01"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5507),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3528),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vantrongvt1310@gmail.com",
                             FullName = "Nguyễn Văn Trọng",
@@ -1853,15 +1819,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0334583920",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("fd86816b-2eab-45c4-a9ca-0c31a0fddd2f"),
+                            ID = new Guid("40eba26a-5abb-4ed3-b7e8-52cdfbcaa9e7"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5542),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3552),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Phongdxph35748@fpt.edu.vn",
                             FullName = "Đặng Xuân Phong",
@@ -1869,15 +1834,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0356400122",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("d792b0fb-b433-4bea-85d1-d3a004b571f1"),
+                            ID = new Guid("bd3327f6-7fb5-4d95-a90f-20aa833d34bd"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5575),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3583),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cuongddpc07789@fpt.edu.vn",
                             FullName = "Đặng Đức Cường",
@@ -1885,15 +1849,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0879130050",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("b25ea685-57de-4da3-9e75-2c58840411d0"),
+                            ID = new Guid("266ae125-0c70-4359-b0eb-46b614ae9907"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5612),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3606),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "vantrongvt1310@gmail.com",
                             FullName = "Nguyễn Văn Trọng",
@@ -1901,15 +1864,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0334583920",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("226edf88-4d62-4c54-acf7-251a9ab1f92a"),
+                            ID = new Guid("eeb027ab-1462-4947-b079-d433f4e2ba6b"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5644),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3627),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Phongdxph35748@fpt.edu.vn",
                             FullName = "Đặng Xuân Phong",
@@ -1917,15 +1879,14 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0356400122",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         },
                         new
                         {
-                            ID = new Guid("9ccb4dc9-0334-4152-aa98-6311ccc6f4d3"),
+                            ID = new Guid("ffc6cfba-0981-4c84-9e01-266cbbe7fa49"),
                             Adderss = "Ba Vi",
-                            CreatedTime = new DateTime(2024, 10, 13, 8, 11, 18, 262, DateTimeKind.Local).AddTicks(5688),
+                            CreatedTime = new DateTime(2024, 10, 15, 20, 41, 31, 161, DateTimeKind.Local).AddTicks(3662),
                             DateOrBriht = new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cuongddpc07789@fpt.edu.vn",
                             FullName = "Đặng Đức Cường",
@@ -1933,7 +1894,6 @@ namespace NeonCinema_Infrastructure.Migrations
                             Images = "images.jpg",
                             PassWord = "LK25tQh1RqkKbrq4C2l6fw==",
                             PhoneNumber = "0879130050",
-                            PromotionUserID = new Guid("00000000-0000-0000-0000-000000000000"),
                             RoleID = new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                             Status = 1
                         });
@@ -2196,12 +2156,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("NeonCinema_Domain.Database.Entities.ShowDate", "ShowDate")
-                        .WithMany("Screening")
-                        .HasForeignKey("ShowDateID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("NeonCinema_Domain.Database.Entities.ShowTime", "ShowTime")
                         .WithMany("Screening")
                         .HasForeignKey("ShowTimeID")
@@ -2211,8 +2165,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Navigation("Movies");
 
                     b.Navigation("Rooms");
-
-                    b.Navigation("ShowDate");
 
                     b.Navigation("ShowTime");
                 });
@@ -2518,11 +2470,6 @@ namespace NeonCinema_Infrastructure.Migrations
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.Service", b =>
                 {
                     b.Navigation("ServiceOders");
-                });
-
-            modelBuilder.Entity("NeonCinema_Domain.Database.Entities.ShowDate", b =>
-                {
-                    b.Navigation("Screening");
                 });
 
             modelBuilder.Entity("NeonCinema_Domain.Database.Entities.ShowTime", b =>
