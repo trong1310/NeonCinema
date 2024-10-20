@@ -8,26 +8,39 @@
 @inject IUserServices UserService
 @inject NavigationManager _navigation
 @inject HttpClient _http
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-<EditForm Model="request">
+<EditForm Model="request" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
     <div class="container-fluid mt-5">
         <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
-                <img src="/images/Client/cam.jpg" alt="Profile" class="rounded-circle img-fluid profile-pic">
+                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+                <label class="custom-file-upload">
+                    <span style="margin-left:-5px">
+                        <i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
+                    </span>
+                    <InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+                    <span>Chọn ảnh</span>
+                </label>
+
+
             </div>
             <div class="col-md-9" style="margin-top:10px;">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="name" class="font-weight-bold">Họ và tên</label>
-                            <input type="text" class="form-control" id="name" @bind-value="request.FullName"/>
+                            <input type="text" class="form-control" id="name" @bind-value="request.FullName" />
+                            <ValidationMessage For="@(() => request.FullName)" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="phone" class="font-weight-bold">Số điện thoại</label>
                             <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber">
+                            <ValidationMessage For="@(() => request.PhoneNumber)" />
                         </div>
                     </div>
                 </div>
@@ -37,65 +50,69 @@
                         <div class="form-group">
                             <label for="email" class="font-weight-bold">Email</label>
                             <input type="email" class="form-control" id="email" @bind-value="request.Email">
+                            <ValidationMessage For="@(() => request.Email)" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="dob" class="font-weight-bold">Ngày sinh</label>
                             <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht">
+                            <ValidationMessage For="@(() => request.DateOrBriht)" />
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="images" class="font-weight-bold">Images</label>
-                            <InputFile OnChange="HandleSelected" />
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                            <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
-                        </div>
-                    </div>
+                @*  <div class="row">
+                <div class="col-md-6">
+                <div class="form-group">
+                <label for="images" class="font-weight-bold">Images</label>
+                <InputFile OnChange="HandleSelected" />
                 </div>
-               
+                </div>
+                <div class="col-md-6">
+                <div class="form-group">
+                <label for="pass" class="font-weight-bold">Mật khẩu</label>
+                <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
+                <ValidationMessage For="@(() => request.PassWord)" />
+                </div>
+                </div>
+                </div> *@
+
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Giới tính</label>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="genderMale" name="gender" @bind="@request.Gender"  />
+                                <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
                                 <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="genderFemale" name="gender" @bind="@request.Gender"/>
+                                <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" @onchange="@((e) => request.Gender = false)" />
                                 <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                             </div>
                         </div>
-
+                        <ValidationMessage For="@(() => request.Gender)" />
                     </div>
-                @*     <div class="col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label>Trạng thái</label>
-                            <select class="form-select" @bind="request.Status">
-                                <option value="@(EntityStatus.Active)">Đang hoạt động</option>
-                                <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
-                            </select>
+                            <label for="pass" class="font-weight-bold">Mật khẩu</label>
+                            <input type="text" class="form-control" id="pass" @bind="request.PassWord" />
+                            <ValidationMessage For="@(() => request.PassWord)" />
                         </div>
-                    </div> *@
+                    </div>
                 </div>
 
+
                 <div class="form-group">
-                    <label for="Description" class="font-weight-bold">Mô tả</label>
+                    <label for="Description" class="font-weight-bold">Địa chỉ</label>
                     <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss"></textarea>
+                    <ValidationMessage For="@(() => request.Adderss)" />
                 </div>
 
                 <div class="text-center">
-                    <button type="button" @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToStaff">Quay lại</button>
                 </div>
             </div>
         </div>
@@ -106,9 +123,34 @@
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
 
+    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+
     private async Task HandleSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
+
+        // Tạo URL tạm thời cho hình ảnh đã chọn
+        var imageUrl = await GetImageUrl(selectedFile);
+        if (imageUrl != null)
+        {
+            profileImage = imageUrl;
+            StateHasChanged(); // Cập nhật giao diện
+        }
+    }
+
+    private async Task<string> GetImageUrl(IBrowserFile file)
+    {
+        // Chỉ tạo URL cho các tệp hình ảnh
+        if (file.ContentType.StartsWith("image/"))
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+            return $"data:{file.ContentType};base64,{imageBase64}";
+        }
+
+        return null;
     }
 
     private async Task HandleSubmit()
@@ -160,6 +202,10 @@
             Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
         }
     }
+    private async Task NavigateToStaff()
+    {
+        _navigation.NavigateTo("/staff");
+    }
 }
 
 <style>
@@ -186,6 +232,31 @@
         border: 3px solid #eaeaea;
         margin-left: -15px;
     }
+
+    .custom-file-upload {
+        display: flex;
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        margin-top: 10px;
+        margin-left: 90px;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        background-color: #a9a9a9; /* Màu nền của nút */
+        color: white; /* Màu chữ */
+        border: none; /* Bỏ viền */
+        text-align: center;
+        width: 150px;
+    }
+
+        .custom-file-upload span {
+            margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+        }
+
+        .custom-file-upload:hover {
+            background-color: #8f8f8f; /* Màu nền khi hover */
+        }
+
 
     label {
         font-size: 14px;
@@ -219,6 +290,13 @@
         .btn-success:hover {
             background-color: #0056b3;
         }
+
+    .btn-warning {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
     .form-group {
         margin-bottom: 1.5rem;

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Seats;
 
 namespace NeonCinema_Infrastructure.Implement.Seats
 {
@@ -126,5 +127,8 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
             // Thêm các kiểm tra khác cho các thuộc tính khác của ghế
         }
+
+
+
     }
 }

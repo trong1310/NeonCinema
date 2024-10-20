@@ -40,7 +40,7 @@ namespace NeonCinema_API.Controllers
 
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
-        [HttpGet]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllRole(CancellationToken cancellationToken)
         {
             var roles = await _rolesRepository.GetAllRole(cancellationToken);

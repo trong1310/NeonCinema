@@ -32,6 +32,17 @@ using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
 using NeonCinema_Client.Data.Services.Promotion;
+using NeonCinema_Client.Data.IServices.Actor;
+using NeonCinema_Client.Data.Services.Actor;
+using NeonCinema_Client.Data.IServices.Director;
+using NeonCinema_Client.Data.Services.Director;
+using NeonCinema_Client.Data.IServices.MovieType;
+using NeonCinema_Client.Data.Services.MovieType;
+using Microsoft.Extensions.FileProviders;
+using NeonCinema_Client.Data.IServices.SeatType;
+using NeonCinema_Client.Data.Services.SeatType;
+using NeonCinema_Client.Data.IServices.Seat;
+using NeonCinema_Client.Data.Services.Seat;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -50,9 +61,13 @@ builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-
+builder.Services.AddScoped<IActorService, ActorService>();
+builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
+builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
+builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
+builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddTransient<IUserServices, UserServices>();
 
 
@@ -90,6 +105,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.MapBlazorHub();
