@@ -43,6 +43,8 @@ using NeonCinema_Client.Data.IServices.SeatType;
 using NeonCinema_Client.Data.Services.SeatType;
 using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Client.Data.Services.Seat;
+using NeonCinema_Client.Data.IServices.Genre;
+using NeonCinema_Client.Data.Services.Genre;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -90,6 +92,9 @@ builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
+builder.Services.AddScoped<IScreeningService, ScreeningService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();

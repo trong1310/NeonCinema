@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.Screening
 {
-    public class ScreeningUpdateRequest
+    public class ScreeningUpdateViewModel
     {
         public Guid ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Show date is required")]
         public DateTime ShowDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Show time is required")]
         public Guid ShowTimeID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Movie is required")]
         public Guid MovieID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Room is required")]
         public Guid RoomID { get; set; }
 
         public EntityStatus Status { get; set; }
