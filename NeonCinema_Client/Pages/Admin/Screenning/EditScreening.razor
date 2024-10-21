@@ -1,0 +1,75 @@
+﻿@page "/edit-screening/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.Screening
+@using NeonCinema_Client.Data.IServices.Screenning
+@inject IScreeningService ScreeningService
+@inject NavigationManager NavigationManager
+
+<h3>Edit Screening</h3>
+
+@if (screeningUpdateRequest == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <form @onsubmit="HandleSubmit">
+        <div class="form-group">
+            <label for="showDate">Show Dates</label>
+            <input type="date" id="showDate" class="form-control" value="@screeningUpdateRequest.ShowDate.ToString("yyyy-MM-dd")" @oninput="e => screeningUpdateRequest.ShowDate = DateTime.Parse(e.Value.ToString())" />
+        </div>
+
+        <div class="form-group">
+            <label for="showTimeId">Show Time</label>
+            <input type="text" id="showTimeId" class="form-control" value="@screeningUpdateRequest.ShowTimeID" @oninput="e => screeningUpdateRequest.ShowTimeID = Guid.Parse(e.Value.ToString())" />
+        </div>
+
+        <div class="form-group">
+            <label for="movieId">Movie</label>
+            <input type="text" id="movieId" class="form-control" value="@screeningUpdateRequest.MovieID" @oninput="e => screeningUpdateRequest.MovieID = Guid.Parse(e.Value.ToString())" />
+        </div>
+
+        <div class="form-group">
+            <label for="roomId">Room</label>
+            <input type="text" id="roomId" class="form-control" value="@screeningUpdateRequest.RoomID" @oninput="e => screeningUpdateRequest.RoomID = Guid.Parse(e.Value.ToString())" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+}
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private ScreeningUpdateRequest screeningUpdateRequest = new ScreeningUpdateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var screening = await ScreeningService.GetScreeningByIdAsync(id);
+        if (screening != null)
+        {
+            screeningUpdateRequest = new ScreeningUpdateRequest
+                {
+                    ID = screening.ID,
+                    ShowDate = screening.ShowDate,
+                    ShowTimeID = screening.ShowTimeID,
+                    MovieID = screening.MovieID,
+                    RoomID = screening.RoomID,
+                    Status = screening.Status
+                };
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/error");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (screeningUpdateRequest != null)
+        {
+            await ScreeningService.UpdateScreeningAsync(screeningUpdateRequest);
+            NavigationManager.NavigateTo("/screenings");
+        }
+    }
+}

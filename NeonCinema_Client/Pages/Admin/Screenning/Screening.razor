@@ -1,0 +1,66 @@
+﻿@page "/screenings"
+@using NeonCinema_Application.DataTransferObject.Screening
+@using NeonCinema_Client.Data.IServices.Screenning
+@inject IScreeningService ScreeningService
+@inject NavigationManager navi
+
+<h3>Screening List</h3>
+<button class="btn btn-success mb-2" @onclick="AddScreening">Add Screening</button>
+@if (screenings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Show Time</th>
+                <th>Show Date</th>
+                <th>Movie</th>
+                <th>Room</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var screening in screenings)
+            {
+                <tr>
+                    <td>@screening.ShowTimeID</td>
+                    <td>@screening.ShowDate.ToString("dd/MM/yyyy")</td>
+                    <td>@screening.MovieID</td>
+                    <td>@screening.RoomID</td>
+                    <td>@screening.Status</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditScreening(screening.ID)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteScreening(screening.ID)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ScreeningDTO> screenings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        screenings = await ScreeningService.GetAllScreeningsAsync();
+    }
+    private void AddScreening()
+    {
+        navi.NavigateTo("/create-screening");
+    }
+    private async Task EditScreening(Guid id)
+    {
+        navi.NavigateTo($"/edit-screening/{id}");
+    }
+
+    private async Task DeleteScreening(Guid id)
+    {
+        await ScreeningService.DeleteScreeningAsync(id);
+        screenings = await ScreeningService.GetAllScreeningsAsync();
+    }
+}
