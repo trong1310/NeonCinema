@@ -11,14 +11,24 @@
 @inject IMovieservices _movieServices
 @inject NavigationManager _navigation
 @inject HttpClient _http
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-<EditForm Model="request">
+<EditForm Model="request" OnValidSubmit="HandleSubmit">
+	<DataAnnotationsValidator />
 	<div class="container-fluid mt-5">
 		<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
-		<span>@errorMessage</span>
 		<div class="row justify-content-center">
 			<div class="col-md-3 text-center mb-4 mt-5">
-				<img src="/images/Client/cam.jpg" alt="Profile" class="" img-fluid profile-pic">
+				<img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+				<label class="custom-file-upload">
+					<span style="margin-left:-5px">
+						<i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
+					</span>
+					<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+					<span>Chọn ảnh</span>
+				</label>
+
+
 			</div>
 			<div class="col-md-9" style="margin-top:10px;">
 				<div class="row">
@@ -26,12 +36,14 @@
 						<div class="form-group">
 							<label for="name" class="font-weight-bold">Tên Phim</label>
 							<input type="text" class="form-control" id="name" @bind-value="request.Name" />
+							<ValidationMessage For="@(() => request.Name)" />
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="Duration" class="font-weight-bold">Thời Lượng</label>
 							<input type="text" class="form-control" id="Duration" @bind-value="request.Duration" />
+							<ValidationMessage For="@(() => request.Duration)" />
 						</div>
 					</div>
 				</div>
@@ -41,27 +53,24 @@
 						<div class="form-group">
 							<label for="Trailer" class="font-weight-bold">Trailer</label>
 							<input type="text" class="form-control" id="Trailer" @bind-value="request.Trailer" />
+							<ValidationMessage For="@(() => request.Trailer)" />
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
 							<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
+							<ValidationMessage For="@(() => request.StarTime)" />
 						</div>
 					</div>
 				</div>
 
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label for="images" class="font-weight-bold">Images</label>
-							<InputFile OnChange="HandleSelected" />
-						</div>
-					</div>
+				<div class="row">					
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
 							<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
+							<ValidationMessage For="@(() => request.AgeAllowed)" />
 						</div>
 					</div>
 				</div>
@@ -77,7 +86,7 @@
 									<option value="@genre.ID">@genre.GenreName</option>
 								}
 							</select>
-
+							<ValidationMessage For="@(() => request.GenreID)" />
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -90,7 +99,7 @@
 									<option value="@language.ID">@language.LanguageName</option>
 								}
 							</select>
-
+							<ValidationMessage For="@(() => request.LenguageID)" />
 						</div>
 					</div>
 				</div>
@@ -106,6 +115,7 @@
 									<option value="@country.ID">@country.CountryName</option>
 								}
 							</select>
+							<ValidationMessage For="@(() => request.CountryID)" />
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -119,6 +129,7 @@
 									<option value="@director.ID">@director.FullName</option>
 								}
 							</select>
+							<ValidationMessage For="@(() => request.DirectorID)" />
 						</div>
 					</div>
 				</div>
@@ -126,10 +137,12 @@
 				<div class="form-group">
 					<label for="Description" class="font-weight-bold">Mô tả</label>
 					<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
+					<ValidationMessage For="@(() => request.Description)" />
 				</div>
 
 				<div class="text-center">
-					<button type="button" @onclick="HandleSubmit" class="btn btn-success btn-lg">Thêm</button>
+					<button type="submit" class="btn btn-success btn-lg">Thêm</button>
+					<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
 				</div>
 			</div>
 		</div>
@@ -139,7 +152,8 @@
 @code {
 	private CreateMovieRequest request = new CreateMovieRequest();
 	private IBrowserFile selectedFile;
-	private string errorMessage;
+	// private string errorMessage;
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
 
 	List<GenreDTO> genres = new List<GenreDTO>();
 	List<LanguageDTO> languages = new List<LanguageDTO>();
@@ -157,21 +171,44 @@
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
 		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
 	}
 
 	private async Task HandleSubmit()
 	{
 		try
 		{
-			if (selectedFile == null || string.IsNullOrEmpty(request.GenreID.ToString()) || string.IsNullOrEmpty(request.Name) ||
-					string.IsNullOrEmpty(request.Duration.ToString()) || string.IsNullOrEmpty(request.Description) ||
-					string.IsNullOrEmpty(request.Trailer) || string.IsNullOrEmpty(request.AgeAllowed.ToString()) ||
-					string.IsNullOrEmpty(request.CountryID.ToString()) || string.IsNullOrEmpty(request.DirectorID.ToString()) ||
-					string.IsNullOrEmpty(request.LenguageID.ToString()))
-			{
-				errorMessage = "Vui lòng nhập đầy đủ thông tin";
-				return;
-			}
+			// if (selectedFile == null || string.IsNullOrEmpty(request.GenreID.ToString()) || string.IsNullOrEmpty(request.Name) ||
+			// 		string.IsNullOrEmpty(request.Duration.ToString()) || string.IsNullOrEmpty(request.Description) ||
+			// 		string.IsNullOrEmpty(request.Trailer) || string.IsNullOrEmpty(request.AgeAllowed.ToString()) ||
+			// 		string.IsNullOrEmpty(request.CountryID.ToString()) || string.IsNullOrEmpty(request.DirectorID.ToString()) ||
+			// 		string.IsNullOrEmpty(request.LenguageID.ToString()))
+			// {
+			// 	errorMessage = "Vui lòng nhập đầy đủ thông tin";
+			// 	return;
+			// }
 
 			var content = new MultipartFormDataContent();
 
@@ -217,8 +254,11 @@
 		{
 			Console.WriteLine($"Lỗi: {ex.Message}");
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
-			errorMessage = "Có lỗi xảy ra. Vui lòng thử lại." + ex.Message;
 		}
+	}
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo("/list-movie-admin");
 	}
 }
 
@@ -292,5 +332,47 @@
 		margin-top: 20px;
 		width: 270px;
 		height: 400px;
+	}
+
+	.custom-file-upload {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		margin-top: 10px;
+		margin-left: 90px;
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+	}
+
+		.custom-file-upload span {
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
+
+		.custom-file-upload:hover {
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
+
+	.btn-success {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-success:hover {
+			background-color: #0056b3;
+		}
+	.btn-warning {
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
 	}
 </style>
