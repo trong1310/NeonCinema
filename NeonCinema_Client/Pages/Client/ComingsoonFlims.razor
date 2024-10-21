@@ -1,4 +1,4 @@
-﻿d@page "/comingsoon-flims"
+﻿@page "/comingsoon-flims"
 @layout LayoutClient
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
@@ -49,7 +49,7 @@
     }
     private string GetImageUrl(string imageUrl)
     {
-        return $"https://localhost:7211/Resources/{imageUrl}";
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
     }
 
     private void OpenDialog()
