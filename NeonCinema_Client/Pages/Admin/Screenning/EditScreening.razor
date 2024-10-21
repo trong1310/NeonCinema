@@ -14,7 +14,7 @@ else
 {
     <form @onsubmit="HandleSubmit">
         <div class="form-group">
-            <label for="showDate">Show Date</label>
+            <label for="showDate">Show Dates</label>
             <input type="date" id="showDate" class="form-control" value="@screeningUpdateRequest.ShowDate.ToString("yyyy-MM-dd")" @oninput="e => screeningUpdateRequest.ShowDate = DateTime.Parse(e.Value.ToString())" />
         </div>
 
