@@ -1,8 +1,11 @@
-﻿using NeonCinema_Application.DataTransferObject.Room;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
+using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Seat;
+using NeonCinema_Infrastructure.Implement.Seats;
 using System.Text.Json;
 using System.Threading;
 
@@ -10,22 +13,24 @@ namespace NeonCinema_Client.Data.Services.Seat
 {
     public class SeatService : ISeatService
     {
+        private readonly ISeatRepository _seatRepository;
         private readonly HttpClient _client;
-        public SeatService(HttpClient httpclient)
+        public SeatService(HttpClient httpclient, SeatRepository seatRepository)
         {
             _client = httpclient;
+            _seatRepository = seatRepository;
         }
         public async Task CreateSeat(CreateSeatDTO request)
         {
             await _client.PostAsJsonAsync("api/Seat/create", request);
         }
 
-        public async Task<List<SeatDTO>> GetAllSeat()
-        {
-            // Thay đổi kiểu trả về thành List<SeatDTO> để phù hợp với deserialization
-            var seats = await _client.GetFromJsonAsync<List<SeatDTO>>("api/Seat/get-all");
-            return seats;  // Không cần chuyển đổi từ ICollection sang List
-        }
+        //public async Task<List<SeatDTO>> GetAllSeat()
+        //{
+           
+        //    var seats = await _client.GetFromJsonAsync<List<SeatDTO>>("api/Seat/get-all");
+        //    return seats;  
+        //}
 
         public async Task<PaginationResponse<SeatDTO>> GetAllSeat(PaginationRequest request)
         {
@@ -75,31 +80,27 @@ namespace NeonCinema_Client.Data.Services.Seat
 
         public async Task<List<SeatTypeDTO>> GetAllSeatTypes()
         {
-            try
-            {
-                var response = await _client.GetAsync("api/SeatType/Get-all");
-                response.EnsureSuccessStatusCode();
+            var response = await _client.GetAsync("api/SeatType/Get-all");
 
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Response content: {content}"); // Log the content
-
-                if (!string.IsNullOrEmpty(content))
-                {
-                    return JsonSerializer.Deserialize<List<SeatTypeDTO>>(content);
-                }
-            }
-            catch (HttpRequestException httpEx)
+            
+            if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"HTTP Error: {httpEx.Message}");
+                
+                var seatTypes = await response.Content.ReadFromJsonAsync<List<SeatTypeDTO>>();
+                return seatTypes; 
             }
-            catch (JsonException jsonEx)
+            else
             {
-                Console.WriteLine($"JSON Error: {jsonEx.Message}");
+                
+                throw new Exception("Failed to retrieve seat types.");
             }
 
-            return new List<SeatTypeDTO>();
         }
 
-
+        public async Task<List<SeatDTO>> GetAllSeats()
+        {
+            var seats = await _seatRepository.GetAllSeatAsync();
+            return seats;
+        }
     }
 }

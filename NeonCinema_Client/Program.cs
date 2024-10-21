@@ -43,6 +43,10 @@ using NeonCinema_Client.Data.IServices.SeatType;
 using NeonCinema_Client.Data.Services.SeatType;
 using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Client.Data.Services.Seat;
+using NeonCinema_Application.Interface.Seats;
+using NeonCinema_Infrastructure.Implement.Seats;
+using NeonCinema_Application.Interface;
+using NeonCinema_Infrastructure.Implement;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -62,13 +66,21 @@ builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<IActorService, ActorService>();
-builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
-builder.Services.AddScoped<ISeatService, SeatService>();
+
 builder.Services.AddTransient<IUserServices, UserServices>();
+
+
+
+builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
+builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
+builder.Services.AddScoped<ISeatService, SeatService>();
+
+
 
 
 

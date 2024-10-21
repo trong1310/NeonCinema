@@ -1,25 +1,14 @@
-﻿@page "/Seats"
-@using NeonCinema_Application.DataTransferObject.Room
-@using NeonCinema_Application.DataTransferObject.SeatTypes
+﻿@page "/seats"
 @using NeonCinema_Application.DataTransferObject.Seats
-@using NeonCinema_Application.Pagination
-@using NeonCinema_Client.Data.IServices.IRoom
 @using NeonCinema_Client.Data.IServices.Seat
- // Ensure you have this service
-@using NeonCinema_Client.Data.IServices.SeatType // Ensure you have this service
+@using NeonCinema_Domain.Enum
 @inject ISeatService SeatService
-@inject IRoomService RoomService // Inject Room Service
-@inject ISeatTypeService SeatTypeService // Inject Seat Type Service
 
-<h3>List of Seats</h3>
-<NavLink class="nav-link" href="/seats/add">Add Seat</NavLink>
+<h3>Seat List</h3>
+
 @if (seats == null)
 {
-    <p><em>Loading...</em></p>
-}
-else if (!seats.Any())
-{
-    <p>No seats found.</p>
+    <p>Loading...</p>
 }
 else
 {
@@ -29,10 +18,9 @@ else
                 <th>Seat Number</th>
                 <th>Row</th>
                 <th>Column</th>
-                <th>Name Room</th>
-                <th>Name Seat Type</th>
+                <th>Room Name</th>
+                <th>Seat Type</th>
                 <th>Status</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,12 +30,9 @@ else
                     <td>@seat.SeatNumber</td>
                     <td>@seat.Row</td>
                     <td>@seat.Column</td>
-                    <td>@GetRoomName(seat.RoomID)</td>  <!-- Assuming RoomId is a property of seat -->
-                    <td>@GetSeatTypeName(seat.SeatTypeID)</td>  <!-- Assuming SeatTypeId is a property of seat -->
-                    <td>@seat.Status</td>
-                    <td>
-                        <NavLink class="btn btn-primary" href="@($"/seats/update/{seat.ID}")">Edit</NavLink>
-                    </td>
+                    <td>@seat.RoomName</td>
+                    <td>@seat.SeatTypeName</td>
+                    <td>@(seat.Status == EntityStatus.Active ? "Active" : "Inactive")</td>
                 </tr>
             }
         </tbody>
@@ -55,31 +40,10 @@ else
 }
 
 @code {
-    private PaginationResponse<SeatDTO> seatTypePagination;
     private List<SeatDTO> seats;
-    private List<RoomDTO> roomDTOs;
-    private List<SeatTypeDTO> seatTypeDTOs;
 
     protected override async Task OnInitializedAsync()
     {
-        var paginationRequest = new PaginationRequest { PageNumber = 1, PageSize = 10 };
-        seatTypePagination = await SeatService.GetAllSeat(paginationRequest);
-        seats = seatTypePagination.Data.ToList();
-
-        // Fetching all rooms and seat types
-        roomDTOs = await RoomService.GetAllRooms(CancellationToken.None); // Assuming this method exists
-        seatTypeDTOs = await SeatTypeService.GetAllSeatType(); // Assuming this method exists
-    }
-
-    private string GetRoomName(Guid roomId)
-    {
-        var room = roomDTOs.FirstOrDefault(r => r.ID == roomId);
-        return room?.Name ?? "Unknown Room"; // Return room name or default text
-    }
-
-    private string GetSeatTypeName(Guid seatTypeId)
-    {
-        var seatType = seatTypeDTOs.FirstOrDefault(st => st.ID == seatTypeId);
-        return seatType?.SeatTypeName ?? "Unknown Seat Type"; // Return seat type name or default text
+        seats = await SeatService.GetAllSeats();
     }
 }

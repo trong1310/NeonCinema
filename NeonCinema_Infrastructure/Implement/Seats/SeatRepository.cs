@@ -21,7 +21,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
         }
         public async Task AddAsync(NeonCinema_Domain.Database.Entities.Seat seat)
         {
-            // Kiểm tra dữ liệu đầu vào
+            
             ValidateSeat(seat);
 
             await _context.Seat.AddAsync(seat);
@@ -30,7 +30,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task DeleteAsync(Guid id)
         {
-            // Kiểm tra xem ID có hợp lệ không
+           
             if (id == Guid.Empty)
             {
                 throw new ArgumentException("ID không hợp lệ.");
@@ -48,19 +48,19 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task<PaginationResponse<NeonCinema_Domain.Database.Entities.Seat>> GetAllAsync(PaginationRequest request)
         {
-            // Tính tổng số bản ghi để xác định có trang tiếp theo không
+            
             var totalRecords = await _context.Seat.CountAsync();
 
-            // Lấy dữ liệu cho trang hiện tại
+           
             var data = await _context.Seat
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
 
-            // Xác định xem có trang tiếp theo không
+            
             bool hasNext = (request.PageNumber * request.PageSize) < totalRecords;
 
-            // Tạo đối tượng phân trang để trả về
+            
             var paginationResponse = new PaginationResponse<NeonCinema_Domain.Database.Entities.Seat>
             {
                 PageNumber = request.PageNumber,
@@ -72,9 +72,31 @@ namespace NeonCinema_Infrastructure.Implement.Seats
             return paginationResponse;
         }
 
+        public async Task<List<SeatDTO>> GetAllSeatAsync()
+        {
+            var seats = await _context.Seat
+           .Include(s => s.Room)           
+           .Include(s => s.SeatTypes)       
+           .Select(s => new SeatDTO
+               {
+                   ID = s.ID,
+                   SeatNumber = s.SeatNumber,
+                   Column = s.Column,
+                   Row = s.Row,
+                   Status = s.Status,
+                   RoomID = s.RoomID,
+                   SeatTypeID = s.SeatTypeID,
+                   RoomName = s.Room.Name,          
+                   SeatTypeName = s.SeatTypes.SeatTypeName 
+               })
+               .ToListAsync();
+
+            return seats;
+        }
+
         public async Task<NeonCinema_Domain.Database.Entities.Seat> GetByIdAsync(Guid id)
         {
-            // Kiểm tra xem ID có hợp lệ hay không
+            
             if (id == Guid.Empty)
             {
                 throw new ArgumentException("ID không hợp lệ.");
@@ -91,14 +113,14 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task UpdateAsync(NeonCinema_Domain.Database.Entities.Seat seat)
         {
-            // Kiểm tra xem ghế có tồn tại không
+           
             var existingSeat = await GetByIdAsync(seat.ID);
             if (existingSeat == null)
             {
                 throw new KeyNotFoundException("Không tìm thấy ghế để cập nhật.");
             }
 
-            // Kiểm tra tính hợp lệ của dữ liệu
+            
             ValidateSeat(seat);
             existingSeat.Column = seat.Column;
             existingSeat.Status = seat.Status;
@@ -111,7 +133,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
             _context.Seat.Update(seat);
             await _context.SaveChangesAsync();
         }
-        // Hàm kiểm tra tính hợp lệ của một Seat
+        
         private void ValidateSeat(NeonCinema_Domain.Database.Entities.Seat seat)
         {
             if (seat == null)
@@ -119,13 +141,13 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 throw new ArgumentException("Dữ liệu ghế không hợp lệ.");
             }
 
-            // Ví dụ: Kiểm tra nếu số ghế hoặc một thuộc tính cụ thể khác của ghế là null hoặc không hợp lệ
+            
             if (string.IsNullOrWhiteSpace(seat.SeatNumber))
             {
                 throw new ArgumentException("Số ghế không được để trống.");
             }
 
-            // Thêm các kiểm tra khác cho các thuộc tính khác của ghế
+            
         }
 
 

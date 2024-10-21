@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.Pagination;
+﻿using NeonCinema_Application.DataTransferObject.Seats;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace NeonCinema_Application.Interface.Seats
         Task AddAsync(Seat seat);
         Task UpdateAsync(Seat seat);
         Task DeleteAsync(Guid id);
+        Task<List<SeatDTO>> GetAllSeatAsync();
         
+
     }
 }
