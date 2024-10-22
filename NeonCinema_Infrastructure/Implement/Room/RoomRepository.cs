@@ -31,7 +31,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
                 Status = request.Status, 
-                CinemasID = Guid.Parse("b596f2fd-2cf4-40ee-a665-387aab29eed2")
+                CinemasID = Guid.Parse("7c272777-c779-48d8-bc05-0c6af035be06")
             };
 
             _context.Room.Add(roomEntity); 

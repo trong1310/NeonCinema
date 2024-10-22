@@ -1,0 +1,125 @@
+﻿@* @page "/update-movie/{movieId:guid}"
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using Microsoft.AspNetCore.Http
+@inject IMovieservices _movieServices
+@inject NavigationManager _navigation
+@inject HttpClient _http
+
+<EditForm Model="request" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary></ValidationSummary>
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-4">Cập nhật phim</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-3 text-center mb-4 mt-5">
+                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic" /> <br />
+                <label class="custom-file-upload">
+                    <span style="margin-left:-5px">
+                        <i class="material-icons">cloud_upload</i>
+                    </span>
+                    <InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+                    <span>Chọn ảnh</span>
+                </label>
+            </div>
+            <div class="col-md-9" style="margin-top:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name" class="font-weight-bold">Tên Phim</label>
+                            <input type="text" class="form-control" id="name" @bind-value="request.Name" />
+                            <ValidationMessage For="@(() => request.Name)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Duration" class="font-weight-bold">Thời Lượng</label>
+                            <input type="text" class="form-control" id="Duration" @bind-value="request.Duration" />
+                            <ValidationMessage For="@(() => request.Duration)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Các trường khác như Trailer, Ngày phát hành, Độ tuổi cho phép, Thể loại, Ngôn ngữ, Quốc gia, Đạo diễn -->
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Cập nhật</button>
+                    <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Guid MovieId { get; set; }
+    private UpdateMovieRequest request = new UpdateMovieRequest { Images = new List<string>() };
+    private IBrowserFile selectedFile;
+    private string profileImage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _movieServices.GetMovieById(MovieId);
+        if (response != null)
+        {
+            
+            profileImage = request.Images.FirstOrDefault(); // Lấy ảnh đầu tiên
+        }
+        else
+        {
+            Console.WriteLine("Lỗi khi tải thông tin phim.");
+        }
+    }
+
+    private async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var imageUrl = await GetImageUrl(selectedFile);
+        if (imageUrl != null)
+        {
+            profileImage = imageUrl;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<string> GetImageUrl(IBrowserFile file)
+    {
+        if (file.ContentType.StartsWith("image/"))
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+            return $"data:{file.ContentType};base64,{imageBase64}";
+        }
+        return null;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (selectedFile != null)
+        {
+            var imageUrl = await GetImageUrl(selectedFile);
+            if (imageUrl != null)
+            {
+                request.Images.Add(imageUrl);
+            }
+        }
+
+        var flimsResponse = await _movieServices.UpdateMovie(request);
+        if (flimsResponse != null)
+        {
+            _navigation.NavigateTo("/list-movie-admin");
+        }
+        else
+        {
+            Console.WriteLine($"Có lỗi xảy ra khi cập nhật phim.");
+        }
+    }
+
+    private void NavigateToList()
+    {
+        _navigation.NavigateTo("/list-movie-admin");
+    }
+}
+ *@

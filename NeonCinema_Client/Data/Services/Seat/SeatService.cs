@@ -41,12 +41,6 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-        public async Task<List<RoomDTO>> GetAllRoom()
-        {
-            var lst = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("https://localhost:7211/api/Room/getall");
-            return lst;
-        }
-
         public async Task<PaginationResponse<SeatDTO>> GetAllSeat(ViewSeatRequest request)
         {
             try
@@ -62,22 +56,11 @@ namespace NeonCinema_Client.Data.Services.Seat
 
         public async Task<List<SeatTypeDTO>> GetAllSeatType()
         {
-            try
-            {
+            
                 
-                var lst = await _httpClient.GetFromJsonAsync<List<SeatTypeDTO>>("https://localhost:7211/api/SeatType/Get-all");
-                return lst;
-            }
-            catch (JsonException jsonEx)
-            {
-                Console.WriteLine("JSON Error: " + jsonEx.Message);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("General Error: " + ex.Message);
-                throw;
-            }
+            var lst = await _httpClient.GetFromJsonAsync<List<SeatTypeDTO>>("https://localhost:7211/api/SeatType/Get-all");
+            return lst;
+
         }
 
         public async Task<SeatDTO> GetSeatById(Guid id)

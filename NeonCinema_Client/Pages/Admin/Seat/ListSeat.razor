@@ -17,7 +17,7 @@
             <th>Seat Number</th>
             <th>Column</th>
             <th>Row</th>
-            <th>Room Name</th>
+            
             <th>Seat Type</th>
             <th>Status</th>
         </tr>
@@ -36,8 +36,8 @@
                 <tr>
                     <td>@seat.SeatNumber</td>
                     <td>@seat.Column</td>
-                    <td>@seat.Row</td>
-                    <td>@seat.RoomName</td>
+                    <td>@seat.Row</td> 
+                    
                     <td>@seat.SeatTypeName</td>
                     <td>@seat.Status</td>
                 </tr>
@@ -48,6 +48,7 @@
 
 @code {
     public List<SeatDTO> seats = new List<SeatDTO>();
+    public List<SeatTypeDTO> seattype = new List<SeatTypeDTO>();
     protected override async Task OnInitializedAsync()
     {
         // Khai báo request và gọi API để lấy danh sách ghế

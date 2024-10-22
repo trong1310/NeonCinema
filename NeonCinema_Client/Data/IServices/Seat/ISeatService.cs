@@ -14,7 +14,7 @@ namespace NeonCinema_Client.Data.IServices.Seat
     {
 
         public Task<PaginationResponse<SeatDTO>> GetAllSeat(ViewSeatRequest request);
-        public Task<List<RoomDTO>> GetAllRoom();
+        
         public Task<List<SeatTypeDTO>> GetAllSeatType();
         
         public Task<HttpResponseMessage> CreateSeat(CreateSeatDTO request);
