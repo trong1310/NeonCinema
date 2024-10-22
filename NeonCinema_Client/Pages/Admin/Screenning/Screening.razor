@@ -5,7 +5,53 @@
 @inject NavigationManager navi
 
 <h3>Screening List</h3>
-<button class="btn btn-success mb-2" @onclick="AddScreening">Add Screening</button>
+
+<button class="btn btn-success mb-2" @onclick="ToggleCreateForm">Add Screening</button>
+
+@if (isCreating)
+{
+    <div class="form-container">
+        <h4>Create New Screening</h4>
+        <EditForm Model="newScreening" OnValidSubmit="CreateScreening">
+            <div class="form-group">
+                <label>Show Time</label>
+                <InputSelect @bind-Value="newScreening.ShowTimeID">
+                    <!-- Add your ShowTime options here -->
+                    <option value="@Guid.Empty">Select ShowTime</option>
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label>Show Date</label>
+                <InputDate @bind-Value="newScreening.ShowDate" />
+            </div>
+            <div class="form-group">
+                <label>Movie</label>
+                <InputSelect @bind-Value="newScreening.MovieID">
+                    <!-- Add your Movie options here -->
+                    <option value="@Guid.Empty">Select Movie</option>
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label>Room</label>
+                <InputSelect @bind-Value="newScreening.RoomID">
+                    <!-- Add your Room options here -->
+                    <option value="@Guid.Empty">Select Room</option>
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <InputSelect @bind-Value="newScreening.Status">
+                    <!-- Add your Status options here -->
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </InputSelect>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+        <hr />
+    </div>
+}
+
 @if (screenings == null)
 {
     <p><em>Loading...</em></p>
@@ -44,15 +90,29 @@ else
 
 @code {
     private List<ScreeningDTO> screenings;
+    private ScreeningDTO newScreening = new ScreeningDTO();
+    private bool isCreating = false;
 
     protected override async Task OnInitializedAsync()
     {
         screenings = await ScreeningService.GetAllScreeningsAsync();
     }
+
+    private void ToggleCreateForm()
+    {
+        isCreating = !isCreating;
+    }
+
+    private async Task CreateScreening()
+    {
+                
+    }
+
     private void AddScreening()
     {
         navi.NavigateTo("/create-screening");
     }
+
     private async Task EditScreening(Guid id)
     {
         navi.NavigateTo($"/edit-screening/{id}");
