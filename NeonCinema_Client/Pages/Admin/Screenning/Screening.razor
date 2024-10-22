@@ -1,58 +1,144 @@
 ﻿@page "/screenings"
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Application.DataTransferObject.Screening
+@using NeonCinema_Application.DataTransferObject.ShowTime
+@using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.Screenning
 @inject IScreeningService ScreeningService
 @inject NavigationManager navi
 
-<h3>Screening List</h3>
-<button class="btn btn-success mb-2" @onclick="AddScreening">Add Screening</button>
+<h3 class="text-center mt-4">Danh sách lịch chiếu</h3>
+
+<div class="d-flex justify-content-center mb-4">
+    <button class="btn btn-success" @onclick="ToggleCreateForm">Thêm mới</button>
+</div>
+
+@if (isCreating)
+{
+    <div class="form-container mx-auto p-4 rounded shadow">
+        <h4 class="text-center">Create New Screening</h4>
+        <EditForm Model="newScreening" OnValidSubmit="CreateScreening">
+            <div class="form-group">
+                <InputSelect @bind-Value="newScreening.ShowTimeID" class="form-control">
+                        <option value="" disabled selected>Chọn thời gian</option>
+                    @foreach (var showTime in showTime)
+                        {
+                        <option value="@showTime.ID">@showTime.StartTime</option>
+                        }
+                </InputSelect>
+            </div>
+@*             <div class="form-group">
+                <InputSelect @bind-Value="newScreening.ShowDate" class="form-control">
+                    <option value="" disabled selected>Chọn quốc gia</option>
+                    @foreach (var showTime in showTime)
+                    {
+                        <option value="@showTime.ID">@showTime.StartTime</option>
+                    }
+                </InputSelect>
+            </div> *@
+            <div class="form-group">
+                <InputSelect @bind-Value="newScreening.MovieID" class="form-control">
+                    <option value="" disabled selected>Chọn phim</option>
+                    @foreach (var movies in movies.Data)
+                    {
+                        <option value="@movies.ID">@movies.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <InputSelect @bind-Value="newScreening.RoomID" class="form-control">
+                    <option value="" disabled selected>Chọn phòng</option>
+                    @foreach (var rooms in rooms)
+                    {
+                        <option value="@rooms.ID">@rooms.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <InputSelect @bind-Value="newScreening.Status" class="form-control">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </InputSelect>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </EditForm>
+        <hr />
+    </div>
+}
+
 @if (screenings == null)
 {
-    <p><em>Loading...</em></p>
+    <p class="text-center"><em>Không có lịch chiếu nào sắp tới</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Show Time</th>
-                <th>Show Date</th>
-                <th>Movie</th>
-                <th>Room</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var screening in screenings)
-            {
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light text-center">
                 <tr>
-                    <td>@screening.ShowTimeID</td>
-                    <td>@screening.ShowDate.ToString("dd/MM/yyyy")</td>
-                    <td>@screening.MovieID</td>
-                    <td>@screening.RoomID</td>
-                    <td>@screening.Status</td>
-                    <td>
-                        <button class="btn btn-primary" @onclick="() => EditScreening(screening.ID)">Edit</button>
-                        <button class="btn btn-danger" @onclick="() => DeleteScreening(screening.ID)">Delete</button>
-                    </td>
+                    <th>Thời gian</th>
+                    <th>Ngày chiếu</th>
+                    <th>Phim</th>
+                    <th>Phòng</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var screening in screenings)
+                {
+                    <tr class="text-center">
+                        <td>@screening.ID</td>
+                        <td>@screening.ShowDate.ToString("dd/MM/yyyy")</td>
+                        <td>@screening.MovieID</td>
+                        <td>@screening.RoomID</td>
+                        <td>@screening.Status</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" @onclick="() => EditScreening(screening.ID)">Edit</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteScreening(screening.ID)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
     private List<ScreeningDTO> screenings;
+    private ScreeningCreateRequest newScreening = new ScreeningCreateRequest();
+    private List<ShowTimeDTO> showTime = new List<ShowTimeDTO>();
+    private PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
+    private List<RoomDTO> rooms = new List<RoomDTO>();
+    private bool isCreating = false;
 
     protected override async Task OnInitializedAsync()
     {
         screenings = await ScreeningService.GetAllScreeningsAsync();
+        movies = await ScreeningService.GetAllMoviesAsync();
+        showTime = await ScreeningService.GetAllShowTimesAsync();
+        rooms = await ScreeningService.GetAllRoomsAsync();
     }
+
+    private void ToggleCreateForm()
+    {
+        isCreating = !isCreating;
+    }
+
+    private async Task CreateScreening()
+    {
+                
+    }
+
     private void AddScreening()
     {
         navi.NavigateTo("/create-screening");
     }
+
     private async Task EditScreening(Guid id)
     {
         navi.NavigateTo($"/edit-screening/{id}");
@@ -64,3 +150,23 @@ else
         screenings = await ScreeningService.GetAllScreeningsAsync();
     }
 }
+<style>
+    .form-container {
+        max-width: 600px;
+        background-color: #f8f9fa;
+    }
+
+    .table-responsive {
+        margin-top: 20px;
+    }
+
+    .table thead {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+</style>

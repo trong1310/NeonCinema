@@ -2,6 +2,7 @@
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
+using NeonCinema_Application.Pagination;
 
 namespace NeonCinema_Client.Data.IServices.Screenning
 {
@@ -13,7 +14,7 @@ namespace NeonCinema_Client.Data.IServices.Screenning
         Task UpdateScreeningAsync(ScreeningUpdateRequest request);
         Task DeleteScreeningAsync(Guid id);
         Task<List<ShowTimeDTO>> GetAllShowTimesAsync();
-        Task<List<MovieDTO>> GetAllMoviesAsync();
+        Task<PaginationResponse<MovieDTO>> GetAllMoviesAsync();
         Task<List<RoomDTO>> GetAllRoomsAsync();
 
     }
