@@ -128,7 +128,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task<SeatDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var seat = await _context.Seat.Include(x => x.Room).Include(x => x.SeatTypes).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
+            var seat = await _context.Seat.Include(x => x.SeatTypes).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
             if (seat == null)
             {
                 return null;
