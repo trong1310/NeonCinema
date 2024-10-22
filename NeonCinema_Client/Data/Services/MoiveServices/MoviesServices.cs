@@ -1,4 +1,5 @@
-﻿using Bogus.Hollywood.Models;
+﻿using Bogus.Hollywood.DataSets;
+using Bogus.Hollywood.Models;
 using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
@@ -8,6 +9,8 @@ using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Domain.Database.Entities;
+using System.Text;
+using System.Text.Json;
 
 namespace NeonCinema_Client.Services.MoivesService
 {
@@ -76,9 +79,22 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
-        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+        public async Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
         {
-            throw new NotImplementedException();
+           
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+                return await _httpClient.PutAsync($"https://localhost:7211/api/Movie/Update/{request.ID}", content);
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Có lỗi : " + ex.Message)
+                };
+
+            }
         }
 
         public async Task<MovieDTO> GetMovieById(Guid id)
