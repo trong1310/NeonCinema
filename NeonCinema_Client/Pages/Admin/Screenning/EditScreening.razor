@@ -48,15 +48,7 @@ else
         var screening = await ScreeningService.GetScreeningByIdAsync(id);
         if (screening != null)
         {
-            screeningUpdateRequest = new ScreeningUpdateRequest
-                {
-                    ID = screening.ID,
-                    ShowDate = screening.ShowDate,
-                    ShowTimeID = screening.ShowTimeID,
-                    MovieID = screening.MovieID,
-                    RoomID = screening.RoomID,
-                    Status = screening.Status
-                };
+
         }
         else
         {
