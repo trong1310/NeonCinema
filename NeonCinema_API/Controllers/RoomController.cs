@@ -24,7 +24,7 @@ namespace NeonCinema_API.Controllers
             {
                 return BadRequest("Request cannot be null.");
             }
-            // Gán CinemaID mặc định
+            
            
             var response = await _roomRepository.CreateRoom(request, cancellationToken);
             return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);

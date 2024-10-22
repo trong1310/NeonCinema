@@ -15,6 +15,7 @@ using NeonCinema_Application.Interface.Point;
 using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
 using NeonCinema_Application.Interface.Room;
+using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Interface.ShiftChange;
 
 using NeonCinema_Application.Interface.ShowTime;
@@ -31,6 +32,7 @@ using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Infrastructure.Implement.Roles;
 using NeonCinema_Infrastructure.Implement.Room;
 using NeonCinema_Infrastructure.Implement.Screenings;
+using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
@@ -51,6 +53,7 @@ builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
 
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IShowTimeRepository, ShowTimeRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
 builder.Services.AddScoped<IPointRepositories, PointRepositories>();

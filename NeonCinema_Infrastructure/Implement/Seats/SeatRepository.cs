@@ -9,126 +9,177 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Seats;
+using AutoMapper;
+using System.Threading;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
+using Com.CloudRail.SI.ServiceCode.Commands;
+using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Infrastructure.Extention;
 
 namespace NeonCinema_Infrastructure.Implement.Seats
 {
     public class SeatRepository : ISeatRepository
     {
         private readonly NeonCinemasContext _context;
-        public SeatRepository(NeonCinemasContext context)
+        private readonly IMapper _maps;
+        public SeatRepository(IMapper maps, NeonCinemasContext context)
         {
             _context = context;
-        }
-        public async Task AddAsync(NeonCinema_Domain.Database.Entities.Seat seat)
-        {
-            // Kiểm tra dữ liệu đầu vào
-            ValidateSeat(seat);
-
-            await _context.Seat.AddAsync(seat);
-            await _context.SaveChangesAsync();
+            _maps = maps;
         }
 
-        public async Task DeleteAsync(Guid id)
+       
+        public async Task<HttpResponseMessage> AddAsync(CreateSeatDTO request, CancellationToken cancellationToken)
         {
-            // Kiểm tra xem ID có hợp lệ không
-            if (id == Guid.Empty)
+            try
             {
-                throw new ArgumentException("ID không hợp lệ.");
+                var seats = new Seat()
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = request.SeatNumber,
+                    Column = request.Column,
+                    Row = request.Row,
+                    Status = request.Status,
+                    RoomID = request.RoomID,
+                    SeatTypeID = request.SeatTypeID,
+
+
+                };
+                await _context.Seat.AddAsync(seats);
+                await _context.SaveChangesAsync();
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Thêm thành công")
+
+                };
             }
-
-            var seat = await GetByIdAsync(id);
-            if (seat == null)
+            catch (Exception ex)
             {
-                throw new KeyNotFoundException("Không tìm thấy ghế để xóa.");
-            }
 
-            _context.Seat.Remove(seat);
-            await _context.SaveChangesAsync();
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                };
+            }
         }
 
-        public async Task<PaginationResponse<NeonCinema_Domain.Database.Entities.Seat>> GetAllAsync(PaginationRequest request)
+        public async Task<HttpResponseMessage> DeleteAsync(Seat request, CancellationToken cancellationToken)
         {
-            // Tính tổng số bản ghi để xác định có trang tiếp theo không
-            var totalRecords = await _context.Seat.CountAsync();
-
-            // Lấy dữ liệu cho trang hiện tại
-            var data = await _context.Seat
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync();
-
-            // Xác định xem có trang tiếp theo không
-            bool hasNext = (request.PageNumber * request.PageSize) < totalRecords;
-
-            // Tạo đối tượng phân trang để trả về
-            var paginationResponse = new PaginationResponse<NeonCinema_Domain.Database.Entities.Seat>
+            try
             {
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                HasNext = hasNext,
-                Data = data
+                var obj = await _context.Seat.FirstOrDefaultAsync(x => x.ID == request.ID);
+                if (obj != null)
+                {
+                    obj.Deleted = true;
+                    obj.DeletedTime = DateTime.Now;
+                    _context.Seat.Update(obj);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Đã xóa thành công")
+                    };
+
+                }
+                else
+                {
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy phim")
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                };
+            }
+        }
+
+        public async Task<PaginationResponse<SeatDTO>> GetAllAsync(ViewSeatRequest request, CancellationToken cancellationToken)
+        {
+            var query = _context.Seat.Include(x => x.Room).Include(x => x.SeatTypes).AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(request.search))
+            {
+                query = query.Where(x => x.SeatNumber.Contains(request.search.ToLower()));
+            }
+            var result = await query.PaginateAsync<Seat, SeatDTO>(request, _maps, cancellationToken);
+            var dataview = (from a in result.Data
+                            join b in query on a.ID equals b.ID
+                            orderby b.Row
+                            select new SeatDTO
+                            {
+                                ID = b.ID,
+                                SeatNumber = b.SeatNumber,
+                                Column = b.Column,
+                                Status = b.Status,
+                                RoomName = b.Room.Name,
+                                SeatTypeName = b.SeatTypes.SeatTypeName
+                            }).ToList();
+            return new PaginationResponse<SeatDTO>()
+            {
+                Data = dataview,
+                HasNext = result.HasNext,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
             };
-
-            return paginationResponse;
         }
 
-        public async Task<NeonCinema_Domain.Database.Entities.Seat> GetByIdAsync(Guid id)
+        public async Task<SeatDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            // Kiểm tra xem ID có hợp lệ hay không
-            if (id == Guid.Empty)
-            {
-                throw new ArgumentException("ID không hợp lệ.");
-            }
-
-            var seat = await _context.Seat.FindAsync(id);
+            var seat = await _context.Seat.Include(x => x.Room).Include(x => x.SeatTypes).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
             if (seat == null)
             {
-                throw new KeyNotFoundException("Không tìm thấy ghế với ID này.");
+                return null;
             }
-
-            return seat;
+            var seatdto = new SeatDTO
+            {
+                ID = seat.ID,
+                SeatNumber = seat.SeatNumber,
+                Column = seat.Column,
+                Status = seat.Status,
+                RoomName = seat.Room.Name,
+                SeatTypeName = seat.SeatTypes.SeatTypeName
+            };
+            return seatdto;
         }
 
-        public async Task UpdateAsync(NeonCinema_Domain.Database.Entities.Seat seat)
+        public async Task<HttpResponseMessage> UpdateAsync(Seat request, CancellationToken cancellationToken)
         {
-            // Kiểm tra xem ghế có tồn tại không
-            var existingSeat = await GetByIdAsync(seat.ID);
-            if (existingSeat == null)
+            try
             {
-                throw new KeyNotFoundException("Không tìm thấy ghế để cập nhật.");
-            }
+                var obj = await _context.Seat.FirstOrDefaultAsync(x => x.ID == request.ID);
+                if (obj.Deleted == true && obj == null)
+                {
 
-            // Kiểm tra tính hợp lệ của dữ liệu
-            ValidateSeat(seat);
-            existingSeat.Column = seat.Column;
-            existingSeat.Status = seat.Status;
-            existingSeat.SeatNumber = seat.SeatNumber;
-            existingSeat.Ticket = seat.Ticket;
-            existingSeat.TicketSeats = seat.TicketSeats;
-            existingSeat.Row = seat.Row;
-            existingSeat.RoomID = seat.RoomID;
-            existingSeat.SeatTypeID = seat.SeatTypeID;
-            _context.Seat.Update(seat);
-            await _context.SaveChangesAsync();
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Không tìm thấy phim")
+                    };
+                }
+                request.SeatNumber = obj.SeatNumber;
+                request.Column = obj.Column;
+                request.Status = obj.Status;
+                request.Row = obj.Row;
+                request.Status = obj.Status;
+                request.RoomID = obj.RoomID;
+                request.SeatTypeID = obj.SeatTypeID;
+                
+                _context.Seat.Update(obj);
+                await _context.SaveChangesAsync(cancellationToken);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Sửa thành công")
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                };
+            }
         }
-        // Hàm kiểm tra tính hợp lệ của một Seat
-        private void ValidateSeat(NeonCinema_Domain.Database.Entities.Seat seat)
-        {
-            if (seat == null)
-            {
-                throw new ArgumentException("Dữ liệu ghế không hợp lệ.");
-            }
-
-            // Ví dụ: Kiểm tra nếu số ghế hoặc một thuộc tính cụ thể khác của ghế là null hoặc không hợp lệ
-            if (string.IsNullOrWhiteSpace(seat.SeatNumber))
-            {
-                throw new ArgumentException("Số ghế không được để trống.");
-            }
-
-            // Thêm các kiểm tra khác cho các thuộc tính khác của ghế
-        }
-
-
-
     }
 }
