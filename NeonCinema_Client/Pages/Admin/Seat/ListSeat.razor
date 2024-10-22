@@ -1,49 +1,70 @@
-﻿@page "/seats"
+﻿@page "/listseat"
+@using NeonCinema_Application.DataTransferObject.SeatTypes
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Client.Data.IServices.Seat
-@using NeonCinema_Domain.Enum
+@inject NavigationManager Navi
 @inject ISeatService SeatService
 
-<h3>Seat List</h3>
 
-@if (seats == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
+
+<button class="btn btn-primary" @onclick="NavigateToAddSeat">Thêm Ghế Mới</button>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Seat Number</th>
+            <th>Column</th>
+            <th>Row</th>
+            <th>Room Name</th>
+            <th>Seat Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (seats.Count == 0)
+        {
             <tr>
-                <th>Seat Number</th>
-                <th>Row</th>
-                <th>Column</th>
-                <th>Room Name</th>
-                <th>Seat Type</th>
-                <th>Status</th>
+                <td colspan="4">Không có dữ liệu.</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var seat in seats)
+        }
+        else
+        {
+            foreach (var seat in seats)
             {
                 <tr>
                     <td>@seat.SeatNumber</td>
-                    <td>@seat.Row</td>
                     <td>@seat.Column</td>
+                    <td>@seat.Row</td>
                     <td>@seat.RoomName</td>
                     <td>@seat.SeatTypeName</td>
-                    <td>@(seat.Status == EntityStatus.Active ? "Active" : "Inactive")</td>
+                    <td>@seat.Status</td>
                 </tr>
             }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
 @code {
-    private List<SeatDTO> seats;
-
+    public List<SeatDTO> seats = new List<SeatDTO>();
     protected override async Task OnInitializedAsync()
     {
-        seats = await SeatService.GetAllSeats();
+        // Khai báo request và gọi API để lấy danh sách ghế
+        var request = new ViewSeatRequest
+        {
+            PageNumber = 1,
+            PageSize = 10 // Bạn có thể điều chỉnh số lượng ghế hiển thị
+        };
+
+        var response = await SeatService.GetAllSeat(request);
+        if (response != null && response.Data != null)
+        {
+            seats = response.Data.ToList();
+        }
+    }
+    private void NavigateToAddSeat()
+    {
+        Navi.NavigateTo("/addseat");
     }
 }

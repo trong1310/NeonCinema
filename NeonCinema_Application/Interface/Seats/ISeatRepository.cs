@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Seats;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
@@ -11,12 +12,12 @@ namespace NeonCinema_Application.Interface.Seats
 {
     public interface ISeatRepository
     {
-        Task<PaginationResponse<Seat>> GetAllAsync(PaginationRequest request);
-        Task<Seat> GetByIdAsync(Guid id);
-        Task AddAsync(Seat seat);
-        Task UpdateAsync(Seat seat);
-        Task DeleteAsync(Guid id);
-        Task<List<SeatDTO>> GetAllSeatAsync();
+        public Task<PaginationResponse<SeatDTO>> GetAllAsync(ViewSeatRequest request, CancellationToken cancellationToken);
+        public Task<SeatDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> AddAsync(CreateSeatDTO request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> UpdateAsync(Seat request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> DeleteAsync(Seat request, CancellationToken cancellationToken);
+        
         
 
     }
