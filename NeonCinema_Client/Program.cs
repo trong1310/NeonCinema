@@ -41,6 +41,12 @@ using NeonCinema_Client.Data.Services.MovieType;
 using Microsoft.Extensions.FileProviders;
 using NeonCinema_Client.Data.IServices.SeatType;
 using NeonCinema_Client.Data.Services.SeatType;
+//using NeonCinema_Client.Data.IServices.Seat;
+//using NeonCinema_Client.Data.Services.Seat;
+using NeonCinema_Application.Interface.Seats;
+using NeonCinema_Infrastructure.Implement.Seats;
+using NeonCinema_Application.Interface;
+using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Client.Data.Services.Seat;
 using NeonCinema_Client.Data.IServices.Genre;
@@ -64,16 +70,25 @@ builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<IActorService, ActorService>();
-builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
-builder.Services.AddScoped<ISeatService, SeatService>();
+
 builder.Services.AddTransient<IUserServices, UserServices>();
 
 
 
+builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
+
+builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
+
+
+
+
+
+
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -98,6 +113,14 @@ builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
+
+
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
+builder.Services.AddHttpClient<ISeatService, SeatService>();
+builder.Services.AddScoped<ISeatService, SeatService>();
+
+
+//builder.Services.AddScoped<ISeatService, SeatService>();
 
 var app = builder.Build();
 

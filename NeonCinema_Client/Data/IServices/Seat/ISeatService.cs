@@ -1,4 +1,9 @@
-﻿using NeonCinema_Application.DataTransferObject.Room;
+﻿using NeonCinema_Application.DataTransferObject.Countrys;
+using NeonCinema_Application.DataTransferObject.Directors;
+using NeonCinema_Application.DataTransferObject.Genre;
+using NeonCinema_Application.DataTransferObject.Language;
+using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Pagination;
@@ -7,13 +12,13 @@ namespace NeonCinema_Client.Data.IServices.Seat
 {
     public interface ISeatService
     {
-        Task<List<SeatDTO>> GetAllSeat();
-        Task<SeatDTO> GetByIdSeat(Guid id);
-        Task CreateSeat(CreateSeatDTO request);
-        Task UpdateSeat(Guid id, UpdateSeatDTO request);
-        Task<PaginationResponse<SeatDTO>> GetAllSeat(PaginationRequest request);
 
-        Task<List<RoomDTO>> GetAllRooms(); 
-        Task<List<SeatTypeDTO>> GetAllSeatTypes(); 
+        public Task<PaginationResponse<SeatDTO>> GetAllSeat(ViewSeatRequest request);
+        public Task<List<RoomDTO>> GetAllRoom();
+        public Task<List<SeatTypeDTO>> GetAllSeatType();
+        
+        public Task<HttpResponseMessage> CreateSeat(CreateSeatDTO request);
+        public Task<HttpResponseMessage> UpdateSeate(UpdateSeatDTO request);
+        public Task<SeatDTO> GetSeatById(Guid id);
     }
 }
