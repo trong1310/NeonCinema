@@ -57,7 +57,17 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 
         public async Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken)
         {
-            var screenings = await _context.Screening.ToListAsync(cancellationToken);
+            var screenings = await _context.Screening
+        .Select(screening => new ScreeningDTO
+        {
+            ID = screening.ID,
+            MovieID = screening.MovieID,
+            ShowTimeID = screening.ShowTimeID,
+            RoomID = screening.RoomID,
+            ShowDate = screening.ShowDate,
+            Status = screening.Status
+        })
+        .ToListAsync(cancellationToken);
             return _mapper.Map<List<ScreeningDTO>>(screenings);
         }
 

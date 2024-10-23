@@ -24,19 +24,19 @@ namespace NeonCinema_Infrastructure.Implement.Room
 
         public async Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken)
         {
-            // Thêm yêu cầu phòng vào DbContext
-            var roomEntity = new NeonCinema_Domain.Database.Entities.Room // Use the Room entity class here
+            
+            var roomEntity = new NeonCinema_Domain.Database.Entities.Room 
             {
                 ID = Guid.NewGuid(),
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
-                Status = request.Status, // Assuming you want to set the status as well
-                CinemasID = request.CinemasID
+                Status = request.Status, 
+                CinemasID = Guid.Parse("7c272777-c779-48d8-bc05-0c6af035be06")
             };
 
-            _context.Room.Add(roomEntity); // Add the Room entity to the DbSet
+            _context.Room.Add(roomEntity); 
 
-            // Save changes to the database
+            
             await _context.SaveChangesAsync(cancellationToken);
 
             return new HttpResponseMessage(HttpStatusCode.Created)
