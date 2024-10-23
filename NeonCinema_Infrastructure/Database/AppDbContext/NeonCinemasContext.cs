@@ -28,7 +28,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         }
         #region DbSet
-        public DbSet<Actor> Actors { get; set; }
         public DbSet<Bill> BillDetails { get; set; }
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
@@ -53,7 +52,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<ShiftChange> ShiftChange { get; set; }
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<WorkShift> WorkShift { get; set; }
-        public DbSet<ActorMovie> ActorMovies { get; set; }
         public DbSet<CategoryMovies> CategoryMovies { get; set; }
         public DbSet<TicketSeat> TicketSeats { get; set; }
         public DbSet<Checkin> Checkin { get; set; }
