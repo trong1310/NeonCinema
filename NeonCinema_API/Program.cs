@@ -16,14 +16,11 @@ using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Application.Interface.ShiftChange;
-
 using NeonCinema_Application.Interface.ShowTime;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
-using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Implement;
-using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Infrastructure.Implement.Cinemas;
 using NeonCinema_Infrastructure.Implement.Countrys;
 using NeonCinema_Infrastructure.Implement.Points;
@@ -55,7 +52,6 @@ builder.Services.AddScoped<IShowTimeRepository, ShowTimeRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
 builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
-builder.Services.AddScoped<IActorRepositories,ActorRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.Configure<FormOptions>(options =>
