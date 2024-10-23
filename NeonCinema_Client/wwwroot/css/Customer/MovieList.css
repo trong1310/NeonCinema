@@ -1,38 +1,5 @@
 ﻿/* Cài đặt cho body */
-body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
-}
 
-/* Cài đặt cho các nút điều khiển carousel */
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%; /* Điều chỉnh kích thước nút */
-    height: 100%; /* Chiều cao phủ đầy để dễ bấm */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent; /* Loại bỏ hoàn toàn nền */
-    border: none;
-}
-
-    /* Cài đặt cho biểu tượng điều khiển */
-    .carousel-control-prev .fa-chevron-left,
-    .carousel-control-next .fa-chevron-right {
-        font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
-        color: #4caf50; /* Màu biểu tượng mặc định */
-        transition: color 0.3s ease, transform 0.3s ease;
-    }
-
-    /* Hiệu ứng hover cho biểu tượng điều khiển */
-    .carousel-control-prev:hover .fa-chevron-left,
-    .carousel-control-next:hover .fa-chevron-right {
-        color: limegreen; /* Màu xanh lá cây khi hover */
-        transform: scale(1.5); /* Phóng to biểu tượng khi hover */
-    }
 
 .movie-card {
     margin: 15px; /* Thêm margin xung quanh card */
