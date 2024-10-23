@@ -20,9 +20,9 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpGet("get-all-screenings")]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll([FromQuery]ViewScreningRequest request,CancellationToken cancellationToken)
         {
-            var result = await _screeningRepository.GetAllScreening(cancellationToken);
+            var result = await _screeningRepository.GetAllScreening(request,cancellationToken);
             return Ok(result);
         }
 

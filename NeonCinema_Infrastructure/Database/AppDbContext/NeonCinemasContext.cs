@@ -28,7 +28,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         }
         #region DbSet
-        public DbSet<Actor> Actors { get; set; }
         public DbSet<Bill> BillDetails { get; set; }
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
@@ -53,7 +52,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<ShiftChange> ShiftChange { get; set; }
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<WorkShift> WorkShift { get; set; }
-        public DbSet<ActorMovie> ActorMovies { get; set; }
         public DbSet<CategoryMovies> CategoryMovies { get; set; }
         public DbSet<TicketSeat> TicketSeats { get; set; }
         public DbSet<Checkin> Checkin { get; set; }
@@ -70,10 +68,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            // optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+          // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }

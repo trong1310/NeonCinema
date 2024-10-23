@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.Ticket;
 using NeonCinema_Application.Interface;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
+using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Extention.AutoMapperProfile;
 using System;
 using System.Collections.Generic;
@@ -55,20 +57,45 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             return new HttpResponseMessage(System.Net.HttpStatusCode.NoContent);
         }
 
-        public async Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken)
+        public async Task<PaginationResponse<ScreeningDTO>> GetAllScreening(ViewScreningRequest request, CancellationToken cancellationToken)
         {
-            var screenings = await _context.Screening
-        .Select(screening => new ScreeningDTO
-        {
-            ID = screening.ID,
-            MovieID = screening.MovieID,
-            ShowTimeID = screening.ShowTimeID,
-            RoomID = screening.RoomID,
-            ShowDate = screening.ShowDate,
-            Status = screening.Status
-        })
-        .ToListAsync(cancellationToken);
-            return _mapper.Map<List<ScreeningDTO>>(screenings);
+            //    var screenings = await _context.Screening
+            //.Select(screening => new ScreeningDTO
+            //{
+            //    ID = screening.ID,
+            //    MovieID = screening.MovieID,
+            //    ShowTimeID = screening.ShowTimeID,
+            //    RoomID = screening.RoomID,
+            //    ShowDate = screening.ShowDate,
+            //    Status = screening.Status
+            //})
+            //.ToListAsync(cancellationToken);
+            //    return _mapper.Map<List<ScreeningDTO>>(screenings);
+            var query = _context.Screening.Include(x => x.Movies).Include(x => x.ShowTime).Include(x => x.Rooms).AsNoTracking();
+            if (request.SearchDate.HasValue)
+            {
+                query = query.Where(x => x.ShowDate.Equals(request.SearchDate));
+            }
+            var result = await query.PaginateAsync<Screening, ScreeningDTO>(request, _mapper, cancellationToken);
+            var data = (from a in result.Data
+                        join b in query on a.ID equals b.ID
+                        orderby b.ShowTime.StartTime ascending
+                        select new ScreeningDTO
+                        {
+                            ID = b.ID,
+                            ShowTime = b.ShowTime.StartTime,
+                            FlimsName = b.Movies.Name,
+                            RoomName = b.Rooms.Name,
+                            ShowDate = b.ShowDate,
+                            Status = b.Status,
+                        }).ToList();
+            return new PaginationResponse<ScreeningDTO>()
+            {
+                Data = data,
+                HasNext = result.HasNext,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+            };
         }
 
         public async Task<ScreeningDTO> GetScreeningById(Guid id, CancellationToken cancellationToken)

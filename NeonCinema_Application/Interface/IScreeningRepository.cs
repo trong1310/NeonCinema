@@ -1,6 +1,7 @@
 ﻿using NeonCinema_Application.DataTransferObject.Screening;
 
 using NeonCinema_Application.DataTransferObject.Ticket;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace NeonCinema_Application.Interface
         Task<HttpResponseMessage> CreateScreening(ScreeningCreateRequest screening, CancellationToken cancellationToken);
         Task<HttpResponseMessage> UpdateScreening(ScreeningUpdateRequest screening, CancellationToken cancellationToken);
         Task<HttpResponseMessage> DeleteScreening(Guid id, CancellationToken cancellationToken);
-        Task<List<ScreeningDTO>> GetAllScreening(CancellationToken cancellationToken);
+        Task<PaginationResponse<ScreeningDTO>> GetAllScreening(ViewScreningRequest request,CancellationToken cancellationToken);
         Task<ScreeningDTO> GetScreeningById(Guid id, CancellationToken cancellationToken);
     }
 }

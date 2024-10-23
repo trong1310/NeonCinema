@@ -94,8 +94,8 @@ else
                     <tr class="text-center">
                         <td>@screening.ID</td>
                         <td>@screening.ShowDate.ToString("dd/MM/yyyy")</td>
-                        <td>@screening.MovieID</td>
-                        <td>@screening.RoomID</td>
+                        <td>@screening.FlimsName</td>
+                        <td>@screening.RoomName</td>
                         <td>@screening.Status</td>
                         <td>
                             <button class="btn btn-primary btn-sm" @onclick="() => EditScreening(screening.ID)">Edit</button>
