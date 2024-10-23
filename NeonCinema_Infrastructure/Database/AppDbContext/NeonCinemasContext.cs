@@ -57,21 +57,22 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
-       
+
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
- 
-       
-        
+
+
+
 
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-       //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-          //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-          optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+          // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -245,7 +246,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
                 }
             };
-            modelBuilder.Entity<Users>(b => { b.HasData(userData); });      
+            modelBuilder.Entity<Users>(b => { b.HasData(userData); });
             var languageData = new List<Language>()
              { new Language(){
                 ID = Guid.NewGuid(),
@@ -368,10 +369,206 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 },
             };
             modelBuilder.Entity<Countrys>(x => { x.HasData(countryData); });
-		}
-	}
+            var cinemaData = new List<Cinemas>()
+{
+    new Cinemas
+    {
+        ID = Guid.NewGuid(),
+        Name = "Cinema A",
+        Location = "Hà Nội",
+        PhoneNumber = "0123456789",
+        WebSite = "www.cinemaa.com",
+        OpeningHours = "08:00 AM",
+        ClosingHours = "10:00 PM",
+        RoomNumber = 5,
+        CreatedTime = DateTime.Now
 
+    },
+    new Cinemas
+    {
+        ID = Guid.NewGuid(),
+        Name = "Cinema B",
+        Location = "Đà Nẵng",
+        PhoneNumber = "0987654321",
+        WebSite = "www.cinemab.com",
+        OpeningHours = "09:00 AM",
+        ClosingHours = "11:00 PM",
+        RoomNumber = 7,
+        CreatedTime = DateTime.Now,
+
+    }
 };
+            modelBuilder.Entity<Cinemas>(b => { b.HasData(cinemaData); });
+            var seatTypeData = new List<SeatType>()
+            {
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Vip",
+                    Price = 500000
+
+                },
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Thường",
+                    Price = 250000
+
+
+                },
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Đôi",
+                    Price = 400000
+
+                }
+            };
+            modelBuilder.Entity<SeatType>(b => { b.HasData(seatTypeData); });
+
+
+            var SeatData = new List<Seat>()
+            {
+                new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "1",
+                    Column = "1",
+                    Row = "1",
+                    Status = EntityStatus.Active,
+                     SeatTypeID = seatTypeData[0].ID
+                },
+                new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "2",
+                    Column = "2",
+                    Row = "2",
+                    Status = EntityStatus.Active,
+                    SeatTypeID = seatTypeData[1].ID
+
+                }, new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "2",
+                    Column = "2",
+                    Row = "2",
+                    Status = EntityStatus.Active,
+                    SeatTypeID = seatTypeData[2].ID
+
+                }
+            };
+            modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
+            var roomData = new List<Room>()
+{
+    new Room
+    {
+        ID = Guid.NewGuid(),
+        Name = "Room 1",
+        SeatingCapacity = 100,
+        Status = EntityStatus.Active,
+        CinemasID = cinemaData[0].ID,
+        SeatID = SeatData[0].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Room
+    {
+        ID = Guid.NewGuid(),
+        Name = "Room 2",
+        SeatingCapacity = 150,
+        Status = EntityStatus.Active,
+        CinemasID = cinemaData[1].ID,
+        SeatID = SeatData[0].ID,
+        CreatedTime = DateTime.Now
+    }
+};
+            modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
+            var showTimeData = new List<ShowTime>()
+{
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(14, 0, 0), // 14:00
+        EndTime = new TimeSpan(16, 30, 0), // 16:30
+        Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(18, 0, 0), // 18:00
+        EndTime = new TimeSpan(20, 30, 0), // 20:30
+        Status = EntityStatus.Active
+    }
+};
+            modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+            var movieData = new List<Movies>()
+{
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Movie A",
+        Duration = 120, // in minutes
+        Description = "An exciting action movie.",
+        StarTime = DateTime.Parse("2024-10-22"),
+        Trailer = "trailerA.mp4",
+        Images = "movieA.jpg",
+        AgeAllowed = 18,
+        Status = MovieStatus.Active,
+         GenreID = genreData[0].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[0].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Movie B",
+        Duration = 150,
+        Description = "A thrilling mystery.",
+        StarTime = DateTime.Parse("2024-11-15"),
+        Trailer = "trailerB.mp4",
+        Images = "movieB.jpg",
+        AgeAllowed = 16,
+        Status = MovieStatus.Active,
+        GenreID = genreData[1].ID,
+        LenguageID = languageData[1].ID,
+        CountryID = countryData[1].ID,
+        DirectorID = directorData[1].ID,
+        CreatedTime = DateTime.Now
+    }
+};
+            modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
+            var screeningData = new List<Screening>()
+{
+    new Screening
+    {
+        ID = Guid.NewGuid(),
+        Status = EntityStatus.Active,
+        ShowTimeID = showTimeData[0].ID,
+        ShowDate = DateTime.Now.AddDays(2), // Two days from now
+        MovieID = movieData[0].ID,
+        RoomID = roomData[0].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Screening
+    {
+        ID = Guid.NewGuid(),
+        Status = EntityStatus.Active,
+        ShowTimeID = showTimeData[1].ID,
+        ShowDate = DateTime.Now.AddDays(5), // Five days from now
+        MovieID = movieData[1].ID,
+        RoomID = roomData[1].ID,
+        CreatedTime = DateTime.Now
+    }
+};
+            modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
+
+
+        }
+
+    }
+}
 
 
 

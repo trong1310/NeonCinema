@@ -10,26 +10,30 @@
 
 <h2 style="text-align: center; margin-top: 40px">DANH SÁCH DIỄN VIÊN</h2>
 
-<div class="Actionn" style="display:flex">
-    <div class="cl1">
-        <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
-    </div>
-    <div class="cl2">
-        <label>
-            <input type="radio" name="genderFilter" value="All" @onchange="OnGenderChanged" checked />
-            All
-        </label>
-        <label>
-            <input type="radio" name="genderFilter" value="Men" @onchange="OnGenderChanged" />
-            Men
-        </label>
-        <label>
-            <input type="radio" name="genderFilter" value="Girl" @onchange="OnGenderChanged" />
-            Girl
-        </label>
-    </div>
-    <div class="cl3">
-        <a class="btn btn-success mb-2" href="/addactor"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>  Thêm diễn viên</a>
+<div class="col-md-4">
+    <div class="row">
+        <div class="Actionn" style="display:flex">
+            <div class="cl1">
+                <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
+            </div>
+            <div class="cl2">
+                <label>
+                    <input type="radio" name="genderFilter" value="All" @onchange="OnGenderChanged" checked />
+                    All
+                </label>
+                <label>
+                    <input type="radio" name="genderFilter" value="Men" @onchange="OnGenderChanged" />
+                    Men
+                </label>
+                <label>
+                    <input type="radio" name="genderFilter" value="Girl" @onchange="OnGenderChanged" />
+                    Girl
+                </label>
+            </div>
+            <div class="cl3 ">
+                <a  class="btn btn-success mb-2" href="/addactor"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>  Thêm diễn viên</a>
+            </div>
+        </div>
     </div>
 </div>
 

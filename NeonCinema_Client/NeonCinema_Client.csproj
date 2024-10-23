@@ -84,6 +84,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NeonCinema_API\NeonCinema_API.csproj" />
     <ProjectReference Include="..\NeonCinema_Application\NeonCinema_Application.csproj" />
     <ProjectReference Include="..\NeonCinema_Infrastructure\NeonCinema_Infrastructure.csproj" />
   </ItemGroup>
