@@ -49,7 +49,7 @@
     </MudNavMenu>
 </MudPaper> *@
 
-<div class="sidebar">
+@* <div class="sidebar">
     <div class="user-info">
         <img src="/images/Client/logo.jpg" alt="User Avatar" class="user-avatar">
         <span class="user-name">Đặng Đức Cường</span>
@@ -76,155 +76,56 @@
             </li>
         </ul>
     </nav>
-</div>
+</div> *@
+
+<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
+    <MudNavMenu Class="mud-width-full" Style="display: flex; flex-direction: column;">
+        <!-- Khu vực hiển thị avatar và thông tin người dùng -->
+        <MudGrid Class="px-4" >
+            <MudItem xs="3" Style="padding-left: 13px;">
+                <MudImage Src="/images/Client/cam.jpg" Alt="Đặng Đức Cường" Class="rounded-circle" Style="width: 70px; height: 70px;" />
+            </MudItem>
+            <MudItem xs="9" Class="text-center mt-2">
+                <MudText Typo="Typo.h6" Style="font-size: 17px;">Đặng Đức Cường</MudText>
+                <MudText Typo="Typo.body2" Class="mud-text-secondary" Style="font-weight:bold">Admin</MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-1" />
+
+        <MudNavLink Href="/list-movie-admin" Icon="fas fa-video" IconColor="Color.Error" Class="custom-nav-link" Active="true">Quản lý phim</MudNavLink>
+        <MudNavLink Href="/servers" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
+        <MudNavLink Href="/rooms" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
+        <MudNavLink Href="/showtimes" Icon="fas fa-clock" IconColor="Color.Info" Class="custom-nav-link">Quản lý giờ chiếu</MudNavLink>
+        <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
+        <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
+        <MudNavLink Href="/list-promotion-admin" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
+        <MudNavLink Href="/tickets" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
+        <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
+
+        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info">
+            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person">Nhân Viên</MudNavLink>
+            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People">Khách Hàng</MudNavLink>
+        </MudNavGroup>
+
+        <!-- Nút Đăng Xuất -->
+        <MudNavLink Href="/" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+
+
+
 
 
 <style>
-    .nav-menu {
-        background-color: #ffffff;
-        padding: 0; /* Remove padding for better alignment */
-        width: 240px;
-        height: 100vh;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    .custom-nav-link {
+        height: 57px; /* Tăng chiều cao của mỗi NavLink */
+        display: flex;
+        align-items: center; /* Căn giữa nội dung theo chiều dọc */
     }
 
-        .nav-menu ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .custom-nav-link .mud-icon-root {
+            font-size: 20px; /* Tùy chỉnh kích thước icon nếu muốn */
         }
-
-            .nav-menu ul li {
-                position: relative;
-                position: relative;
-            }
-
-                .nav-menu ul li a {
-                    text-decoration: none;
-                    color: #343a40;
-                    display: flex;
-                    align-items: center; /* Align icon and text */
-                    padding: 15px 20px; /* Increase height for menu items */
-                    font-size: 16px;
-                    transition: background-color 0.3s, color 0.3s;
-                }
-
-                    .nav-menu ul li a i {
-                        margin-right: 15px;
-                        font-size: 18px;
-                    }
-
-                    .nav-menu ul li a:hover {
-                        background-color: #f8f9fa;
-                        color: #007bff;
-                    }
-
-                .nav-menu ul li ul {
-                    display: none;
-                    padding-left: 20px;
-                }
-
-                .nav-menu ul li:hover ul {
-                    display: block;
-                }
-
-                .nav-menu ul li ul li a {
-                    font-size: 14px;
-                    padding: 10px 20px;
-                    transition: background-color 0.3s;
-                }
-
-                    .nav-menu ul li ul li a:hover {
-                        background-color: #e9ecef;
-                        color: #007bff;
-                    }
-
-    .dropdown-toggle {
-        padding: 15px 20px; /* Đảm bảo padding giống như các mục khác */
-        display: flex; /* Sử dụng flexbox để căn chỉnh biểu tượng và chữ */
-        align-items: center; /* Căn giữa theo chiều dọc */
-        font-size: 16px; /* Kích thước chữ giống như các mục khác */
-        padding-left: 100px;
-    }
-    /* Adjust user-info section */
-    .user-info {
-        text-align: center;
-        padding: 10px 0; /* Reduce padding for closer alignment */
-        border-bottom: 1px solid #dee2e6;
-        margin: 0; /* Remove bottom margin */
-        display: flex; /* Use flexbox for centering */
-        flex-direction: column; /* Stack vertically */
-        align-items: center; /* Center child elements */
-    }
-
-    .user-avatar {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin-bottom: 10px;
-    }
-
-    .user-name {
-        color: #343a40;
-        font-size: 18px;
-        font-weight: bold;
-        margin: 0; /* Ensure no margin */
-    }
-
-    /* Adjust "Tài khoản" alignment */
-    .nav-menu ul li .dropdown-toggle {
-        padding: 15px 20px; /* Make sure the dropdown item has the same padding */
-        display: flex; /* Align icon and text */
-        align-items: center; /* Center vertically */
-        font-size: 16px; /* Match font size with other items */
-    }
-
-    /* Icon colors */
-    .nav-menu ul li a .fa-film {
-        color: #e74c3c;
-    }
-
-    .nav-menu ul li a .fa-calendar-alt {
-        color: #3498db;
-    }
-
-    .nav-menu ul li a .fa-chair {
-        color: #2ecc71;
-    }
-
-    .nav-menu ul li a .fa-clock {
-        color: #f39c12;
-    }
-
-    .nav-menu ul li a .fa-user-tie {
-        color: #8e44ad;
-    }
-
-    .nav-menu ul li a .fa-user {
-        color: #e67e22;
-    }
-
-    .nav-menu ul li a .fa-tags {
-        color: #1abc9c;
-    }
-
-    .nav-menu ul li a .fa-ticket {
-        color: #2980b9;
-    }
-
-    .nav-menu ul li a .fa-chart-line {
-        color: #d35400;
-    }
-
-    .nav-menu ul li a .fa-users {
-        color: #34495e;
-    }
-
-    .nav-menu ul li ul li a .fa-user-shield {
-        color: #c0392b;
-    }
-
-    .nav-menu ul li ul li a .fa-user-friends {
-        color: #16a085;
-    }
 </style>
