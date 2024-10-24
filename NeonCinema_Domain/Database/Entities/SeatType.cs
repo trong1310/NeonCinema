@@ -11,8 +11,8 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid ID { get; set; }
         public string SeatTypeName { get; set; }
-        public decimal Price { get; set; } 
         public virtual ICollection<Seat>? Seats { get; set; }
+        public virtual ICollection<TicketPrice>? TicketPrice { get; set; }
 
     }
 }

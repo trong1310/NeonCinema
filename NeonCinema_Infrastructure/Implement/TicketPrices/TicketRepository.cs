@@ -25,41 +25,17 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
             _context = new NeonCinemasContext();
             _mapper = mapper;
         }
-        public async Task<HttpResponseMessage> CreateTicket(Ticket ticket, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateTicket(TicketPrice ticket, CancellationToken cancellationToken)
         {
             try
             {
-                if (ticket.Price == null ||
-                   ticket.QrCode == null ||
-                   ticket.CustomerID == null ||
-                   ticket.SeatID == null ||
-                   ticket.SurchargeID == null ||
-                   ticket.ScreeningID == null)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Please enter enough")
-                    };
-                }
-
-                var findSeatByid = await _context.Seat.FindAsync(ticket.SeatID);
-
-                if (findSeatByid != null)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Seat already exists")
-                    };
-                }
-
-                Ticket tk = new Ticket()
+                TicketPrice tk = new TicketPrice()
                 {
                     ID = Guid.NewGuid(),
                     Price = ticket.Price,
-                    QrCode = ticket.QrCode,
-                    CustomerID = ticket.CustomerID,
-                    SeatID = ticket.SeatID,
-                    SurchargeID = ticket.SurchargeID,
+                    SeatTypeID = ticket.SeatTypeID,
+                    ShowTimeID = ticket.ShowTimeID,
+                    Status = ticket.Status,
                     ScreeningID = ticket.ScreeningID,
                 };
                 await _context.Ticket.AddAsync(tk);
@@ -79,7 +55,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
             }
         }
 
-        public async Task<HttpResponseMessage> DeleteTicket(Ticket ticket, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> DeleteTicket(TicketPrice ticket, CancellationToken cancellationToken)
         {
             try
             {
@@ -110,17 +86,6 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
             }
         }
 
-        public async Task<List<TicketDTO>> GetAllTicket(CancellationToken cancellationToken)
-        {
-            var lst = await _context.Ticket
-                .Include(s => s.Seat)
-                .Include(s => s.Customers)
-                .Include(s => s.Screening)
-                .Include(s => s.Surcharges)
-                .ToListAsync(cancellationToken);
-            return lst.Select(ticket => _mapper.Map<TicketDTO>(ticket)).ToList();
-        }
-
         public async Task<TicketDTO> GetTicketById(Guid id, CancellationToken cancellationToken)
         {
             if (id != null)
@@ -138,7 +103,7 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
             throw new NotImplementedException();
         }
 
-        public async Task<HttpResponseMessage> UpdateTicket(Ticket ticket, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> UpdateTicket(TicketPrice ticket, CancellationToken cancellationToken)
         {
             try
             {
@@ -152,13 +117,10 @@ namespace NeonCinema_Infrastructure.Implement.Tickets
                 }
 
                 tk.Price = ticket.Price;
-                tk.CustomerID = ticket.CustomerID;
-                tk.QrCode = ticket.QrCode;
-                tk.CustomerID = ticket.CustomerID;
+                tk.SeatTypeID = ticket.SeatTypeID;
+                tk.ShowTimeID = ticket.ShowTimeID;
+                tk.Status = ticket.Status;
                 tk.ScreeningID = ticket.ScreeningID;
-                tk.SurchargeID = ticket.SurchargeID;
-                tk.SeatID = ticket.SeatID;
-
                 _context.Ticket.Update(tk);
 
                 await _context.SaveChangesAsync(cancellationToken);
