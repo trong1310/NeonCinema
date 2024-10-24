@@ -24,9 +24,9 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Seats
             CreateMap<Seat_ShowTime_Status, CreateSeatShowTimeStatusDTO>().ReverseMap();
             CreateMap<Seat_ShowTime_Status, UpdateSeatShowTimeStatusDTO>().ReverseMap();
            
-            CreateMap<TicketSeat, CreateTicketSeatDTO>().ReverseMap();
-            CreateMap<TicketSeat, TicketSeatDTO>().ReverseMap();
-            CreateMap<TicketSeat, UpdateTicketSeatDTO>().ReverseMap();
+            CreateMap<Ticket, CreateTicketSeatDTO>().ReverseMap();
+            CreateMap<Ticket, TicketSeatDTO>().ReverseMap();
+            CreateMap<Ticket, UpdateTicketSeatDTO>().ReverseMap();
 
             CreateMap<Show_release, ShowReleaseDTO>().ReverseMap();
             CreateMap<Show_release, CreateShowReleaseDTO>().ReverseMap();

@@ -15,6 +15,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public string Name { get; set; }	
 		public Guid TicketID { get; set; }
 
-		public virtual Ticket? Tickets { get; set; }
+		public virtual TicketPrice? Tickets { get; set; }
 	}
 }

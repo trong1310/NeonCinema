@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.TicketSeats
 {
-    public class TicketSeatRepository : ITicketSeatRepository
+    public class TicketsRepository : ITicketSeatRepository
     {
         private readonly NeonCinemasContext _context;
         private readonly IMapper _mapper;
-        public TicketSeatRepository(NeonCinemasContext context , IMapper mapper)
+        public TicketsRepository(NeonCinemasContext context , IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -28,7 +28,7 @@ namespace NeonCinema_Infrastructure.Implement.TicketSeats
         {
             ValidateTicketSeat(dto);
 
-            var ticketSeat = _mapper.Map<TicketSeat>(dto);
+            var ticketSeat = _mapper.Map<Ticket>(dto);
             await _context.TicketSeats.AddAsync(ticketSeat);
             await _context.SaveChangesAsync();
 
@@ -91,7 +91,7 @@ namespace NeonCinema_Infrastructure.Implement.TicketSeats
             {
                 throw new KeyNotFoundException("TicketSeat not found");
             }
-            ticketSeat.TicketID = dto.TicketID;
+            ticketSeat.TicketPriceID = dto.TicketPriceID;
             ticketSeat.CinemasID = dto.CinemasID;
             ticketSeat.RoomID = dto.RoomID;
             ticketSeat.Status = dto.Status;
