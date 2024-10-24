@@ -12,7 +12,8 @@ namespace NeonCinema_Application.DataTransferObject.TicketSeats
         public Guid ID { get; set; }
         public Guid CinemasID { get; set; }
         public Guid RoomID { get; set; }
-        public Guid TicketID { get; set; }
+        public Guid BookTickID { get; set; }
+        public Guid TicketPriceID { get; set; }
         public Guid MovieID { get; set; }
         public Guid SeatID { get; set; }
         public Guid Show_ReleaseID { get; set; }

@@ -75,7 +75,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IEntityRepository<FoodCombo>, FoodComboRepository>();
             services.AddScoped<IEntityRepository<Service>, ServicesRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
-            services.AddTransient<ITicketSeatRepository, TicketSeatRepository>();
+            services.AddTransient<ITicketSeatRepository, TicketsRepository>();
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();

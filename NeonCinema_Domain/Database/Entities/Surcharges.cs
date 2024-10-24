@@ -15,6 +15,6 @@ namespace NeonCinema_Domain.Database.Entities
         public decimal Price { get; set; }
         public string Description { get; set; }
         public EntityStatus status { get; set; }
-        public virtual ICollection< Ticket>?  Ticket {  get; set; } 
+        public virtual ICollection< TicketPrice>?  Ticket {  get; set; } 
     }
 }

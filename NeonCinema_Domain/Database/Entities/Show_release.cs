@@ -18,6 +18,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public DateTime DateRelease { get; set; }
 		public virtual Movies? Movies { get; set; }
 		public virtual Room? Room { get; set; }
-		public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
+		public virtual ICollection<Ticket>? TicketSeats { get; set; }
 	}
 }

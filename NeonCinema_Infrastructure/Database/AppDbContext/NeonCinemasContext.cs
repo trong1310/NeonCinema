@@ -50,10 +50,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Service> Service { get; set; }
         public DbSet<FoodCombo> FoodCombos { get; set; }
         public DbSet<ShiftChange> ShiftChange { get; set; }
-        public DbSet<Ticket> Ticket { get; set; }
+        public DbSet<TicketPrice> Ticket { get; set; }
         public DbSet<WorkShift> WorkShift { get; set; }
         public DbSet<CategoryMovies> CategoryMovies { get; set; }
-        public DbSet<TicketSeat> TicketSeats { get; set; }
+        public DbSet<Ticket> TicketSeats { get; set; }
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
@@ -68,9 +68,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-          optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-           //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -85,7 +89,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 .HasOne(r => r.Cinemas)
                 .WithMany(c => c.Rooms)
                 .HasForeignKey(r => r.CinemasID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
+                .OnDelete(DeleteBehavior.Cascade); 
 
 
         }
@@ -404,23 +408,16 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 {
                     ID = Guid.NewGuid(),
                     SeatTypeName = "Ghế Vip",
-                    Price = 500000
-
                 },
                 new SeatType
                 {
                     ID = Guid.NewGuid(),
                     SeatTypeName = "Ghế Thường",
-                    Price = 250000
-
-
                 },
                 new SeatType
                 {
                     ID = Guid.NewGuid(),
                     SeatTypeName = "Ghế Đôi",
-                    Price = 400000
-
                 }
             };
             modelBuilder.Entity<SeatType>(b => { b.HasData(seatTypeData); });
@@ -528,6 +525,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[0].ID,
         DirectorID = directorData[0].ID,
         CreatedTime = DateTime.Now,
+   ActorID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f")
     },
     new Movies
     {
@@ -545,6 +543,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[1].ID,
         DirectorID = directorData[1].ID,
         CreatedTime = DateTime.Now,
+      ActorID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f")
     }
 };
             modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
@@ -568,7 +567,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ShowDate = DateTime.Now.AddDays(5), // Five days from now
         MovieID = movieData[1].ID,
         RoomID = roomData[1].ID,
-        CreatedTime = DateTime.Now
+        CreatedTime = DateTime.Now,
+        
     }
 };
             modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
