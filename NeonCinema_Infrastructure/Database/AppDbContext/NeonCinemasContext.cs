@@ -43,7 +43,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<MovieType> MoviesType { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Room> Room { get; set; }
-        public DbSet<Surcharges> Surcharges { get; set; }
         public DbSet<Screening> Screening { get; set; }
         public DbSet<Seat> Seat { get; set; }
         public DbSet<SeatType> SeatTypes { get; set; }
@@ -81,16 +80,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             SeenDingData(modelBuilder);
-            modelBuilder.Entity<MoviesActor>()
-          .HasKey(ma => new { ma.MovieID, ma.ActorID });
             modelBuilder.Entity<PromotionUsers>()
           .HasKey(ma => new { ma.PromotionID, ma.UserID });
             modelBuilder.Entity<Room>()
                 .HasOne(r => r.Cinemas)
                 .WithMany(c => c.Rooms)
                 .HasForeignKey(r => r.CinemasID)
-                .OnDelete(DeleteBehavior.Cascade); 
-
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
         private void SeenDingData(ModelBuilder modelBuilder)
@@ -525,7 +521,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[0].ID,
         DirectorID = directorData[0].ID,
         CreatedTime = DateTime.Now,
-   ActorID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f")
     },
     new Movies
     {
@@ -543,7 +538,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[1].ID,
         DirectorID = directorData[1].ID,
         CreatedTime = DateTime.Now,
-      ActorID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f")
     }
 };
             modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
@@ -568,7 +562,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         MovieID = movieData[1].ID,
         RoomID = roomData[1].ID,
         CreatedTime = DateTime.Now,
-        
+
     }
 };
             modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });

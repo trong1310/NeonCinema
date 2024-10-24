@@ -17,7 +17,6 @@ using NeonCinema_Infrastructure.Implement.Directors;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Tickets;
 using NeonCinema_Infrastructure.Database.Configuration;
-using NeonCinema_Infrastructure.Implement.Surcharge;
 using NeonCinema_Infrastructure.Implement.Bills;
 using NeonCinema_Infrastructure.Implement.Checkin_R;
 using NeonCinema_Infrastructure.Implement.FoodCombo_R;
@@ -69,7 +68,6 @@ namespace NeonCinema_Infrastructure.Extention
             //services.AddScoped<IEntityRepository<ShowTime>, ShowTimeRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IEntityRepository<BookTickets>, BookTicketRepository>();
-            services.AddScoped<IEntityRepository<Surcharges>, SurchargeRepository>();
             services.AddScoped<IEntityRepository<Bill>, BillRepository>();
             services.AddScoped<IEntityRepository<Checkin>, CheckinRepository>();
             services.AddScoped<IEntityRepository<FoodCombo>, FoodComboRepository>();

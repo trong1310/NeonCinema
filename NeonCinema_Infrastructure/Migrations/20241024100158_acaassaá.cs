@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeonCinema_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDb : Migration
+    public partial class acaassaá : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -275,22 +275,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Surcharges",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Surcharges", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Movies",
                 columns: table => new
                 {
@@ -304,7 +288,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     AgeAllowed = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Status = table.Column<int>(type: "int", nullable: false),
                     GenreID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LenguageID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CountryID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DirectorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -319,12 +302,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movies", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Movies_Actor_ActorID",
-                        column: x => x.ActorID,
-                        principalTable: "Actor",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Movies_Countrys_CountryID",
                         column: x => x.CountryID,
@@ -409,6 +386,29 @@ namespace NeonCinema_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ActorMovies",
+                columns: table => new
+                {
+                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsLeadActor = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActorMovies", x => new { x.MovieID, x.ActorID });
+                    table.ForeignKey(
+                        name: "FK_ActorMovies_Actor_ActorID",
+                        column: x => x.ActorID,
+                        principalTable: "Actor",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ActorMovies_Movies_MovieID",
+                        column: x => x.MovieID,
+                        principalTable: "Movies",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CategoryMovies",
                 columns: table => new
                 {
@@ -437,31 +437,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         column: x => x.MovieID,
                         principalTable: "Movies",
                         principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MoviesActor",
-                columns: table => new
-                {
-                    MovieID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsLeadActor = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MoviesActor", x => new { x.MovieID, x.ActorID });
-                    table.ForeignKey(
-                        name: "FK_MoviesActor_Actor_ActorID",
-                        column: x => x.ActorID,
-                        principalTable: "Actor",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MoviesActor_Movies_MovieID",
-                        column: x => x.MovieID,
-                        principalTable: "Movies",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -813,7 +788,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     SeatID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    SurchargesID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UsersID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -845,11 +819,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         name: "FK_TicketPrice_ShowTimes_ShowTimeID",
                         column: x => x.ShowTimeID,
                         principalTable: "ShowTimes",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_TicketPrice_Surcharges_SurchargesID",
-                        column: x => x.SurchargesID,
-                        principalTable: "Surcharges",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TicketPrice_Users_UsersID",
@@ -984,8 +953,8 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "ClosingHours", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "Location", "ModifiedBy", "ModifiedTime", "Name", "OpeningHours", "PhoneNumber", "RoomNumber", "WebSite" },
                 values: new object[,]
                 {
-                    { new Guid("636376cd-c288-4e09-ac6d-8ad3b9143f0b"), "10:00 PM", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3351), null, null, null, "Hà Nội", null, null, "Cinema A", "08:00 AM", "0123456789", 5, "www.cinemaa.com" },
-                    { new Guid("8f70aa55-b2d4-4f1b-801b-0337612c70af"), "11:00 PM", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3356), null, null, null, "Đà Nẵng", null, null, "Cinema B", "09:00 AM", "0987654321", 7, "www.cinemab.com" }
+                    { new Guid("298dd888-0e82-49a8-9cae-7c0b93b2b65f"), "11:00 PM", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(682), null, null, null, "Đà Nẵng", null, null, "Cinema B", "09:00 AM", "0987654321", 7, "www.cinemab.com" },
+                    { new Guid("b0ccc071-6c01-44df-be6f-48a17fe6f520"), "10:00 PM", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(676), null, null, null, "Hà Nội", null, null, "Cinema A", "08:00 AM", "0123456789", 5, "www.cinemaa.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -993,10 +962,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CountryName" },
                 values: new object[,]
                 {
-                    { new Guid("0234f54f-3cc5-4fe8-bb13-532fee5327af"), "Nhật Bản" },
-                    { new Guid("1b2444db-c8bc-4104-8efd-e29e410fb11a"), "Vương Quốc Anh" },
-                    { new Guid("e09edd00-881a-4f97-b6bf-ee00bcef4c80"), "Việt Nam" },
-                    { new Guid("f295331f-9224-4406-a387-63f950355b95"), "Trung Quốc" }
+                    { new Guid("190fb4eb-3272-494b-8059-3264cb4dca8d"), "Trung Quốc" },
+                    { new Guid("4e187a97-244f-4a6c-bd68-02ec22a74dbf"), "Nhật Bản" },
+                    { new Guid("52b44372-d706-4908-977f-d463a0c3b592"), "Vương Quốc Anh" },
+                    { new Guid("6d8e4848-f57c-48fb-bf06-dc29409393cc"), "Việt Nam" }
                 });
 
             migrationBuilder.InsertData(
@@ -1004,10 +973,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "Address", "Biography", "BirthDate", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "Nationality", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("0eab970f-9bc6-47ae-b921-c1d29ab31291"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn A", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
-                    { new Guid("5ff3bbc6-f6f8-4baa-9db7-750484df14c9"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn D", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
-                    { new Guid("8ee654bc-77a5-4171-8377-7ffcc5b26e30"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn C", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 5 },
-                    { new Guid("c77b7e37-07e7-41d2-896b-b22e32c10cfb"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn B", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 5 }
+                    { new Guid("5916f4ec-b571-49b0-9507-33697378ebd0"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn A", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
+                    { new Guid("655f3daa-06d7-456b-b720-3286f9e00b76"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn C", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 5 },
+                    { new Guid("7e1d050e-2a6f-49d9-9f72-b28459cf94ff"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn D", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 1 },
+                    { new Guid("b249db13-aca3-4793-b8a5-45687a9aa287"), "Hà Nội", "Có", new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, null, null, "Nguyễn Văn B", "Nam", "\"image1.jpg\"", null, null, "Ha Noi", 5 }
                 });
 
             migrationBuilder.InsertData(
@@ -1015,10 +984,10 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "GenreName", "ModifiedBy", "ModifiedTime" },
                 values: new object[,]
                 {
-                    { new Guid("09158f57-de4d-4845-baef-5cf520bfa0bd"), null, null, null, null, null, "Tình cảm", null, null },
-                    { new Guid("9854c67e-97af-41a0-9a8a-6428813d16d9"), null, null, null, null, null, "2D", null, null },
-                    { new Guid("ddb0ff1c-c3aa-410a-b584-363e9b6e95d5"), null, null, null, null, null, "Kịch tính", null, null },
-                    { new Guid("fb5eb441-296e-4922-be45-e6703b23923a"), null, null, null, null, null, "Hoạt hình", null, null }
+                    { new Guid("567fd442-4c13-481e-9e01-7699325208ed"), null, null, null, null, null, "Kịch tính", null, null },
+                    { new Guid("5e3789f5-a78e-4635-a837-a27246a5ad0c"), null, null, null, null, null, "2D", null, null },
+                    { new Guid("6c3ffa1f-721b-4e5d-b31d-60c0e94b4a59"), null, null, null, null, null, "Hoạt hình", null, null },
+                    { new Guid("caee23c9-88db-4ef6-91c3-2139bf3dd558"), null, null, null, null, null, "Tình cảm", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -1026,9 +995,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "LanguageName", "ModifiedBy", "ModifiedTime" },
                 values: new object[,]
                 {
-                    { new Guid("0a9a7ac1-eb33-48db-a5ec-883ad8f2229d"), null, null, null, null, null, "vi", null, null },
-                    { new Guid("c3f0d20d-e111-4ce4-857c-0e5aad467776"), null, null, null, null, null, "en", null, null },
-                    { new Guid("ef0ee229-41eb-45b2-9955-fb119c01d7aa"), null, null, null, null, null, "ja", null, null }
+                    { new Guid("69408e4a-9bba-4d02-91bc-9137d1de206f"), null, null, null, null, null, "en", null, null },
+                    { new Guid("c3dcc07b-5988-4b83-b243-5383e6870ad9"), null, null, null, null, null, "ja", null, null },
+                    { new Guid("e624dbf6-49c3-49f2-8e4c-d4e307781ddf"), null, null, null, null, null, "vi", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -1036,9 +1005,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "RoleName", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2439), null, null, null, null, null, "Admin", 1 },
-                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2458), null, null, null, null, null, "Staff", 1 },
-                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2456), null, null, null, null, null, "Customer", 1 }
+                    { new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), null, new DateTime(2024, 10, 24, 17, 1, 58, 506, DateTimeKind.Local).AddTicks(9670), null, null, null, null, null, "Admin", 1 },
+                    { new Guid("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"), null, new DateTime(2024, 10, 24, 17, 1, 58, 506, DateTimeKind.Local).AddTicks(9698), null, null, null, null, null, "Staff", 1 },
+                    { new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), null, new DateTime(2024, 10, 24, 17, 1, 58, 506, DateTimeKind.Local).AddTicks(9696), null, null, null, null, null, "Customer", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1046,9 +1015,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "SeatTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("359b55ca-899f-4a0c-b673-2b03b13bcc71"), null, null, null, null, null, null, null, "Ghế Vip" },
-                    { new Guid("8a3eaa9f-6f83-45c1-bf2d-8457d0948f6c"), null, null, null, null, null, null, null, "Ghế Thường" },
-                    { new Guid("d6cfc8e5-5e3d-4b25-8dd3-3fc10dbbb0a4"), null, null, null, null, null, null, null, "Ghế Đôi" }
+                    { new Guid("0681714b-3a18-4776-84af-bfd25005e865"), null, null, null, null, null, null, null, "Ghế Thường" },
+                    { new Guid("1662b9be-1402-4e79-911e-517516c40755"), null, null, null, null, null, null, null, "Ghế Vip" },
+                    { new Guid("d01dd6f9-370e-40cd-881c-4c9b2a61dbf4"), null, null, null, null, null, null, null, "Ghế Đôi" }
                 });
 
             migrationBuilder.InsertData(
@@ -1056,17 +1025,17 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "EndTime", "StartTime", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("89613507-30c2-4c56-9f5d-3cfcb8061987"), new TimeSpan(0, 16, 30, 0, 0), new TimeSpan(0, 14, 0, 0, 0), 1 },
-                    { new Guid("f384307a-a0f9-4471-88c8-616308e43de0"), new TimeSpan(0, 20, 30, 0, 0), new TimeSpan(0, 18, 0, 0, 0), 1 }
+                    { new Guid("1791d414-f578-430b-ad5b-eceb84104986"), new TimeSpan(0, 16, 30, 0, 0), new TimeSpan(0, 14, 0, 0, 0), 1 },
+                    { new Guid("652683da-b18e-4aad-a26b-dd8d0a7abb61"), new TimeSpan(0, 20, 30, 0, 0), new TimeSpan(0, 18, 0, 0, 0), 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Movies",
-                columns: new[] { "ID", "ActorID", "AgeAllowed", "CountryID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "Description", "DirectorID", "Duration", "GenreID", "Images", "LenguageID", "ModifiedBy", "ModifiedTime", "Name", "StarTime", "Status", "Trailer" },
+                columns: new[] { "ID", "AgeAllowed", "CountryID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "Description", "DirectorID", "Duration", "GenreID", "Images", "LenguageID", "ModifiedBy", "ModifiedTime", "Name", "StarTime", "Status", "Trailer" },
                 values: new object[,]
                 {
-                    { new Guid("845dce00-6dc3-4bfc-8454-5c58077da2bf"), new Guid("127d38f8-f339-40a6-9626-0dbd122d7f5f"), 16, new Guid("1b2444db-c8bc-4104-8efd-e29e410fb11a"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3548), null, null, null, "A thrilling mystery.", new Guid("5ff3bbc6-f6f8-4baa-9db7-750484df14c9"), 150, new Guid("09158f57-de4d-4845-baef-5cf520bfa0bd"), "movieB.jpg", new Guid("0a9a7ac1-eb33-48db-a5ec-883ad8f2229d"), null, null, "Movie B", new DateTime(2024, 11, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "trailerB.mp4" },
-                    { new Guid("d399ebe8-f204-4d9f-85dd-2197f6282663"), new Guid("127d38f8-f339-40a6-9626-0dbd122d7f5f"), 18, new Guid("0234f54f-3cc5-4fe8-bb13-532fee5327af"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3538), null, null, null, "An exciting action movie.", new Guid("0eab970f-9bc6-47ae-b921-c1d29ab31291"), 120, new Guid("ddb0ff1c-c3aa-410a-b584-363e9b6e95d5"), "movieA.jpg", new Guid("c3f0d20d-e111-4ce4-857c-0e5aad467776"), null, null, "Movie A", new DateTime(2024, 10, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "trailerA.mp4" }
+                    { new Guid("601a95f5-9305-4688-9e60-c095fe73bf71"), 18, new Guid("4e187a97-244f-4a6c-bd68-02ec22a74dbf"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(900), null, null, null, "An exciting action movie.", new Guid("5916f4ec-b571-49b0-9507-33697378ebd0"), 120, new Guid("567fd442-4c13-481e-9e01-7699325208ed"), "movieA.jpg", new Guid("69408e4a-9bba-4d02-91bc-9137d1de206f"), null, null, "Movie A", new DateTime(2024, 10, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "trailerA.mp4" },
+                    { new Guid("eef97ac1-61ca-483a-a9b2-4f1266f3fe4e"), 16, new Guid("52b44372-d706-4908-977f-d463a0c3b592"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(915), null, null, null, "A thrilling mystery.", new Guid("7e1d050e-2a6f-49d9-9f72-b28459cf94ff"), 150, new Guid("caee23c9-88db-4ef6-91c3-2139bf3dd558"), "movieB.jpg", new Guid("e624dbf6-49c3-49f2-8e4c-d4e307781ddf"), null, null, "Movie B", new DateTime(2024, 11, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "trailerB.mp4" }
                 });
 
             migrationBuilder.InsertData(
@@ -1074,9 +1043,9 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "Column", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "Row", "SeatNumber", "SeatTypeID", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("311d2379-5f75-482c-8d26-0bcfc82ee3f8"), "1", null, null, null, null, null, null, null, "1", "1", new Guid("359b55ca-899f-4a0c-b673-2b03b13bcc71"), 1 },
-                    { new Guid("4f8ffb50-db8a-44dc-99eb-4f5d04aacb51"), "2", null, null, null, null, null, null, null, "2", "2", new Guid("d6cfc8e5-5e3d-4b25-8dd3-3fc10dbbb0a4"), 1 },
-                    { new Guid("9cdb6942-9b2f-4492-8904-92c91a2a4f2d"), "2", null, null, null, null, null, null, null, "2", "2", new Guid("8a3eaa9f-6f83-45c1-bf2d-8457d0948f6c"), 1 }
+                    { new Guid("c5401b53-abcc-4818-a647-c2191ca0c3c0"), "1", null, null, null, null, null, null, null, "1", "1", new Guid("1662b9be-1402-4e79-911e-517516c40755"), 1 },
+                    { new Guid("c684d0e4-2312-4ddf-9187-c8b7876b8c5b"), "2", null, null, null, null, null, null, null, "2", "2", new Guid("0681714b-3a18-4776-84af-bfd25005e865"), 1 },
+                    { new Guid("ed2b4c15-b32c-4f7c-9e96-55db4db3345d"), "2", null, null, null, null, null, null, null, "2", "2", new Guid("d01dd6f9-370e-40cd-881c-4c9b2a61dbf4"), 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1084,15 +1053,15 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "Adderss", "CreatedBy", "CreatedTime", "DateOrBriht", "Deleted", "DeletedBy", "DeletedTime", "Email", "FullName", "Gender", "Images", "ModifiedBy", "ModifiedTime", "PassWord", "PhoneNumber", "RoleID", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("102f82fa-524b-4208-a0b3-2f8a8b5ac3f7"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3064), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("3a843c31-9564-4818-b168-89dff985a1e2"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2939), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "client@gmail.com", "Client", true, "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("6fd2cbf7-a0e4-405e-8877-ecfcaa8f6a84"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3042), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("731b7ad8-5ec1-45ef-9f0e-aab278365286"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3084), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("7d3f333e-3ff1-4214-b254-83d558ecfd22"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3011), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("811df57b-1346-419b-a681-811fa27c7c4f"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2544), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
-                    { new Guid("93acf7b5-a16b-4f95-8957-ecb42042b1fd"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2961), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("a0cd6f36-53ac-46b2-99f7-aacbf5acd162"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2988), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
-                    { new Guid("cfe8a704-d583-488e-a2e7-1dd6c6e81f25"), "Ba Vi", null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(2909), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@gmail.com", "Admin", true, "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 }
+                    { new Guid("0bb54e50-0f9f-42ac-b5a3-00a85fe1ac38"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(286), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("0f4b7077-5b93-4154-b408-528564008131"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(373), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "vantrongvt1310@gmail.com", "Nguyễn Văn Trọng", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0334583920", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("3c7501f0-8b88-4ab0-b3fc-2be126467b51"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(229), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@gmail.com", "Admin", true, "images.jpg", null, null, "CNGfZLm8IgV4PLYHIuAxaA==", "0334555555", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 },
+                    { new Guid("46b29be1-cd46-468b-b52a-e43cff74678a"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(395), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("5442fc79-a303-44fb-bca8-2a5657ddcc7f"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(345), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("549f7b05-5603-4e1e-a2f7-846c899bca58"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(416), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "cuongddpc07789@fpt.edu.vn", "Đặng Đức Cường", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0879130050", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("ac0c2539-478f-4e72-9fc9-191265d2e6e9"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(313), new DateTime(2004, 10, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Phongdxph35748@fpt.edu.vn", "Đặng Xuân Phong", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0356400122", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("e6c26614-5a7a-4266-ae73-ae18d6e2ba72"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(261), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "client@gmail.com", "Client", true, "images.jpg", null, null, "uwIZujummuxfCG/M104Pww==", "0334555555", new Guid("ba820c64-1a81-4c44-80ea-47038c930c3b"), 1 },
+                    { new Guid("efc7e4d9-0a34-4bf7-8f4c-e677c26163de"), "Ba Vi", null, new DateTime(2024, 10, 24, 17, 1, 58, 506, DateTimeKind.Local).AddTicks(9795), new DateTime(2004, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "giapptph39723@fpt.edu.vn", "Phùng Tiến Giáp", true, "images.jpg", null, null, "LK25tQh1RqkKbrq4C2l6fw==", "0862774830", new Guid("25d7afcb-949b-4717-a961-b50f2e18657d"), 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1100,8 +1069,8 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CinemasID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "Name", "SeatID", "SeatingCapacity", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("6ff045e2-0044-42e5-93e5-94a4df35a292"), new Guid("636376cd-c288-4e09-ac6d-8ad3b9143f0b"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3453), null, null, null, null, null, "Room 1", new Guid("311d2379-5f75-482c-8d26-0bcfc82ee3f8"), 100, 1 },
-                    { new Guid("e6240079-f05f-40fd-9cba-98158dc4690f"), new Guid("8f70aa55-b2d4-4f1b-801b-0337612c70af"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3458), null, null, null, null, null, "Room 2", new Guid("311d2379-5f75-482c-8d26-0bcfc82ee3f8"), 150, 1 }
+                    { new Guid("27707784-f8cc-456a-a4ff-32c4984dbecf"), new Guid("b0ccc071-6c01-44df-be6f-48a17fe6f520"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(809), null, null, null, null, null, "Room 1", new Guid("c5401b53-abcc-4818-a647-c2191ca0c3c0"), 100, 1 },
+                    { new Guid("5ac72560-cc37-48bc-aca2-a23ea18babcb"), new Guid("298dd888-0e82-49a8-9cae-7c0b93b2b65f"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(814), null, null, null, null, null, "Room 2", new Guid("c5401b53-abcc-4818-a647-c2191ca0c3c0"), 150, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1109,9 +1078,14 @@ namespace NeonCinema_Infrastructure.Migrations
                 columns: new[] { "ID", "CreatedBy", "CreatedTime", "Deleted", "DeletedBy", "DeletedTime", "ModifiedBy", "ModifiedTime", "MovieID", "RoomID", "ShowDate", "ShowTimeID", "Status" },
                 values: new object[,]
                 {
-                    { new Guid("d0240d92-f54e-41ee-8411-5df27025f2aa"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3584), null, null, null, null, null, new Guid("845dce00-6dc3-4bfc-8454-5c58077da2bf"), new Guid("e6240079-f05f-40fd-9cba-98158dc4690f"), new DateTime(2024, 10, 29, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3583), new Guid("f384307a-a0f9-4471-88c8-616308e43de0"), 1 },
-                    { new Guid("d4381cc4-ad66-4128-87db-30fc1907aac8"), null, new DateTime(2024, 10, 24, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3579), null, null, null, null, null, new Guid("d399ebe8-f204-4d9f-85dd-2197f6282663"), new Guid("6ff045e2-0044-42e5-93e5-94a4df35a292"), new DateTime(2024, 10, 26, 16, 27, 1, 21, DateTimeKind.Local).AddTicks(3572), new Guid("89613507-30c2-4c56-9f5d-3cfcb8061987"), 1 }
+                    { new Guid("cb391724-f784-4ef7-ab30-6dc73555a77c"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(958), null, null, null, null, null, new Guid("eef97ac1-61ca-483a-a9b2-4f1266f3fe4e"), new Guid("5ac72560-cc37-48bc-aca2-a23ea18babcb"), new DateTime(2024, 10, 29, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(956), new Guid("652683da-b18e-4aad-a26b-dd8d0a7abb61"), 1 },
+                    { new Guid("f9c173bb-5f4d-4379-84d6-41aec5eca588"), null, new DateTime(2024, 10, 24, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(954), null, null, null, null, null, new Guid("601a95f5-9305-4688-9e60-c095fe73bf71"), new Guid("27707784-f8cc-456a-a4ff-32c4984dbecf"), new DateTime(2024, 10, 26, 17, 1, 58, 507, DateTimeKind.Local).AddTicks(946), new Guid("1791d414-f578-430b-ad5b-eceb84104986"), 1 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActorMovies_ActorID",
+                table: "ActorMovies",
+                column: "ActorID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bill_PaymentMethodID",
@@ -1159,11 +1133,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 column: "ServiceID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movies_ActorID",
-                table: "Movies",
-                column: "ActorID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Movies_CountryID",
                 table: "Movies",
                 column: "CountryID");
@@ -1182,11 +1151,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "IX_Movies_LenguageID",
                 table: "Movies",
                 column: "LenguageID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MoviesActor_ActorID",
-                table: "MoviesActor",
-                column: "ActorID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Point_UserID",
@@ -1314,11 +1278,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 column: "ShowTimeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TicketPrice_SurchargesID",
-                table: "TicketPrice",
-                column: "SurchargesID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TicketPrice_UsersID",
                 table: "TicketPrice",
                 column: "UsersID");
@@ -1338,6 +1297,9 @@ namespace NeonCinema_Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ActorMovies");
+
+            migrationBuilder.DropTable(
                 name: "BookTicket");
 
             migrationBuilder.DropTable(
@@ -1350,9 +1312,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "FoodCombo");
 
             migrationBuilder.DropTable(
-                name: "MoviesActor");
-
-            migrationBuilder.DropTable(
                 name: "Point");
 
             migrationBuilder.DropTable(
@@ -1363,6 +1322,9 @@ namespace NeonCinema_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShiftChange");
+
+            migrationBuilder.DropTable(
+                name: "Actor");
 
             migrationBuilder.DropTable(
                 name: "Ticket");
@@ -1398,9 +1360,6 @@ namespace NeonCinema_Infrastructure.Migrations
                 name: "Screening");
 
             migrationBuilder.DropTable(
-                name: "Surcharges");
-
-            migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
@@ -1414,9 +1373,6 @@ namespace NeonCinema_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "Actor");
 
             migrationBuilder.DropTable(
                 name: "Countrys");
