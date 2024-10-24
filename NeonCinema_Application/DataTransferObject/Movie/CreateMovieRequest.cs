@@ -11,6 +11,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 {
     public class CreateMovieRequest
     {
+		[Required(ErrorMessage = "Thời lượng không được để trống")]
 		[Range(1, int.MaxValue, ErrorMessage = "Thời lượng phải lớn hơn 0")]
 		public int Duration { get; set; }
 		[Required(ErrorMessage = "Tên phim không được để trống")]
@@ -18,6 +19,8 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		[Required(ErrorMessage = "Mô tả không được để trống")]
 		public string Description { get; set; }
 		[Required(ErrorMessage = "Thời gian bắt đầu không được để trống")]
+		[DataType(DataType.Date)]
+		[FutureDate(ErrorMessage = "Ngày phát hành không được nhỏ hơn ngày hiện tại")]
 		public DateTime StarTime { get; set; }
 		[Required(ErrorMessage = "Trailer không được để trống")]
 		public string Trailer { get; set; }
@@ -32,5 +35,21 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public Guid CountryID { get; set; }
 		[Required(ErrorMessage = "Đạo diễn không được để trống")]
 		public Guid DirectorID { get; set; }
+        [Required(ErrorMessage = "Đạo diễn không được để trống")]
+        public Guid Actor { get; set; }
     }
+	public class FutureDateAttribute : ValidationAttribute
+	{
+		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+		{
+			if (value is DateTime dateTime)
+			{
+				if (dateTime < DateTime.Today)
+				{
+					return new ValidationResult(ErrorMessage);
+				}
+			}
+			return ValidationResult.Success;
+		}
+	}
 }

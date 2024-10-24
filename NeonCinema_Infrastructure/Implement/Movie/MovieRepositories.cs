@@ -173,10 +173,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
 
-            if (movie == null)
-            {
-                return null; 
-            }
+                if (movie == null)
+                {
+                    return null; 
+                }
 
             var movieDTO = new MovieDTO
             {

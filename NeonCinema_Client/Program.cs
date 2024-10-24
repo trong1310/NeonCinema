@@ -1,14 +1,7 @@
-﻿// Program.cs
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.DependencyInjection;
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using NeonCinema_Client.Data;
 using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Client.Services.User;
-using NeonCinema_Client.Pages.Admin.Users;
-using AutoMapper; // Ensure this is included
-using NeonCinema_Infrastructure.Extention.AutoMapperProfile.Actors;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Client.Models;
 using NeonCinema_Client.Data.Services.Cinemas;
@@ -27,7 +20,6 @@ using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
 using NeonCinema_Application.Interface.Actors;
-using NeonCinema_Infrastructure.Implement.Actors;
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
@@ -51,6 +43,8 @@ using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Client.Data.Services.Seat;
 using NeonCinema_Client.Data.IServices.Genre;
 using NeonCinema_Client.Data.Services.Genre;
+using NeonCinema_Client.Data.IServices.Country;
+using NeonCinema_Client.Data.Services.Country;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -66,7 +60,6 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<IActorRepositories, ActorRepositories>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<IActorService, ActorService>();
@@ -108,6 +101,7 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
 builder.Services.AddScoped<IScreeningService, ScreeningService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 
 builder.Services.AddBlazoredLocalStorage();

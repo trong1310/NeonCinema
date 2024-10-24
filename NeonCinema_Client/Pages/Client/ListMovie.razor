@@ -18,7 +18,7 @@
                 <img src="images/Client/slide1.jpg" class="d-block w-100" alt="Slide 1" loading="lazy">
             </div>
             <div class="carousel-item">
-                <img src="images/Client/slide2.jpg" class="d-block w-100" alt="Slide 2" loading="lazy">
+                <img src="images/Client/banner.jpg" class="d-block w-100" alt="Slide 2" loading="lazy">
             </div>
             <div class="carousel-item">
                 <img src="images/Client/slide3.jpg" class="d-block w-100" alt="Slide 3" loading="lazy">
@@ -34,79 +34,184 @@
         </button>
     </div>
 
-    <div class="card_wrapper">
+    @* ----- List Movie CommingSoon -----  *@
+    <section class="movies">
         <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <div class="owl-carousel slider_carousel">
-                        <div class="card movie-card">
-                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
+            <div style="text-align: center;">
+                <h2 class="mb-4 mt-4 green-title">PHIM ĐANG CHIẾU</h2>
+            </div>
+            <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
                                 </div>
-                                <h5 class="card-title">CÁM</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
                             </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
+                            <!-- Add more movie cards here (up to 4 in this example) -->
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
                                 </div>
-                                <h5 class="card-title">CÁM</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
                             </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
                                 </div>
-                                <h5 class="card-title">CÁM</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
                             </div>
-                        </div>
-                        <div class="card movie-card">
-                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
-                            <div class="card-body">
-                                <div class="tags mb-2">
-                                    <span class="badge bg-danger">18</span>
-                                    <span class="badge bg-dark">Phụ đề</span>
-                                    <span class="badge bg-success">3D</span>
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
                                 </div>
-                                <h5 class="card-title">CÁM</h5>
-                                <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
-                                <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
-                                    <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                </button>
                             </div>
                         </div>
                     </div>
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Add more movie cards here (up to 4 in this example) -->
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- You can add more carousel items for more movies -->
                 </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#movieCarousel" data-bs-slide="prev">
+                    <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#movieCarousel" data-bs-slide="next">
+                    <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                @* <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button> *@
             </div>
         </div>
-    </div>
-	<ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
+    </section>
 
 
+    <ChooseShowTimeDialog @ref="chooseSTD" OnClose="OnDialogClose" />
 
     @code {
         private ChooseShowTimeDialog? chooseSTD;
@@ -117,7 +222,7 @@
         }
         private string GetImageUrl(string imageUrl)
         {
-            return $"https://localhost:7211/Resources/{imageUrl}";
+            return $"https://localhost:7211/api/Resources/{imageUrl}";
         }
 
         private void OpenDialog()
@@ -131,3 +236,152 @@
         }
     }
 </body>
+
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
+    }
+
+    /* Cài đặt cho các nút điều khiển carousel */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%; /* Điều chỉnh kích thước nút */
+        height: 100%; /* Chiều cao phủ đầy để dễ bấm */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent; /* Loại bỏ hoàn toàn nền */
+        border: none;
+    }
+
+        /* Cài đặt cho biểu tượng điều khiển */
+        .carousel-control-prev .fa-chevron-left,
+        .carousel-control-next .fa-chevron-right {
+            font-size: 2rem; /* Giữ font-size lớn cho dễ nhìn */
+            color: #4caf50; /* Màu biểu tượng mặc định */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Hiệu ứng hover cho biểu tượng điều khiển */
+        .carousel-control-prev:hover .fa-chevron-left,
+        .carousel-control-next:hover .fa-chevron-right {
+            color: limegreen; /* Màu xanh lá cây khi hover */
+            transform: scale(1.5); /* Phóng to biểu tượng khi hover */
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            background-color: transparent; /* Đảm bảo nền là trong suốt khi hover */
+        }
+
+    .movie-card {
+        margin: 15px; /* Thêm margin xung quanh card */
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s; /* Thêm hiệu ứng cho box-shadow */
+        width: calc(100% - 30px); /* Điều chỉnh width để bù cho margin */
+        height: auto; /* Sử dụng auto để có không gian cho nội dung */
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .movie-card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+    .green-title {
+        color: limegreen; /* Màu chữ xanh lá cây */
+        border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
+        padding: 10px; /* Thêm khoảng cách giữa chữ và viền */
+        border-radius: 8px; /* Bo góc cho đường viền */
+        display: inline-block; /* Để viền chỉ bao quanh chữ */
+        font-weight: bold;
+    }
+
+    /* Đảm bảo thông tin bên dưới ảnh có không gian và dễ đọc */
+    .movie-info {
+        padding: 10px;
+        text-align: left;
+        flex: 1;
+        background-color: white;
+    }
+
+        .movie-info h3 {
+            font-size: 18px;
+            color: #4caf50;
+            margin: 15px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    /* Hiệu ứng hover không làm cho card bị che khuất */
+    .movie-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ đổ bóng khi hover */
+    }
+
+    /* Cài đặt cho badge */
+    .tags .badge {
+        font-size: 14px;
+        padding: 5px 9px;
+        border-radius: 10px;
+        margin-right: 3px;
+    }
+
+        .tags .badge:last-child {
+            margin-right: 0;
+        }
+
+    /* Hiệu ứng khi hover vào movie-card */
+    .movie-card:hover .buy-ticket-btn {
+        opacity: 1;
+    }
+
+    /* Hiệu ứng khi hover vào movie-card làm cho ảnh mờ đi */
+    .movie-card:hover img {
+        opacity: 0.7;
+    }
+
+    .card-body {
+        background-color: #292C35; /* Màu nền tối để phù hợp */
+        color: #ffffff;
+    }
+    /* Cài đặt cho danh sách */
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    /* Loại bỏ outline khi nút và input được chọn */
+    button:focus, input:focus, textarea:focus {
+        outline: none; /* Sử dụng none thay vì 0 */
+    }
+
+    /* Cài đặt cho wrapper của card */
+    .card_wrapper {
+        background: linear-gradient(180deg, #23273A 46.35%, #FA4A6F 119.01%);
+        width: 100%;
+        min-height: 100vh; /* Thay đổi từ height sang min-height */
+        display: flex;
+        align-items: center;
+        padding: 20px; /* Thêm padding để có không gian cho các thẻ */
+        overflow: visible; /* Đảm bảo không bị cắt */
+    }
+    
+    
+</style>

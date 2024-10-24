@@ -40,7 +40,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                     Column = request.Column,
                     Row = request.Row,
                     Status = request.Status,
-                    RoomID = request.RoomID,
+                    //RoomID = request.RoomID,
                     SeatTypeID = request.SeatTypeID,
 
 
@@ -99,7 +99,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task<PaginationResponse<SeatDTO>> GetAllAsync(ViewSeatRequest request, CancellationToken cancellationToken)
         {
-            var query = _context.Seat.Include(x => x.Room).Include(x => x.SeatTypes).AsNoTracking();
+            var query = _context.Seat.Include(x => x.SeatTypes).AsNoTracking();
             if (!string.IsNullOrWhiteSpace(request.search))
             {
                 query = query.Where(x => x.SeatNumber.Contains(request.search.ToLower()));
@@ -114,7 +114,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                                 SeatNumber = b.SeatNumber,
                                 Column = b.Column,
                                 Status = b.Status,
-                                RoomName = b.Room.Name,
+                              //  RoomName = b.Room.Name,
                                 SeatTypeName = b.SeatTypes.SeatTypeName
                             }).ToList();
             return new PaginationResponse<SeatDTO>()
@@ -128,7 +128,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
         public async Task<SeatDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var seat = await _context.Seat.Include(x => x.Room).Include(x => x.SeatTypes).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
+            var seat = await _context.Seat.Include(x => x.SeatTypes).AsNoTracking().FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
             if (seat == null)
             {
                 return null;
@@ -139,7 +139,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 SeatNumber = seat.SeatNumber,
                 Column = seat.Column,
                 Status = seat.Status,
-                RoomName = seat.Room.Name,
+               // RoomName = seat.Room.Name,
                 SeatTypeName = seat.SeatTypes.SeatTypeName
             };
             return seatdto;
@@ -163,7 +163,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 request.Status = obj.Status;
                 request.Row = obj.Row;
                 request.Status = obj.Status;
-                request.RoomID = obj.RoomID;
+               // request.RoomID = obj.RoomID;
                 request.SeatTypeID = obj.SeatTypeID;
                 
                 _context.Seat.Update(obj);

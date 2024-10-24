@@ -15,11 +15,12 @@
 
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
 	<DataAnnotationsValidator />
+	<ValidationSummary></ValidationSummary>
 	<div class="container-fluid mt-5">
 		<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
-		<div class="row justify-content-center">
+		<div class="row">
 			<div class="col-md-3 text-center mb-4 mt-5">
-				<img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+				<img src="@profileImage" alt="Profile" class="img-fluid profile-pic"> <br />
 				<label class="custom-file-upload">
 					<span style="margin-left:-5px">
 						<i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
@@ -65,12 +66,21 @@
 					</div>
 				</div>
 
-				<div class="row">					
+				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
 							<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
 							<ValidationMessage For="@(() => request.AgeAllowed)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Actor" class="font-weight-bold">Diễn viên</label>
+							<div class="position-relative">
+								<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên" />
+								<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -146,6 +156,40 @@
 				</div>
 			</div>
 		</div>
+		@if (isActorModalOpen)
+		{
+			<div class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Chọn diễn viên</h5>
+							<button type="button" class="close" @onclick="CloseActorDialog">
+								<i class="material-icons">close</i>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="form-check d-flex align-items-center mb-4">
+								<input class="form-check-input" type="checkbox" value="actor1" id="actor1" />
+								<label class="form-check-label ms-2 mt-1" for="actor1">Diễn viên 1</label>
+							</div>
+							<div class="form-check d-flex align-items-center mb-4">
+								<input class="form-check-input" type="checkbox" value="actor2" id="actor2" />
+								<label class="form-check-label ms-2 mt-1" for="actor2">Diễn viên 2</label>
+							</div>
+							<div class="form-check d-flex align-items-center mb-4">
+								<input class="form-check-input" type="checkbox" value="actor3" id="actor3" />
+								<label class="form-check-label ms-2 mt-1" for="actor3">Diễn viên 3</label>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
+							<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
 	</div>
 </EditForm>
 
@@ -154,6 +198,7 @@
 	private IBrowserFile selectedFile;
 	// private string errorMessage;
 	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	private bool isActorModalOpen = false;
 
 	List<GenreDTO> genres = new List<GenreDTO>();
 	List<LanguageDTO> languages = new List<LanguageDTO>();
@@ -260,6 +305,23 @@
 	{
 		_navigation.NavigateTo("/list-movie-admin");
 	}
+	private void OpenActorDialog()
+	{
+		isActorModalOpen = true; // Mở modal
+	}
+
+	private void CloseActorDialog()
+	{
+		isActorModalOpen = false; // Đóng modal
+	}
+
+	private void SelectActors()
+	{
+		// Logic xử lý cho việc chọn diễn viên
+		// Có thể thêm logic khác nếu cần
+		CloseActorDialog(); // Đóng modal sau khi chọn
+	}
+
 }
 
 
@@ -286,6 +348,8 @@
 		object-fit: cover;
 		border: 3px solid #eaeaea;
 		margin-left: -15px; /* Shift image slightly left */
+		height: 350px;
+		width: 250px;
 	}
 
 	label {
@@ -321,6 +385,13 @@
 			background-color: #0056b3;
 		}
 
+	.btn-secondary {
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
 	.form-group {
 		margin-bottom: 1.5rem;
 	}
@@ -328,7 +399,8 @@
 	.form-check {
 		margin-right: 15px; /* Adjust spacing between radio buttons */
 	}
-	img{
+
+	img {
 		margin-top: 20px;
 		width: 270px;
 		height: 400px;
@@ -339,7 +411,6 @@
 		align-items: center; /* Căn giữa theo chiều dọc */
 		justify-content: center; /* Căn giữa theo chiều ngang */
 		margin-top: 10px;
-		margin-left: 90px;
 		padding: 10px 20px;
 		cursor: pointer;
 		border-radius: 10px;
@@ -348,6 +419,8 @@
 		border: none; /* Bỏ viền */
 		text-align: center;
 		width: 150px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 		.custom-file-upload span {
@@ -369,10 +442,66 @@
 		.btn-success:hover {
 			background-color: #0056b3;
 		}
+
 	.btn-warning {
 		border: none;
 		padding: 10px 20px;
 		border-radius: 5px;
 		font-size: 16px;
+	}
+
+	.modal {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
+		z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
+	}
+
+	.modal-dialog {
+		max-width: 800px; /* Tăng chiều rộng tối đa của dialog */
+		width: 30%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
+		margin: auto; /* Để căn giữa modal */
+	}
+
+	.modal-content {
+		padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
+	}
+
+	.no-hover {
+		border: none; /* Bỏ viền */
+		background-color: transparent; /* Bỏ nền */
+		outline: none; /* Bỏ viền ngoài */
+		cursor: pointer; /* Con trỏ vẫn là tay khi hover */
+	}
+
+		.no-hover:hover {
+			background-color: transparent;
+			color: inherit;
+			outline: none;
+		}
+
+		.no-hover:focus {
+			outline: none;
+			box-shadow: none;
+		}
+
+	.position-relative {
+		position: relative;
+	}
+
+	.add-icon {
+		position: absolute;
+		right: 30px; /* Khoảng cách từ icon đến bên phải */
+		top: 50%; /* Đặt icon giữa theo chiều dọc */
+		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
+		cursor: pointer;
+		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
+		font-size: 24px; /* Kích thước của icon */
 	}
 </style>

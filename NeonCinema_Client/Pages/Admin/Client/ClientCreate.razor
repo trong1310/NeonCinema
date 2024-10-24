@@ -17,10 +17,10 @@
         <h2 class="text-center mb-4 font-weight-bold">Thêm khách hàng mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
-                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic">
+                <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
                 <label class="custom-file-upload">
                     <span style="margin-left:-5px">
-                        <i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
+                        <i class="material-icons">cloud_upload</i>
                     </span>
                     <InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
                     <span>Chọn ảnh</span>
@@ -81,14 +81,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Giới tính</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)"  />
-                                <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" @onchange="@((e) => request.Gender = false)" />
-                                <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                            <label>Giới tính</label> <br />
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
+                                    <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" @onchange="@((e) => request.Gender = false)" />
+                                    <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                                </div>
                             </div>
                             <ValidationMessage For="@(() => request.Gender)" />
                         </div>
@@ -97,7 +99,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                            <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
+                            <input type="@(showPassword ? "text" : "password")" class="form-control" id="pass" @bind="request.PassWord" />
+
+                            <div class="input-group-append">
+                                <span class="input-group-text password-icon" @onclick="TogglePasswordVisibility">
+                                    <i class="material-icons">@((showPassword) ? "visibility_off" : "visibility")</i>
+                                </span>
+                            </div>
                             <ValidationMessage For="@(() => request.PassWord)" />
                         </div>
                     </div>
@@ -130,6 +138,7 @@
 @code {
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
+    private bool showPassword = false;
 
     private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
 
@@ -215,7 +224,10 @@
         // _navigation.NavigateTo("/staff"); 
         _navigation.NavigateTo("/client"); 
     }
-
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword; // Đổi trạng thái hiển thị mật khẩu
+    }
 }
 
 <style>
@@ -240,15 +252,15 @@
         height: 200px;
         object-fit: cover;
         border: 3px solid #eaeaea;
-        margin-left: -15px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .custom-file-upload {
         display: flex;
         align-items: center; /* Căn giữa theo chiều dọc */
         justify-content: center; /* Căn giữa theo chiều ngang */
-        margin-top: 10px;
-        margin-left: 90px;
         padding: 10px 20px;
         cursor: pointer;
         border-radius: 10px;
@@ -257,6 +269,8 @@
         border: none; /* Bỏ viền */
         text-align: center;
         width: 150px;
+        margin-left: auto; /* Thêm */
+        margin-right: auto;
     }
 
         .custom-file-upload span {
@@ -311,6 +325,20 @@
     }
 
     .form-check {
-        margin-right: 15px;
+        margin-top: 5px;
+        margin-right: 50px;
+        padding-left: 0; /* Loại bỏ padding thừa */
+        margin-left: 0;
+    }
+
+  
+    .password-icon {
+        position: absolute;
+        right: 30px; /* Khoảng cách từ lề phải */
+        top: 62%; /* Đưa icon vào giữa theo chiều dọc */
+        transform: translateY(-50%); /* Căn giữa hoàn toàn */
+        cursor: pointer; /* Con trỏ tay khi hover */
+        background: transparent; /* Nền trong suốt */
+        border: none; /* Bỏ viền */
     }
 </style>

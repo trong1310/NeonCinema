@@ -16,7 +16,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.ToTable("Seat");
             builder.HasKey(x=>x.ID);
             builder.Property(x=>x.SeatNumber);
-            builder.HasOne(x=>x.Room).WithMany(x=>x.Seats).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);
 			builder.HasOne(x => x.SeatTypes).WithMany(x => x.Seats).HasForeignKey(x => x.SeatTypeID).OnDelete(DeleteBehavior.NoAction);
 		}
     }

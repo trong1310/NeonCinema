@@ -29,7 +29,7 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
         public virtual ICollection<Point>? Points { get; set; }
         public virtual ICollection<RankMember>? RankMembers { get; set; }
-        public virtual ICollection<Ticket>? Ticket { get; set; }
+        public virtual ICollection<TicketPrice>? Ticket { get; set; }
         public virtual ICollection<WorkShift> Workshifts { get; set; }
         public virtual ICollection< BookTickets>? BookTickets { get; set; }
     }

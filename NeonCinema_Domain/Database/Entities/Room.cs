@@ -15,12 +15,13 @@ namespace NeonCinema_Domain.Database.Entities
         public int SeatingCapacity { get; set; }
         public EntityStatus Status { get; set; }
         public Guid CinemasID { get; set; }
+        public Guid SeatID { get; set; }
 
         // 
         public virtual Cinemas? Cinemas { get; set; }
         public virtual ICollection<Screening>? Screenings { get; set; }
-		public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
-		public virtual ICollection<Seat>? Seats { get; set; }
+		public virtual ICollection<Ticket>? TicketSeats { get; set; }
+		public virtual Seat? Seats { get; set; }
 		public virtual ICollection<Show_release>? Show_Releases { get; set; }
     }
 }

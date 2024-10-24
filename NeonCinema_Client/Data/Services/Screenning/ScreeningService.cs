@@ -2,6 +2,7 @@
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Screenning;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,8 @@ public class ScreeningService : IScreeningService
 
     public async Task<List<ScreeningDTO>> GetAllScreeningsAsync()
     {
-        var response = await _httpClient.GetAsync("api/Screening/get-all-screenings");
-        response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<ScreeningDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var response = await _httpClient.GetFromJsonAsync<List<ScreeningDTO>>("https://localhost:7211/api/Screening/get-all-screenings");
+        return response;
     }
 
     public async Task<ScreeningDTO> GetScreeningByIdAsync(Guid id)
@@ -55,19 +53,19 @@ public class ScreeningService : IScreeningService
     }
     public async Task<List<ShowTimeDTO>> GetAllShowTimesAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<ShowTimeDTO>>("api/ShowTime/get-all-showtime");
+        var response = await _httpClient.GetFromJsonAsync<List<ShowTimeDTO>>("https://localhost:7211/api/ShowTime/get-all-showtime");
         return response;
     }
 
-    public async Task<List<MovieDTO>> GetAllMoviesAsync()
+    public async Task<PaginationResponse<MovieDTO>> GetAllMoviesAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<MovieDTO>>("api/Movie/GetAll");
+        var response = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>("https://localhost:7211/api/Movie/GetAll");
         return response;
     }
 
     public async Task<List<RoomDTO>> GetAllRoomsAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("api/Room/getall");
+        var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("https://localhost:7211/api/Room/getall");
         return response;
     }
 

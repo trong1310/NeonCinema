@@ -28,7 +28,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         }
         #region DbSet
-        public DbSet<Actor> Actors { get; set; }
         public DbSet<Bill> BillDetails { get; set; }
         public DbSet<Cinemas> Cinema { get; set; }
         public DbSet<Users> Users { get; set; }
@@ -44,18 +43,16 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<MovieType> MoviesType { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Room> Room { get; set; }
-        public DbSet<Surcharges> Surcharges { get; set; }
         public DbSet<Screening> Screening { get; set; }
         public DbSet<Seat> Seat { get; set; }
         public DbSet<SeatType> SeatTypes { get; set; }
         public DbSet<Service> Service { get; set; }
         public DbSet<FoodCombo> FoodCombos { get; set; }
         public DbSet<ShiftChange> ShiftChange { get; set; }
-        public DbSet<Ticket> Ticket { get; set; }
+        public DbSet<TicketPrice> Ticket { get; set; }
         public DbSet<WorkShift> WorkShift { get; set; }
-        public DbSet<ActorMovie> ActorMovies { get; set; }
         public DbSet<CategoryMovies> CategoryMovies { get; set; }
-        public DbSet<TicketSeat> TicketSeats { get; set; }
+        public DbSet<Ticket> TicketSeats { get; set; }
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
@@ -70,10 +67,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //    optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
         }
@@ -82,13 +80,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             SeenDingData(modelBuilder);
-
+            modelBuilder.Entity<PromotionUsers>()
+          .HasKey(ma => new { ma.PromotionID, ma.UserID });
             modelBuilder.Entity<Room>()
                 .HasOne(r => r.Cinemas)
                 .WithMany(c => c.Rooms)
                 .HasForeignKey(r => r.CinemasID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa Room khi Cinema bị xóa
-
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
         private void SeenDingData(ModelBuilder modelBuilder)
@@ -400,6 +398,59 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
     }
 };
             modelBuilder.Entity<Cinemas>(b => { b.HasData(cinemaData); });
+            var seatTypeData = new List<SeatType>()
+            {
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Vip",
+                },
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Thường",
+                },
+                new SeatType
+                {
+                    ID = Guid.NewGuid(),
+                    SeatTypeName = "Ghế Đôi",
+                }
+            };
+            modelBuilder.Entity<SeatType>(b => { b.HasData(seatTypeData); });
+
+
+            var SeatData = new List<Seat>()
+            {
+                new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "1",
+                    Column = "1",
+                    Row = "1",
+                    Status = EntityStatus.Active,
+                     SeatTypeID = seatTypeData[0].ID
+                },
+                new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "2",
+                    Column = "2",
+                    Row = "2",
+                    Status = EntityStatus.Active,
+                    SeatTypeID = seatTypeData[1].ID
+
+                }, new Seat
+                {
+                    ID = Guid.NewGuid(),
+                    SeatNumber = "2",
+                    Column = "2",
+                    Row = "2",
+                    Status = EntityStatus.Active,
+                    SeatTypeID = seatTypeData[2].ID
+
+                }
+            };
+            modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
             var roomData = new List<Room>()
 {
     new Room
@@ -409,6 +460,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         SeatingCapacity = 100,
         Status = EntityStatus.Active,
         CinemasID = cinemaData[0].ID,
+        SeatID = SeatData[0].ID,
         CreatedTime = DateTime.Now
     },
     new Room
@@ -418,6 +470,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         SeatingCapacity = 150,
         Status = EntityStatus.Active,
         CinemasID = cinemaData[1].ID,
+        SeatID = SeatData[0].ID,
         CreatedTime = DateTime.Now
     }
 };
@@ -439,7 +492,17 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         Status = EntityStatus.Active
     }
 };
+
             modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+            var actordata = new List<Actor>()
+            {
+                new Actor
+                {
+                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+                    Name = "Dang xuan phong",
+                    Status = EntityStatus.Active,
+                }
+            };
             var movieData = new List<Movies>()
 {
     new Movies
@@ -457,7 +520,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         LenguageID = languageData[0].ID,
         CountryID = countryData[0].ID,
         DirectorID = directorData[0].ID,
-        CreatedTime = DateTime.Now
+        CreatedTime = DateTime.Now,
     },
     new Movies
     {
@@ -474,7 +537,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         LenguageID = languageData[1].ID,
         CountryID = countryData[1].ID,
         DirectorID = directorData[1].ID,
-        CreatedTime = DateTime.Now
+        CreatedTime = DateTime.Now,
     }
 };
             modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
@@ -498,18 +561,17 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         ShowDate = DateTime.Now.AddDays(5), // Five days from now
         MovieID = movieData[1].ID,
         RoomID = roomData[1].ID,
-        CreatedTime = DateTime.Now
+        CreatedTime = DateTime.Now,
+
     }
 };
             modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
 
 
-
-
         }
-    }
 
-};
+    }
+}
 
 
 
