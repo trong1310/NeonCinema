@@ -10,6 +10,10 @@ using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Infrastructure.Implement.Seats;
 using System.Text.Json;
+
+
+
+//using System.Text.Json;
 using System.Threading;
 
 namespace NeonCinema_Client.Data.Services.Seat
@@ -56,11 +60,19 @@ namespace NeonCinema_Client.Data.Services.Seat
 
         public async Task<List<SeatTypeDTO>> GetAllSeatType()
         {
-            
-                
-            var lst = await _httpClient.GetFromJsonAsync<List<SeatTypeDTO>>("https://localhost:7211/api/SeatType/Get-all");
-            return lst;
+            try
+            {
+                var response = await _httpClient.GetAsync("https://localhost:7211/api/SeatType/Get-all");
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response JSON: " + jsonResponse); // Thêm dòng này để debug JSON trả về
 
+                var lst = JsonSerializer.Deserialize<List<SeatTypeDTO>>(jsonResponse);
+                return lst;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error occurred: " + ex.Message);
+            }
         }
 
         public async Task<SeatDTO> GetSeatById(Guid id)

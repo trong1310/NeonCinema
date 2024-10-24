@@ -16,7 +16,7 @@ namespace NeonCinema_Application.DataTransferObject.Seats
         public EntityStatus Status { get; set; }
         public Guid RoomID { get; set; }
         public Guid SeatTypeID { get; set; }
-        public string RoomName { get; set; }   // Tên phòng chiếu
+       
         public string SeatTypeName { get; set; }  // Tên loại ghế
     }
 }

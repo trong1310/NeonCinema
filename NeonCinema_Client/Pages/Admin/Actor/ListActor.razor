@@ -107,7 +107,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         actors = await ActorService.GetAllActor();
-        filteredActors = actors; // Khởi tạo danh sách được lọc ban đầu là toàn bộ diễn viên
+        filteredActors = actors; 
     }
 
     private void EditActor(Guid actorId)

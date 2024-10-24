@@ -40,7 +40,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                     Column = request.Column,
                     Row = request.Row,
                     Status = request.Status,
-                    //RoomID = request.RoomID,
+                    
                     SeatTypeID = request.SeatTypeID,
 
 
@@ -114,7 +114,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                                 SeatNumber = b.SeatNumber,
                                 Column = b.Column,
                                 Status = b.Status,
-                              //  RoomName = b.Room.Name,
+                              
                                 SeatTypeName = b.SeatTypes.SeatTypeName
                             }).ToList();
             return new PaginationResponse<SeatDTO>()
@@ -139,7 +139,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 SeatNumber = seat.SeatNumber,
                 Column = seat.Column,
                 Status = seat.Status,
-               // RoomName = seat.Room.Name,
+               
                 SeatTypeName = seat.SeatTypes.SeatTypeName
             };
             return seatdto;
@@ -163,7 +163,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 request.Status = obj.Status;
                 request.Row = obj.Row;
                 request.Status = obj.Status;
-               // request.RoomID = obj.RoomID;
+               
                 request.SeatTypeID = obj.SeatTypeID;
                 
                 _context.Seat.Update(obj);

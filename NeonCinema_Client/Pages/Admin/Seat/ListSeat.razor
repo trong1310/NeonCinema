@@ -17,7 +17,6 @@
             <th>Seat Number</th>
             <th>Column</th>
             <th>Row</th>
-            
             <th>Seat Type</th>
             <th>Status</th>
         </tr>
@@ -37,7 +36,6 @@
                     <td>@seat.SeatNumber</td>
                     <td>@seat.Column</td>
                     <td>@seat.Row</td> 
-                    
                     <td>@seat.SeatTypeName</td>
                     <td>@seat.Status</td>
                 </tr>
@@ -51,11 +49,11 @@
     public List<SeatTypeDTO> seattype = new List<SeatTypeDTO>();
     protected override async Task OnInitializedAsync()
     {
-        // Khai báo request và gọi API để lấy danh sách ghế
+        
         var request = new ViewSeatRequest
         {
             PageNumber = 1,
-            PageSize = 10 // Bạn có thể điều chỉnh số lượng ghế hiển thị
+            PageSize = 10 
         };
 
         var response = await SeatService.GetAllSeat(request);

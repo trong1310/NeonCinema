@@ -1,13 +1,14 @@
 ﻿@page "/addseat"
-@using NeonCinema_Application.DataTransferObject.Room
+
 
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Application.DataTransferObject.SeatTypes
-@using NeonCinema_Client.Data.IServices.IRoom
+
 @using NeonCinema_Client.Data.IServices.Seat
 @using NeonCinema_Client.Data.IServices.SeatType
+@using System.Text.Json
 @inject ISeatService SeatService
-@inject IRoomService RoomService
+
 @inject ISeatTypeService SeatTypeService
 @inject NavigationManager Navigation
 
@@ -32,33 +33,20 @@
         <InputText id="row" class="form-control" @bind-Value="newSeat.Row" />
     </div>
 
-    <div class="row">
-	   <div class="col-md-6">
-            <div class="form-group">
-                <label for="roomId">Chọn Phòng:</label>
-                <select @onchange="(e) => newSeat.RoomID = Guid.Parse(e.Value.ToString())">
-                    <option value="" disabled selected>Chọn phòng chiếu</option>
-                    @foreach (var item in rooms)
-                    {
-                        <option value="@item.ID">@item.Name</option>
-                    }
-                </select>
-                <ValidationMessage For="@(() => newSeat.RoomID)" />
-            </div>
-	   </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="seattypeid">Chọn loại ghế:</label>
+            <select id="seattypeid" @onchange="(e) => newSeat.SeatTypeID = Guid.Parse(e.Value.ToString())" class="form-control">
+                <option value="" disabled selected>Chọn loại ghế</option>
+                @foreach (var item in seatTypes)
+                {
+                    <option value="@item.ID">@item.SeatTypeName</option> <!-- Hiển thị tên loại ghế -->
+                }
+            </select>
+            <ValidationMessage For="@(() => newSeat.SeatTypeID)" />
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="seattypeid">Chọn ghế:</label>
-        <select @onchange="(e) => newSeat.SeatTypeID = Guid.Parse(e.Value.ToString())">
-            <option value="" disabled selected>Chọn ghế</option>
-            @foreach (var item in seatTypes)
-            {
-                <option value="@item.ID">@item.SeatTypeName</option>
-            }
-        </select>
-        <ValidationMessage For="@(() => newSeat.SeatTypeID)" />
-    </div>
 
     <div class="form-group">
         <label for="status">Trạng Thái:</label>
@@ -74,31 +62,27 @@
 
 @code {
     private CreateSeatDTO newSeat = new CreateSeatDTO();
-    private List<RoomDTO> rooms = new List<RoomDTO>();
+
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        // Lấy danh sách phòng từ API
-        var roomResponse = await RoomService.GetAllRooms(CancellationToken.None);
-        if (roomResponse != null)
-        {
-            rooms = roomResponse.ToList();
-        }
 
+        seatTypes = await SeatService.GetAllSeatType();
         // Lấy danh sách loại ghế từ API
-        var seatTypeResponse = await SeatTypeService.GetAllSeatType();
-        if (seatTypeResponse != null)
-        {
-            seatTypes = seatTypeResponse.ToList();
-        }
+        // var seatTypeResponse = await SeatTypeService.GetAllSeatType();
+        // if (seatTypeResponse != null)
+        // {
+        //     seatTypes = seatTypeResponse.ToList();
+        // }
     }
 
     private async Task HandleValidSubmit()
     {
         // Gọi API để thêm ghế mới
         var result = await SeatService.CreateSeat(newSeat);
-
+        
+        
         if (result.IsSuccessStatusCode)
         {
             // Điều hướng trở lại trang danh sách ghế sau khi thêm thành công
