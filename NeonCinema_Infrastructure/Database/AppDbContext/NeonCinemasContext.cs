@@ -78,7 +78,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             SeenDingData(modelBuilder);
             modelBuilder.Entity<MoviesActor>()
-        .HasKey(ma => new { ma.MovieID, ma.ActorID });
+          .HasKey(ma => new { ma.MovieID, ma.ActorID });
+            modelBuilder.Entity<PromotionUsers>()
+          .HasKey(ma => new { ma.PromotionID, ma.UserID });
             modelBuilder.Entity<Room>()
                 .HasOne(r => r.Cinemas)
                 .WithMany(c => c.Rooms)
