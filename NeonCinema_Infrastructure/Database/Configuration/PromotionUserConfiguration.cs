@@ -14,7 +14,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 		public void Configure(EntityTypeBuilder<PromotionUsers> builder)
 		{
 			builder.ToTable("PromotionUsers");
-			builder.HasKey(x=>x.ID);
 			builder.HasOne(x=>x.User).WithMany(x=>x.PromotionUsers).HasForeignKey(x=>x.UserID).OnDelete(DeleteBehavior.NoAction); ;
 			builder.HasOne(x=>x.Promotion).WithMany(x=>x.PromotionUsers).HasForeignKey(x=>x.PromotionID).OnDelete(DeleteBehavior.NoAction); ;
 		}

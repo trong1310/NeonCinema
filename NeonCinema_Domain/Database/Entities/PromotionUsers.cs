@@ -10,7 +10,6 @@ namespace NeonCinema_Domain.Database.Entities
 {
     public class PromotionUsers : EntityBase
     {
-        public Guid ID { get; set; }  // Khóa chính
         public Guid PromotionID { get; set; }  // Khóa ngoại đến Promotion
         public Guid UserID { get; set; }  // Khóa ngoại đến user
         public EntityStatus Status { get; set; }
