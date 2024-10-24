@@ -7,336 +7,351 @@
 @inject IPromotionServices _prosv
 
 
-<div>
-	<div class="col-12 p-5">
-		@* <button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button> *@
-		<h6 style="display: inline;">Danh sách khuyến mại</h6>
-		<hr>
-		<div class="row boxfilter p-2">
-			<div class="col-6">
-				<div class="form-group">
-					<label for="Search">Tìm kiếm</label>
-					<input type="text" class="form-control" style="width: 500px;" placeholder="Search by name">
-				</div>
-				<div class="form-check">
-					<div class="row mt-3">
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
-								   value="option1" checked>
-							<label class="form-check-label" for="exampleRadio1">
-								Lựa chọn 1
-							</label>
+<AuthorizeView Roles="Admin">
+	<Authorized>
+		<div>
+			<div class="col-12 p-5">
+				@* <button class="btn" style="display: inline;"><i class="fa-solid fa-arrow-left"></i></button> *@
+				<h6 style="display: inline;">Danh sách khuyến mại</h6>
+				<hr>
+				<div class="row boxfilter p-2">
+					<div class="col-6">
+						<div class="form-group">
+							<label for="Search">Tìm kiếm</label>
+							<input type="text" class="form-control" style="width: 500px;" placeholder="Search by name">
 						</div>
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
-								   value="option2">
-							<label class="form-check-label" for="exampleRadio2">
-								Lựa chọn 2
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-3">
-				<label for="StartDate">Ngày bắt đầu</label>
-				<input type="datetime-local" class="form-control" name="" id="">
-			</div>
-			<div class="col-3">
-				<label for="EndDate">Ngày kết thúc</label>
-				<input type="datetime-local" class="form-control" name="" id="">
-			</div>
-		</div>
-		<div class="row mt-5">
-			<div class="col-11"></div>
-			<div class="col-1">
-				<button @onclick="OpenModal1" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
-
-
-				<!-- Modal--> 
-				<!--Create Promotion-->
-				@if (isModalVisible == 1)
-				{
-					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<div class="col-12">
-										<div class="row">
-											<div class="col-1">
-												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-												</button>
-											</div>
-											<div class="col-5">
-												<h6>Tạo mã khuyến mại</h6>
-											</div>
-										</div>
-	
-									</div>
+						<div class="form-check">
+							<div class="row mt-3">
+								<div class="col-2">
+									<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
+										   value="option1" checked>
+									<label class="form-check-label" for="exampleRadio1">
+										Lựa chọn 1
+									</label>
 								</div>
-								<div class="modal-body">
-									<EditForm Model="@input" OnValidSubmit="AddPromotion">
-										<DataAnnotationsValidator/>
-										<div class="mb-3">
-											<label for="" class="form-label">Mã khuyến mại</label>
-											<InputText @bind-Value="input.Code" class="form-control"/>
-											<ValidationMessage For="@(() => input.Code)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Mô tả</label>
-											<InputText @bind-Value="input.Description" class="form-control"/>
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Phần trăm giảm giá</label>
-											<InputNumber @bind-Value="input.DiscountAmount" class="form-control"/>
-											<ValidationMessage For="@(() => input.DiscountAmount)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Ngày bắt đầu</label>
-											<InputDate @bind-Value="input.StartDate" class="form-control"/>
-											<ValidationMessage For="@(() => input.StartDate)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Ngày kết thúc</label>
-											<InputDate @bind-Value="input.EndDate" class="form-control"/>
-											<ValidationMessage For="@(() => input.EndDate)" />
-										</div>
-										@if(messageString == "Thêm thành công")
-										{
-											<p class="alert alert-success">@messageString</p>
-										}
-										else if(messageString == "Thêm thất bại")
-										{
-										    <p class="alert alert-danger">@messageString</p>
-										}
-
-										<button type="submit" class="btn btn-primary">Thêm</button>
-									</EditForm>
+								<div class="col-2">
+									<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
+										   value="option2">
+									<label class="form-check-label" for="exampleRadio2">
+										Lựa chọn 2
+									</label>
 								</div>
 							</div>
 						</div>
 					</div>
-				}
-				//add promotion to user
-				else if(isModalVisible == 2)
-				{
-					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content" style="width: 1000px; right: 40%;">
-								<div class="modal-header">
-									<div class="col-12">
-										<div class="row">
-											<div class="col-1">
-												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-												</button>
-											</div>
-											<div class="col-5">
-												<h6>Thêm khuyến mại cho khách hàng</h6>
+					<div class="col-3">
+						<label for="StartDate">Ngày bắt đầu</label>
+						<input type="datetime-local" class="form-control" name="" id="">
+					</div>
+					<div class="col-3">
+						<label for="EndDate">Ngày kết thúc</label>
+						<input type="datetime-local" class="form-control" name="" id="">
+					</div>
+				</div>
+				<div class="row mt-5">
+					<div class="col-11"></div>
+					<div class="col-1">
+						<button @onclick="OpenModal1" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
+
+
+						<!-- Modal-->
+						<!--Create Promotion-->
+						@if (isModalVisible == 1)
+						{
+							<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<div class="col-12">
+												<div class="row">
+													<div class="col-1">
+														<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="col-5">
+														<h6>Tạo mã khuyến mại</h6>
+													</div>
+												</div>
+
 											</div>
 										</div>
-									</div>
-								</div>
-								<div class="modal-body">
-									<div class="col-12">
-										<div class="row">
-											<InputText @bind-Value="inputSearchUser" @oninput="OnInputChanged" class="form-control" Placeholder="Tìm kiếm theo tên" />
-										</div>
-										<div class="row p-1 rounded border-1 mt-3 " style="height:300px; overflow-y: auto;">
-											<table class="table">
-												<thead style="position: sticky; top: 0; background-color: white;">
-													<tr>
-														<th><input class="" type="checkbox"> Tất cả</th>
-														<th>Tên đầy đủ</th>
-														<th>Số điện thoại</th>
-														<th>Email</th>
-													</tr>
-												</thead>
-												<tbody>
-													@foreach (var item in _lstuser)
+										<div class="modal-body">
+											<EditForm Model="@input" OnValidSubmit="AddPromotion">
+												<ChildContent Context="addContext">
+													<DataAnnotationsValidator />
+													<div class="mb-3">
+														<label for="" class="form-label">Mã khuyến mại</label>
+														<InputText @bind-Value="input.Code" class="form-control" />
+														<ValidationMessage For="@(() => input.Code)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Mô tả</label>
+														<InputText @bind-Value="input.Description" class="form-control" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Phần trăm giảm giá</label>
+														<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
+														<ValidationMessage For="@(() => input.DiscountAmount)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Ngày bắt đầu</label>
+														<InputDate @bind-Value="input.StartDate" class="form-control" />
+														<ValidationMessage For="@(() => input.StartDate)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Ngày kết thúc</label>
+														<InputDate @bind-Value="input.EndDate" class="form-control" />
+														<ValidationMessage For="@(() => input.EndDate)" />
+													</div>
+													@if (messageString == "Thêm thành công")
 													{
-														<tr>
-															<td><input class="" type="checkbox"/></td>
-															<td>@item.FullName</td>
-															<td>@item.PhoneNumber</td>
-															<td>@item.Email</td>
-														</tr>
+														<p class="alert alert-success">@messageString</p>
 													}
-												</tbody>
-											</table>
-										</div>
-										<div class="row mt-3">
-											<div class="col-9"></div>
-											<div class="col-1"><button @onclick="CloseModal" class="btn btn-danger">Hủy</button></div>
-											<div class="col-2"><button class="btn btn-success">Lưu</button></div>
+													else if (messageString == "Thêm thất bại")
+													{
+														<p class="alert alert-danger">@messageString</p>
+													}
+
+													<button type="submit" class="btn btn-primary">Thêm</button>
+												</ChildContent>
+												
+											</EditForm>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-				}
-				//Comfirm delete
-				else if(isModalVisible == 3)
-				{
-					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<div class="col-12">
-										<div class="row">
-											<div class="col-1">
-												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-												</button>
-											</div>
-											<div class="col-5">
-												<h6>Xác nhận</h6>
+						}
+						//add promotion to user
+						else if (isModalVisible == 2)
+						{
+							<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content" style="width: 1000px; right: 40%;">
+										<div class="modal-header">
+											<div class="col-12">
+												<div class="row">
+													<div class="col-1">
+														<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="col-5">
+														<h6>Thêm khuyến mại cho khách hàng</h6>
+													</div>
+												</div>
 											</div>
 										</div>
-
-									</div>
-								</div>
-								<div class="modal-body">
-									<div class="col-12">
-										<div class="row">
-											<div class="col-3 offset-3">
-												<button style="width: 100px" @onclick=" async () => await DeletePromotion(idActive)" class="btn btn-primary">Đồng ý</button>
-											</div>
-											<div class="col-6">
-												<button style="width: 100px" @onclick="BackList" class="btn btn-danger">Hủy</button>
+										<div class="modal-body">
+											<div class="col-12">
+												<div class="row">
+													<InputText @bind-Value="inputSearchUser" @oninput="OnInputChanged" class="form-control" Placeholder="Tìm kiếm theo tên" />
+												</div>
+												<div class="row p-1 rounded border-1 mt-3 " style="height:300px; overflow-y: auto;">
+													<table class="table">
+														<thead style="position: sticky; top: 0; background-color: white;">
+															<tr>
+																<th><input class="" type="checkbox"> Tất cả</th>
+																<th>Tên đầy đủ</th>
+																<th>Số điện thoại</th>
+																<th>Email</th>
+															</tr>
+														</thead>
+														<tbody>
+															@foreach (var item in _lstuser)
+															{
+																<tr>
+																	<td><input class="" type="checkbox" /></td>
+																	<td>@item.FullName</td>
+																	<td>@item.PhoneNumber</td>
+																	<td>@item.Email</td>
+																</tr>
+															}
+														</tbody>
+													</table>
+												</div>
+												<div class="row mt-3">
+													<div class="col-9"></div>
+													<div class="col-1"><button @onclick="CloseModal" class="btn btn-danger">Hủy</button></div>
+													<div class="col-2"><button class="btn btn-success">Lưu</button></div>
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-				}
+						}
+						//Comfirm delete
+						else if (isModalVisible == 3)
+						{
+							<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<div class="col-12">
+												<div class="row">
+													<div class="col-1">
+														<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="col-5">
+														<h6>Xác nhận</h6>
+													</div>
+												</div>
 
-				else if(isModalVisible == 4)
-				{
-					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<div class="col-12">
-										<div class="row">
-											<div class="col-1">
-												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-												</button>
-											</div>
-											<div class="col-5">
-												<h6>Sửa mã khuyến mại</h6>
 											</div>
 										</div>
-
+										<div class="modal-body">
+											<div class="col-12">
+												<div class="row">
+													<div class="col-3 offset-3">
+														<button style="width: 100px" @onclick=" async () => await DeletePromotion(idActive)" class="btn btn-primary">Đồng ý</button>
+													</div>
+													<div class="col-6">
+														<button style="width: 100px" @onclick="BackList" class="btn btn-danger">Hủy</button>
+													</div>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
-								<div class="modal-body">
-									<EditForm Model="@inputUpdate" OnValidSubmit="async () => await UpdatePromotion()">
-										<DataAnnotationsValidator />
-										<div class="mb-3">
-											<label for="" class="form-label">Mã khuyến mại</label>
-											<InputText @bind-Value="inputUpdate.Code" class="form-control" />
-											<ValidationMessage For="@(() => inputUpdate.Code)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Mô tả</label>
-											<InputText @bind-Value="inputUpdate.Description" class="form-control" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Phần trăm giảm giá</label>
-											<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
-											<ValidationMessage For="@(() => inputUpdate.DiscountAmount)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Ngày bắt đầu</label>
-											<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
-											<ValidationMessage For="@(() => inputUpdate.StartDate)" />
-										</div>
-										<div class="mb-3">
-											<label for="" class="form-label">Ngày kết thúc</label>
-											<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" />
-											<ValidationMessage For="@(() => inputUpdate.EndDate)" />
-										</div>
-										<div class="mb-3">
-											<!--Status-->
-										</div>
-										@if (messageString == "Sửa thành công")
-										{
-											<p class="alert alert-success">@messageString</p>
-										}
-										else if (messageString == "Sửa thất bại")
-										{
-											<p class="alert alert-danger">@messageString</p>
-										}
+							</div>
+						}
 
-										<button type="submit" class="btn btn-primary">Lưu</button>
-									</EditForm>
+						else if (isModalVisible == 4)
+						{
+							<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<div class="col-12">
+												<div class="row">
+													<div class="col-1">
+														<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="col-5">
+														<h6>Sửa mã khuyến mại</h6>
+													</div>
+												</div>
+
+											</div>
+										</div>
+										<div class="modal-body">
+											<EditForm Model="@inputUpdate" OnValidSubmit="async () => await UpdatePromotion()">
+												<ChildContent Context="editContext">
+													<DataAnnotationsValidator />
+													<div class="mb-3">
+														<label for="" class="form-label">Mã khuyến mại</label>
+														<InputText @bind-Value="inputUpdate.Code" class="form-control" />
+														<ValidationMessage For="@(() => inputUpdate.Code)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Mô tả</label>
+														<InputText @bind-Value="inputUpdate.Description" class="form-control" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Phần trăm giảm giá</label>
+														<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
+														<ValidationMessage For="@(() => inputUpdate.DiscountAmount)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Ngày bắt đầu</label>
+														<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
+														<ValidationMessage For="@(() => inputUpdate.StartDate)" />
+													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Ngày kết thúc</label>
+														<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" />
+														<ValidationMessage For="@(() => inputUpdate.EndDate)" />
+													</div>
+													<div class="mb-3">
+														<!--Status-->
+													</div>
+													@if (messageString == "Sửa thành công")
+													{
+														<p class="alert alert-success">@messageString</p>
+													}
+													else if (messageString == "Sửa thất bại")
+													{
+														<p class="alert alert-danger">@messageString</p>
+													}
+
+													<button type="submit" class="btn btn-primary">Lưu</button>
+												</ChildContent>											
+											</EditForm>
+										</div>
+									</div>
 								</div>
 							</div>
-						</div>
+						}
+						<!--End modal-->
+
+
+
 					</div>
-				}
-				<!--End modal-->
-
-
-
+				</div>
+				<div class="row mt-2 table-promotion">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Mã</th>
+								<th>Mô tả</th>
+								<th>Phần trăm giảm</th>
+								<th>Ngày bắt đầu</th>
+								<th>Ngày kết thúc</th>
+								<th>Trạng thái</th>
+								<th>Hành động</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in _lstpro.Select((value, index) => new { value, index }))
+							{
+								<tr>
+									<td>@(item.index + 1)</td>
+									<td>@item.value.Code</td>
+									<td>@item.value.Description</td>
+									<td>@item.value.DiscountAmount%</td>
+									<td>@item.value.StartDate.ToShortDateString()</td>
+									<td>@item.value.EndDate.ToShortDateString()</td>
+									<td><span class="bg-success text-white rounded">@item.value.Status</span></td> <!--Đoạn này cần if else để css màu-->
+									<td>
+										<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
+										<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
+										<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
-		<div class="row mt-2 table-promotion">
-			<table class="table">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th>Mã</th>
-						<th>Mô tả</th>
-						<th>Phần trăm giảm</th>
-						<th>Ngày bắt đầu</th>
-						<th>Ngày kết thúc</th>
-						<th>Trạng thái</th>
-						<th>Hành động</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var item in _lstpro.Select((value, index) => new { value, index }))
-					{
-						<tr>
-							<td>@(item.index + 1)</td>
-							<td>@item.value.Code</td>
-							<td>@item.value.Description</td>
-							<td>@item.value.DiscountAmount%</td>
-							<td>@item.value.StartDate.ToShortDateString()</td>
-							<td>@item.value.EndDate.ToShortDateString()</td>
-							<td><span class="bg-success text-white rounded">@item.value.Status</span></td> <!--Đoạn này cần if else để css màu-->
-							<td>
-								<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
-								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
-								<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
-<style>
-	td {
-		text-align: center
-	}
 
-	th {
-		text-align: center
-	}
+	</Authorized>
+	<NotAuthorized>
+		<p>You not authorize</p>
+	</NotAuthorized>
+</AuthorizeView>
 
-	.modal{
-		top: 10%;
-	}
-</style>
+		<style>
+			td {
+				text-align: center
+			}
+
+			th {
+				text-align: center
+			}
+
+			.modal {
+				top: 10%;
+			}
+		</style>
+
 
 @code {
 	int stt = 1;
@@ -466,3 +481,4 @@
 		}
 	}
 }
+
