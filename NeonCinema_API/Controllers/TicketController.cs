@@ -21,23 +21,13 @@ namespace NeonCinema_API.Controllers
             _repos = repos;
         }
 
-
-        [HttpGet("get-all-ticket")]
-    
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
-        {
-            var result = await _repos.GetAllTicket(cancellationToken);
-
-            return Ok(result);
-        }
-
         [HttpPost("create-ticket")]
 
         public async Task<IActionResult> PostTicket([FromBody] TicketDTO request, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _repos.CreateTicket(_mapper.Map<Ticket>(request), cancellationToken);
+                var result = await _repos.CreateTicket(_mapper.Map<TicketPrice>(request), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -51,7 +41,7 @@ namespace NeonCinema_API.Controllers
         {
             try
             {
-                var result = await _repos.UpdateTicket(_mapper.Map<Ticket>(request), cancellationToken);
+                var result = await _repos.UpdateTicket(_mapper.Map<TicketPrice>(request), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,7 +55,7 @@ namespace NeonCinema_API.Controllers
         {
             try
             {
-                var result = await _repos.DeleteTicket(_mapper.Map<Ticket>(requests), cancellationToken);
+                var result = await _repos.DeleteTicket(_mapper.Map<TicketPrice>(requests), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
