@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 
@@ -11,9 +12,11 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 namespace NeonCinema_Infrastructure.Migrations
 {
     [DbContext(typeof(NeonCinemasContext))]
-    partial class NeonCinemasContextModelSnapshot : ModelSnapshot
+    [Migration("20241026175831_inits")]
+    partial class inits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -353,9 +356,6 @@ namespace NeonCinema_Infrastructure.Migrations
                     b.Property<string>("Biography")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -378,10 +378,6 @@ namespace NeonCinema_Infrastructure.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Images")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -410,10 +406,8 @@ namespace NeonCinema_Infrastructure.Migrations
                             ID = new Guid("110c3689-f486-4d0f-8c5c-821628d09dea"),
                             Address = "Hà Nội",
                             Biography = "Có",
-                            BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Nguyễn Văn A",
                             Gender = "Nam",
-                            Images = "\"image1.jpg\"",
                             Nationality = "Ha Noi",
                             Status = 1
                         },
@@ -422,10 +416,8 @@ namespace NeonCinema_Infrastructure.Migrations
                             ID = new Guid("683a86d5-e7bf-42d5-af29-9253a252e450"),
                             Address = "Hà Nội",
                             Biography = "Có",
-                            BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Nguyễn Văn D",
                             Gender = "Nam",
-                            Images = "\"image1.jpg\"",
                             Nationality = "Ha Noi",
                             Status = 1
                         },
@@ -434,10 +426,8 @@ namespace NeonCinema_Infrastructure.Migrations
                             ID = new Guid("a8b15ce5-224b-4b19-8e04-e9b32804b7e8"),
                             Address = "Hà Nội",
                             Biography = "Có",
-                            BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Nguyễn Văn B",
                             Gender = "Nam",
-                            Images = "\"image1.jpg\"",
                             Nationality = "Ha Noi",
                             Status = 5
                         },
@@ -446,10 +436,8 @@ namespace NeonCinema_Infrastructure.Migrations
                             ID = new Guid("aa331925-9e0c-4456-8fc3-cd988e8b3cb9"),
                             Address = "Hà Nội",
                             Biography = "Có",
-                            BirthDate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Nguyễn Văn C",
                             Gender = "Nam",
-                            Images = "\"image1.jpg\"",
                             Nationality = "Ha Noi",
                             Status = 5
                         });

@@ -31,12 +31,12 @@
                         </div>
                         <div class="form-check me-3 ml-4">
                             <input class="form-check-input" type="radio" name="status" id="active" value="active" >
-                            <label class="form-check-label" for="resigned">Commingsoon</label>
+                            <label class="form-check-label" for="resigned">Phim sắp chiếu</label>
                         </div>
                     </div>
                     <div class="form-check mt-1">
                         <input class="form-check-input" type="radio" name="status" id="pendingConfirmation" value="pendingConfirmation" >
-                        <label class="form-check-label" for="resigned">Nowshowing</label>
+                        <label class="form-check-label" for="resigned">Phim đang chiếu</label>
                     </div>
                 </div>
             </div>
@@ -115,6 +115,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadMovies();
+
     }
 
     public async Task LoadMovies()

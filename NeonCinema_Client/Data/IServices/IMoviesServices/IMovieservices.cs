@@ -17,7 +17,7 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
         public Task<List<DirectorDTO>> GetAllDirector();
         public Task<List<LanguageDTO>> GetAllLanguage();
         public Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request);
-        public Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request);
+        public Task<HttpResponseMessage> Update(UpdateMovieRequest request);
         public Task<MovieDTO> GetMovieById(Guid id);
     }
 }
