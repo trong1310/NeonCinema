@@ -20,8 +20,8 @@ namespace NeonCinema_Domain.Database.Entities
         
      
         public virtual ICollection<Seat_ShowTime_Status>? Seat_ShowTime_Status { get; set; }
-		public virtual ICollection<TicketSeat>? TicketSeats { get; set; }
-		public virtual ICollection<Ticket>? Ticket { get; set; }
+		public virtual ICollection<Ticket>? TicketSeats { get; set; }
+		public virtual ICollection<TicketPrice>? Ticket { get; set; }
 		public virtual SeatType? SeatTypes { get; set; }
         public virtual ICollection<Room>? Rooms { get; set; }
 
