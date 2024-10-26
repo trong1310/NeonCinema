@@ -40,7 +40,6 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                     Column = request.Column,
                     Row = request.Row,
                     Status = request.Status,
-                    
                     SeatTypeID = request.SeatTypeID,
 
 
@@ -114,7 +113,8 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                                 SeatNumber = b.SeatNumber,
                                 Column = b.Column,
                                 Status = b.Status,
-                              
+                                Row = b.Row,
+                                SeatTypeID = b.SeatTypeID,
                                 SeatTypeName = b.SeatTypes.SeatTypeName
                             }).ToList();
             return new PaginationResponse<SeatDTO>()
@@ -155,7 +155,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
 
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("Không tìm thấy phim")
+                        Content = new StringContent("Không tìm thấy ghế")
                     };
                 }
                 request.SeatNumber = obj.SeatNumber;
@@ -163,7 +163,6 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 request.Status = obj.Status;
                 request.Row = obj.Row;
                 request.Status = obj.Status;
-               
                 request.SeatTypeID = obj.SeatTypeID;
                 
                 _context.Seat.Update(obj);

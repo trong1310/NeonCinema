@@ -31,9 +31,10 @@ else
 }
 
 @code {
+    
+
     [Parameter] public Guid seatTypeId { get; set; }
     private SeatTypeDTO seatType = new SeatTypeDTO();
-
     protected override async Task OnInitializedAsync()
     {
         seatType = await SV.GetByIdSeatType(seatTypeId);
@@ -41,13 +42,14 @@ else
 
     private async Task HandleValidSubmit()
     {
-        var updateSeatTypeRequest = new UpdateSeatTypeDTO
+        var update = new UpdateSeatTypeDTO
             {
                 ID = seatType.ID,
-                SeatTypeName = seatType.SeatTypeName,
                 Price = seatType.Price,
+                SeatTypeName = seatType.SeatTypeName
             };
-        await SV.UpdateSeatType(seatType.ID, updateSeatTypeRequest);
+        await SV.UpdateSeatTYpe(seatType.ID, update);
+        
         NavigationManager.NavigateTo("/listSeatType");
     }
 

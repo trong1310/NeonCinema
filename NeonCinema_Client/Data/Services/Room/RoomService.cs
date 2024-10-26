@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Room;
+using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Client.Data.IServices.IRoom;
 
@@ -40,6 +41,11 @@ namespace NeonCinema_Client.Data.Services.Room
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken)
         {
             return await _client.PutAsJsonAsync($"api/Room/{id}", request, cancellationToken);
+        }
+
+        public async Task<List<SeatDTO>> GetSeats()
+        {
+            return await _client.GetFromJsonAsync<List<SeatDTO>>($"https://localhost:7211/api/Seat/GetAll");
         }
     }
 }

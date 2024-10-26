@@ -31,7 +31,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
                 Status = request.Status, 
-                CinemasID = Guid.Parse("7c272777-c779-48d8-bc05-0c6af035be06")
+                CinemasID = request.CinemasID,
+                SeatID = request.SeatID
             };
 
             _context.Room.Add(roomEntity); 
@@ -55,7 +56,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 ID = room.ID,
                 Name = room.Name,
                 SeatingCapacity = room.SeatingCapacity,
-                Status = room.Status
+                Status = room.Status,
+                SeatID = room.SeatID
             })
             .ToListAsync(cancellationToken);
 
@@ -71,7 +73,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     ID = room.ID,
                     Name = room.Name,
                     SeatingCapacity = room.SeatingCapacity,
-                    Status = room.Status
+                    Status = room.Status,
+                    SeatID = room.SeatID
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -90,7 +93,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
             room.Name = request.Name;
             room.SeatingCapacity = request.SeatingCapacity;
             room.Status = request.Status;
-
+            room.SeatID = request.SeatID;
+                
             _context.Room.Update(room);
             await _context.SaveChangesAsync(cancellationToken);
 

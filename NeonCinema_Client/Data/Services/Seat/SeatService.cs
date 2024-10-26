@@ -20,12 +20,12 @@ namespace NeonCinema_Client.Data.Services.Seat
 {
     public class SeatService : ISeatService
     {
-        
+
         private readonly HttpClient _httpClient;
         public SeatService(HttpClient httpclient)
         {
             _httpClient = httpclient;
-            
+
         }
 
         public async Task<HttpResponseMessage> CreateSeat(CreateSeatDTO request)
@@ -58,21 +58,22 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-        public async Task<List<SeatTypeDTO>> GetAllSeatType()
+        public async Task<List<SeatDTO>> GetAllSeats(CancellationToken cancellationToken)
         {
             try
             {
-                var response = await _httpClient.GetAsync("https://localhost:7211/api/SeatType/Get-all");
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response JSON: " + jsonResponse); // Thêm dòng này để debug JSON trả về
-
-                var lst = JsonSerializer.Deserialize<List<SeatTypeDTO>>(jsonResponse);
-                return lst;
+                var response = await _httpClient.GetFromJsonAsync<List<SeatDTO>>("https://localhost:7211/api/Seat/GetAll");
+                return response;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error occurred: " + ex.Message);
+                throw new Exception("An error occurred while fetching all seats: " + ex.Message);
             }
+        }
+
+        public async Task<List<SeatTypeDTO>> GetAllSeatType()
+        {
+            return await _httpClient.GetFromJsonAsync<List<SeatTypeDTO>>("api/SeatType/Get-all");
         }
 
         public async Task<SeatDTO> GetSeatById(Guid id)
@@ -94,6 +95,6 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-        
+
     }
 }

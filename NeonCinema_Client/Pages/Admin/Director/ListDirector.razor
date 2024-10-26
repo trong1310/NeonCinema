@@ -7,10 +7,7 @@
 @layout LayoutAdmin
 <link rel="stylesheet" href="/css/Director/ListDirector.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <h2 style="text-align: center; margin-top: 40px">DANH SÁCH ĐẠO DIỄN</h2>
-
-
 <div class="Actionn" style="display:flex">
     <div class="cl1">
         <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
@@ -81,7 +78,7 @@ else
                                    checked="@(actor.Status == EntityStatus.Active)"
                                    @onchange="(e) => ToggleRoomStatus(actor, e)" />
                             <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
-                                @(actor.Status == EntityStatus.Active ? "" : "")
+                                @(actor.Status == EntityStatus.Active ? "Nam" : "Nữ")
                             </label>
                         </div>
                     </td>

@@ -45,14 +45,13 @@ else
 }
 
 @code {
-    private PaginationResponse<SeatTypeDTO> seatTypePagination;
+
     private List<SeatTypeDTO> seatTypes;
 
     protected override async Task OnInitializedAsync()
     {
-        var paginationRequest = new PaginationRequest { PageNumber = 1, PageSize = 10 };
-        seatTypePagination = await SV.GetAllSeatType(paginationRequest);
-        seatTypes = seatTypePagination.Data.ToList();
+
+        seatTypes = await SV.GetAllSeatType();
     }
 
     private void EditSeatType(Guid seatTypeId)

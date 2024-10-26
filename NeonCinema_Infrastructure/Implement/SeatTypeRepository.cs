@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
@@ -34,28 +36,20 @@ namespace NeonCinema_Infrastructure.Implement
             }
         }
 
-        public async Task<PaginationResponse<SeatType>> GetAllAsync(PaginationRequest request)
+        public async Task<List<SeatTypeDTO>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var totalItems = await _context.SeatTypes.CountAsync(); // Tổng số phần tử
+            var st = await _context.SeatTypes.ToListAsync(cancellationToken);
 
-            var data = await _context.SeatTypes
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync();
-
-            // Tính HasNext dựa trên tổng số phần tử và trang hiện tại
-            var hasNext = (request.PageNumber * request.PageSize) < totalItems;
-
-            // Tạo đối tượng PaginationResponse
-            var response = new PaginationResponse<SeatType>
+            // Manually map the list of Actor entities to a list of ActorDTOs
+            var stdto = st.Select(stt => new SeatTypeDTO
             {
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                HasNext = hasNext,
-                Data = data
-            };
+                ID = stt.ID,
+                SeatTypeName = stt.SeatTypeName,
+                Price = stt.Price,
 
-            return response;
+            }).ToList();
+
+            return stdto;
         }
 
         public async Task<SeatType> GetByIdAsync(Guid id)
@@ -63,10 +57,31 @@ namespace NeonCinema_Infrastructure.Implement
             return await _context.SeatTypes.FindAsync(id);
         }
 
-        public async Task UpdateAsync(SeatType seatType)
+        public async Task<HttpResponseMessage> UpdateSeatType(Guid id, UpdateSeatTypeDTO request, CancellationToken cancellationToken)
         {
-            _context.SeatTypes.Update(seatType);
-            await _context.SaveChangesAsync();
+            // Retrieve the existing seat type by ID
+            var seatType = await _context.SeatTypes.FindAsync(new object[] { id }, cancellationToken);
+
+            // Check if the seat type exists
+            if (seatType == null)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Seat type type not found.")
+                };
+            }
+
+            // Update properties
+            seatType.SeatTypeName = request.SeatTypeName;
+            seatType.Price = request.Price;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent("Seat type updated successfully.")
+            };
         }
     }
 }

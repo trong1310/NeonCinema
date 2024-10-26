@@ -1,5 +1,102 @@
-﻿<h3>UpdateSeat</h3>
+﻿@page "/updateseat/{seatId:guid}"
+
+@using NeonCinema_Application.DataTransferObject.Seats
+@using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Client.Data.IServices.Seat
+@using NeonCinema_Client.Data.IServices.SeatType
+@using NeonCinema_Domain.Enum
+@inject NavigationManager Navigation
+@inject ISeatService SeatService
+@inject ISeatTypeService SeatTypeService
+
+<h3>Cập Nhật Thông Tin Ghế</h3>
+
+<EditForm Model="seatToUpdate" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="seatNumber">Số Ghế:</label>
+        <InputText id="seatNumber" class="form-control" @bind-Value="seatToUpdate.SeatNumber" />
+    </div>
+
+    <div class="form-group">
+        <label for="column">Cột:</label>
+        <InputText id="column" class="form-control" @bind-Value="seatToUpdate.Column" />
+    </div>
+
+    <div class="form-group">
+        <label for="row">Hàng:</label>
+        <InputText id="row" class="form-control" @bind-Value="seatToUpdate.Row" />
+    </div>
+
+    <div class="form-group">
+        <label for="seattypeid">Chọn loại ghế:</label>
+        <InputSelect id="seattypeid" class="form-control" @bind-Value="seatToUpdate.SeatTypeID">
+            <option value="" disabled selected>Chọn loại ghế</option>
+            @if (seatTypes != null && seatTypes.Count > 0)
+            {
+                @foreach (var item in seatTypes)
+                {
+                    <option value="@item.ID">@item.SeatTypeName</option>
+                }
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => seatToUpdate.SeatTypeID)" />
+    </div>
+
+    <div class="form-group">
+        <label for="status">Trạng Thái:</label>
+        <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
+            <option value="@(EntityStatus.Active)">Hoạt động</option>
+            <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập Nhật Ghế</button>
+    <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
+</EditForm>
 
 @code {
+    [Parameter] public Guid seatId { get; set; }
+    private UpdateSeatDTO seatToUpdate = new UpdateSeatDTO();
+    private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all seat types for the dropdown
+        seatTypes = await SeatTypeService.GetAllSeatType();
+
+        // Fetch the seat details by ID
+        var seatResponse = await SeatService.GetSeatById(seatId);
+
+        if (seatResponse != null)
+        {
+            // Map the response to the DTO
+            seatToUpdate = new UpdateSeatDTO
+                {
+                    ID = seatResponse.ID,
+                    SeatNumber = seatResponse.SeatNumber,
+                    Column = seatResponse.Column,
+                    Row = seatResponse.Row,
+                    Status = seatResponse.Status,
+                    SeatTypeID = seatResponse.SeatTypeID
+                };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await SeatService.UpdateSeate(seatToUpdate); // Call API to update seat
+
+        if (result.IsSuccessStatusCode) // If update is successful
+        {
+            Navigation.NavigateTo("/listseat"); // Navigate back to seat list page
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/listseat");
+    }
 }

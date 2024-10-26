@@ -19,6 +19,7 @@
             <th>Row</th>
             <th>Seat Type</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -38,6 +39,9 @@
                     <td>@seat.Row</td> 
                     <td>@seat.SeatTypeName</td>
                     <td>@seat.Status</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="@(() => NavigateToUpdateSeat(seat.ID))">Cập Nhật</button> <!-- Update button -->
+                    </td>
                 </tr>
             }
         }
@@ -65,5 +69,9 @@
     private void NavigateToAddSeat()
     {
         Navi.NavigateTo("/addseat");
+    }
+    private void NavigateToUpdateSeat(Guid seatId)
+    {
+        Navi.NavigateTo($"/updateseat/{seatId}");
     }
 }
