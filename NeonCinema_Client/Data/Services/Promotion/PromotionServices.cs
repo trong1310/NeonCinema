@@ -3,6 +3,9 @@ using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.DataTransferObject.Roles;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Client.Data.IServices.Promotion;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace NeonCinema_Client.Data.Services.Promotion
 {
@@ -35,6 +38,30 @@ namespace NeonCinema_Client.Data.Services.Promotion
                 return false;
             }
 
+		}
+
+		public async Task<bool> CreatePromotionUserAsync(List<PromotionUserDTO> lstinput)
+		{
+			try
+			{
+				foreach (var item in lstinput)
+				{
+					try
+					{
+						var result = await _client.PostAsJsonAsync("https://localhost:7211/api/Promotion/create-promotion-user", item);
+					}
+					catch (Exception ex) 
+					{
+						continue;
+					}
+					
+				}	
+				return true;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
 		}
 
 		public async Task<bool> DeletePromotionAsync(Guid id)
@@ -124,5 +151,38 @@ namespace NeonCinema_Client.Data.Services.Promotion
 				return false;
 			}
 		}
+
+		//Gửi mail
+		public async Task SendMailWithTemplateAsync(string ToEmail, string Title, string TemplateName, List<string>? KeyReplace, List<string>? ValueReplace, string _URL)
+		{
+			using var httpClient = new HttpClient();
+			var body = new
+			{
+				ToEmail,
+				Title,
+				TemplateName,
+				KeyReplace,
+				ValueReplace
+			};
+
+			var httpRequestMessage = new HttpRequestMessage()
+			{
+				Method = HttpMethod.Post,
+				RequestUri = new Uri($"{_URL}/api/v1/Mail/SendMailWithTemplate"),
+				Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")
+			};
+
+			// Gửi yêu cầu và đợi phản hồi
+			var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+			// Kiểm tra phản hồi
+			if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
+			{
+				throw new Exception($"Http Response Code: {httpResponseMessage.StatusCode}");
+			}
+
+			var result = await httpResponseMessage.Content.ReadAsStringAsync();
+		}
+
 	}
 }

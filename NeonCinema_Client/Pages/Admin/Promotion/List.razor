@@ -18,7 +18,7 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label for="Search">Tìm kiếm</label>
-					<input type="text" class="form-control" style="width: 500px;" placeholder="Search by name">
+					<input type="text" class="form-control" style="width: 500px;" @bind="searchName" placeholder="Search by name" @oninput="FilterRecords" />
 				</div>
 				<div class="form-check">
 					<div class="row mt-3">
@@ -41,11 +41,11 @@
 			</div>
 			<div class="col-3">
 				<label for="StartDate">Ngày bắt đầu</label>
-				<input type="datetime-local" class="form-control" name="" id="">
+				<input type="datetime-local" class="form-control" @bind="startDate" @oninput="FilterRecords" />
 			</div>
 			<div class="col-3">
 				<label for="EndDate">Ngày kết thúc</label>
-				<input type="datetime-local" class="form-control" name="" id="">
+				<input type="datetime-local" class="form-control" @bind="endDate" @oninput="FilterRecords" />
 			</div>
 		</div>
 		<div class="row mt-5">
@@ -86,7 +86,6 @@
 														<div class="mb-3">
 															<label for="" class="form-label">Mã khuyến mại</label>
 															<InputText @bind-Value="codegen" class="form-control" readonly />
-															@* <ValidationMessage For="@(() => input.Code)" /> *@
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Mô tả</label>
@@ -287,21 +286,30 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var item in _lstpro.Select((value, index) => new { value, index }))
+					@if (filteredPromotions.Any())
+					{
+						@foreach (var item in filteredPromotions.Select((value, index) => new { value, index }))
+						{
+							<tr>
+								<td>@(item.index + 1)</td>
+								<td>@item.value.Code</td>
+								<td>@item.value.Description</td>
+								<td>@item.value.DiscountAmount%</td>
+								<td>@item.value.StartDate.ToShortDateString()</td>
+								<td>@item.value.EndDate.ToShortDateString()</td>
+								<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
+								<td>
+									<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
+									<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
+									<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+								</td>
+							</tr>
+						}
+					}
+					else
 					{
 						<tr>
-							<td>@(item.index + 1)</td>
-							<td>@item.value.Code</td>
-							<td>@item.value.Description</td>
-							<td>@item.value.DiscountAmount%</td>
-							<td>@item.value.StartDate.ToShortDateString()</td>
-							<td>@item.value.EndDate.ToShortDateString()</td>
-							<td><span class="bg-success text-white rounded">@item.value.Status</span></td> <!--Đoạn này cần if else để css màu-->
-							<td>
-								<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
-								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
-								<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-							</td>
+							<td colspan="8" class="text-center">Không có bản ghi nào phù hợp.</td>
 						</tr>
 					}
 				</tbody>
@@ -336,6 +344,12 @@
 	private Guid idActive;
 	private bool selectAll = false;
 
+	//filter
+	private string searchName;
+	private DateTime? startDate;
+	private DateTime? endDate;
+	private List<PromotionDTO> filteredPromotions = new List<PromotionDTO>();
+
 
 
 	//Gen code
@@ -346,6 +360,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await LoadPromotion();
+		filteredPromotions = _lstpro; // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
 		codegen = utl.GenerateCode();
 	}
@@ -422,14 +437,38 @@
 	//Add
 	public async Task AddPromotion()
 	{
+		input.ID = Guid.NewGuid();
 		input.Code = codegen;
 		var check = await _prosv.CreatePromotionAsync(input);
 
 		if (check)
 		{
-			messageString = "Thêm thành công";
+			List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
+
+			foreach (var item in GetSelectedUser())
+			{
+				PromotionUserDTO x = new PromotionUserDTO
+					{
+						PromotionID = input.ID,
+						UserID = item.ID
+					};
+
+				lstPU.Add(x);
+			}
+
+			if (await _prosv.CreatePromotionUserAsync(lstPU))
+			{
+				messageString = "Thêm thành công";
+			}
+			else
+			{
+				messageString = "Có lỗi khi thêm ưu đãi khách hàng";
+			}
+
 			input = new PromotionCreateRequest();
 			await LoadPromotion();
+
+
 
 		}
 		else
@@ -495,9 +534,51 @@
 	}
 
 	//Hàm trả về danh sách Id của các mục được chọn
-	private List<Guid> GetSelectedUserIds()
+	private List<CustomerViewModel_Promotion> GetSelectedUser()
 	{
-		return _lstuser.Where(u => u.IsSelected).Select(u => u.ID).ToList();
+		return _lstuser.Where(u => u.IsSelected).ToList();
 	}
+
+	private void FilterRecords()
+	{
+		// Kiểm tra nếu _lstpro là null
+		if (_lstpro == null) return;
+
+		// Mặc định là hiển thị tất cả nếu không có điều kiện nào
+		filteredPromotions = _lstpro;
+
+		// Kiểm tra các điều kiện tìm kiếm
+		if (!string.IsNullOrWhiteSpace(searchName))
+		{
+			filteredPromotions = filteredPromotions
+				.Where(p => p.Description.Contains(searchName, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		if (startDate.HasValue && endDate.HasValue)
+		{
+			// Lọc theo ngày bắt đầu và ngày kết thúc
+			filteredPromotions = filteredPromotions
+				.Where(p => p.StartDate >= startDate.Value && p.EndDate <= endDate.Value)
+				.ToList();
+		}
+		else if (startDate.HasValue)
+		{
+			// Lọc chỉ theo ngày bắt đầu
+			filteredPromotions = filteredPromotions
+				.Where(p => p.StartDate >= startDate.Value)
+				.ToList();
+		}
+		else if (endDate.HasValue)
+		{
+			// Lọc chỉ theo ngày kết thúc
+			filteredPromotions = filteredPromotions
+				.Where(p => p.EndDate <= endDate.Value)
+				.ToList();
+		}
+
+		// Nếu không có tiêu chí nào được nhập, filteredPromotions sẽ là _lstpro, do đó danh sách sẽ được hiển thị đầy đủ.
+	}
+
 }
 

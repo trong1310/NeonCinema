@@ -82,6 +82,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
             services.AddTransient<IUserMovies, UserMoviess>();
             services.AddScoped<IEntityRepository<Promotion>, PromotionRepository>();
+            services.AddScoped<IEntityRepository<PromotionUsers>, PromotionCustomerResp>();
             
             return services;
         }

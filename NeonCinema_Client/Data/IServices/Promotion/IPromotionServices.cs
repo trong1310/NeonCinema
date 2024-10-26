@@ -12,6 +12,8 @@ namespace NeonCinema_Client.Data.IServices.Promotion
         Task<bool> UpdatePromotionAsync(PromotionDTO input);
         Task<bool> DeletePromotionAsync(Guid id);
         Task<List<UserDTO>> GetAllUserAsync(string input);
-        //Task<string> Validate(PromotionCreateRequest input);
-    }
+        Task<bool> CreatePromotionUserAsync(List<PromotionUserDTO> lstinput);
+        Task SendMailWithTemplateAsync(string ToEmail, string Title, string TemplateName, List<string>? KeyReplace, List<string>? ValueReplace, string _URL);
+
+	}
 }
