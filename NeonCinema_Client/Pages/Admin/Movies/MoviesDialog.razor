@@ -6,223 +6,409 @@
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using System.Text.Json
+@using NeonCinema_Domain.Enum
 @inject IMovieservices _movieServices
 @inject HttpClient _http
 @inject NavigationManager _navigation
 <body>
-    <div class="container-fluid">
-        <div class="row movie-detail-background">
-            <div class="col-md-4">
-                <!-- Điều chỉnh col-md-4 để ảnh chiếm 1/3 kích thước -->
-                <div class="img-movie-detail">
-                    <img src="/images/Client/cam.jpg" alt="Movie Poster" class="img-fluid rounded shadow">
-                </div>
-            </div>
+	<div class="container-fluid">
+		<div class="row movie-detail-background d-flex">
+			<div class="col-md-4">
+				<div class="img-movie-detail">
+					<img src="@GetImageUrl(movieDto.Images)" alt="Movie Poster" class="img-fluid rounded shadow">
+				</div>
+			</div>
+			<div class="col-md-8">
+				<h2 class="title">@movieDto.Name</h2>
+				<p class="description">@movieDto.Description</p>
+				<p>
+					<strong>Phân loại:</strong>
+					<span class="text-muted">Phim phổ biến đến người xem từ @movieDto.AgeAllowed trở lên</span>
+				</p>
+				<p>
+					<strong>Kiểu phim</strong>
+					<span class="badge bg-success">2D</span>
+				</p>
 
-            <!-- Thông tin phim bên phải -->
-            <div class="col-md-8">
-                <!-- Điều chỉnh col-md-8 để phần chữ chiếm nhiều không gian hơn -->
-                <h2 class="title">@movieDto.Name</h2>
-                <p class="description">@movieDto.Description</p>
-                <p>
-                    <strong>Phân loại:</strong>
-                    @* <span class="badge bg-danger">T18</span> *@
-                    <span class="text-muted">Phim phổ biến đến người xem từ @movieDto.AgeAllowed trở lên</span>
-                </p>
-                <p>
-                    <strong>Kiểu phim</strong>
-                    <span class="badge bg-success">2D</span>
-                </p>
-            
-                @* <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p> *@
-                <p><strong>Khởi chiếu:</strong> <span class="text-info">@movieDto.StarTime</span></p>
-                <p><strong>Thể loại:</strong> <span class="text-info">@movieDto.GenreName</span></p>
-                <p><strong>Thời lượng:</strong> <span class="text-info">@movieDto.Duration</span></p>
-                <p><strong>Ngôn ngữ:</strong> <span class="text-info">@movieDto.LanguareName</span></p>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12">
-                    <h4 class="trailer-title">Trailer</h4>
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="w-100" height="700" src="https://www.youtube.com/embed/6A0nJ_sJzCk" frameborder="0" allowfullscreen></iframe> <!-- Điều chỉnh height -->
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn-edit" @onclick="ToggleEdit">Chỉnh sửa</button>
-        <!-- Trailer phim -->
-      
-    </div>
-    @if (isEditing) // Kiểm tra biến isEditing để hiển thị phần sửa thông tin
-    {
-        <div class="container-fluid mt-5">
-            <h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
+				@* <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p> *@
+				<p><strong>Khởi chiếu:</strong> <span class="text-info">@movieDto.StarTime</span></p>
+				<p><strong>Thể loại:</strong> <span class="text-info">@movieDto.GenreName</span></p>
+				<p><strong>Thời lượng:</strong> <span class="text-info">@movieDto.Duration</span></p>
+				<p><strong>Ngôn ngữ:</strong> <span class="text-info">@movieDto.LanguareName</span></p>
+			</div>
+			<div class="row mt-4">
+				<div class="col-12">
+					<h4 class="trailer-title">Trailer</h4>
+					<div class="embed-responsive embed-responsive-16by9">
+						<iframe class="w-40" height="300" src="@movieDto.Trailer" frameborder="0" allowfullscreen></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button type="button" class="btn-edit" @onclick="ToggleEdit">Chỉnh sửa</button>
+	</div>
+	@if (isEditing)
+	{
+		<EditForm Model="@request" OnValidSubmit="HandleSubmit">
+			<div class="container-fluid mt-5">
+				<h2 class="text-center mb-4 font-weight-bold">Chỉnh sửa phim</h2>
+				<div class="row">
+					<div class="col-md-3 text-center mb-4 mt-5">
+						<img src="@profileImage" alt="Profile" class="img-fluid profile-pic"> <br />
+						<label class="custom-file-upload">
+							<span style="margin-left:-5px">
+								<i class="material-icons">cloud_upload</i>
+							</span>
+							<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+							<span>Chọn ảnh</span>
+						</label>
+					</div>
+					<div class="col-md-9" style="margin-top:10px;">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="name" class="font-weight-bold">Tên Phim</label>
+									<input type="text" class="form-control" id="name" @bind-value="request.Name" />
+									<ValidationMessage For="@(() => request.Name)" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Duration" class="font-weight-bold">Thời Lượng</label>
+									<input type="number" class="form-control" id="Duration" @bind-value="request.Duration" />
+									<ValidationMessage For="@(() => request.Duration)" />
+								</div>
+							</div>
+						</div>
 
-            <div class="row justify-content-center">
-                <div class="col-md-3 text-center mb-4 mt-5">
-                    <img src="/images/Client/cam.jpg" alt="Profile" class="img-fluid profile-pic">
-                </div>
-                <div class="col-md-9" style="margin-top:10px">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="name" class="font-weight-bold">Tên Phim</label>
-                                <input type="text" class="form-control" id="name" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Duration" class="font-weight-bold">Thời Lượng</label>
-                                <input type="text" class="form-control" id="Duration" />
-                            </div>
-                        </div>
-                    </div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Trailer" class="font-weight-bold">Trailer</label>
+									<input type="text" class="form-control" id="Trailer" @bind-value="request.Trailer" />
+									<ValidationMessage For="@(() => request.Trailer)" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+									<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
+									<ValidationMessage For="@(() => request.StarTime)" />
+								</div>
+							</div>
+						</div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Trailer" class="font-weight-bold">Trailer</label>
-                                <input type="text" class="form-control" id="Trailer" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
-                                <input type="date" class="form-control" id="StarTime" />
-                            </div>
-                        </div>
-                    </div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+									<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
+									<ValidationMessage For="@(() => request.AgeAllowed)" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Actor" class="font-weight-bold">Diễn viên</label>
+									<div class="position-relative">
+										<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên" />
+										<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="images" class="font-weight-bold">Hình ảnh</label>
-                                <InputFile class="form-control" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
-                                <input type="number" class="form-control" id="AgeAllowed" />
-                            </div>
-                        </div>
-                    </div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Genre" class="font-weight-bold">Thể loại</label>
+									<select @onchange="(e) => request.GenreID = Guid.Parse(e.Value.ToString())" class="form-control">
+										<option value="@request.GenreID" disabled selected>@movieDto.GenreName</option>
+										@foreach (var genre in genres)
+										{
+											<option value="@genre.ID">@genre.GenreName</option>
+										}
+									</select>
+									<ValidationMessage For="@(() => request.GenreID)" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+									<select @onchange="(e) => request.LenguageID = Guid.Parse(e.Value.ToString())" class="form-control">
+										<option value="@request.LenguageID" disabled selected>@movieDto.LanguareName</option>
+										@foreach (var language in languages)
+										{
+											<option value="@language.ID">@language.LanguageName</option>
+										}
+									</select>
+									<ValidationMessage For="@(() => request.LenguageID)" />
+								</div>
+							</div>
+						</div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Genre" class="font-weight-bold">Thể loại</label>
-                                <select class="form-control">
-                                    <option value="" disabled selected>Chọn thể loại</option>
-                                    <!-- Các lựa chọn thể loại sẽ được thêm ở đây -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Language" class="font-weight-bold">Ngôn ngữ</label>
-                                <select class="form-control">
-                                    <option value="" disabled selected>Chọn ngôn ngữ</option>
-                                    <!-- Các lựa chọn ngôn ngữ sẽ được thêm ở đây -->
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Country" class="font-weight-bold">Quốc gia</label>
+									<select @onchange="(e) => request.CountryID = Guid.Parse(e.Value.ToString())" class="form-control">
+										<option value="@request.CountryID" disabled selected>@movieDto.CountryName</option>
+										@foreach (var country in countries)
+										{
+											<option value="@country.ID">@country.CountryName</option>
+										}
+									</select>
+									<ValidationMessage For="@(() => request.CountryID)" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Director" class="font-weight-bold">Đạo diễn</label>
+									<select @onchange="(e) => request.DirectorID = Guid.Parse(e.Value.ToString())" class="form-control">
+										<option value="@request.DirectorID" disabled selected>@movieDto.DirectorName</option>
+										@foreach (var director in directors)
+										{
+											<option value="@director.ID">@director.FullName</option>
+										}
+									</select>
+									<ValidationMessage For="@(() => request.DirectorID)" />
+								</div>
+							</div>
+						</div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Country" class="font-weight-bold">Quốc gia</label>
-                                <select class="form-control">
-                                    <option value="" disabled selected>Chọn quốc gia</option>
-                                    <!-- Các lựa chọn quốc gia sẽ được thêm ở đây -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Director" class="font-weight-bold">Đạo diễn</label>
-                                <select class="form-control">
-                                    <option value="" disabled selected>Chọn đạo diễn</option>
-                                    <!-- Các lựa chọn đạo diễn sẽ được thêm ở đây -->
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label for="Description" class="font-weight-bold">Mô tả</label>
-                            <textarea class="form-control" id="Description" rows="3"></textarea>
-                        </div>
-                    </div>
+						<div class="form-group">
+							<label for="Description" class="font-weight-bold">Mô tả</label>
+							<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
+							<ValidationMessage For="@(() => request.Description)" />
+						</div>
 
-                    <div class="text-center">
-                        <button type="button" class="btn btn-success btn-lg">Sửa</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Trạng thái</label>
+								<select class="form-select" @bind="request.Status">
+									<option value="" disabled selected>Chọn trạng thái</option>
+                                    @foreach (var status in Enum.GetValues(typeof(MovieStatus)).Cast<MovieStatus>())
+                                    {
+										<option value="@status">@status.ToString()</option>
+									}
+								</select>
+								<ValidationMessage For="@(() => request.Status)" />
+							</div>
+						</div>
+
+						<div class="text-center">
+							<button type="submit" class="btn btn-success btn-lg">Lưu</button>
+							<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
+						</div>
+					</div>
+				</div>
+
+				@if (isActorModalOpen)
+				{
+					<div class="modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title">Chọn diễn viên</h5>
+									<button type="button" class="close" @onclick="CloseActorDialog">
+										<i class="material-icons">close</i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<div class="form-check d-flex align-items-center mb-4">
+										<input class="form-check-input" type="checkbox" value="actor1" id="actor1" />
+										<label class="form-check-label ms-2 mt-1" for="actor1">Diễn viên 1</label>
+									</div>
+									<div class="form-check d-flex align-items-center mb-4">
+										<input class="form-check-input" type="checkbox" value="actor2" id="actor2" />
+										<label class="form-check-label ms-2 mt-1" for="actor2">Diễn viên 2</label>
+									</div>
+									<div class="form-check d-flex align-items-center mb-4">
+										<input class="form-check-input" type="checkbox" value="actor3" id="actor3" />
+										<label class="form-check-label ms-2 mt-1" for="actor3">Diễn viên 3</label>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
+									<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</EditForm>
+	}
+
 
 </body>
-@code{
-    [Parameter]
-    public Guid id { get; set; }
-    private MovieDTO movieDto = new MovieDTO();
-    protected override async Task OnInitializedAsync()
-    {
-         movieDto = await _movieServices.GetMovieById(id);
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	private UpdateMovieRequest request = new UpdateMovieRequest();
+	private IBrowserFile selectedFile;
+	private bool isActorModalOpen = false;
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
 
-    }
-    private bool isEditing = false; 
+	}
+	private bool isEditing = false; // Biến để kiểm soát trạng thái hiển thị
+	#region update
+	private void ToggleEdit()
+	{
+		isEditing = !isEditing; // Chuyển đổi trạng thái hiển thị
+	}
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged();
+		}
+	}
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 30); // tối đa 30mb
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
 
-    private void ToggleEdit()
-    {
-        isEditing = !isEditing; 
-    }
+		return null;
+	}
+	private void OpenActorDialog()
+	{
+		isActorModalOpen = true; // Mở modal
+	}
+
+	private void CloseActorDialog()
+	{
+		isActorModalOpen = false; // Đóng modal
+	}
+
+	private void SelectActors()
+	{
+		CloseActorDialog();  
+	}
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo("/list-movie-admin");
+	}
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			var content = new MultipartFormDataContent();
+			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 30));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+			content.Add(fileContent, "file", selectedFile.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				var fileName = Path.GetFileName(fileUrl);
+				request.Images = fileName;
+
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+
+
+			var flimsResponse = await _movieServices.Update(request);
+			if (flimsResponse.IsSuccessStatusCode)
+			{
+				Console.WriteLine(request.GenreID);
+				Console.WriteLine(request.Images);
+				Console.WriteLine(request.Description);
+				Console.WriteLine(request.Name);
+				Console.WriteLine(request.LenguageID);
+				Console.WriteLine(request.CountryID);
+				Console.WriteLine(request.DirectorID);
+				_navigation.NavigateTo("/list-movie-admin");
+			}
+			else
+			{
+				Console.WriteLine($"Có lỗi xảy ra khi tạo phim.{flimsResponse.Content}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+	#endregion 
+	#region detail
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#endregion
 }
 <style>
-    .movie-detail-background {
-        margin-top: 20px;
-    }
+	.movie-detail-background {
+		margin-top: 20px;
+	}
 
-    .img-movie-detail img {
-        width: 100%; /* Chiếm 100% của cột chứa ảnh, nên ảnh sẽ nhỏ hơn 1/3 */
-        height: auto;
-    }
+	.img-movie-detail img {
+		width: 100%; /* Chiếm 100% của cột chứa ảnh, nên ảnh sẽ nhỏ hơn 1/3 */
+		height: auto;
+	}
 
-    .col-md-8 {
-        padding-left: 30px; /* Thêm khoảng cách giữa ảnh và phần chữ */
-    }
+	.col-md-8 {
+		padding-left: 30px; /* Thêm khoảng cách giữa ảnh và phần chữ */
+	}
 
-    .title {
-        font-size: 2rem;
-        font-weight: bold;
-    }
+	.title {
+		font-size: 2rem;
+		font-weight: bold;
+	}
 
-    .description {
-        font-size: 1.2rem;
-    }
+	.description {
+		font-size: 1.2rem;
+	}
 
-    .trailer-title {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
+	.trailer-title {
+		font-size: 1.8rem;
+		margin-bottom: 15px;
+	}
 
-    .embed-responsive-16by9 {
-        position: relative;
-        padding-bottom: 56.25%;
-        height: 0;
-        overflow: hidden;
-        max-height: 800px; /* Chiều cao tối đa của trailer */
-    }
-
-        .embed-responsive-16by9 iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80%;
-        }
+	.embed-responsive-16by9 {
+		position: relative;
+		padding-bottom: 56.25%;
+		height: 0;
+		overflow: hidden;
+		max-height: 800px; /* Chiều cao tối đa của trailer */
+	}
+		.embed-responsive-16by9 iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 30%;
+			height: 35%;
+		}
 
 </style>

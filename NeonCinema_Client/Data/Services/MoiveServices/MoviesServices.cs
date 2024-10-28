@@ -79,22 +79,10 @@ namespace NeonCinema_Client.Services.MoivesService
             }
         }
 
-        public async Task<HttpResponseMessage> UpdateMovie(UpdateMovieRequest request)
+		public async Task<HttpResponseMessage> Update(UpdateMovieRequest request)
         {
-           
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
-                return await _httpClient.PutAsync($"https://localhost:7211/api/Movie/Update/{request.ID}", content);
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Có lỗi : " + ex.Message)
-                };
-
-            }
+            var respones = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/Movie/Update", request);
+            return respones;
         }
 
         public async Task<MovieDTO> GetMovieById(Guid id)
@@ -102,7 +90,7 @@ namespace NeonCinema_Client.Services.MoivesService
             var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
             return respones;
         }
-    }
+	}
 
 
 }
