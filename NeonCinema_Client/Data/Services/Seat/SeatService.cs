@@ -82,11 +82,11 @@ namespace NeonCinema_Client.Data.Services.Seat
             return respones;
         }
 
-        public async Task<HttpResponseMessage> UpdateSeate(UpdateSeatDTO request)
+        public async Task<HttpResponseMessage> UpdateSeate(Guid id, UpdateSeatDTO request)
         {
             try
             {
-                var result = await _httpClient.PutAsJsonAsync($"https://localhost:7211/api/Seat/Update/{request.ID}", request);
+                var result = await _httpClient.PutAsJsonAsync($"https://localhost:7211/api/Seat/Update?id={id}", request);
                 return result;
             }
             catch (Exception ex)

@@ -13,6 +13,8 @@ namespace NeonCinema_Client.Data.Services.SeatType
             _httpClient = client;
         }
 
+        
+
         public async Task CreateSeatType(CreateSeatTypeDTO request)
         {
             await _httpClient.PostAsJsonAsync("api/SeatType/Create-SeatType", request);

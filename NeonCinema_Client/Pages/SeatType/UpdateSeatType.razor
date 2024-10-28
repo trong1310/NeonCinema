@@ -19,11 +19,14 @@ else
         <div class="mb-3">
             <label class="form-label">Seat Type Name:</label>
             <InputText @bind-Value="seatType.SeatTypeName" class="form-control" />
+            <ValidationMessage For="@(() => seatType.SeatTypeName)" />
         </div>
-        <div class="mb-3">
-            <label class="form-label">Price:</label>
-            <InputNumber @bind-Value="seatType.Price" class="form-control" />
-        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="text-danger">@errorMessage</div>
+        }
+        
 
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
@@ -35,6 +38,7 @@ else
 
     [Parameter] public Guid seatTypeId { get; set; }
     private SeatTypeDTO seatType = new SeatTypeDTO();
+    private string errorMessage;
     protected override async Task OnInitializedAsync()
     {
         seatType = await SV.GetByIdSeatType(seatTypeId);
@@ -42,6 +46,23 @@ else
 
     private async Task HandleValidSubmit()
     {
+        // Basic validation for empty SeatTypeName
+        if (string.IsNullOrWhiteSpace(seatType.SeatTypeName))
+        {
+            errorMessage = "Seat Type Name không được để trống.";
+            return;
+        }
+
+        // Check for duplicate SeatTypeName
+        var existingSeatTypes = await SV.GetAllSeatType();
+        if (existingSeatTypes.Any(st => st.SeatTypeName == seatType.SeatTypeName))
+        {
+            errorMessage = "Seat Type Name đã tồn tại.";
+            return;
+        }
+
+        // If valid, proceed with creation
+        errorMessage = string.Empty; // Clear error message
         var update = new UpdateSeatTypeDTO
             {
                 ID = seatType.ID,

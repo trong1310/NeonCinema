@@ -10,14 +10,19 @@
 <h3 class="text-center mb-4">Add New SeatType</h3>
 
 <EditForm Model="seatType" OnValidSubmit="HandleValidSubmit" class="form-container">
+    <DataAnnotationsValidator />
+    <ValidationSummary></ValidationSummary>
     <div class="mb-3">
         <label class="form-label">Seat Type Name:</label>
         <InputText @bind-Value="seatType.SeatTypeName" class="form-control" />
+        <ValidationMessage For="@(() => seatType.SeatTypeName)" />
     </div>
-    <div class="mb-3">
-        <label class="form-label">Price:</label>
-        <InputNumber @bind-Value="seatType.Price" class="form-control" />
-    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="text-danger">@errorMessage</div>
+    }
+   
 
     <button type="submit" class="btn btn-primary">Save</button>
     <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
@@ -25,9 +30,25 @@
 
 @code {
     private CreateSeatTypeDTO seatType = new CreateSeatTypeDTO();
-
+    private string errorMessage;
     private async Task HandleValidSubmit()
     {
+        if (string.IsNullOrWhiteSpace(seatType.SeatTypeName))
+        {
+            errorMessage = "Seat Type Name không được để trống.";
+            return;
+        }
+
+        
+        var existingSeatTypes = await SV.GetAllSeatType();
+        if (existingSeatTypes.Any(st => st.SeatTypeName == seatType.SeatTypeName))
+        {
+            errorMessage = "Seat Type Name đã tồn tại.";
+            return;
+        }
+
+       
+        errorMessage = string.Empty; 
         await SV.CreateSeatType(seatType);
         NavigationManager.NavigateTo("/listSeatType");
     }

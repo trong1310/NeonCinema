@@ -48,8 +48,8 @@
     <div class="form-group">
         <label for="status">Trạng Thái:</label>
         <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
-            <option value="@(EntityStatus.Active)">Hoạt động</option>
-            <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+            <option value="@(EntityStatus.Active)">Ghế còn trống</option>
+            <option value="@(EntityStatus.Inactive)">Đã đặt</option>
         </InputSelect>
     </div>
 
@@ -61,37 +61,42 @@
     [Parameter] public Guid seatId { get; set; }
     private UpdateSeatDTO seatToUpdate = new UpdateSeatDTO();
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
+    
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetch all seat types for the dropdown
+       
+
         seatTypes = await SeatTypeService.GetAllSeatType();
-
-        // Fetch the seat details by ID
         var seatResponse = await SeatService.GetSeatById(seatId);
-
         if (seatResponse != null)
         {
-            // Map the response to the DTO
             seatToUpdate = new UpdateSeatDTO
-                {
+            {
                     ID = seatResponse.ID,
                     SeatNumber = seatResponse.SeatNumber,
                     Column = seatResponse.Column,
                     Row = seatResponse.Row,
                     Status = seatResponse.Status,
                     SeatTypeID = seatResponse.SeatTypeID
-                };
+
+            };
         }
     }
 
     private async Task HandleValidSubmit()
     {
-        var result = await SeatService.UpdateSeate(seatToUpdate); // Call API to update seat
+        var result = await SeatService.UpdateSeate(seatToUpdate.ID, seatToUpdate);
 
-        if (result.IsSuccessStatusCode) // If update is successful
+        
+        if (result != null && result.IsSuccessStatusCode)
         {
-            Navigation.NavigateTo("/listseat"); // Navigate back to seat list page
+            Navigation.NavigateTo("/listseat");
+        }
+        else
+        {
+            Console.WriteLine("Error: Could not update seat information.");
+            
         }
     }
 

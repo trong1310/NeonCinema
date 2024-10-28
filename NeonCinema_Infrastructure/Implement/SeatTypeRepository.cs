@@ -45,7 +45,7 @@ namespace NeonCinema_Infrastructure.Implement
             {
                 ID = stt.ID,
                 SeatTypeName = stt.SeatTypeName,
-                Price = stt.Price,
+                //Price = stt.Price,
 
             }).ToList();
 
@@ -73,7 +73,7 @@ namespace NeonCinema_Infrastructure.Implement
 
             // Update properties
             seatType.SeatTypeName = request.SeatTypeName;
-            seatType.Price = request.Price;
+            //seatType.Price = request.Price;
 
             // Save changes to the database
             await _context.SaveChangesAsync(cancellationToken);

@@ -2,6 +2,7 @@
 @using NeonCinema_Application.DataTransferObject.SeatTypes
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Client.Data.IServices.Seat
+@using NeonCinema_Domain.Enum
 @inject NavigationManager Navi
 @inject ISeatService SeatService
 
@@ -14,12 +15,12 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Seat Number</th>
-            <th>Column</th>
-            <th>Row</th>
-            <th>Seat Type</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>Số ghế</th>
+            <th>Cột</th>
+            <th>Hàng</th>
+            <th>Kiểu ghế</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -38,7 +39,19 @@
                     <td>@seat.Column</td>
                     <td>@seat.Row</td> 
                     <td>@seat.SeatTypeName</td>
-                    <td>@seat.Status</td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="flexSwitchCheckDefault_@(seat.ID)"
+                                   checked="@(seat.Status == EntityStatus.Active)"
+                                   @onchange="(e) => ToggleRoomStatus(seat, e)" />
+                            <label class="form-check-label" for="flexSwitchCheckDefault_@(seat.ID)">
+                                @(seat.Status == EntityStatus.Active ? "còn trống" : "đã đặt")
+                            </label>
+                        </div>
+                    </td>
                     <td>
                         <button class="btn btn-warning" @onclick="@(() => NavigateToUpdateSeat(seat.ID))">Cập Nhật</button> <!-- Update button -->
                     </td>
@@ -72,6 +85,42 @@
     }
     private void NavigateToUpdateSeat(Guid seatId)
     {
-        Navi.NavigateTo($"/updateseat/{seatId}");
+        var seat = seats.FirstOrDefault(s => s.ID == seatId);
+        if (seat != null)
+        {
+            var status = seat.Status == EntityStatus.Active ? "Active" : "Locked";
+            Navi.NavigateTo($"/updateseat/{seatId}?status={status}");
+        }
+    }
+    private async Task ToggleRoomStatus(SeatDTO seat, ChangeEventArgs e)
+    {
+        seat.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+
+        var roomUpdateRequest = new UpdateSeatDTO
+            {
+                ID = seat.ID,
+                SeatNumber = seat.SeatNumber,
+                Column = seat.Column,
+                Row = seat.Row,
+                SeatTypeID = seat.SeatTypeID,
+                Status = seat.Status
+            };
+
+        var response = await SeatService.UpdateSeate(roomUpdateRequest.ID, roomUpdateRequest);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Đảm bảo trạng thái ghế đã được cập nhật chính xác trong danh sách ghế.
+            var updatedSeat = seats.FirstOrDefault(s => s.ID == seat.ID);
+            if (updatedSeat != null)
+            {
+                updatedSeat.Status = seat.Status;
+            }
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error: {errorContent}");
+        }
     }
 }

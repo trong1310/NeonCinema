@@ -53,7 +53,7 @@
                                        checked="@(room.Status == EntityStatus.Active)"
                                        @onchange="(e) => ToggleRoomStatus(room, e)" />
                                 <label class="form-check-label" for="flexSwitchCheckDefault_@(room.Status)">
-                                    @(room.Status == EntityStatus.Active ? "Mở" : "Đóng")
+                                    @(room.Status == EntityStatus.Active ? "đang chiếu" : "sắp chiếu")
                                 </label>
                             </div>
                         </td>
