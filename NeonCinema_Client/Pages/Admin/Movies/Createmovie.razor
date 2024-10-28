@@ -15,7 +15,7 @@
 
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
 	<DataAnnotationsValidator />
-	<ValidationSummary></ValidationSummary>
+	@* <ValidationSummary></ValidationSummary> *@
 	<div class="container-fluid mt-5">
 		<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
 		<div class="row">
@@ -28,8 +28,6 @@
 					<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
 					<span>Chọn ảnh</span>
 				</label>
-
-
 			</div>
 			<div class="col-md-9" style="margin-top:10px;">
 				<div class="row">
@@ -162,12 +160,13 @@
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title">Chọn diễn viên</h5>
 							<button type="button" class="close" @onclick="CloseActorDialog">
 								<i class="material-icons">close</i>
-							</button>
+							</button>												
 						</div>
+						
 						<div class="modal-body">
+							<h5 class="modal-title">Chọn diễn viên</h5>
 							<div class="form-check d-flex align-items-center mb-4">
 								<input class="form-check-input" type="checkbox" value="actor1" id="actor1" />
 								<label class="form-check-label ms-2 mt-1" for="actor1">Diễn viên 1</label>
@@ -179,6 +178,89 @@
 							<div class="form-check d-flex align-items-center mb-4">
 								<input class="form-check-input" type="checkbox" value="actor3" id="actor3" />
 								<label class="form-check-label ms-2 mt-1" for="actor3">Diễn viên 3</label>
+							</div>
+							<hr />
+							<h5 class="modal-title">Thêm diễn viên mới</h5>
+							<div class="row">
+								<!-- Image Upload Section -->
+								<div class="col-md-4 text-center">
+									<img src="@profileImage" alt="Profile" class="img-fluid profile-pic-modal rounded-circle mb-3">
+									<label class="file-upload-modal">
+										<span style="margin-left: -5px">
+											<i class="material-icons">cloud_upload</i>
+										</span>
+										<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+										<span>Chọn ảnh</span>
+									</label>
+								</div>
+
+								<!-- Actor Details Section -->
+								<div class="col-md-8">
+									<div class="form-group">
+										<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
+										<input type="text" class="form-control" id="actorName" />
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="gender" class="font-weight-bold">Giới Tính</label>
+												<select class="form-control" id="gender">
+													<option value="Male">Nam</option>
+													<option value="Female">Nữ</option>
+													<option value="Other">Khác</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="dob" class="font-weight-bold">Ngày Sinh</label>
+												<input type="date" class="form-control" id="dob" />
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="nationality" class="font-weight-bold">Quốc Tịch</label>
+												<select class="form-control" id="nationality">
+													<option value="">Chọn quốc tịch</option>
+													<option value="">Việt Nam</option>
+													<option value="">Anh</option>
+													<option value="">Mỹ</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="status" class="font-weight-bold">Trạng Thái</label>
+												<select class="form-control" id="status">
+													<option value="Active">Hoạt Động</option>
+													<option value="Inactive">Không Hoạt Động</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="bio" class="font-weight-bold">Tiểu Sử</label>
+												<textarea class="form-control" id="bio"></textarea>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="address" class="font-weight-bold">Địa Chỉ</label>
+												<textarea class="form-control" id="address"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="text-center">
+										<button type="submit" class="btn btn-success btn-lg" style="margin-left: -40px">Thêm</button>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -207,6 +289,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		request.StarTime = DateTime.UtcNow;
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
@@ -245,19 +328,7 @@
 	{
 		try
 		{
-			// if (selectedFile == null || string.IsNullOrEmpty(request.GenreID.ToString()) || string.IsNullOrEmpty(request.Name) ||
-			// 		string.IsNullOrEmpty(request.Duration.ToString()) || string.IsNullOrEmpty(request.Description) ||
-			// 		string.IsNullOrEmpty(request.Trailer) || string.IsNullOrEmpty(request.AgeAllowed.ToString()) ||
-			// 		string.IsNullOrEmpty(request.CountryID.ToString()) || string.IsNullOrEmpty(request.DirectorID.ToString()) ||
-			// 		string.IsNullOrEmpty(request.LenguageID.ToString()))
-			// {
-			// 	errorMessage = "Vui lòng nhập đầy đủ thông tin";
-			// 	return;
-			// }
-
 			var content = new MultipartFormDataContent();
-
-			// Tạo nội dung tệp từ selectedFile
 			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
 			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
 
@@ -457,22 +528,23 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 100%;
-		height: 100%;
 		background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
 		z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
 	}
 
 	.modal-dialog {
-		max-width: 800px; /* Tăng chiều rộng tối đa của dialog */
-		width: 30%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
+		max-width: 1500px; /* Tăng chiều rộng tối đa của dialog */
+		max-height: 80vh;
+		width: 50%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
 		margin: auto; /* Để căn giữa modal */
+		overflow-y: auto;
 	}
 
 	.modal-content {
 		padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
 	}
 
+	
 	.no-hover {
 		border: none; /* Bỏ viền */
 		background-color: transparent; /* Bỏ nền */
@@ -503,5 +575,37 @@
 		cursor: pointer;
 		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
 		font-size: 24px; /* Kích thước của icon */
+	}
+	.profile-pic-modal {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border: 3px solid #eaeaea;
+		
+	}
+
+	.file-upload-modal {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		margin-top: 10px;
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+		.file-upload-modal span {
+		margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+	}
+
+		.file-upload-modal:hover {
+		background-color: #8f8f8f; /* Màu nền khi hover */
 	}
 </style>

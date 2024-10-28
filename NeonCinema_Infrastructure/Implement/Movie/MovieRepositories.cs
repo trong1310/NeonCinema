@@ -198,7 +198,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             return movieDTO;
         }
 
-        public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -211,17 +211,18 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                         Content = new StringContent("Không tìm thấy phim")
                     };
                 }
-                request.Duration = obj.Duration;
-                request.Name = obj.Name;
-                request.Status = obj.Status;
-                request.AgeAllowed = obj.AgeAllowed;
-                request.CountryID = obj.CountryID;
-                request.Description = obj.Description;
-                request.DirectorID = obj.DirectorID;
-                request.Trailer = obj.Trailer;
-                request.GenreID = obj.GenreID;
-                request.LenguageID = obj.LenguageID;
-                request.StarTime = obj.StarTime;
+                obj.Duration = request.Duration ;
+                obj.Name = request.Name;
+                obj.Status = request.Status;
+                obj.AgeAllowed = request.AgeAllowed;
+                obj.CountryID = request.CountryID;
+                obj.Description = request.Description;
+                obj.DirectorID = request.DirectorID;
+                obj.Trailer = request.Trailer;
+                obj.GenreID = request.GenreID;
+                obj.LenguageID = request.LenguageID;
+                obj.StarTime = request.StarTime;
+                obj.ModifiedTime = DateTime.UtcNow;
                 _context.Movies.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
