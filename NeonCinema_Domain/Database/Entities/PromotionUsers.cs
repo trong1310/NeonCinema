@@ -12,7 +12,7 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid PromotionID { get; set; }  // Khóa ngoại đến Promotion
         public Guid UserID { get; set; }  // Khóa ngoại đến user
-        public EntityStatus Status { get; set; }
+        public PromotionStatus Status { get; set; }
 
         // Liên kết
         public virtual Promotion? Promotion { get; set; }

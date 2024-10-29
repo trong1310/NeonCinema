@@ -8,7 +8,7 @@ namespace NeonCinema_Infrastructure.Extention.Utilis
 {
     public class Utilis
     {
-        public static string GenerateCode()
+        public string GenerateCode()
         {
             StringBuilder builder = new StringBuilder("UDKH");
             Enumerable
