@@ -1,4 +1,9 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using System.Text.RegularExpressions
+@using Blazored.LocalStorage
+
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService _localStorage;
+
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -86,7 +91,7 @@
                 <MudImage Src="/images/Client/cam.jpg" Alt="Đặng Đức Cường" Class="rounded-circle" Style="width: 70px; height: 70px;" />
             </MudItem>
             <MudItem xs="9" Class="text-center mt-5">
-                <MudText Typo="Typo.h6" Style="font-size: 17px;">Đặng Đức Cường</MudText>
+                <MudText Typo="Typo.h6" Style="font-size: 17px;">@nameUser</MudText>
                 <MudText Typo="Typo.body2" Class="mud-text-secondary" Style="font-weight:bold">Admin</MudText>
             </MudItem>
         </MudGrid>
@@ -133,3 +138,15 @@
             font-size: 20px; /* Tùy chỉnh kích thước icon nếu muốn */
         }
 </style>
+
+@code {
+    private string nameUser = "";
+    protected override async Task OnInitializedAsync()
+    {
+        var name = await _localStorage.GetItemAsStringAsync("name");
+        if (name != null)
+        {
+            nameUser = Regex.Unescape(name.Trim('"'));
+        }
+    }
+}
