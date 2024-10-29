@@ -45,6 +45,7 @@ using NeonCinema_Client.Data.IServices.Genre;
 using NeonCinema_Client.Data.Services.Genre;
 using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
+using Microsoft.AspNetCore.Components.Authorization;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -112,6 +113,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
+
 
 
 //builder.Services.AddScoped<ISeatService, SeatService>();
