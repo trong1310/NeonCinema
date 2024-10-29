@@ -1,4 +1,7 @@
-﻿using NeonCinema_Application.DataTransferObject.Countrys;
+﻿using Com.CloudRail.SI.ServiceCode.Commands;
+using NeonCinema_Application.DataTransferObject.ActorMoives;
+using NeonCinema_Application.DataTransferObject.Actors;
+using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
@@ -19,5 +22,7 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
         public Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request);
         public Task<HttpResponseMessage> Update(UpdateMovieRequest request);
         public Task<MovieDTO> GetMovieById(Guid id);
+        public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request);
+        public Task<HttpResponseMessage> CreateActorMovies (CreateActorMoviesRequest request);
     }
 }

@@ -162,9 +162,9 @@
 						<div class="modal-header">
 							<button type="button" class="close" @onclick="CloseActorDialog">
 								<i class="material-icons">close</i>
-							</button>												
+							</button>
 						</div>
-						
+
 						<div class="modal-body">
 							<h5 class="modal-title">Chọn diễn viên</h5>
 							<div class="form-check d-flex align-items-center mb-4">
@@ -182,84 +182,23 @@
 							<hr />
 							<h5 class="modal-title">Thêm diễn viên mới</h5>
 							<div class="row">
-								<!-- Image Upload Section -->
-								<div class="col-md-4 text-center">
-									<img src="@profileImage" alt="Profile" class="img-fluid profile-pic-modal rounded-circle mb-3">
-									<label class="file-upload-modal">
-										<span style="margin-left: -5px">
-											<i class="material-icons">cloud_upload</i>
-										</span>
-										<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
-										<span>Chọn ảnh</span>
-									</label>
-								</div>
-
-								<!-- Actor Details Section -->
 								<div class="col-md-8">
 									<div class="form-group">
 										<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
 										<input type="text" class="form-control" id="actorName" />
 									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="gender" class="font-weight-bold">Giới Tính</label>
-												<select class="form-control" id="gender">
-													<option value="Male">Nam</option>
-													<option value="Female">Nữ</option>
-													<option value="Other">Khác</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="dob" class="font-weight-bold">Ngày Sinh</label>
-												<input type="date" class="form-control" id="dob" />
-											</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="status" class="font-weight-bold">Trạng Thái</label>
+											<select class="form-control" id="status">
+												<option value="Active">Hoạt Động</option>
+												<option value="Inactive">Không Hoạt Động</option>
+											</select>
 										</div>
 									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="nationality" class="font-weight-bold">Quốc Tịch</label>
-												<select class="form-control" id="nationality">
-													<option value="">Chọn quốc tịch</option>
-													<option value="">Việt Nam</option>
-													<option value="">Anh</option>
-													<option value="">Mỹ</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="status" class="font-weight-bold">Trạng Thái</label>
-												<select class="form-control" id="status">
-													<option value="Active">Hoạt Động</option>
-													<option value="Inactive">Không Hoạt Động</option>
-												</select>
-											</div>
-										</div>
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="bio" class="font-weight-bold">Tiểu Sử</label>
-												<textarea class="form-control" id="bio"></textarea>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="address" class="font-weight-bold">Địa Chỉ</label>
-												<textarea class="form-control" id="address"></textarea>
-											</div>
-										</div>
-									</div>
-									<div class="text-center">
-										<button type="submit" class="btn btn-success btn-lg" style="margin-left: -40px">Thêm</button>
-									</div>
+								</div>
+								<div class="text-center">
+									<button type="submit" class="btn btn-success btn-lg" style="margin-left: -40px">Thêm</button>
 								</div>
 							</div>
 						</div>
@@ -544,7 +483,7 @@
 		padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
 	}
 
-	
+
 	.no-hover {
 		border: none; /* Bỏ viền */
 		background-color: transparent; /* Bỏ nền */
@@ -576,12 +515,12 @@
 		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
 		font-size: 24px; /* Kích thước của icon */
 	}
+
 	.profile-pic-modal {
 		width: 200px;
 		height: 200px;
 		object-fit: cover;
 		border: 3px solid #eaeaea;
-		
 	}
 
 	.file-upload-modal {
@@ -602,10 +541,10 @@
 	}
 
 		.file-upload-modal span {
-		margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
-	}
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
 
 		.file-upload-modal:hover {
-		background-color: #8f8f8f; /* Màu nền khi hover */
-	}
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
 </style>

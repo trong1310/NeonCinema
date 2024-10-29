@@ -38,6 +38,8 @@ using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Application.Interface.UserFlims;
 using NeonCinema_Infrastructure.Implement.UserMovies;
 using NeonCinema_Infrastructure.Implement.Promotion_R;
+using NeonCinema_Infrastructure.Implement.Acotr;
+using NeonCinema_Infrastructure.Implement.ActorMovies;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -83,7 +85,8 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<IUserMovies, UserMoviess>();
             services.AddScoped<IEntityRepository<Promotion>, PromotionRepository>();
             services.AddScoped<IEntityRepository<PromotionUsers>, PromotionCustomerResp>();
-            
+            services.AddTransient<ActorResp>();
+            services.AddTransient<ActorMoviesResp>();
             return services;
         }
     }

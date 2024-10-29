@@ -1,5 +1,8 @@
 ﻿using Bogus.Hollywood.DataSets;
 using Bogus.Hollywood.Models;
+using Com.CloudRail.SI.ServiceCode.Commands;
+using NeonCinema_Application.DataTransferObject.ActorMoives;
+using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
@@ -90,6 +93,16 @@ namespace NeonCinema_Client.Services.MoivesService
             var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
             return respones;
         }
+
+		public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request )
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 
