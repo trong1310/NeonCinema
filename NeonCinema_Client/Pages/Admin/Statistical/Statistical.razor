@@ -2,73 +2,93 @@
 @using MudBlazor
 @using NeonCinema_Domain.Database.Entities
 
-<MudContainer Class="pa-4" Style="">
-    <MudGrid Spacing="3">
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="mud-elevation-12" Style="background-color: white; border-radius: 12px; height: 150px;">
-                <MudCardContent Style="height 20px">
-                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">DOANH THU TRONG NGÀY</MudText>
-                    <MudText Typo="Typo.h5" Color="Color.Primary">0 VND</MudText>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudIconButton Icon="fas fa-receipt" Color="Color.Primary" />
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">12-08-2023</MudText>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="mud-elevation-12" Style="background-color: white; border-radius: 12px; height: 150px;">
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">KHÁCH HÀNG MỚI</MudText>
-                    <MudText Typo="Typo.h5" Color="Color.Primary">7</MudText>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudIconButton Icon="fas fa-users" Color="Color.Primary" />
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">12-08-2023</MudText>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="mud-elevation-12" Style="background-color: white; border-radius: 12px; height: 150px;">
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">TỔNG VÉ</MudText>
-                    <MudText Typo="Typo.h5" Color="Color.Primary">266</MudText>
-                  
-                </MudCardContent>
-                <MudCardActions>
-                    <MudIconButton Icon="fas fa-ticket-alt" Color="Color.Error" />
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">01-01-2022 | 12-08-2023</MudText>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
+<div class="container my-4">
+    <!-- Statistical Cards -->
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card shadow h-100 position-relative">
+                <div class="card-body">
+                    <h6 class="text-secondary">DOANH THU TRONG NGÀY</h6>
+                    <h5 style="font-weight:bold">0 VND</h5>
+                </div>
+                <p class="text-muted ml-4">12-08-2023</p>
+                <span class="material-icons card-icon bg-primary">attach_money</span>
+            </div>
+        </div>
 
-        <MudItem xs="12" sm="6" md="3">
-            <MudCard Class="mud-elevation-12" Style="background-color: white; border-radius: 12px; height: 150px;">
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle1" Color="Color.Primary">TỔNG DOANH THU</MudText>
-                    <MudText Typo="Typo.h5" Color="Color.Primary">3.335.067.600 VND</MudText>
-                  
-                </MudCardContent>
-                <MudCardActions>
-                    <MudIconButton Icon="fas fa-wallet" Color="Color.Warning" />
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">01-01-2022 | 12-08-2023</MudText>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-<MudContainer>
-    <MudGrid Spacing="3">
-        <MudItem xs="3">
-            <MudTextField Value="13/10/2024"  Format="dd/MM/yyyy" Label="Từ ngày" Variant="Variant.Outlined"Margin="Margin.Dense"Class="bordered" />
-        </MudItem>
-        <MudItem xs="3">
-            <MudTextField Value="20/10/2024" Format="dd/MM/yyyy" Label="Đến ngày" Variant="Variant.Outlined" Margin="Margin.Dense"Class="bordered" />
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card shadow h-100 position-relative">
+                <div class="card-body">
+                    <h6 class="text-secondary">KHÁCH HÀNG MỚI</h6>
+                    <h5 style="font-weight:bold">7</h5>
+                </div>
+                <p class="text-muted ml-4">12-08-2023</p>
+                <span class="material-icons card-icon bg-success">person_add</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card shadow h-100 position-relative">
+                <div class="card-body">
+                    <h6 class="text-secondary">TỔNG VÉ</h6>
+                    <h5 style="font-weight:bold">266</h5>
+                </div>
+                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <span class="material-icons card-icon bg-warning">confirmation_number</span>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="card shadow h-100 position-relative">
+                <div class="card-body">
+                    <h6 class="text-secondary">TỔNG DOANH THU</h6>
+                    <h5 style="font-weight:bold;">3.356.067.600 VND</h5>
+                </div>
+                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <span class="material-icons card-icon bg-danger">shopping_cart</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mt-4 shadow" style="border-radius: 8px;">
+        <div class="card-body">
+            <h5 class="card-title">Thống kê doanh thu</h5>
+            <form class="row g-3">
+                <div class="col-md-4">
+                    <label for="startDate" class="form-label">Ngày bắt đầu</label>
+                    <input type="date" id="startDate" class="form-control" value="2023-06-01">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="endDate" class="form-label">Ngày kết thúc</label>
+                    <input type="date" id="endDate" class="form-control" value="2023-08-12">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100">Chấp nhận</button>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="timeFilter" class="form-label">Lọc theo thời gian</label>
+                    <select id="timeFilter" class="form-select">
+                        <option selected>Lọc Theo Năm</option>
+                        <option>Theo Tháng</option>
+                        <option>Theo Tuần</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="theater" class="form-label">Rạp</label>
+                    <input type="text" id="theater" class="form-control" placeholder="Selected">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <MudContainer>
     <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="400px" />
@@ -105,5 +125,45 @@
         border: 1px solid #ccc; 
         border-radius: 4px; 
         padding: 4px;
+    }
+
+    .card {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .card .card-body h6 {
+            font-weight: bold;
+        }
+
+        .card .card-body h5 {
+            font-weight: bold;
+        }
+
+    .text-muted {
+        font-size: 0.875rem;
+    }
+    /* Icon styling */
+    .card-icon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 1.2rem; /* Adjust the icon size */
+        color: #ffffff;
+        border-radius: 50%;
+        padding: 8px;
+        line-height: 1; /* Center the icon */
+    }
+
+    .icon-background {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%; /* Makes the background circular */
+        font-size: 1rem; /* Adjust icon size */
     }
 </style>
