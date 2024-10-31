@@ -21,6 +21,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Trailer { get; set; }
         public string Images { get; set; }
         public int AgeAllowed { get; set; }
+        public string Actor {  get; set; }
         public MovieStatus Status { get; set; } 
         public Guid GenreID { get; set; }/// <s
         /// </summary>
@@ -32,6 +33,7 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual ICollection<Screening>? Screening { get; set; }
 		public virtual ICollection<Ticket>? TicketSeats { get; set; }
 		public virtual ICollection<Show_release>? Show_Releases { get; set; }
+
         public virtual Director? Director { get; set; }
         public virtual ICollection<MoviesActor>? MoviesActor { get; set; }
         public virtual ICollection<CategoryMovies>? CategoryMovies { get; set; }

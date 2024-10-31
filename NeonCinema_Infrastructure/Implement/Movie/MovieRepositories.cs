@@ -54,6 +54,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     LenguageID = request.LenguageID,
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
+                    Actor = request.Actor,
                     CreatedTime = DateTime.Now,
 
                 };
@@ -148,6 +149,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
+                                Actor = b.Actor
 
                             }).ToList();
 
@@ -193,6 +195,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 CountryName = movie.Countrys.CountryName,
                 DirectorName = movie.Director.FullName,
                 GenreName = movie.Genre.GenreName,
+                Actor = movie.Actor,
             };
 
             return movieDTO;
@@ -211,17 +214,19 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                         Content = new StringContent("Không tìm thấy phim")
                     };
                 }
-                request.Duration = obj.Duration;
-                request.Name = obj.Name;
-                request.Status = obj.Status;
-                request.AgeAllowed = obj.AgeAllowed;
-                request.CountryID = obj.CountryID;
-                request.Description = obj.Description;
-                request.DirectorID = obj.DirectorID;
-                request.Trailer = obj.Trailer;
-                request.GenreID = obj.GenreID;
-                request.LenguageID = obj.LenguageID;
-                request.StarTime = obj.StarTime;
+                obj.Duration = request.Duration ;
+                obj.Name = request.Name;
+                obj.Status = request.Status;
+                obj.AgeAllowed = request.AgeAllowed;
+                obj.CountryID = request.CountryID;
+                obj.Description = request.Description;
+                obj.DirectorID = request.DirectorID;
+                obj.Trailer = request.Trailer;
+                obj.GenreID = request.GenreID;
+                obj.LenguageID = request.LenguageID;
+                obj.Actor = request.Actor;
+                obj.StarTime = request.StarTime;
+                obj.ModifiedTime = DateTime.UtcNow;
                 _context.Movies.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
