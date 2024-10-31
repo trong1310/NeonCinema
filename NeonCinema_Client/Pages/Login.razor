@@ -3,7 +3,7 @@
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
-@inject Blazored.LocalStorage.ILocalStorageService _localstorgae
+@inject Blazored.LocalStorage.ILocalStorageService _localstorage
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
@@ -64,6 +64,7 @@
 
     public async Task LoginAccount()
     {
+        _localstorage.ClearAsync();
         isProcessing = true;
         errorMessage = null;
 
@@ -86,19 +87,23 @@
                     var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
                     var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
                     var images = claim.FirstOrDefault(c => c.Type == "profile_image_url").Value;
-                    await _localstorgae.SetItemAsync("userId", nameidentifier.Trim());
-                    await _localstorgae.SetItemAsync("mobilephone", mobilephone.Trim());
-                    await _localstorgae.SetItemAsync("email", email.Trim());
-                    await _localstorgae.SetItemAsync("address", address.Trim());
-                    await _localstorgae.SetItemAsync("dateofbirth", dateofbirth.Trim());
-                    await _localstorgae.SetItemAsync("gender", gender.Trim());
-                    await _localstorgae.SetItemAsync("name", name.Trim());
+                    await _localstorage.SetItemAsync("userId", nameidentifier.Trim());
+                    await _localstorage.SetItemAsync("mobilephone", mobilephone.Trim());
+                    await _localstorage.SetItemAsync("email", email.Trim());
+                    await _localstorage.SetItemAsync("address", address.Trim());
+                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth.Trim());
+                    await _localstorage.SetItemAsync("gender", gender.Trim());
+                    await _localstorage.SetItemAsync("name", name.Trim());
 
                     if(role.Equals("Admin"))
                     {
                         _navi.NavigateTo("/listuser");
                     }
-                    
+                    else if(role.Equals("Customer"))
+                    {
+                        _navi.NavigateTo("/");
+                    }
+
                 }
                 catch (Exception ex)
                 {

@@ -1,0 +1,108 @@
+﻿@page "/ticket-pricing"
+
+<div class="card-header text-center mb-1">
+    <h3>Quản lý giá vé</h3>
+</div>
+<div class="card" style="border: none">
+    
+    <div class="card-body p-2">
+        <table class="table table-bordered ">
+            <thead class="table-primary">
+                <tr>
+                    <th class="text-center align-middle"></th>
+                    <th class="text-center align-middle">Học Sinh, Sinh Viên</th>
+                    <th class="text-center align-middle">Người Lớn</th>
+                    <th class="text-center align-middle">Người Già, Trẻ Em</th>
+                    <th class="text-center align-middle">Thành Viên, Vé Trực Tuyến</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h">
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">Thứ 6, Thứ 7, Chủ Nhật</td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" placeholder="Trước 17h" />
+                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-bordered mt-3">
+            <thead class="table-primary">
+                <tr>
+                    <th colspan="2" class="text-center align-middle">Phụ Thu</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">3D</td>
+                    <td><input type="number" class="form-control" /></td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">4D</td>
+                    <td><input type="number" class="form-control" /></td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
+                    <td><input type="number" class="form-control" /></td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">Ghế vip</td>
+                    <td><input type="number" class="form-control" /></td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle" style="font-weight:bold">Ghế couple</td>
+                    <td><input type="number" class="form-control" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-end">
+        <button class="btn btn-primary">Lưu</button>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        width: 100%;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>

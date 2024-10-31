@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
-using NeonCinema_Application.Interface.Actors;
+
 using NeonCinema_Application.Interface.Cinemas;
 using NeonCinema_Application.Interface.Countrys;
 using NeonCinema_Application.Interface.Directors;

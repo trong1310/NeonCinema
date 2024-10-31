@@ -12,11 +12,13 @@ namespace NeonCinema_API.Controllers
     public class PromotionController : ControllerBase
     {
         private readonly IEntityRepository<Promotion> _repos;
+        private readonly IEntityRepository<PromotionUsers> _reposPU;
         private readonly IMapper _mapper;
-        public PromotionController(IEntityRepository<Promotion> repos, IMapper mapper)
+        public PromotionController(IEntityRepository<Promotion> repos, IMapper mapper, IEntityRepository<PromotionUsers> reposPU)
         {
             _mapper = mapper;
             _repos = repos;
+            _reposPU = reposPU;
         }
 
         [HttpGet("get-all")]
@@ -116,5 +118,28 @@ namespace NeonCinema_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("create-promotion-user")]
+        public async Task<IActionResult> CreatePU([FromBody] PromotionUserDTO input, CancellationToken cancellationToken)
+        {
+			try
+			{
+				var result = await _reposPU.Create(_mapper.Map<PromotionUsers>(input), cancellationToken);
+
+				if (result.IsSuccessStatusCode)
+				{
+					return Ok(result.Content);
+				}
+				else
+				{
+					return BadRequest(result.Content);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
     }
 }

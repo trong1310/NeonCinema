@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Actors;
+
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Domain.Database.Entities;

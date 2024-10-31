@@ -11,6 +11,10 @@ namespace NeonCinema_Domain.Enum
 		Private = 1,
 		Public = 2,
 		Expired = 3,
-		NotYetApplied = 4
+		NotYetApplied = 4,
+
+		//
+		Unused = 5,
+		Used = 6,
 	}
 }

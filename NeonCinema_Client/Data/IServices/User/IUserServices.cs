@@ -1,4 +1,4 @@
-﻿using NeonCinema_Application.DataTransferObject.Actors;
+﻿
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;

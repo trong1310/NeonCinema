@@ -36,7 +36,7 @@
 
     @* ----- List Movie CommingSoon -----  *@
     <section class="movies">
-        <div class="container">
+        <div class="container-fluid">
             <div style="text-align: center;">
                 <h2 class="mb-4 mt-4 green-title">PHIM ĐANG CHIẾU</h2>
             </div>
@@ -44,7 +44,7 @@
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -61,8 +61,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Add more movie cards here (up to 4 in this example) -->
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -79,7 +78,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -96,7 +95,24 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-custom">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -117,7 +133,7 @@
                     </div>
                     <div class="carousel-item active">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -134,8 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Add more movie cards here (up to 4 in this example) -->
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -152,7 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -169,7 +184,24 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-custom">
+                                <div class="card movie-card">
+                                    <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
+                                    <div class="card-body">
+                                        <div class="tags mb-2">
+                                            <span class="badge bg-danger">18</span>
+                                            <span class="badge bg-dark">Phụ đề</span>
+                                            <span class="badge bg-success">3D</span>
+                                        </div>
+                                        <h5 class="card-title">CÁM</h5>
+                                        <p class="card-text">Thể loại phim: <span class="genre">Horror</span></p>
+                                        <button class="btn buy-ticket-btn" @onclick="() => OpenDialog()">
+                                            <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-custom">
                                 <div class="card movie-card">
                                     <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy">
                                     <div class="card-body">
@@ -382,6 +414,10 @@
         padding: 20px; /* Thêm padding để có không gian cho các thẻ */
         overflow: visible; /* Đảm bảo không bị cắt */
     }
-    
+
+    .col-custom {
+        flex: 0 0 20%; /* Chiếm 20% chiều rộng */
+        max-width: 20%; /* Đảm bảo không vượt quá 20% */
+    }
     
 </style>
