@@ -56,7 +56,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
-
+        public DbSet<Actor> Actor { get; set; }
+        public DbSet<MoviesActor> MoviesActors { get; set; }
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
@@ -70,8 +71,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
             optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
            // optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            // optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+             optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+
 
 
         }
@@ -271,9 +278,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     FullName = "Nguyễn Văn A",
                     Address = "Hà Nội",
                     Biography = "Có",
-                    BirthDate = DateTime.Parse("10/10/2000"),
                     Gender = "Nam",
-                    Images = "image1.jpg",
                     Nationality = "Ha Noi",
                     Status = EntityStatus.Active,
                 },
@@ -283,9 +288,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     FullName = "Nguyễn Văn D",
                     Address = "Hà Nội",
                     Biography = "Có",
-                    BirthDate = DateTime.Parse("10/10/2000"),
                     Gender = "Nam",
-                    Images = "image1.jpg",
                     Nationality = "Ha Noi",
                     Status = EntityStatus.Active,
                 },
@@ -295,9 +298,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     FullName = "Nguyễn Văn B",
                     Address = "Hà Nội",
                     Biography = "Có",
-                    BirthDate = DateTime.Parse("10/10/2000"),
                     Gender = "Nam",
-                    Images = "image1.jpg",
                     Nationality = "Ha Noi",
                     Status = EntityStatus.Locked,
                 },
@@ -307,9 +308,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     FullName = "Nguyễn Văn C",
                     Address = "Hà Nội",
                     Biography = "Có",
-                    BirthDate = DateTime.Parse("10/10/2000"),
                     Gender = "Nam",
-                    Images = "image1.jpg",
                     Nationality = "Ha Noi",
                     Status = EntityStatus.Locked,
                 }

@@ -34,9 +34,12 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public Guid CountryID { get; set; }
 		[Required(ErrorMessage = "Đạo diễn không được để trống")]
 		public Guid DirectorID { get; set; }
+
         [Required(ErrorMessage = " Diễn viên  không được để trống")]
         public string Actor { get; set; }
         [Required(ErrorMessage = "Vui lòng chọn trạng thái")]
+
+
 
 		public MovieStatus Status { get; set; }
 	}

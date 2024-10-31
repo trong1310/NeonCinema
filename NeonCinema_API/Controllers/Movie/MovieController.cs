@@ -32,9 +32,9 @@ namespace NeonCinema_API.Controllers.Movie
             return Ok(obj);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update([FromBody]UpdateMovieRequest request, CancellationToken cancellationToken)
         {
-            var obj = await _reps.Update(_map.Map<NeonCinema_Domain.Database.Entities.Movies>(request), cancellationToken);
+            var obj = await _reps.Update(request, cancellationToken);
             return Ok(obj);
         }
         [HttpDelete]

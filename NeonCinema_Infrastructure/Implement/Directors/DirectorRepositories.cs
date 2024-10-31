@@ -29,11 +29,9 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 ID = Guid.NewGuid(), // Generate a new ID
                 FullName = request.FullName,
                 Gender = request.Gender,
-                BirthDate = request.BirthDate,
                 Address = request.Address,
                 Nationality = request.Nationality,
                 Biography = request.Biography,
-                Images = request.Images,
                 Status = EntityStatus.Active // Example status
             };
 
@@ -47,11 +45,9 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 ID = DRT.ID,
                 FullName = DRT.FullName,
                 Gender = DRT.Gender,
-                BirthDate = DRT.BirthDate,
                 Address = DRT.Address,
                 Nationality = DRT.Nationality,
                 Biography = DRT.Biography,
-                Images = DRT.Images,
                 Status = DRT.Status
             };
 
@@ -68,11 +64,9 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 ID = drtt.ID,
                 FullName = drtt.FullName,
                 Gender = drtt.Gender,
-                BirthDate = drtt.BirthDate,
                 Address = drtt.Address,
                 Nationality = drtt.Nationality,
                 Biography = drtt.Biography,
-                Images = drtt.Images,
                 Status = drtt.Status
             }).ToList();
 
@@ -93,11 +87,9 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                 ID = DRT.ID,
                 FullName = DRT.FullName,
                 Gender = DRT.Gender,
-                BirthDate = DRT.BirthDate,
                 Address = DRT.Address,
                 Nationality = DRT.Nationality,
                 Biography = DRT.Biography,
-                Images = DRT.Images,
                 Status = DRT.Status
             };
 
@@ -114,15 +106,11 @@ namespace NeonCinema_Infrastructure.Implement.Directors
                     Content = new StringContent("director not found.")
                 };
             }
-
-            // Update the properties
             DRT.FullName = request.FullName;
             DRT.Gender = request.Gender;
-            DRT.BirthDate = request.BirthDate;
             DRT.Address = request.Address;
             DRT.Nationality = request.Nationality;
             DRT.Biography = request.Biography;
-            DRT.Images = request.Images;
             DRT.Status = request.Status;
             await _context.SaveChangesAsync(cancellationToken);
             return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

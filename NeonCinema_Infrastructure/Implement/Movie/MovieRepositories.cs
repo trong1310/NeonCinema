@@ -201,7 +201,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             return movieDTO;
         }
 
-        public async Task<HttpResponseMessage> Update(Movies request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -224,7 +224,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 obj.Trailer = request.Trailer;
                 obj.GenreID = request.GenreID;
                 obj.LenguageID = request.LenguageID;
+
                 obj.Actor = request.Actor;
+
                 obj.StarTime = request.StarTime;
                 obj.ModifiedTime = DateTime.UtcNow;
                 _context.Movies.Update(obj);
