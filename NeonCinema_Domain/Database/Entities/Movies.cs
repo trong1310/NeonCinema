@@ -35,7 +35,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public virtual ICollection<Show_release>? Show_Releases { get; set; }
 
         public virtual Director? Director { get; set; }
-        public virtual ICollection<MoviesActor>? MoviesActor { get; set; }
+
         public virtual ICollection<CategoryMovies>? CategoryMovies { get; set; }
         public virtual Language? Lenguage { get; set; }
         public virtual Genre? Genre { get; set; }

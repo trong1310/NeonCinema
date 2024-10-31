@@ -12,7 +12,6 @@ using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
-using NeonCinema_Application.DataTransferObject.Actors;
 
 namespace NeonCinema_Client.Services.User
 {

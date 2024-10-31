@@ -19,13 +19,12 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
-using NeonCinema_Application.Interface.Actors;
+
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
 using NeonCinema_Client.Data.Services.Promotion;
-using NeonCinema_Client.Data.IServices.Actor;
-using NeonCinema_Client.Data.Services.Actor;
+
 using NeonCinema_Client.Data.IServices.Director;
 using NeonCinema_Client.Data.Services.Director;
 using NeonCinema_Client.Data.IServices.MovieType;
@@ -62,7 +61,7 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-builder.Services.AddScoped<IActorService, ActorService>();
+
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
