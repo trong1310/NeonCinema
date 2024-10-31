@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.Actors;
+
 using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;

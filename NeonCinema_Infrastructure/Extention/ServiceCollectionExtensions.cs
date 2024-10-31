@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Application.Interface.Actors;
+
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Application.Interface.Genre;

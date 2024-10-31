@@ -54,6 +54,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                     LenguageID = request.LenguageID,
                     CountryID = request.CountryID,
                     DirectorID = request.DirectorID,
+                    Actor = request.Actor,
                     CreatedTime = DateTime.Now,
 
                 };
@@ -148,6 +149,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
+                                Actor = b.Actor
 
                             }).ToList();
 
@@ -193,6 +195,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 CountryName = movie.Countrys.CountryName,
                 DirectorName = movie.Director.FullName,
                 GenreName = movie.Genre.GenreName,
+                Actor = movie.Actor,
             };
 
             return movieDTO;
@@ -221,6 +224,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 obj.Trailer = request.Trailer;
                 obj.GenreID = request.GenreID;
                 obj.LenguageID = request.LenguageID;
+
+                obj.Actor = request.Actor;
+
                 obj.StarTime = request.StarTime;
                 obj.ModifiedTime = DateTime.UtcNow;
                 _context.Movies.Update(obj);
