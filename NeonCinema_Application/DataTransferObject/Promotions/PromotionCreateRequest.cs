@@ -9,7 +9,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 {
     public class PromotionCreateRequest
     {
-        [Required(ErrorMessage = "Không được để trống trường này")]
+		public Guid ID { get; set; }  // Khóa chính
         public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; } = "Không có"; // Mô tả khuyến mãi
 

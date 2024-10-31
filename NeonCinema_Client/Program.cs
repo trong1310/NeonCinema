@@ -19,13 +19,12 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
-using NeonCinema_Application.Interface.Actors;
+
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
 using NeonCinema_Client.Data.Services.Promotion;
-using NeonCinema_Client.Data.IServices.Actor;
-using NeonCinema_Client.Data.Services.Actor;
+
 using NeonCinema_Client.Data.IServices.Director;
 using NeonCinema_Client.Data.Services.Director;
 using NeonCinema_Client.Data.IServices.MovieType;
@@ -45,6 +44,7 @@ using NeonCinema_Client.Data.IServices.Genre;
 using NeonCinema_Client.Data.Services.Genre;
 using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
+using Microsoft.AspNetCore.Components.Authorization;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -62,7 +62,7 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-builder.Services.AddScoped<IActorService, ActorService>();
+
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
@@ -112,6 +112,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
+
 
 
 //builder.Services.AddScoped<ISeatService, SeatService>();

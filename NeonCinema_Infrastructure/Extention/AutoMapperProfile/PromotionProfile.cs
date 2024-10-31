@@ -16,6 +16,8 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
             CreateMap<PromotionDTO, Promotion>().ReverseMap();
             CreateMap<PromotionCreateRequest, Promotion>();
             CreateMap<PromotionDeleteRequest, Promotion>();
+
+            CreateMap<PromotionUserDTO, PromotionUsers>().ReverseMap();
         }
     }
 }

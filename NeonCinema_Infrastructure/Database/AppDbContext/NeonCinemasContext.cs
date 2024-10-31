@@ -69,10 +69,16 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+           // optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
             // optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
              optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+
 
 
         }
@@ -487,15 +493,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 };
 
             modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
-            var actordata = new List<Actor>()
-            {
-                new Actor
-                {
-                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-                    Name = "Dang xuan phong",
-                    Status = EntityStatus.Active,
-                }
-            };
+            
             var movieData = new List<Movies>()
 {
     new Movies
@@ -510,6 +508,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         AgeAllowed = 18,
         Status = MovieStatus.Active,
          GenreID = genreData[0].ID,
+         Actor = "Phong,hào,trọng",
         LenguageID = languageData[0].ID,
         CountryID = countryData[0].ID,
         DirectorID = directorData[0].ID,
@@ -528,6 +527,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         Status = MovieStatus.Active,
         GenreID = genreData[1].ID,
         LenguageID = languageData[1].ID,
+            Actor = "Phong,hào,trọng",
         CountryID = countryData[1].ID,
         DirectorID = directorData[1].ID,
         CreatedTime = DateTime.Now,

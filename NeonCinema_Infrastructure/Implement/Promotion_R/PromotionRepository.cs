@@ -25,7 +25,6 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
         {
             try
             {
-                entity.ID = Guid.NewGuid();
                 entity.Status = PromotionStatus.NotYetApplied;
 
                 _context.Promotions.Add(entity);

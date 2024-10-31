@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Actors;
+
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Domain.Database.Entities;
