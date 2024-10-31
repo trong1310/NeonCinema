@@ -15,15 +15,7 @@
 else
 {
     <div class="CL0">
-        <div class="CL1">
-            <div class="mb-3">
-                <label class="form-label">Image:</label>
-                <div class="mb-2">
-                    <img src="@(!string.IsNullOrEmpty(temporaryImageUrl) ? temporaryImageUrl : "")" alt="@actor.FullName" class="img-thumbnail" width="150" height="150" />
-                </div>
-                <InputFile OnChange="HandleFileSelected" class="form-control" />
-            </div>
-        </div>
+       
         <div class="CL2">
             <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
                 <div class="CL3">
@@ -44,10 +36,7 @@ else
 
 
                 <div class="CL4">
-                    <div class="mb-3">
-                        <label class="form-label">Birth Date:</label>
-                        <InputDate @bind-Value="actor.BirthDate" class="form-control" />
-                    </div>
+                   
                     <div class="mb-3">
                         <label class="form-label">Nationality:</label>
                         <InputText @bind-Value="actor.Nationality" class="form-control" />
@@ -69,10 +58,7 @@ else
                         <ValidationMessage For="@(() => actor.Status)" />
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Address:</label>
-                    <InputText @bind-Value="actor.Address" class="form-control" />
-                </div>
+                
 
 
 
@@ -86,42 +72,15 @@ else
 @code {
     [Parameter] public Guid actorId { get; set; }
     private DirectorDTO actor = new DirectorDTO();
-    private IBrowserFile selectedFile;
-    private string temporaryImageUrl; // Biến lưu URL tạm thời
+   
 
     protected override async Task OnInitializedAsync()
     {
         actor = await SV.GetByIdDirector(actorId);
-        temporaryImageUrl = actor.Images; // Khởi tạo với đường dẫn ảnh ban đầu
+        
     }
 
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-
-        if (selectedFile != null)
-        {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedFile.Name)}";
-            var filePath = Path.Combine("wwwroot/images/Director", fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-            }
-
-            actor.Images = $"/images/Director/{fileName}";
-
-            // Tạo URL tạm thời để hiển thị ảnh
-            using (var stream = new MemoryStream())
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-                temporaryImageUrl = $"data:image;base64,{Convert.ToBase64String(stream.ToArray())}";
-            }
-
-            // Cập nhật lại đường dẫn để hiển thị hình ảnh mới
-            StateHasChanged(); // Để chắc chắn rằng UI được cập nhật
-        }
-    }
+    
 
     private async Task HandleValidSubmit()
     {
@@ -130,11 +89,11 @@ else
                 ID = actor.ID,
                 FullName = actor.FullName,
                 Gender = actor.Gender,
-                BirthDate = actor.BirthDate,
-                Address = actor.Address,
+                
+              
                 Nationality = actor.Nationality,
                 Biography = actor.Biography,
-                Images = actor.Images,
+               
                 Status = actor.Status
             };
 

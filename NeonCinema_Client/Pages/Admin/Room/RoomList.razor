@@ -99,7 +99,7 @@
                             <div class="form-group">
                                 <label for="seattypeid">Chọn  ghế:</label>
                                 <InputSelect id="seattypeid" class="form-control" @bind-Value="newRoom.SeatID">
-                                    <option value="" disabled selected>Chọn loại ghế</option>
+                                    <option value="" disabled selected>Chọn ghế</option>
                                     @if (seatDTOs != null && seatDTOs.Count > 0)
                                     {
                                         @foreach (var item in seatDTOs)
@@ -108,6 +108,7 @@
                                         }
                                     }
                                 </InputSelect>
+
                                 <ValidationMessage For="@(() => newRoom.SeatID)" />
                             </div>
                         </div>
@@ -184,10 +185,14 @@
     private RoomDTO newRoom = new RoomDTO();
     private RoomDTO selectedRoom;
     public List<SeatDTO> seatDTOs = new List<SeatDTO>();
+    private RoomCreateRequest newR = new RoomCreateRequest();
     private bool isCreateRoomModalVisible = false;
     private bool isEditRoomModalVisible = false;
     private string searchTerm = string.Empty;
     private Dictionary<Guid, string> seatNames = new Dictionary<Guid, string>();
+
+
+
     private async Task LoadSeatNamesAsync()
     {
         foreach (var room in rooms)
@@ -195,7 +200,7 @@
             if (!seatNames.ContainsKey(room.SeatID))
             {
                 var seatName = await SV.GetSeatById(room.SeatID);
-                seatNames[room.SeatID] = seatName?.SeatTypeName ?? "Unknown Seat";  // Cache the seat name
+                seatNames[room.SeatID] = seatName?.SeatTypeName ?? "Unknown Seat";
             }
         }
     }
@@ -207,23 +212,25 @@
     protected override async Task OnInitializedAsync()
     {
         rooms = await RoomService.GetAllRooms(CancellationToken.None);
-        //seatDTOs = await SV.GetAllSeats(CancellationToken.None);
+        seatDTOs = await RoomService.GetSeats();
+
+        // Debugging to check if seatDTOs contains expected data
+        if (seatDTOs == null || seatDTOs.Count == 0)
+        {
+            Console.WriteLine("No seat types found.");
+        }
         await LoadSeatNamesAsync();
     }
     
 
-
-
-
-
-
-
-
-
-
-    private void ShowCreateRoomModal()
+    private async void  ShowCreateRoomModal()
     {
         isCreateRoomModalVisible = true;
+        // Optionally, fetch seat types again or confirm they're already loaded
+        if (seatDTOs == null || seatDTOs.Count == 0)
+        {
+            seatDTOs = await RoomService.GetSeats();
+        }
     }
 
     private void HideCreateRoomModal()
@@ -259,6 +266,8 @@
 
             isCreateRoomModalVisible = false;
             rooms = await RoomService.GetAllRooms(CancellationToken.None);
+            // Force a state update to ensure UI re-renders
+            StateHasChanged();
         }
     }
 

@@ -8,55 +8,65 @@
 @inject NavigationManager Navigation
 @inject ISeatService SeatService
 @inject ISeatTypeService SeatTypeService
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMz43W8dC8wY9s6h0xT27i5u60hz4HhI1c8/1" crossorigin="anonymous">
+<h3 style="text-align: center; margin-top: 30px">Cập Nhật Thông Tin Ghế</h3>
 
-<h3>Cập Nhật Thông Tin Ghế</h3>
+<div class="updateSeat">
+    <EditForm Model="seatToUpdate" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<EditForm Model="seatToUpdate" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <div class="form-group">
+            <label for="seatNumber">Số Ghế:</label>
+            <InputText id="seatNumber" class="form-control" @bind-Value="seatToUpdate.SeatNumber" />
+        </div>
 
-    <div class="form-group">
-        <label for="seatNumber">Số Ghế:</label>
-        <InputText id="seatNumber" class="form-control" @bind-Value="seatToUpdate.SeatNumber" />
-    </div>
+        <div class="form-group">
+            <label for="column">Cột:</label>
+            <InputText id="column" class="form-control" @bind-Value="seatToUpdate.Column" />
+        </div>
 
-    <div class="form-group">
-        <label for="column">Cột:</label>
-        <InputText id="column" class="form-control" @bind-Value="seatToUpdate.Column" />
-    </div>
+        <div class="form-group">
+            <label for="row">Hàng:</label>
+            <InputText id="row" class="form-control" @bind-Value="seatToUpdate.Row" />
+        </div>
 
-    <div class="form-group">
-        <label for="row">Hàng:</label>
-        <InputText id="row" class="form-control" @bind-Value="seatToUpdate.Row" />
-    </div>
-
-    <div class="form-group">
-        <label for="seattypeid">Chọn loại ghế:</label>
-        <InputSelect id="seattypeid" class="form-control" @bind-Value="seatToUpdate.SeatTypeID">
-            <option value="" disabled selected>Chọn loại ghế</option>
-            @if (seatTypes != null && seatTypes.Count > 0)
-            {
-                @foreach (var item in seatTypes)
+        <div class="form-group">
+            <label for="seattypeid">Chọn loại ghế:</label>
+            <InputSelect id="seattypeid" class="form-control" @bind-Value="seatToUpdate.SeatTypeID">
+                <option value="" disabled selected>Chọn loại ghế</option>
+                @if (seatTypes != null && seatTypes.Count > 0)
                 {
-                    <option value="@item.ID">@item.SeatTypeName</option>
+                    @foreach (var item in seatTypes)
+                    {
+                        <option value="@item.ID">@item.SeatTypeName</option>
+                    }
                 }
-            }
-        </InputSelect>
-        <ValidationMessage For="@(() => seatToUpdate.SeatTypeID)" />
-    </div>
+            </InputSelect>
+            <ValidationMessage For="@(() => seatToUpdate.SeatTypeID)" />
+        </div>
 
-    <div class="form-group">
-        <label for="status">Trạng Thái:</label>
-        <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
-            <option value="@(EntityStatus.Active)">Ghế còn trống</option>
-            <option value="@(EntityStatus.Inactive)">Đã đặt</option>
-        </InputSelect>
-    </div>
+        <div class="form-group">
+            <label for="status">Trạng Thái:</label>
+            <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
+                <option value="@(EntityStatus.Active)">Ghế còn trống</option>
+                <option value="@(EntityStatus.Inactive)">Đã đặt</option>
+            </InputSelect>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Cập Nhật Ghế</button>
-    <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
-</EditForm>
-
+        <div style="margin-top: 10px">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Cập Nhật</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack"><i class="fas fa-times"></i>Quay lại</button>
+        </div>
+    </EditForm>
+</div>
+<style>
+    .updateSeat {
+        width: 50%;
+        margin: 0 auto;
+    }
+</style>
 @code {
     [Parameter] public Guid seatId { get; set; }
     private UpdateSeatDTO seatToUpdate = new UpdateSeatDTO();

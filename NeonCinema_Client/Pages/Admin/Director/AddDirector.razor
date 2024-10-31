@@ -7,132 +7,88 @@
 @layout LayoutAdmin
 @inject HttpClient _http
 <link rel="stylesheet" href="/css/Director/Directorr.css">
-<h3 class="text-center mb-4">Add New Director</h3>
+<h3 class="text-center mb-4">THÊM ĐẠO DIỄN</h3>
 
-<div class="CL0">
-    <div class="CL1">
-        <div class="mb-3">
-            <label class="form-label">Image:</label>
-            <div class="mb-2">
-                <img src="@(!string.IsNullOrEmpty(temporaryImageUrl) ? temporaryImageUrl : "")" alt="@actor.FullName" class="img-thumbnail" width="150" height="150" />
+
+<div class="drt">
+    <EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit" class="container form-container">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Full Name:</label>
+                <InputText @bind-Value="newdirector.FullName" class="form-control" />
             </div>
-            <InputFile OnChange="HandleFileSelected" class="form-control" />
+
+            <div class="col-md-6">
+                <label class="form-label">Gender:</label>
+                <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
+                    <option value="">-- Select Gender --</option>
+                    <option value="@(EntityStatus.Men)">Nam</option>
+                    <option value="@(EntityStatus.Girl)">Nữ</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => newdirector.Gender)" />
+            </div>
         </div>
-    </div>
-    <div class="CL2">
-        <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
-            <div class="CL3">
-                <div class="mb-3">
-                    <label class="form-label">Full Name:</label>
-                    <InputText @bind-Value="actor.FullName" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Gender:</label>
-                    <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
-                        <option value="">-- Chọn giới tính --</option>
-                        <option value="@(EntityStatus.Men)">Nam</option>
-                        <option value="@(EntityStatus.Girl)">Nữ</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => actor.Gender)" />
-                </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Nationality:</label>
+                <InputText @bind-Value="newdirector.Nationality" class="form-control" />
             </div>
 
-
-            <div class="CL4">
-                <div class="mb-3">
-                    <label class="form-label">Birth Date:</label>
-                    <InputDate @bind-Value="actor.BirthDate" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Nationality:</label>
-                    <InputText @bind-Value="actor.Nationality" class="form-control" />
-                </div>
+            <div class="col-md-6">
+                <label class="form-label">Status:</label>
+                <InputSelect id="status" class="form-select" @bind-Value="newdirector.Status">
+                    <option value="@(EntityStatus.Active)">Active</option>
+                    <option value="@(EntityStatus.Locked)">Inactive</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => actor.Status)" />
             </div>
+        </div>
 
-
-            <div class="CL5">
-                <div class="mb-3">
-                    <label class="form-label">Biography:</label>
-                    <InputTextArea @bind-Value="actor.Biography" class="form-control" rows="3" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Status:</label>
-                    <InputSelect id="status" class="form-select" @bind-Value="actor.Status">
-                        <option value="@(EntityStatus.Active)">Hoạt động</option>
-                        <option value="@(EntityStatus.Locked)">Không hoạt động</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => actor.Status)" />
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label class="form-label">Biography:</label>
+                <InputTextArea @bind-Value="newdirector.Biography" class="form-control" rows="3" />
             </div>
-            <div class="mb-3">
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
                 <label class="form-label">Address:</label>
-                <InputText @bind-Value="actor.Address" class="form-control" />
+                <InputText @bind-Value="newdirector.Address" class="form-control" />
             </div>
+        </div>
 
-
-
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
-        </EditForm>
-    </div>
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <button type="button" class="btn btn-secondary" @onclick="NavigateBack">Cancel</button>
+        </div>
+    </EditForm>
 </div>
+    
+<style>
+    .drt
+    {
+        width: 70%;
+        margin-left: 200px;
+    }
+</style>
 
 @code {
     private DirectorDTO actor = new DirectorDTO();
-    private IBrowserFile selectedFile;
-    private string temporaryImageUrl;
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-
-        if (selectedFile != null)
-        {
-            
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedFile.Name)}";
-            var filePath = Path.Combine("wwwroot/images/Director", fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-            }
-
-            actor.Images = $"/images/Director/{fileName}";
-
-            using (var stream = new MemoryStream())
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-                temporaryImageUrl = $"data:image/png;base64,{Convert.ToBase64String(stream.ToArray())}";
-            }
-
-            StateHasChanged();
-        }
-    }
-
+    private CreateDirectorRequest newdirector = new CreateDirectorRequest();
     private async Task HandleValidSubmit()
     {
         if (string.IsNullOrEmpty(actor.Gender))
         {
-            // Gửi thông báo lỗi nếu Gender chưa được chọn
             throw new InvalidOperationException("Director is required.");
         }
 
-        var createActorRequest = new CreateDirectorRequest
-            {
-                FullName = actor.FullName,
-                Gender = actor.Gender, // Đảm bảo rằng đây không phải là NULL
-                BirthDate = actor.BirthDate,
-                Address = actor.Address,
-                Nationality = actor.Nationality,
-                Biography = actor.Biography,
-                Images = actor.Images,
-                Status = actor.Status
-            };
+        
 
-        await SV.CreateDirector(createActorRequest);
+        await SV.CreateDirector(newdirector);
         NavigationManager.NavigateTo("/listDirector");
     }
-
 
     private void NavigateBack()
     {

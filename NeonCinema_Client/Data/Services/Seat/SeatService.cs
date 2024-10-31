@@ -49,12 +49,13 @@ namespace NeonCinema_Client.Data.Services.Seat
         {
             try
             {
-                var results = await _httpClient.GetFromJsonAsync<PaginationResponse<SeatDTO>>($"https://localhost:7211/api/Seat/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
-                return results;
+                var response = await _httpClient.GetFromJsonAsync<PaginationResponse<SeatDTO>>(
+                    $"https://localhost:7211/api/Seat/GetAll?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
+                return response ?? new PaginationResponse<SeatDTO>();
             }
-            catch (Exception ex)
+            catch (HttpRequestException e)
             {
-                throw new Exception("co loi xay ra : " + ex.Message);
+                throw new Exception("Error fetching seats: " + e.Message, e);
             }
         }
 

@@ -26,20 +26,20 @@ namespace NeonCinema_Infrastructure.Implement.Directors
         {
             var DRT = new Director
             {
-                ID = Guid.NewGuid(), // Generate a new ID
+                ID = Guid.NewGuid(), 
                 FullName = request.FullName,
                 Gender = request.Gender,
                 Address = request.Address,
                 Nationality = request.Nationality,
                 Biography = request.Biography,
-                Status = EntityStatus.Active // Example status
+                Status = EntityStatus.Active 
             };
 
-            // Add the actor to the context and save changes
+            
             await _context.Directors.AddAsync(DRT, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            // Manually map the Actor entity to ActorDTO
+            
             var directorDTO = new DirectorDTO
             {
                 ID = DRT.ID,

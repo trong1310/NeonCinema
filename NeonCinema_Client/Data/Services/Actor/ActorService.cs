@@ -12,22 +12,22 @@ namespace NeonCinema_Client.Data.Services.Actor
         }
         public async Task CreateActor(CreateActorRequest request)
         {
-            await _httpClient.PostAsJsonAsync("api/Actor/CreateActor", request);
+            await _httpClient.PostAsJsonAsync("api/Actor/Create", request);
         } 
 
         public async Task<List<ActorDTO>> GetAllActor()
         {
-            return await _httpClient.GetFromJsonAsync<List<ActorDTO>>("api/Actor/Get-All");
+            return await _httpClient.GetFromJsonAsync<List<ActorDTO>>("api/Actor/GetAll");
         }
 
         public async Task<ActorDTO> GetByIdActor(Guid id)
         {
-            return await _httpClient.GetFromJsonAsync<ActorDTO>($"api/Actor/GetById/{id}");
+            return await _httpClient.GetFromJsonAsync<ActorDTO>($"api/Actor/{id}");
         }
 
         public async Task UpdateActor(Guid id, UpdateActorRequest request)
         {
-            await _httpClient.PutAsJsonAsync($"api/Actor/UpdateActor/{id}", request);
+            await _httpClient.PutAsJsonAsync($"api/Actor/Update/{id}", request);
         }
     }
 }

@@ -43,10 +43,10 @@ else
     <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
         <thead>
             <tr>
-                <th>Ảnh cá nhân</th>
+                
                 <th>Tên</th>
                 <th>Gender</th>
-                <th>Ngày sinh</th>
+               
                 <th>Địa chỉ</th>
                 <th>Quốc tịch</th>
                 <th>Tiểu sử</th>
@@ -58,14 +58,10 @@ else
             @foreach (var actor in filteredDirectors)
             {
                 <tr>
-                    <td class="image-cell">
-                        <img src="@actor.Images"
-                             alt="@actor.FullName"
-                             style="border-radius: 100%; width: 80px; height: 80px; object-fit: cover;" />
-                    </td>
+                    
                     <td class="table-cell">@actor.FullName</td>
                     <td class="table-cell">@actor.Gender</td>
-                    <td class="table-cell">@actor.BirthDate.ToShortDateString()</td>
+                    
                     <td class="table-cell">@actor.Address</td>
                     <td class="table-cell">@actor.Nationality</td>
                     <td class="table-cell">@actor.Biography</td>
@@ -78,7 +74,7 @@ else
                                    checked="@(actor.Status == EntityStatus.Active)"
                                    @onchange="(e) => ToggleRoomStatus(actor, e)" />
                             <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
-                                @(actor.Status == EntityStatus.Active ? "Nam" : "Nữ")
+                                @(actor.Status == EntityStatus.Active ? "" : "")
                             </label>
                         </div>
                     </td>
@@ -121,11 +117,11 @@ else
                 ID = drt.ID,
                 FullName = drt.FullName,
                 Gender = drt.Gender,
-                BirthDate = drt.BirthDate,
+                
                 Address = drt.Address,
                 Nationality = drt.Nationality,
                 Biography = drt.Biography,
-                Images = drt.Images,
+                
                 Status = drt.Status
             };
 

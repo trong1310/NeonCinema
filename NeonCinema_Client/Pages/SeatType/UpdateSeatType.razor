@@ -7,7 +7,7 @@
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
 
-<h3 class="text-center mb-4">Update SeatType</h3>
+<h3 style="margin-top: 30px" class="text-center mb-4">Update SeatType</h3>
 
 @if (seatType == null)
 {
@@ -15,24 +15,35 @@
 }
 else
 {
-    <EditForm Model="seatType" OnValidSubmit="HandleValidSubmit" class="form-container">
-        <div class="mb-3">
-            <label class="form-label">Seat Type Name:</label>
-            <InputText @bind-Value="seatType.SeatTypeName" class="form-control" />
-            <ValidationMessage For="@(() => seatType.SeatTypeName)" />
-        </div>
+    <div class="STT1">
+        <EditForm Model="seatType" OnValidSubmit="HandleValidSubmit" class="form-container">
+            <div class="mb-3">
+                <label class="form-label">Seat Type Name:</label>
+                <InputText @bind-Value="seatType.SeatTypeName" class="form-control" />
+                <ValidationMessage For="@(() => seatType.SeatTypeName)" />
+            </div>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="text-danger">@errorMessage</div>
-        }
-        
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="text-danger">@errorMessage</div>
+            }
 
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
-    </EditForm>
+
+            <button type="submit" class="btn btn-success">
+                <i  class="fas fa-save"></i>   Lưu
+            </button>
+            <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">
+                <i  class="fas fa-times"></i>   Hủy
+            </button>
+        </EditForm>
+    </div>
 }
-
+<style>
+    .STT1 {
+        width: 50%;
+        margin: 0 auto;
+    }
+</style>
 @code {
     
 

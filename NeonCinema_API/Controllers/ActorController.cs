@@ -19,82 +19,56 @@ namespace NeonCinema_API.Controllers
         {
             _reps = rep;
         }
-
-        [HttpGet("Get-All")]
-        public async Task<IActionResult> GetAll([FromQuery] ViewActorRequest request, CancellationToken cancellationToken)
+        [HttpGet("GetAll")]
+        
+        public async Task<ActionResult<List<ActorDTO>>> GetAllActors(CancellationToken cancellationToken)
         {
-            try
+            var actors = await _reps.GetAllActor(cancellationToken);
+            return Ok(actors);
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ActorDTO>> GetActorById(Guid id, CancellationToken cancellationToken)
+        {
+            var actor = await _reps.GetActorById(id, cancellationToken);
+            if (actor == null)
             {
-                var actors = await _reps.GetAllActor(cancellationToken);
-                return Ok(actors);
+                return NotFound("Actor not found.");
             }
-            catch (Exception ex)
-            {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            return Ok(actor);
         }
 
-        [HttpPost("CreateActor")]
-        public async Task<IActionResult> CreateActor([FromBody] CreateActorRequest request, CancellationToken cancellationToken)
+
+
+        [HttpPost("Create")]
+        
+        public async Task<ActionResult<ActorDTO>> CreateActor([FromBody] CreateActorRequest request, CancellationToken cancellationToken)
         {
-            // Validate the request
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                // Directly pass the request to the repository without mapping
-                var createdActorResponse = await _reps.CreateActor(request, cancellationToken);
-
-                return CreatedAtAction(nameof(GetActorById), new { id = createdActorResponse.ID }, createdActorResponse);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            var createdActor = await _reps.CreateActor(request, cancellationToken);
+            return CreatedAtAction(nameof(GetActorById), new { id = createdActor.ID }, createdActor);
         }
 
-        [HttpPut("UpdateActor/{id}")]
-        public async Task<IActionResult> UpdateActor(Guid id, [FromBody] UpdateActorRequest request, CancellationToken cancellationToken)
-        {
-            if (id != request.ID || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            try
+        [HttpPut("Update/{id}")]
+
+        public async Task<ActionResult> UpdateActor(Guid id, [FromBody] UpdateActorRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _reps.UpdateActor(id, request, cancellationToken);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                var updatedActorResponse = await _reps.UpdateActor(id, request, cancellationToken);
-                return Ok(updatedActorResponse);
+                return NotFound("Actor not found.");
             }
-            catch (Exception ex)
-            {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            return Ok("Actor updated successfully.");
         }
-
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetActorById(Guid id, CancellationToken cancellationToken)
+        [HttpDelete("Delete")]
+        
+        public async Task<ActionResult> DeleteActor([FromBody] DeleteActorRequest request, CancellationToken cancellationToken)
         {
-            try
+            var response = await _reps.DeleteActor(request, cancellationToken);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                var actor = await _reps.GetActorById(id, cancellationToken);
-                if (actor == null)
-                {
-                    return NotFound($"Actor with ID {id} not found.");
-                }
-                return Ok(actor);
+                return NotFound("Actor not found.");
             }
-            catch (Exception ex)
-            {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            return Ok("Actor deleted successfully.");
         }
     }
 }
