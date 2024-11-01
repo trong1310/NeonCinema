@@ -94,14 +94,16 @@ namespace NeonCinema_Client.Services.MoivesService
             return respones;
         }
 
-		public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
+		public async Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
 		{
-			throw new NotImplementedException();
+            var respones = await _httpClient.GetFromJsonAsync<PaginationResponse<ActorDTO>>("https://localhost:7211/api/Actor/getactor");
+            return respones;
 		}
 
-		public Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request )
+		public async Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request )
 		{
-			throw new NotImplementedException();
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActormovies",request);
+			return respones;
 		}
 	}
 

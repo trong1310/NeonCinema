@@ -15,7 +15,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         public ActorProfile()
         {
             CreateMap<Actor,ActorDTO>().ReverseMap();
-         //   CreateMap<Actor,ActorDTO>().ReverseMap();
+            CreateMap<Actor,CreateActorRequest>().ReverseMap();
         }
     }
 }
