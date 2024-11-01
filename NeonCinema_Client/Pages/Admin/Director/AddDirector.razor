@@ -20,7 +20,7 @@
 
             <div class="col-md-6">
                 <label class="form-label">Gender:</label>
-                <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
+                <InputSelect id="gender" class="form-select" @bind-Value="newdirector.Gender" required>
                     <option value="">-- Select Gender --</option>
                     <option value="@(EntityStatus.Men)">Nam</option>
                     <option value="@(EntityStatus.Girl)">Nữ</option>
@@ -41,7 +41,7 @@
                     <option value="@(EntityStatus.Active)">Active</option>
                     <option value="@(EntityStatus.Locked)">Inactive</option>
                 </InputSelect>
-                <ValidationMessage For="@(() => actor.Status)" />
+                <ValidationMessage For="@(() => newdirector.Status)" />
             </div>
         </div>
 
@@ -75,14 +75,11 @@
 </style>
 
 @code {
-    private DirectorDTO actor = new DirectorDTO();
+    
     private CreateDirectorRequest newdirector = new CreateDirectorRequest();
     private async Task HandleValidSubmit()
     {
-        if (string.IsNullOrEmpty(actor.Gender))
-        {
-            throw new InvalidOperationException("Director is required.");
-        }
+       
 
         
 
