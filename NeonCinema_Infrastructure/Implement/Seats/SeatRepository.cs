@@ -40,7 +40,6 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                     Column = request.Column,
                     Row = request.Row,
                     Status = request.Status,
-                    //RoomID = request.RoomID,
                     SeatTypeID = request.SeatTypeID,
 
 
@@ -114,7 +113,8 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                                 SeatNumber = b.SeatNumber,
                                 Column = b.Column,
                                 Status = b.Status,
-                              //  RoomName = b.Room.Name,
+                                Row = b.Row,
+                                SeatTypeID = b.SeatTypeID,
                                 SeatTypeName = b.SeatTypes.SeatTypeName
                             }).ToList();
             return new PaginationResponse<SeatDTO>()
@@ -139,7 +139,8 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 SeatNumber = seat.SeatNumber,
                 Column = seat.Column,
                 Status = seat.Status,
-               // RoomName = seat.Room.Name,
+                Row = seat.Row,
+                SeatTypeID = seat.SeatTypeID,
                 SeatTypeName = seat.SeatTypes.SeatTypeName
             };
             return seatdto;
@@ -150,24 +151,27 @@ namespace NeonCinema_Infrastructure.Implement.Seats
             try
             {
                 var obj = await _context.Seat.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if (obj.Deleted == true && obj == null)
-                {
 
+                if (obj == null)
+                {
                     return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
                     {
-                        Content = new StringContent("Không tìm thấy phim")
+                        Content = new StringContent("Không tìm thấy ghế hoặc ghế đã bị xóa")
                     };
                 }
-                request.SeatNumber = obj.SeatNumber;
-                request.Column = obj.Column;
-                request.Status = obj.Status;
-                request.Row = obj.Row;
-                request.Status = obj.Status;
-               // request.RoomID = obj.RoomID;
-                request.SeatTypeID = obj.SeatTypeID;
-                
+
+                // Gán các giá trị mới từ request vào obj
+                obj.ID = request.ID;    
+                obj.SeatNumber = request.SeatNumber;
+                obj.Column = request.Column;
+                obj.Row = request.Row;
+                obj.Status = request.Status;
+                obj.SeatTypeID = request.SeatTypeID;
+
+                // Thực hiện cập nhật vào database
                 _context.Seat.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
+
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
                 {
                     Content = new StringContent("Sửa thành công")
@@ -177,7 +181,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
                 {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
+                    Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
                 };
             }
         }

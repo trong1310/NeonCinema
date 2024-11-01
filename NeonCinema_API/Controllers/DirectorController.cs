@@ -29,12 +29,12 @@ namespace NeonCinema_API.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
+               
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
-        // 2. Get Director by ID
+        
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetDirectorById(Guid id, CancellationToken cancellationToken)
         {
@@ -49,16 +49,16 @@ namespace NeonCinema_API.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
-        // 3. Create Director
+        
         [HttpPost("CreateDirector")]
         public async Task<IActionResult> CreateDirector([FromBody] CreateDirectorRequest request, CancellationToken cancellationToken)
         {
-            // Validate the request
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -66,36 +66,38 @@ namespace NeonCinema_API.Controllers
 
             try
             {
-                // Directly pass the request to the repository without mapping
                 var createDRTResponse = await _reps.CreateDirector(request, cancellationToken);
 
-                return CreatedAtAction(nameof(GetDirectorById), new { id = createDRTResponse.ID }, createDRTResponse);
+                return Ok(createDRTResponse);
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
-        // 4. Update Director
+        
         [HttpPut("UpdateDirector/{id}")]
         public async Task<IActionResult> UpdateDirector(Guid id, [FromBody] UpdateDirectorRequest request, CancellationToken cancellationToken)
         {
-            if (id != request.ID || !ModelState.IsValid)
+            if (id != request.ID)
             {
-                return BadRequest(ModelState);
+                return BadRequest("The ID in the request does not match the ID in the route.");
             }
 
             try
             {
-                var updatedDRTrResponse = await _reps.UpdateDirector(id, request, cancellationToken);
-                return Ok(updatedDRTrResponse);
+                var response = await _reps.UpdateDirector(id, request, cancellationToken);
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return NotFound(response.Content.ReadAsStringAsync().Result);
+                }
+                return Ok(response.Content.ReadAsStringAsync().Result);
             }
             catch (Exception ex)
             {
-                // Log the exception here for further analysis
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error: {ex.Message}");
             }
         }
 

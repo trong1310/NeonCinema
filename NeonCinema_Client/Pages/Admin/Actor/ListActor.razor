@@ -1,0 +1,121 @@
+﻿@* @page "/listactor"
+@using NeonCinema_Application.DataTransferObject.Actors
+@using NeonCinema_Client.Data.IServices.Actor
+@using NeonCinema_Domain.Enum
+@inject NavigationManager Navi
+@inject IActorService ActorService
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Actor/listactor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<h2 class="text-center mt-4">DANH SÁCH DIỄN VIÊN</h2>
+
+
+        <div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control" />
+        </div>
+        <div class="col-md-4 text-end">
+            <a class="btn btn-success" href="/addactor">
+                <i class="fa-solid fa-plus" style="color: #ffffff;"></i> Thêm diễn viên
+            </a>
+        </div>
+    </div>
+
+    @if (filteredActors == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (filteredActors.Count == 0)
+    {
+        <p>No actors found.</p>
+    }
+    else
+    {
+        <table class="table table-hover shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Tên</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var actor in filteredActors)
+                {
+                    <tr>
+                        <td>@actor.FullName</td>
+                        <td class="text-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="flexSwitchCheckDefault_@(actor.Status)"
+                                       checked="@(actor.Status == EntityStatus.Active)"
+                                       @onchange="(e) => ToggleRoomStatus(actor, e)" />
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" @onclick="() => EditActor(actor.ID)">
+                                <i class="fa-regular fa-pen-to-square" style="color: black;"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+        </div>
+  
+
+@code {
+    private List<ActorDTO> actors;
+    private List<ActorDTO> filteredActors;
+    private string searchText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        actors = await ActorService.GetAllActor();
+        filteredActors = actors;
+    }
+
+    private void EditActor(Guid actorId)
+    {
+        Navi.NavigateTo($"/updateactor/{actorId}");
+    }
+
+    private async void ToggleRoomStatus(ActorDTO actor, ChangeEventArgs e)
+    {
+        actor.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+
+        var ActorUpdateRequest = new UpdateActorRequest
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+                Status = actor.Status
+            };
+
+        await ActorService.UpdateActor(ActorUpdateRequest.ID, ActorUpdateRequest);
+        actors = await ActorService.GetAllActor();
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value.ToString();
+        FilterActors();
+    }
+
+    private void FilterActors()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredActors = actors;
+        }
+        else
+        {
+            filteredActors = actors.Where(a => a.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+    }
+}
+ *@

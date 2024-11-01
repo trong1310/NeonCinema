@@ -1,0 +1,19 @@
+﻿.container {
+    padding: 20px;
+    width: 70%;
+
+}
+
+.table {
+    margin-top: 20px;
+    border-radius: 0.5rem;
+    overflow: hidden; /* To round the table corners */
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+.btn {
+    margin-left: 5px; /* Space between buttons */
+}

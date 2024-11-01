@@ -5,6 +5,7 @@ namespace NeonCinema_Client.Data.IServices.MovieType
 {
     public interface IMovieTypeService
     {
+        
         Task<List<MovieTypeDTO>> GetAllMovieType();
         Task<MovieTypeDTO> GetByIdMovieType(Guid id);
         Task CreateMovieType(CreateMovieTypeRequest request);

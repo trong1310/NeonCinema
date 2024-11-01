@@ -1,0 +1,73 @@
+﻿@* @page "/updateactor/{actorId:guid}"
+@using NeonCinema_Application.DataTransferObject.Actors
+@using NeonCinema_Client.Data.IServices.Actor
+@using NeonCinema_Domain.Enum
+@inject IActorService ActorService
+@inject NavigationManager NavigationManager
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Actor/UpdateActor.css">
+<h3 class="text-center mb-4">Update Actor</h3>
+
+@if (actor == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+   
+        
+        <div class="CL2">
+            <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
+                <div class="mb-3">
+                    <label class="form-label">Full Name:</label>
+                    <InputText @bind-Value="actor.FullName" class="form-control" />
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Status:</label>
+                    <InputSelect id="status" class="form-select" @bind-Value="actor.Status">
+                        <option value="@(EntityStatus.Active)">Hoạt động</option>
+                        <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => actor.Status)" />
+                </div>
+                <button  type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
+            </EditForm>
+        </div>
+    
+}
+
+@code {
+    [Parameter] public Guid actorId { get; set; }
+    private ActorDTO actor = new ActorDTO();
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        actor = await ActorService.GetByIdActor(actorId);
+        
+    }
+
+    
+
+    private async Task HandleValidSubmit()
+    {
+        var updateActorRequest = new UpdateActorRequest
+            {
+                ID = actor.ID,
+                FullName = actor.FullName,
+               
+                Status = actor.Status
+            };
+
+        await ActorService.UpdateActor(actor.ID, updateActorRequest);
+
+        NavigationManager.NavigateTo("/listactor");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/listactor");
+    }
+} *@

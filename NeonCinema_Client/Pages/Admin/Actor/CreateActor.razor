@@ -1,0 +1,49 @@
+﻿@* @page "/addactor"
+@using NeonCinema_Application.DataTransferObject.Actors
+@using NeonCinema_Client.Data.IServices.Actor
+@using NeonCinema_Domain.Enum
+@inject IActorService ActorService
+@inject NavigationManager NavigationManager
+@layout LayoutAdmin
+<link rel="stylesheet" href="/css/Actor/Actorr.css">
+<h3 class="text-center mb-4">Thêm Diễn Viên</h3>
+
+
+
+    <div class="container" style="width: 30%; text-align: center">
+        <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
+                    <label class="form-label">Họ tên:</label>
+                    <InputText @bind-Value="actor.FullName" class="form-control" />
+                     <label class="form-label">Trạng thái:</label>
+                    <InputSelect id="status" class="form-select" @bind-Value="actor.Status">
+                        <option value="@(EntityStatus.Active)">Hoạt động</option>
+                        <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => actor.Status)" />
+            <div style="margin-top: 10px">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
+            </div>
+        </EditForm>
+    </div>
+@code {
+    private ActorDTO actor = new ActorDTO();
+    private async Task HandleValidSubmit()
+    {
+
+        var createActorRequest = new CreateActorRequest
+            {
+                FullName = actor.FullName,
+
+                Status = actor.Status
+            };
+        await ActorService.CreateActor(createActorRequest);
+        NavigationManager.NavigateTo("/listactor");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/listactor");
+    }
+}
+ *@
