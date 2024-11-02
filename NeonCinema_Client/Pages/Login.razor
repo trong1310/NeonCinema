@@ -97,11 +97,16 @@
 
                     if(role.Equals("Admin"))
                     {
-                        _navi.NavigateTo("/listuser");
+                        _navi.NavigateTo("/admin-dashboard");
+
                     }
-                    else if(role.Equals("Customer"))
+                    if(role.Equals("Client"))
                     {
-                        _navi.NavigateTo("/");
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (role.Equals("Staff"))
+                    {
+                        _navi.NavigateTo("/staff-dashboard");
                     }
 
                 }
