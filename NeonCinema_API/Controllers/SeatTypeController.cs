@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Interface;
 using NeonCinema_Application.Pagination;
@@ -23,22 +24,18 @@ namespace NeonCinema_API.Controllers
         }
         [HttpGet("Get-all")]
         //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request)
+        public async Task<IActionResult> GetAll( CancellationToken cancellationToken)
         {
-            // Gọi phương thức GetAllAsync với request để lấy dữ liệu phân trang
-            var seatTypes = await _seatTypeRepository.GetAllAsync(request);
-
-            // Sử dụng AutoMapper để chuyển từ SeatType sang SeatTypeDTO
-            var result = new PaginationResponse<SeatTypeDTO>
+            try
             {
-                PageNumber = seatTypes.PageNumber,
-                PageSize = seatTypes.PageSize,
-                HasNext = seatTypes.HasNext,
-                Data = _mapper.Map<List<SeatTypeDTO>>(seatTypes.Data)
-            };
-
-            // Trả về kết quả dạng JSON
-            return Ok(result);
+                var result = await _seatTypeRepository.GetAllAsync(cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here for further analysis
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
         [HttpGet("Get-by-id")]
        // [Authorize(Roles = "Admin")]
@@ -60,18 +57,29 @@ namespace NeonCinema_API.Controllers
             await _seatTypeRepository.AddAsync(seatType);
             return CreatedAtAction(nameof(GetById), new { id = seatType.ID }, seatType);
         }
-        [HttpPut("Update-SeatType")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSeatTypeDTO updateSeatTypeDTO)
+
+
+        [HttpPut("Update-SeatType/{id}")]
+        public async Task<IActionResult> UpdateSeattype(Guid id, [FromBody] UpdateSeatTypeDTO request, CancellationToken cancellationToken)
         {
-            var seatType = await _seatTypeRepository.GetByIdAsync(id);
-            if (seatType == null)
+            if (id != request.ID || !ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
-            _mapper.Map(updateSeatTypeDTO, seatType);
-            await _seatTypeRepository.UpdateAsync(seatType);
-            return NoContent();
+
+            try
+            {
+                var updatedResponse = await _seatTypeRepository.UpdateSeatType(id, request, cancellationToken);
+                return Ok(updatedResponse);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
+
+
         [HttpDelete("Delete-SeatType")]
         public async Task<IActionResult> Delete(Guid id)
         {

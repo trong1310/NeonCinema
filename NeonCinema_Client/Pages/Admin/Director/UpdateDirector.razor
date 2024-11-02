@@ -1,4 +1,4 @@
-﻿@page "/updateDirector/{actorId:guid}"
+﻿@page "/updateDirector/{DRTId:guid}"
 @using NeonCinema_Application.DataTransferObject.Directors
 @using NeonCinema_Client.Data.IServices.Director
 @using NeonCinema_Domain.Enum
@@ -8,49 +8,38 @@
 <link rel="stylesheet" href="/css/Director/UpdateDirector.css">
 <h3 class="text-center mb-4">Update Director</h3>
 
-@if (actor == null)
+@if (DRT == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <div class="CL0">
-        <div class="CL1">
-            <div class="mb-3">
-                <label class="form-label">Image:</label>
-                <div class="mb-2">
-                    <img src="@(!string.IsNullOrEmpty(temporaryImageUrl) ? temporaryImageUrl : "")" alt="@actor.FullName" class="img-thumbnail" width="150" height="150" />
-                </div>
-                <InputFile OnChange="HandleFileSelected" class="form-control" />
-            </div>
-        </div>
+       
         <div class="CL2">
-            <EditForm Model="actor" OnValidSubmit="HandleValidSubmit" class="form-container">
+            <EditForm Model="DRT" OnValidSubmit="HandleValidSubmit" class="form-container">
                 <div class="CL3">
                     <div class="mb-3">
                         <label class="form-label">Full Name:</label>
-                        <InputText @bind-Value="actor.FullName" class="form-control" />
+                        <InputText @bind-Value="DRT.FullName" class="form-control" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Gender:</label>
-                        <InputSelect id="gender" class="form-select" @bind-Value="actor.Gender" required>
+                        <InputSelect id="gender" class="form-select" @bind-Value="DRT.Gender" required>
                             <option value="">-- Chọn giới tính --</option>
                             <option value="@(EntityStatus.Men)">Nam</option>
                             <option value="@(EntityStatus.Girl)">Nữ</option>
                         </InputSelect>
-                        <ValidationMessage For="@(() => actor.Gender)" />
+                        <ValidationMessage For="@(() => DRT.Gender)" />
                     </div>
                 </div>
 
 
                 <div class="CL4">
-                    <div class="mb-3">
-                        <label class="form-label">Birth Date:</label>
-                        <InputDate @bind-Value="actor.BirthDate" class="form-control" />
-                    </div>
+                   
                     <div class="mb-3">
                         <label class="form-label">Nationality:</label>
-                        <InputText @bind-Value="actor.Nationality" class="form-control" />
+                        <InputText @bind-Value="DRT.Nationality" class="form-control" />
                     </div>
                 </div>
 
@@ -58,21 +47,18 @@ else
                 <div class="CL5">
                     <div class="mb-3">
                         <label class="form-label">Biography:</label>
-                        <InputTextArea @bind-Value="actor.Biography" class="form-control" rows="3" />
+                        <InputTextArea @bind-Value="DRT.Biography" class="form-control" rows="3" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Status:</label>
-                        <InputSelect id="status" class="form-select" @bind-Value="actor.Status">
+                        <InputSelect id="status" class="form-select" @bind-Value="DRT.Status">
                             <option value="@(EntityStatus.Active)">Hoạt động</option>
                             <option value="@(EntityStatus.Locked)">Không hoạt động</option>
                         </InputSelect>
-                        <ValidationMessage For="@(() => actor.Status)" />
+                        <ValidationMessage For="@(() => DRT.Status)" />
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Address:</label>
-                    <InputText @bind-Value="actor.Address" class="form-control" />
-                </div>
+                
 
 
 
@@ -84,61 +70,32 @@ else
 }
 
 @code {
-    [Parameter] public Guid actorId { get; set; }
-    private DirectorDTO actor = new DirectorDTO();
-    private IBrowserFile selectedFile;
-    private string temporaryImageUrl; // Biến lưu URL tạm thời
+    [Parameter] public Guid DRTId { get; set; }
+    private DirectorDTO DRT = new DirectorDTO();
+   
 
     protected override async Task OnInitializedAsync()
     {
-        actor = await SV.GetByIdDirector(actorId);
-        temporaryImageUrl = actor.Images; // Khởi tạo với đường dẫn ảnh ban đầu
+        DRT = await SV.GetByIdDirector(DRTId);
+        
     }
 
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-
-        if (selectedFile != null)
-        {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedFile.Name)}";
-            var filePath = Path.Combine("wwwroot/images/Director", fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-            }
-
-            actor.Images = $"/images/Director/{fileName}";
-
-            // Tạo URL tạm thời để hiển thị ảnh
-            using (var stream = new MemoryStream())
-            {
-                await selectedFile.OpenReadStream().CopyToAsync(stream);
-                temporaryImageUrl = $"data:image;base64,{Convert.ToBase64String(stream.ToArray())}";
-            }
-
-            // Cập nhật lại đường dẫn để hiển thị hình ảnh mới
-            StateHasChanged(); // Để chắc chắn rằng UI được cập nhật
-        }
-    }
+    
 
     private async Task HandleValidSubmit()
     {
         var updateActorRequest = new UpdateDirectorRequest
             {
-                ID = actor.ID,
-                FullName = actor.FullName,
-                Gender = actor.Gender,
-                BirthDate = actor.BirthDate,
-                Address = actor.Address,
-                Nationality = actor.Nationality,
-                Biography = actor.Biography,
-                Images = actor.Images,
-                Status = actor.Status
+                ID = DRT.ID,
+                FullName = DRT.FullName,
+                Gender = DRT.Gender,               
+                Address = DRT.Address,
+                Nationality = DRT.Nationality,
+                Biography = DRT.Biography,              
+                Status = DRT.Status
             };
 
-        await SV.UpdateDirector(actor.ID, updateActorRequest);
+        await SV.UpdateDirector(DRT.ID, updateActorRequest);
 
         NavigationManager.NavigateTo("/listDirector");
     }

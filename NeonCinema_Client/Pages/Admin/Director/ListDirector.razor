@@ -7,10 +7,7 @@
 @layout LayoutAdmin
 <link rel="stylesheet" href="/css/Director/ListDirector.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <h2 style="text-align: center; margin-top: 40px">DANH SÁCH ĐẠO DIỄN</h2>
-
-
 <div class="Actionn" style="display:flex">
     <div class="cl1">
         <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
@@ -46,10 +43,10 @@ else
     <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
         <thead>
             <tr>
-                <th>Ảnh cá nhân</th>
+                
                 <th>Tên</th>
                 <th>Gender</th>
-                <th>Ngày sinh</th>
+               
                 <th>Địa chỉ</th>
                 <th>Quốc tịch</th>
                 <th>Tiểu sử</th>
@@ -61,14 +58,10 @@ else
             @foreach (var actor in filteredDirectors)
             {
                 <tr>
-                    <td class="image-cell">
-                        <img src="@actor.Images"
-                             alt="@actor.FullName"
-                             style="border-radius: 100%; width: 80px; height: 80px; object-fit: cover;" />
-                    </td>
+                    
                     <td class="table-cell">@actor.FullName</td>
                     <td class="table-cell">@actor.Gender</td>
-                    <td class="table-cell">@actor.BirthDate.ToShortDateString()</td>
+                    
                     <td class="table-cell">@actor.Address</td>
                     <td class="table-cell">@actor.Nationality</td>
                     <td class="table-cell">@actor.Biography</td>
@@ -124,11 +117,11 @@ else
                 ID = drt.ID,
                 FullName = drt.FullName,
                 Gender = drt.Gender,
-                BirthDate = drt.BirthDate,
+                
                 Address = drt.Address,
                 Nationality = drt.Nationality,
                 Biography = drt.Biography,
-                Images = drt.Images,
+                
                 Status = drt.Status
             };
 

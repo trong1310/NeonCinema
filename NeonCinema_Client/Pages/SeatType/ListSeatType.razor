@@ -6,10 +6,12 @@
 @inject NavigationManager Navi
 @inject ISeatTypeService SV
 @layout LayoutAdmin
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMz43W8dC8wY9s6h0xT27i5u60hz4HhI1c8/1" crossorigin="anonymous">
 
-<h3>List of SeatType</h3>
+<h3  style="text-align: center; margin-top: 30px">DANH SÁCH KIỂU GHẾ</h3>
 
-<a class="btn btn-success mb-2" href="/AddSeatType">Add New SeatType</a>
+
 
 @if (seatTypes == null)
 {
@@ -21,38 +23,48 @@ else if (seatTypes.Count == 0)
 }
 else
 {
-    <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
-        <thead>
-            <tr>
-                <th>Seat Type Name</th>
-                <th>Price</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in seatTypes)
-            {
+    <div class="ST">
+        <a class="btn btn-success mb-2" href="/AddSeatType">
+            <i class="fas fa-plus"></i> Thêm kiểu ghế mới
+        </a>
+        <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+            <thead>
                 <tr>
-                    <td class="table-cell">@item.SeatTypeName</td>
-                    <td class="table-cell">@item.Price</td>
-                    <td class="table-cell">
-                        <button class="btn btn-primary" @onclick="() => EditSeatType(item.ID)">Edit</button>
-                    </td>
+                    <th>Kiểu ghế</th>
+                    <th>Thao tác</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in seatTypes)
+                {
+                    <tr>
+                        <td style="font-weight: bold;" class="table-cell">@item.SeatTypeName</td>
 
+                        <td class="table-cell">
+                            <button class="btn btn-white" @onclick="() => EditSeatType(item.ID)">
+                                <i style="color: #d56f03" class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+<style>
+    .ST {
+        width: 80%; 
+        margin: 0 auto;
+    }
+</style>
 @code {
-    private PaginationResponse<SeatTypeDTO> seatTypePagination;
+
     private List<SeatTypeDTO> seatTypes;
 
     protected override async Task OnInitializedAsync()
     {
-        var paginationRequest = new PaginationRequest { PageNumber = 1, PageSize = 10 };
-        seatTypePagination = await SV.GetAllSeatType(paginationRequest);
-        seatTypes = seatTypePagination.Data.ToList();
+
+        seatTypes = await SV.GetAllSeatType();
     }
 
     private void EditSeatType(Guid seatTypeId)
