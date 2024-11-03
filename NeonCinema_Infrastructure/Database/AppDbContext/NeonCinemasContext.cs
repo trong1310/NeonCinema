@@ -11,7 +11,6 @@ using NeonCinema_Infrastructure.Extention;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,8 +56,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<Checkin> Checkin { get; set; }
         public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
         public DbSet<Show_release> Show_release { get; set; }
-        //public DbSet<Actor> Actor { get; set; }
-        //public DbSet<MoviesActor> MoviesActors { get; set; }
+        public DbSet<Actor> Actor { get; set; }
+        public DbSet<ActorMovies> ActorMovies { get; set; }
         public DbSet<Point> Points { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
@@ -69,7 +68,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
+            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            // optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //  optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -397,7 +403,17 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         Status = EntityStatus.Active
     }
 };
+
             modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+            var actordata = new List<Actor>()
+            {
+                new Actor
+                {
+                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+                    Name = "Dang xuan phong",
+                    Status = EntityStatus.Active,
+                }
+            };
             var movieData = new List<Movies>()
 {
     new Movies
@@ -416,7 +432,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[0].ID,
         DirectorID = directorData[0].ID,
         CreatedTime = DateTime.Now,
-        Actor ="1232"
     },
     new Movies
     {
@@ -434,7 +449,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         CountryID = countryData[1].ID,
         DirectorID = directorData[1].ID,
         CreatedTime = DateTime.Now,
-                Actor ="1232"
     }
 };
             modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
