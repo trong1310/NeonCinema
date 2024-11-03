@@ -6,83 +6,84 @@
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
 @inject HttpClient _http
-<link rel="stylesheet" href="/css/Director/Directorr.css">
-<h3 class="text-center mb-4">THÊM ĐẠO DIỄN</h3>
+   
 
+<EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit">
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-4 font-weight-bold">Thêm đạo diễn mới</h2>
+        <div class="row director justify-content-center">
+            <div class="col-md-12" style="margin-top:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Full Name:</label>
+                            <InputText @bind-Value="newdirector.FullName" class="form-control" />
+                        </div>
+                    </div>
 
-<div class="drt">
-    <EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit" class="container form-container">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label class="form-label">Full Name:</label>
-                <InputText @bind-Value="newdirector.FullName" class="form-control" />
-            </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Gender:</label>
+                            <InputSelect id="gender" class="form-select" @bind-Value="newdirector.Gender" required>
+                                <option value="">-- Select Gender --</option>
+                                <option value="@(EntityStatus.Nam)">Nam</option>
+                                <option value="@(EntityStatus.Nữ)">Nữ</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => newdirector.Gender)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Nationality:</label>
+                            <InputText @bind-Value="newdirector.Nationality" class="form-control" />
+                        </div>
+                    </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Gender:</label>
-                <InputSelect id="gender" class="form-select" @bind-Value="newdirector.Gender" required>
-                    <option value="">-- Select Gender --</option>
-                    <option value="@(EntityStatus.Men)">Nam</option>
-                    <option value="@(EntityStatus.Girl)">Nữ</option>
-                </InputSelect>
-                <ValidationMessage For="@(() => newdirector.Gender)" />
-            </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Status:</label>
+                            <InputSelect id="status" class="form-select" @bind-Value="newdirector.Status">
+                                <option value="@(EntityStatus.Active)">Active</option>
+                                <option value="@(EntityStatus.Locked)">Inactive</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => newdirector.Status)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label">Biography:</label>
+                            <InputTextArea @bind-Value="newdirector.Biography" class="form-control" rows="3" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label">Address:</label>
+                            <InputText @bind-Value="newdirector.Address" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateBack">Quay lại</button>
+                </div>
+            </div>   
         </div>
+    </div>
+</EditForm>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label class="form-label">Nationality:</label>
-                <InputText @bind-Value="newdirector.Nationality" class="form-control" />
-            </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Status:</label>
-                <InputSelect id="status" class="form-select" @bind-Value="newdirector.Status">
-                    <option value="@(EntityStatus.Active)">Active</option>
-                    <option value="@(EntityStatus.Locked)">Inactive</option>
-                </InputSelect>
-                <ValidationMessage For="@(() => newdirector.Status)" />
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-12">
-                <label class="form-label">Biography:</label>
-                <InputTextArea @bind-Value="newdirector.Biography" class="form-control" rows="3" />
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-12">
-                <label class="form-label">Address:</label>
-                <InputText @bind-Value="newdirector.Address" class="form-control" />
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-center mt-4">
-            <button type="submit" class="btn btn-primary me-2">Save</button>
-            <button type="button" class="btn btn-secondary" @onclick="NavigateBack">Cancel</button>
-        </div>
-    </EditForm>
-</div>
-    
-<style>
-    .drt
-    {
-        width: 70%;
-        margin-left: 200px;
-    }
-</style>
 
 @code {
     
     private CreateDirectorRequest newdirector = new CreateDirectorRequest();
     private async Task HandleValidSubmit()
     {
-       
-
-        
-
         await SV.CreateDirector(newdirector);
         NavigationManager.NavigateTo("/listDirector");
     }
@@ -92,3 +93,68 @@
         NavigationManager.NavigateTo("/listDirector");
     }
 }
+
+<style>
+    body {
+        background-color: #f4f4f9;
+    }
+
+    .director {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: white; /* Light background for contrast */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+        margin: auto;
+        max-width: 100%; /* Center the content */
+    }
+    h2 {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-left: -20px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .btn-success {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-warning {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+</style>
