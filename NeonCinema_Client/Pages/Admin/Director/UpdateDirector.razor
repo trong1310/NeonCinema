@@ -5,69 +5,74 @@
 @inject IDirectorService SV
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
-<link rel="stylesheet" href="/css/Director/UpdateDirector.css">
-<h3 class="text-center mb-4">Update Director</h3>
 
-@if (DRT == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="CL0">
-       
-        <div class="CL2">
-            <EditForm Model="DRT" OnValidSubmit="HandleValidSubmit" class="form-container">
-                <div class="CL3">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name:</label>
-                        <InputText @bind-Value="DRT.FullName" class="form-control" />
+
+<EditForm Model="DRT" OnValidSubmit="HandleValidSubmit">
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-4 font-weight-bold">Sửa đạo diễn</h2>
+        <div class="row director justify-content-center">
+            <div class="col-md-12" style="margin-top:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên:</label>
+                            <InputText @bind-Value="DRT.FullName" class="form-control" />
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Gender:</label>
-                        <InputSelect id="gender" class="form-select" @bind-Value="DRT.Gender" required>
-                            <option value="">-- Chọn giới tính --</option>
-                            <option value="@(EntityStatus.Men)">Nam</option>
-                            <option value="@(EntityStatus.Girl)">Nữ</option>
-                        </InputSelect>
-                        <ValidationMessage For="@(() => DRT.Gender)" />
-                    </div>
-                </div>
 
-
-                <div class="CL4">
-                   
-                    <div class="mb-3">
-                        <label class="form-label">Nationality:</label>
-                        <InputText @bind-Value="DRT.Nationality" class="form-control" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Giới tính:</label>
+                            <InputSelect id="gender" class="form-select" @bind-Value="DRT.Gender" required>
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="@(EntityStatus.Nam)">Nam</option>
+                                <option value="@(EntityStatus.Nữ)">Nữ</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => DRT.Gender)" />
+                        </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Quốc tịch:</label>
+                            <InputText @bind-Value="DRT.Nationality" class="form-control" />
+                        </div>
+                    </div>
 
-
-                <div class="CL5">
-                    <div class="mb-3">
-                        <label class="form-label">Biography:</label>
+                    <div class="col-md-6">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Trạng thái:</label>
+                                <InputSelect id="status" class="form-select" @bind-Value="DRT.Status">
+                                    <option value="@(EntityStatus.Active)">Hoạt động</option>
+                                    <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => DRT.Status)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label class="form-label">Tiểu sử:</label>
                         <InputTextArea @bind-Value="DRT.Biography" class="form-control" rows="3" />
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status:</label>
-                        <InputSelect id="status" class="form-select" @bind-Value="DRT.Status">
-                            <option value="@(EntityStatus.Active)">Hoạt động</option>
-                            <option value="@(EntityStatus.Locked)">Không hoạt động</option>
-                        </InputSelect>
-                        <ValidationMessage For="@(() => DRT.Status)" />
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label">Địa chỉ:</label>
+                        <InputText @bind-Value="DRT.Address" class="form-control" />
                     </div>
                 </div>
-                
-
-
-
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="button" class="btn btn-secondary ms-2" @onclick="NavigateBack">Cancel</button>
-            </EditForm>
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-success btn-lg">Lưu</button>
+                    <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateBack">Quay lại</button>
+                </div>
+            </div>
         </div>
     </div>
-}
+</EditForm>
 
 @code {
     [Parameter] public Guid DRTId { get; set; }
@@ -105,3 +110,67 @@ else
         NavigationManager.NavigateTo("/listDirector");
     }
 }
+<style>
+    body {
+        background-color: #f4f4f9;
+    }
+
+    h2 {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+    .director{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: white; /* Light background for contrast */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+        margin: auto;
+        max-width: 100%; /* Center the content */
+    }
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-left: -20px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .btn-success {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-warning {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+</style>
