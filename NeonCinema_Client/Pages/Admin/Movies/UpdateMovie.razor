@@ -1,0 +1,396 @@
+﻿@page "/movie-update/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using System.Text.Json
+@using NeonCinema_Domain.Enum
+@inject IMovieservices _movieServices
+@inject HttpClient _http
+@inject NavigationManager _navigation
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div class="container-fluid mt-5">
+	<h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
+	<div class="row">
+		<div class="col-md-3 text-center mb-4 mt-5">
+			<img src="@profileImage" alt="Profile" class="img-fluid profile-pic"> <br />
+			<label class="custom-file-upload">
+				<span style="margin-left:-5px">
+					<i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
+				</span>
+				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+				<span>Chọn ảnh</span>
+			</label>
+		</div>
+		<div class="col-md-9" style="margin-top:10px;">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="name" class="font-weight-bold">Tên Phim</label>
+						<input type="text" class="form-control" @bind-value="@movieDto.Name" />
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Duration" class="font-weight-bold">Thời Lượng</label>
+						<input type="text" class="form-control" @bind-value="@movieDto.Duration" />
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Trailer" class="font-weight-bold">Trailer</label>
+						<input type="text" class="form-control" @bind-value="@movieDto.Trailer" />
+
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+						<input type="date" class="form-control" @bind-value="@movieDto.StarTime" />
+
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+						<input type="text" class="form-control" @bind-value="@movieDto.AgeAllowed" />
+					</div>
+				</div>
+				
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Genre" class="font-weight-bold">Thể loại</label>
+						<select  @bind="movieDto.GenreName" class="form-control">
+							<option value="" disabled selected>Chọn thể loại</option>
+							@foreach (var genre in genres)
+							{
+								<option value="@genre.ID">@genre.GenreName</option>
+							}
+						</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+						<select @bind="movieDto.LanguareName" class="form-control">
+							<option value="" disabled selected>Chọn ngôn ngữ</option>
+							@foreach (var language in languages)
+							{
+								<option value="@language.ID">@language.LanguageName</option>
+							}
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Country" class="font-weight-bold">Quốc gia</label>
+						<select @bind="movieDto.CountryName" class="form-control">
+							<option value="" disabled selected>Chọn quốc gia</option>
+							@foreach (var country in countries)
+							{
+								<option value="@country.ID">@country.CountryName</option>
+							}
+						</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Director" class="font-weight-bold">Đạo diễn</label>
+						<select @bind="movieDto.DirectorName" class="form-control">
+							<option value="" disabled selected>Chọn đạo diễn</option>
+							@foreach (var director in directors)
+							{
+								<option value="@director.ID">@director.FullName</option>
+							}
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="Description" class="font-weight-bold">Mô tả</label>
+				<textarea class="form-control" rows="3" @bind="@movieDto.Description"></textarea>
+			</div>
+
+			<div class="text-center">
+				<button type="submit" class="btn btn-success btn-lg">Lưu</button>
+				<button type="button" class="btn btn-warning btn-lg">Quay lại</button>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	private UpdateMovieRequest request = new UpdateMovieRequest();
+	private IBrowserFile selectedFile;
+	private bool isActorModalOpen = false;
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+
+	}
+	private bool isEditing = false; // Biến để kiểm soát trạng thái hiển thị
+	#region update
+	private void ToggleEdit()
+	{
+		isEditing = !isEditing; // Chuyển đổi trạng thái hiển thị
+	}
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
+	}
+	private void OpenActorDialog()
+	{
+		isActorModalOpen = true; // Mở modal
+	}
+
+	private void CloseActorDialog()
+	{
+		isActorModalOpen = false; // Đóng modal
+	}
+
+	private void SelectActors()
+	{
+		CloseActorDialog();
+	}
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo("/list-movie-admin");
+	}
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			var content = new MultipartFormDataContent();
+			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+			content.Add(fileContent, "file", selectedFile.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				var fileName = Path.GetFileName(fileUrl);
+				request.Images = fileName;
+
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+
+
+			var flimsResponse = await _movieServices.Update(request);
+			if (flimsResponse.IsSuccessStatusCode)
+			{
+				Console.WriteLine(request.GenreID);
+				Console.WriteLine(request.Images);
+				Console.WriteLine(request.Description);
+				Console.WriteLine(request.Name);
+				Console.WriteLine(request.LenguageID);
+				Console.WriteLine(request.CountryID);
+				Console.WriteLine(request.DirectorID);
+				_navigation.NavigateTo("/list-movie-admin");
+			}
+			else
+			{
+				Console.WriteLine($"Có lỗi xảy ra khi tạo phim.{flimsResponse.Content}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+	#endregion
+	#region detail
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#endregion
+}
+<style>
+	body {
+		background-color: #f4f4f9;
+	}
+
+	.card {
+		border-radius: 10px;
+		background-color: white;
+		max-width: 1000px;
+		margin: auto;
+	}
+
+	h2 {
+		font-family: 'Arial', sans-serif;
+		color: #333;
+	}
+
+	.profile-pic {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border: 3px solid #eaeaea;
+		margin-left: -15px; /* Shift image slightly left */
+		height: 350px;
+		width: 250px;
+	}
+
+	label {
+		font-size: 14px;
+		color: #555;
+	}
+
+	input, select, textarea {
+		border-radius: 5px;
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin-left: -20px; /* Shift input fields slightly left */
+	}
+
+	.form-control:focus {
+		border-color: #007bff;
+		box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+	}
+
+	textarea {
+		resize: none;
+	}
+
+	.btn-primary {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+		}
+
+	.btn-secondary {
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-check {
+		margin-right: 15px; /* Adjust spacing between radio buttons */
+	}
+
+	img {
+		margin-top: 20px;
+		width: 270px;
+		height: 400px;
+	}
+
+	.custom-file-upload {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		margin-top: 10px;
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+		.custom-file-upload span {
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
+
+		.custom-file-upload:hover {
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
+
+	.btn-success {
+		background-color: #007bff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+		.btn-success:hover {
+			background-color: #0056b3;
+		}
+
+	.btn-warning {
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
+
+</style>
