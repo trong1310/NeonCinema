@@ -14,14 +14,14 @@
         <h1>Đăng Nhập</h1>
         <EditForm Model="@loginModel" OnValidSubmit="LoginAccount">
             <DataAnnotationsValidator />
-            <ValidationSummary />  
+            <ValidationSummary />
             <div class="input-group">
                 <label for="username">Email hoặc số điện thoại</label>
                 <InputText id="username" class="form-control rounded" @bind-Value="loginModel.EmailorPhone" required />
             </div>
             <div class="input-group">
                 <label for="password">Mật Khẩu</label>
-                <InputText id="password" type="password"  class="form-control rounded" @bind-Value="loginModel.Password" required />
+                <InputText id="password" type="password" class="form-control rounded" @bind-Value="loginModel.Password" required />
             </div>
             <div>
                 @if (!string.IsNullOrEmpty(errorMessage))
@@ -36,11 +36,11 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 }
-               else
-               {
+                else
+                {
                     <button type="submit">Đăng Nhập</button>
-               }
-                
+                }
+
             </div>
             <div class="links">
                 <a href="#">Quên Mật Khẩu?</a>
@@ -81,7 +81,7 @@
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                     var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
-                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;     
+                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
                     var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress").Value;
                     var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
                     var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
@@ -95,13 +95,18 @@
                     await _localstorage.SetItemAsync("gender", gender.Trim());
                     await _localstorage.SetItemAsync("name", name.Trim());
 
-                    if(role.Equals("Admin"))
+                    if (role.Equals("Admin"))
                     {
-                        _navi.NavigateTo("/listuser");
+                        _navi.NavigateTo("/admin-dashboard");
+
                     }
-                    else if(role.Equals("Customer"))
+                    if (role.Equals("Client"))
                     {
-                        _navi.NavigateTo("/");
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (role.Equals("Staff"))
+                    {
+                        _navi.NavigateTo("/staff-dashboard");
                     }
 
                 }
@@ -112,7 +117,7 @@
             }
             else
             {
-                errorMessage = "Thông tin đăng nhập không chính xác" ;
+                errorMessage = "Thông tin đăng nhập không chính xác";
             }
         }
         catch (Exception ex)
