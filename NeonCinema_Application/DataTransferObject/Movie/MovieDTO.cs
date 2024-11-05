@@ -19,7 +19,6 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public int? AgeAllowed { get; set; }  
         public string Images { get; set; }
         public MovieStatus? Status { get; set; }
-        public string Actor {  get; set; }
         public string? GenreName { get; set; }
         public string? LanguareName { get; set; }
         public string? CountryName { get; set; }

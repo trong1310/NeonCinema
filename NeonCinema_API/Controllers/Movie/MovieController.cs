@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Bogus.Hollywood.DataSets;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -26,7 +27,7 @@ namespace NeonCinema_API.Controllers.Movie
             return Ok(obj);
         }
 		[HttpPost ("Create")]
-        public async Task <IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
+		public async Task <IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
         {
             var obj = await _reps.Create(request,cancellationToken);
             return Ok(obj);

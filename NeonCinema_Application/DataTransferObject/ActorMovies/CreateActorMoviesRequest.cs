@@ -11,6 +11,5 @@ namespace NeonCinema_Application.DataTransferObject.ActorMoives
     {
         public Guid MovieID { get; set; }
         public Guid ActorID { get; set; }
-        public bool IsLeadActor { get; set; }
     }
 }

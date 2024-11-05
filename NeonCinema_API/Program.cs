@@ -41,11 +41,9 @@ using Twilio;
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddControllers();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 //builder.Services.AddScoped<TwilioClient, TwilioClient>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRolesRepository, RoleRepository>();
@@ -63,7 +61,7 @@ builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // Giới hạn kích thước file upload (10MB)
+    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Giới hạn kích thước file upload (20MB)
 });
 var key = builder.Configuration.GetSection("Jwt:Key").Value;
 builder.Services.AddAuthentication(x =>
