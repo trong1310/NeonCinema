@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NeonCinema_Application.DataTransferObject.ActorMoives;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         public ActorMoviesProfile()
         {
             CreateMap<CreateActorMoviesRequest, ActorMovies>();
+            CreateMap<ActorMovies, ActorMoviesDto>().ReverseMap();
 
         }
     }

@@ -29,7 +29,13 @@ namespace NeonCinema_API.Controllers
             var obj = await _reps.Get(request, cancellationToken);
             return Ok(obj);
         }
-        [HttpPost("createActormovies")]
+		[HttpGet("get-actor-byflims")]
+		public async Task<IActionResult> FilterActorByFilms([FromQuery]Guid movieID,  CancellationToken cancellationToken)
+		{
+			var obj = await _actormovies.GetActorsByFilmAsync(movieID,cancellationToken);
+			return Ok(obj);
+		}
+		[HttpPost("createActormovies")]
         public async Task<IActionResult> CreateActorMovie([FromBody] CreateActorMoviesRequest request, CancellationToken cancellationToken)
         {
             var obj = await _actormovies.CreateActorMovies(request, cancellationToken);
