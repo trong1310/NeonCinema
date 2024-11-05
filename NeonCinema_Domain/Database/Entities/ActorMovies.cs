@@ -11,11 +11,7 @@ namespace NeonCinema_Domain.Database.Entities
     {
         public Guid MovieID { get; set; }
         public virtual Movies? Movie { get; set; }
-
         public Guid ActorID { get; set; }
         public virtual Actor? Actor { get; set; }
-
-        public bool IsLeadActor { get; set; }
-
     }
 }
