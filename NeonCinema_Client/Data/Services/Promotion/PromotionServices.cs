@@ -99,7 +99,7 @@ namespace NeonCinema_Client.Data.Services.Promotion
 
 			if (result != null && lstrole != null)
 			{
-				RolesDTO role = lstrole.FirstOrDefault(x => x.RoleName == "Customer");
+				RolesDTO role = lstrole.FirstOrDefault(x => x.RoleName == "Client");
 				lst = result.Where(x => x.RoleID == role.ID && x.FullName.Trim().ToLower().Contains(input.Trim().ToLower())).ToList();
 			}
 
