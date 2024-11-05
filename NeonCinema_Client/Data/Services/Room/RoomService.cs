@@ -1,6 +1,8 @@
 ﻿using NeonCinema_Application.DataTransferObject.Room;
+using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Client.Data.IServices.IRoom;
+using System.Text.Json;
 
 namespace NeonCinema_Client.Data.Services.Room
 {
@@ -40,6 +42,24 @@ namespace NeonCinema_Client.Data.Services.Room
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken)
         {
             return await _client.PutAsJsonAsync($"api/Room/{id}", request, cancellationToken);
+        }
+
+        public async Task<List<SeatDTO>> GetSeats()
+        {
+            try
+            {
+                var response = await _client.GetAsync("https://localhost:7211/api/Seat/GetAll");
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<SeatDTO>>(jsonResponse);
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"JSON Deserialization Error: {ex.Message}");
+                return new List<SeatDTO>(); // Return an empty list to prevent null references
+            }
+            return await _client.GetFromJsonAsync<List<SeatDTO>>($"https://localhost:7211/api/Seat/GetAll");
         }
     }
 }

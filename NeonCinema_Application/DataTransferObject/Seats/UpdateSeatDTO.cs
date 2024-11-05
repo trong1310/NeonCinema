@@ -14,7 +14,7 @@ namespace NeonCinema_Application.DataTransferObject.Seats
         public string Column { get; set; }
         public string Row { get; set; }
         public EntityStatus Status { get; set; }
-        public Guid RoomID { get; set; }
+       
         public Guid SeatTypeID { get; set; }
     }
 }

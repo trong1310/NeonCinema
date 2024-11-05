@@ -5,94 +5,115 @@
 @inject NavigationManager Navi
 @inject IDirectorService SV
 @layout LayoutAdmin
-<link rel="stylesheet" href="/css/Director/ListDirector.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
 <h2 style="text-align: center; margin-top: 40px">DANH SÁCH ĐẠO DIỄN</h2>
+<div class="container-fluid mt-5">
+    <div class="row mb-4 p-3 search-filter-container">
+        <div class="col-md-4" style="margin-top:7px">
+            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
+        </div>
 
-
-<div class="Actionn" style="display:flex">
-    <div class="cl1">
-        <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control mb-3" />
-    </div>
-    <div class="cl2">
-        <label>
-            <input type="radio" name="genderFilter" value="All" @onchange="OnGenderChanged" checked />
-            All
-        </label>
-        <label>
-            <input type="radio" name="genderFilter" value="Men" @onchange="OnGenderChanged" />
-            Men
-        </label>
-        <label>
-            <input type="radio" name="genderFilter" value="Girl" @onchange="OnGenderChanged" />
-            Girl
-        </label>
-    </div>
-    <div class="cl3">
-        <a class="btn btn-success mb-2" href="/addDirector"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>  Thêm đạo diễn</a>
-    </div>
-</div>
-@if (filteredDirectors == null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (filteredDirectors.Count == 0)
-{
-    <p>No directors found.</p>
-}
-else
-{
-    <table class="table table-hover" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
-        <thead>
-            <tr>
-                <th>Ảnh cá nhân</th>
-                <th>Tên</th>
-                <th>Gender</th>
-                <th>Ngày sinh</th>
-                <th>Địa chỉ</th>
-                <th>Quốc tịch</th>
-                <th>Tiểu sử</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var actor in filteredDirectors)
-            {
-                <tr>
-                    <td class="image-cell">
-                        <img src="@actor.Images"
-                             alt="@actor.FullName"
-                             style="border-radius: 100%; width: 80px; height: 80px; object-fit: cover;" />
-                    </td>
-                    <td class="table-cell">@actor.FullName</td>
-                    <td class="table-cell">@actor.Gender</td>
-                    <td class="table-cell">@actor.BirthDate.ToShortDateString()</td>
-                    <td class="table-cell">@actor.Address</td>
-                    <td class="table-cell">@actor.Nationality</td>
-                    <td class="table-cell">@actor.Biography</td>
-                    <td class="table-cell">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   role="switch"
-                                   id="flexSwitchCheckDefault_@(actor.Status)"
-                                   checked="@(actor.Status == EntityStatus.Active)"
-                                   @onchange="(e) => ToggleRoomStatus(actor, e)" />
-                            <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
-                                @(actor.Status == EntityStatus.Active ? "" : "")
-                            </label>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Giới tính</label>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex">
+                        <div class="form-check me-3">
+                            <input type="radio" name="genderFilter" value="All" @onchange="OnGenderChanged" checked />
+                            <label class="form-check-label" for="all">Tất Cả</label>
                         </div>
-                    </td>
-                    <td class="table-cell">
-                        <button style="background-color: #eea90c; border-color: black" class="btn btn-primary" @onclick="() => EditDirector(actor.ID)"><i class="fa-regular fa-pen-to-square" style="color: black;"></i></button>
-                    </td>
+                        <div class="form-check me-3 ml-4">
+                            <input type="radio" name="genderFilter" value="Men" @onchange="OnGenderChanged" />
+                            <label class="form-check-label" for="resigned">Nam</label>
+                        </div>
+                    </div>
+                    <div class="form-check mt-1">
+                        <input type="radio" name="genderFilter" value="Girl" @onchange="OnGenderChanged" />
+                        <label class="form-check-label" for="resigned">Nữ</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-success mb-2" href="/addDirector"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>  Thêm đạo diễn</a>
+        </div>
+    </div>
+    @if (filteredDirectors == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (filteredDirectors.Count == 0)
+    {
+        <p>No directors found.</p>
+    }
+    else
+    {
+        <table class="table table-hover director-table">
+            <thead>
+                <tr>
+
+                    <th class="text-center"></th>
+                    <th class="text-center">Tên</th>
+                    <th class="text-center">Giới tính</th>
+
+                    <th class="text-center">Địa chỉ</th>
+                    <th class="text-center">Quốc tịch</th>
+                    <th class="text-center">Tiểu sử</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var actor in filteredDirectors)
+                {
+                    <tr>
+                        <td class="text-center align-middle">@(@filteredDirectors.IndexOf(actor) + 1)</td>
+                        <td class="text-center align-middle">@actor.FullName</td>
+                        <td class="text-center align-middle">
+                            @if(actor.Gender == "Men")
+                            {
+                                <span>Nam</span>
+                            }
+                            else
+                            {
+                                <span>Nữ</span>
+                            }
+                        </td>
+
+                        <td class="text-center align-middle">@actor.Address</td>
+                        <td class="text-center align-middle">@actor.Nationality</td>
+                        <td class="text-center align-middle">@actor.Biography</td>
+                        <td class="text-center align-middle">
+                            <div class=" form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="flexSwitchCheckDefault_@(actor.Status)"
+                                       checked="@(actor.Status == EntityStatus.Active)"
+                                       @onchange="(e) => ToggleRoomStatus(actor, e)" />
+                                <label class="form-check-label" for="flexSwitchCheckDefault_@(actor.Status)">
+                                    @(actor.Status == EntityStatus.Active ? "" : "")
+                                </label>
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <button class="btn btn-outline-primary btn-sm " style="border: none;" @onclick="() => EditDirector(actor.ID)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+
 
 @code {
     private List<DirectorDTO> director;
@@ -124,11 +145,11 @@ else
                 ID = drt.ID,
                 FullName = drt.FullName,
                 Gender = drt.Gender,
-                BirthDate = drt.BirthDate,
+                
                 Address = drt.Address,
                 Nationality = drt.Nationality,
                 Biography = drt.Biography,
-                Images = drt.Images,
+                
                 Status = drt.Status
             };
 
@@ -177,3 +198,40 @@ else
     }
 
 }
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+    }
+
+    .container-fluid {
+        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+    }
+    .search-filter-container {
+        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
+        border-radius: 8px; /* Bo góc cho khung */
+        padding: 20px; /* Padding cho khung */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
+        margin-left: 1px;
+        margin-right: 1px;
+    }
+
+    .director-table {
+        background-color: white; /* Màu nền bảng là trắng */
+        border-radius: 8px; /* Bo góc bảng */
+        overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+    }
+
+        .director-table td {
+            font-size: 16px; /* Tăng kích thước chữ trong các thẻ td */
+            padding: 12px; /* Tăng khoảng cách giữa nội dung và đường viền của ô */
+        }
+
+    .status-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

@@ -1,71 +1,166 @@
 ﻿@page "/listseat"
 @using NeonCinema_Application.DataTransferObject.SeatTypes
 @using NeonCinema_Application.DataTransferObject.Seats
+@using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.Seat
+@using NeonCinema_Domain.Enum
 @inject NavigationManager Navi
 @inject ISeatService SeatService
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMz43W8dC8wY9s6h0xT27i5u60hz4HhI1c8/1" crossorigin="anonymous">
+<h2 style="text-align: center; margin-top: 30px">DANH SÁCH GHẾ</h2>
 
 
 
-<button class="btn btn-primary" @onclick="NavigateToAddSeat">Thêm Ghế Mới</button>
 
+<div class="seat1">  
+    <button class="btn btn-success" @onclick="NavigateToAddSeat">
+        <i class="fas fa-plus"></i>Thêm Ghế Mới
+    </button>
 
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Seat Number</th>
-            <th>Column</th>
-            <th>Row</th>
-            
-            <th>Seat Type</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (seats.Count == 0)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td colspan="4">Không có dữ liệu.</td>
+                <th>Số ghế</th>
+                <th>Cột</th>
+                <th>Hàng</th>
+                <th>Kiểu ghế</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
             </tr>
-        }
-        else
-        {
-            foreach (var seat in seats)
+        </thead>
+        <tbody>
+            @if (seats.Count == 0)
             {
                 <tr>
-                    <td>@seat.SeatNumber</td>
-                    <td>@seat.Column</td>
-                    <td>@seat.Row</td> 
-                    
-                    <td>@seat.SeatTypeName</td>
-                    <td>@seat.Status</td>
+                    <td colspan="4">Không có dữ liệu.</td>
                 </tr>
             }
-        }
-    </tbody>
-</table>
+            else
+            {
+                foreach (var seat in seats)
+                {
+                    <tr>
+                        <td style="font-weight: bold;" class="table-cell">@seat.SeatNumber</td>
+                        <td>@seat.Column</td>
+                        <td>@seat.Row</td>
+                        <td >@seat.SeatTypeName</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="flexSwitchCheckDefault_@(seat.ID)"
+                                       checked="@(seat.Status == EntityStatus.Active)"
+                                       @onchange="(e) => ToggleRoomStatus(seat, e)" />
+                                <label class="form-check-label" for="flexSwitchCheckDefault_@(seat.ID)">
+                                    @(seat.Status == EntityStatus.Active ? "còn trống" : "đã đặt")
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <button style="border-color: 1px black" class="" @onclick="@(() => NavigateToUpdateSeat(seat.ID))">
+                                <i style="color: #d56f03" class="fas fa-edit"></i>
+                            </button> <!-- Update button -->
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 
+</div>
+
+<MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
+    <MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
+</MudBlazor.MudContainer>
+<style>
+    .seat1 {
+        width: 80%;
+        margin: 0 auto;
+    }
+</style>
 @code {
     public List<SeatDTO> seats = new List<SeatDTO>();
     public List<SeatTypeDTO> seattype = new List<SeatTypeDTO>();
+    private int countPage = 1;
+    PaginationResponse<SeatDTO> seatdto = new PaginationResponse<SeatDTO>();
+    private string errorMessage;
     protected override async Task OnInitializedAsync()
     {
-        // Khai báo request và gọi API để lấy danh sách ghế
-        var request = new ViewSeatRequest
-        {
-            PageNumber = 1,
-            PageSize = 10 // Bạn có thể điều chỉnh số lượng ghế hiển thị
-        };
+        await LoadSeat();
 
-        var response = await SeatService.GetAllSeat(request);
-        if (response != null && response.Data != null)
+    }
+    public async Task LoadSeat()
+    {
+        try
         {
-            seats = response.Data.ToList();
+            var request = new ViewSeatRequest
+                {
+                    PageNumber = 1,
+                    PageSize = 12
+                };
+            seatdto.Data = null;
+            request.PageNumber = countPage;
+            var response = await SeatService.GetAllSeat(request);
+            if (response != null && response.Data != null)
+            {
+                seats = response.Data.ToList();
+            }
         }
+        catch (Exception ex)
+        {
+
+            errorMessage = $"Có lỗi xảy ra: {ex.Message}";
+        }
+    }
+    public async Task OnPaginationSelectedChanged(int selectedPage)
+    {
+        countPage = selectedPage;
+        await LoadSeat();
     }
     private void NavigateToAddSeat()
     {
         Navi.NavigateTo("/addseat");
+    }
+    private void NavigateToUpdateSeat(Guid seatId)
+    {
+        var seat = seats.FirstOrDefault(s => s.ID == seatId);
+        if (seat != null)
+        {
+            var status = seat.Status == EntityStatus.Active ? "Active" : "Locked";
+            Navi.NavigateTo($"/updateseat/{seatId}?status={status}");
+        }
+    }
+    private async Task ToggleRoomStatus(SeatDTO seat, ChangeEventArgs e)
+    {
+        seat.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+
+        var roomUpdateRequest = new UpdateSeatDTO
+            {
+                ID = seat.ID,
+                SeatNumber = seat.SeatNumber,
+                Column = seat.Column,
+                Row = seat.Row,
+                SeatTypeID = seat.SeatTypeID,
+                Status = seat.Status
+            };
+
+        var response = await SeatService.UpdateSeate(roomUpdateRequest.ID, roomUpdateRequest);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Đảm bảo trạng thái ghế đã được cập nhật chính xác trong danh sách ghế.
+            var updatedSeat = seats.FirstOrDefault(s => s.ID == seat.ID);
+            if (updatedSeat != null)
+            {
+                updatedSeat.Status = seat.Status;
+            }
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error: {errorContent}");
+        }
     }
 }

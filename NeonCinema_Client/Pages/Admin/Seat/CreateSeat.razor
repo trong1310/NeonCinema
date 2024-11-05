@@ -1,112 +1,86 @@
 ﻿@page "/addseat"
-@using NeonCinema_Application.DataTransferObject.Room
-
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Application.DataTransferObject.SeatTypes
-@using NeonCinema_Client.Data.IServices.IRoom
 @using NeonCinema_Client.Data.IServices.Seat
 @using NeonCinema_Client.Data.IServices.SeatType
+@using System.Text.Json
+@using NeonCinema_Domain.Enum
 @inject ISeatService SeatService
-@inject IRoomService RoomService
 @inject ISeatTypeService SeatTypeService
 @inject NavigationManager Navigation
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMz43W8dC8wY9s6h0xT27i5u60hz4HhI1c8/1" crossorigin="anonymous">
 
-<h3>Thêm Ghế Mới</h3>
 
-<EditForm Model="newSeat" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="form-group">
-        <label for="seatNumber">Số Ghế:</label>
-        <InputText id="seatNumber" class="form-control" @bind-Value="newSeat.SeatNumber" />
-    </div>
-
-    <div class="form-group">
-        <label for="column">Cột:</label>
-        <InputText id="column" class="form-control" @bind-Value="newSeat.Column" />
-    </div>
-
-    <div class="form-group">
-        <label for="row">Hàng:</label>
-        <InputText id="row" class="form-control" @bind-Value="newSeat.Row" />
-    </div>
-
-    <div class="row">
-	   <div class="col-md-6">
+<div class="Addseat">
+    <h3  style="margin-top: 30px; margin-bottom: 30px; text-align:center">Thêm Ghế Mới</h3>
+    <EditForm Model="newSeat" OnValidSubmit="HandleValidSubmit">
+        <div class="form-group">
+            <label for="seatNumber">Số Ghế:</label>
+            <InputText id="seatNumber" class="form-control" @bind-Value="newSeat.SeatNumber" />
+        </div>
+        <div class="form-group">
+            <label for="column">Cột:</label>
+            <InputText id="column" class="form-control" @bind-Value="newSeat.Column" />
+        </div>
+        <div class="form-group">
+            <label for="row">Hàng:</label>
+            <InputText id="row" class="form-control" @bind-Value="newSeat.Row" />
+        </div>
+        <div class="col-md-6">
             <div class="form-group">
-                <label for="roomId">Chọn Phòng:</label>
-                <select @onchange="(e) => newSeat.RoomID = Guid.Parse(e.Value.ToString())">
-                    <option value="" disabled selected>Chọn phòng chiếu</option>
-                    @foreach (var item in rooms)
+                <label for="seattypeid">Chọn loại ghế:</label>
+                <InputSelect id="seattypeid" class="form-control" @bind-Value="newSeat.SeatTypeID">
+                    <option value="" disabled selected>Chọn loại ghế</option>
+                    @if (seatTypes != null && seatTypes.Count > 0)
                     {
-                        <option value="@item.ID">@item.Name</option>
+                        @foreach (var item in seatTypes)
+                        {
+                            <option value="@item.ID">@item.SeatTypeName</option>
+                        }
                     }
-                </select>
-                <ValidationMessage For="@(() => newSeat.RoomID)" />
+                </InputSelect>
+                <ValidationMessage For="@(() => newSeat.SeatTypeID)" />
             </div>
-	   </div>
-    </div>
+        </div>
+        <div class="form-group">
+            <label for="status">Trạng Thái:</label>
+            <InputSelect id="status" class="form-control" @bind-Value="newSeat.Status">
+                <option value="@(EntityStatus.Active)">Hoạt động</option>
+                <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+            </InputSelect>
+        </div>
 
-    <div class="form-group">
-        <label for="seattypeid">Chọn ghế:</label>
-        <select @onchange="(e) => newSeat.SeatTypeID = Guid.Parse(e.Value.ToString())">
-            <option value="" disabled selected>Chọn ghế</option>
-            @foreach (var item in seatTypes)
-            {
-                <option value="@item.ID">@item.SeatTypeName</option>
-            }
-        </select>
-        <ValidationMessage For="@(() => newSeat.SeatTypeID)" />
-    </div>
-
-    <div class="form-group">
-        <label for="status">Trạng Thái:</label>
-        <InputSelect id="status" class="form-control" @bind-Value="newSeat.Status">
-            <option value="1">Hoạt động</option>
-            <option value="2">Không hoạt động</option>
-        </InputSelect>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Thêm Ghế</button>
-    <button type="button" class="btn btn-secondary" @onclick="GoBack">Quay lại</button>
-</EditForm>
-
+        <div style="margin-top: 10px">
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Lưu</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack"><i class="fas fa-times"></i> Hủy</button>
+        </div>
+    </EditForm>
+</div>
+<style>
+    .Addseat {
+        width: 50%;
+        margin: 0 auto;
+    }
+</style>
 @code {
     private CreateSeatDTO newSeat = new CreateSeatDTO();
-    private List<RoomDTO> rooms = new List<RoomDTO>();
+
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        // Lấy danh sách phòng từ API
-        var roomResponse = await RoomService.GetAllRooms(CancellationToken.None);
-        if (roomResponse != null)
-        {
-            rooms = roomResponse.ToList();
-        }
-
-        // Lấy danh sách loại ghế từ API
-        var seatTypeResponse = await SeatTypeService.GetAllSeatType();
-        if (seatTypeResponse != null)
-        {
-            seatTypes = seatTypeResponse.ToList();
-        }
+        seatTypes = await SeatService.GetAllSeatType();
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleValidSubmit( )
     {
-        // Gọi API để thêm ghế mới
-        var result = await SeatService.CreateSeat(newSeat);
+        var result = await SeatService.CreateSeat(newSeat); 
 
-        if (result.IsSuccessStatusCode)
+        if (result.IsSuccessStatusCode) 
         {
-            // Điều hướng trở lại trang danh sách ghế sau khi thêm thành công
+           
             Navigation.NavigateTo("/listseat");
-        }
-        else
-        {
-            Console.WriteLine("Thêm ghế thất bại.");
         }
     }
 

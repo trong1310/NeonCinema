@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.Room;
+using NeonCinema_Application.DataTransferObject.Seats;
 
 namespace NeonCinema_Client.Data.IServices.IRoom
 {
@@ -8,5 +9,6 @@ namespace NeonCinema_Client.Data.IServices.IRoom
         Task<RoomDTO> GetRoomById(Guid id, CancellationToken cancellationToken);
         Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken);
         Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken);
+        Task<List<SeatDTO>> GetSeats();
     }
 }

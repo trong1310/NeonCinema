@@ -27,6 +27,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public string Images { get; set; }
 		[Range(1, int.MaxValue, ErrorMessage = "Tuổi phải lớn hơn 0")]
 		public int AgeAllowed { get; set; }
+
 		[Required(ErrorMessage = "Thể loại không được để trống")]
 		public Guid GenreID { get; set; }
 		[Required(ErrorMessage = "Ngôn ngữ không được để trống")]
@@ -35,8 +36,6 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public Guid CountryID { get; set; }
 		[Required(ErrorMessage = "Đạo diễn không được để trống")]
 		public Guid DirectorID { get; set; }
-        [Required(ErrorMessage = "Đạo diễn không được để trống")]
-        public Guid Actor { get; set; }
     }
     public class FutureDateAttribute : ValidationAttribute
     {

@@ -19,13 +19,12 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
-using NeonCinema_Application.Interface.Actors;
+
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
 using NeonCinema_Client.Data.Services.Promotion;
-using NeonCinema_Client.Data.IServices.Actor;
-using NeonCinema_Client.Data.Services.Actor;
+
 using NeonCinema_Client.Data.IServices.Director;
 using NeonCinema_Client.Data.Services.Director;
 using NeonCinema_Client.Data.IServices.MovieType;
@@ -46,12 +45,9 @@ using NeonCinema_Client.Data.Services.Genre;
 using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
 using Microsoft.AspNetCore.Components.Authorization;
-
-
+using Microsoft.IdentityModel.Tokens;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorPages();
@@ -61,27 +57,13 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddTransient<IFlimUsers, FlimUsers>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddDbContext<NeonCinemasContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-builder.Services.AddScoped<IActorService, ActorService>();
 builder.Services.AddScoped<IDirectorService, DirectorService>();
 builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
-
 builder.Services.AddTransient<IUserServices, UserServices>();
-
-
-
 builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
-
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
-
-
-
-
-
-
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
@@ -91,11 +73,9 @@ builder.Services.AddCors(options =>
                           policy.AllowAnyOrigin();
                       });
 });
-
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7211/") });
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-
+options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<LoginModels>();
 builder.Services.AddScoped<IUserServices, UserServices>();
@@ -104,22 +84,30 @@ builder.Services.AddScoped<IShowTimeService, ShowTimeService>();
 builder.Services.AddScoped<IScreeningService, ScreeningService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
-
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
-
-
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
-
-
-
 //builder.Services.AddScoped<ISeatService, SeatService>();
 
+builder.Services.AddAuthentication("Bearer")
+	.AddJwtBearer("Bearer", options =>
+	{
+		options.Authority = "https://localhost:7211"; // Địa chỉ máy chủ xác thực (auth server) của bạn
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateAudience = false
+		};
+	});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
+    options.AddPolicy("StaffPolicy", policy => policy.RequireRole("Staff"));
+});
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -129,7 +117,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseCors(MyAllowSpecificOrigins);
 app.MapBlazorHub();

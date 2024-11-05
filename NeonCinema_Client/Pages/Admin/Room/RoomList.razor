@@ -1,7 +1,11 @@
 ﻿@page "/rooms"
 @using NeonCinema_Application.DataTransferObject.Room
+@using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Client.Data.IServices.Seat
 @using NeonCinema_Domain.Enum
+@inject ISeatService SV
 @inject IRoomService RoomService
 @inject NavigationManager Navi
 @layout LayoutAdmin
@@ -27,6 +31,7 @@
                 <tr>
                     <th>Tên phòng</th>
                     <th>Sức chứa</th>
+                    <th>Ghế</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
                 </tr>
@@ -37,6 +42,8 @@
                     <tr>
                         <td><strong>@room.Name</strong></td>
                         <td>@room.SeatingCapacity</td>
+                        <td>@(seatNames.ContainsKey(room.SeatID) ? seatNames[room.SeatID] : "Loading...")</td>
+
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input"
@@ -46,7 +53,7 @@
                                        checked="@(room.Status == EntityStatus.Active)"
                                        @onchange="(e) => ToggleRoomStatus(room, e)" />
                                 <label class="form-check-label" for="flexSwitchCheckDefault_@(room.Status)">
-                                    @(room.Status == EntityStatus.Active ? "Mở" : "Đóng")
+                                    @(room.Status == EntityStatus.Active ? "đang chiếu" : "sắp chiếu")
                                 </label>
                             </div>
                         </td>
@@ -63,8 +70,6 @@
         <p>Loading...</p>
     }
 </div>
-
-<!-- Modal để thêm phòng mới -->
 @if (isCreateRoomModalVisible)
 {
     <div class="modal fade-in show" style="display:block; background-color:rgba(0, 0, 0, 0.5);" role="dialog">
@@ -90,7 +95,23 @@
                             <InputNumber id="seatingCapacity" class="form-control" @bind-Value="newRoom.SeatingCapacity" />
                             <ValidationMessage For="@(() => newRoom.SeatingCapacity)" />
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="seattypeid">Chọn  ghế:</label>
+                                <InputSelect id="seattypeid" class="form-control" @bind-Value="newRoom.SeatID">
+                                    <option value="" disabled selected>Chọn ghế</option>
+                                    @if (seatDTOs != null && seatDTOs.Count > 0)
+                                    {
+                                        @foreach (var item in seatDTOs)
+                                        {
+                                            <option value="@item.ID">@item.SeatTypeName</option>
+                                        }
+                                    }
+                                </InputSelect>
 
+                                <ValidationMessage For="@(() => newRoom.SeatID)" />
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Trạng thái</label>
                             <InputSelect id="status" class="form-control" @bind-Value="newRoom.Status">
@@ -108,7 +129,7 @@
         </div>
     </div>
 }
-<!-- Modal để chỉnh sửa phòng -->
+
 @if (isEditRoomModalVisible)
 {
     <div class="modal fade-in show" style="display:block; background-color:rgba(0, 0, 0, 0.5);" role="dialog">
@@ -161,25 +182,55 @@
 }
 @code {
     private List<RoomDTO> rooms;
-    private RoomDTO newRoom = new RoomDTO(); // Đối tượng phòng mới
-    private RoomDTO selectedRoom; // Đối tượng phòng được chọn để chỉnh sửa
-    private bool isCreateRoomModalVisible = false; // Hiển thị modal tạo phòng
-    private bool isEditRoomModalVisible = false; // Hiển thị modal chỉnh sửa
-    private string searchTerm = string.Empty; // Thêm biến lưu giá trị tìm kiếm
+    private RoomDTO newRoom = new RoomDTO();
+    private RoomDTO selectedRoom;
+    public List<SeatDTO> seatDTOs = new List<SeatDTO>();
+    private RoomCreateRequest newR = new RoomCreateRequest();
+    private bool isCreateRoomModalVisible = false;
+    private bool isEditRoomModalVisible = false;
+    private string searchTerm = string.Empty;
+    private Dictionary<Guid, string> seatNames = new Dictionary<Guid, string>();
 
-    // Lọc danh sách phòng theo tên dựa trên searchTerm
+
+
+    private async Task LoadSeatNamesAsync()
+    {
+        foreach (var room in rooms)
+        {
+            if (!seatNames.ContainsKey(room.SeatID))
+            {
+                var seatName = await SV.GetSeatById(room.SeatID);
+                seatNames[room.SeatID] = seatName?.SeatTypeName ?? "Unknown Seat";
+            }
+        }
+    }
+    
     private List<RoomDTO> FilteredRooms => string.IsNullOrEmpty(searchTerm)
-        ? rooms // Nếu không có tìm kiếm, hiển thị toàn bộ danh sách phòng
-        : rooms.Where(r => r.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList(); // Lọc danh sách phòng theo tên
+        ? rooms 
+        : rooms.Where(r => r.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList(); 
 
     protected override async Task OnInitializedAsync()
     {
         rooms = await RoomService.GetAllRooms(CancellationToken.None);
-    }
+        seatDTOs = await RoomService.GetSeats();
 
-    private void ShowCreateRoomModal()
+        // Debugging to check if seatDTOs contains expected data
+        if (seatDTOs == null || seatDTOs.Count == 0)
+        {
+            Console.WriteLine("No seat types found.");
+        }
+        await LoadSeatNamesAsync();
+    }
+    
+
+    private async void  ShowCreateRoomModal()
     {
         isCreateRoomModalVisible = true;
+        // Optionally, fetch seat types again or confirm they're already loaded
+        if (seatDTOs == null || seatDTOs.Count == 0)
+        {
+            seatDTOs = await RoomService.GetSeats();
+        }
     }
 
     private void HideCreateRoomModal()
@@ -189,13 +240,13 @@
 
     private void ShowEditRoomModal(RoomDTO room)
     {
-        selectedRoom = room; // Lấy thông tin phòng cần chỉnh sửa
-        isEditRoomModalVisible = true; // Hiển thị modal chỉnh sửa
+        selectedRoom = room; 
+        isEditRoomModalVisible = true; 
     }
 
     private void HideEditRoomModal()
     {
-        isEditRoomModalVisible = false; // Ẩn modal chỉnh sửa
+        isEditRoomModalVisible = false; 
     }
 
     private async Task CreateRoom()
@@ -207,6 +258,7 @@
                     Name = newRoom.Name,
                     SeatingCapacity = newRoom.SeatingCapacity,
                     Status = newRoom.Status,
+                    SeatID = newRoom.SeatID,
                     CinemasID = newRoom.ID
                 };
 
@@ -214,8 +266,20 @@
 
             isCreateRoomModalVisible = false;
             rooms = await RoomService.GetAllRooms(CancellationToken.None);
+            // Force a state update to ensure UI re-renders
+            StateHasChanged();
         }
     }
+
+
+
+
+
+
+
+
+
+
 
     private async Task UpdateRoom()
     {
@@ -227,7 +291,7 @@
                     Name = selectedRoom.Name,
                     SeatingCapacity = selectedRoom.SeatingCapacity,
                     Status = selectedRoom.Status,
-                    // CinemasID = selectedRoom.CinemasID // Thêm nếu cần
+                    // CinemasID = selectedRoom.CinemasID
                 };
 
             var response = await RoomService.UpdateRoom(roomUpdateRequest.ID, roomUpdateRequest, CancellationToken.None);
@@ -235,7 +299,7 @@
             if (response.IsSuccessStatusCode)
             {
                 rooms = await RoomService.GetAllRooms(CancellationToken.None);
-                isEditRoomModalVisible = false; // Ẩn modal sau khi cập nhật
+                isEditRoomModalVisible = false; 
             }
             else
             {

@@ -36,43 +36,42 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         }
         public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var movies = new Movies()
-                {
-                    ID = Guid.NewGuid(),
+			try
+			{
+				var movies = new Movies()
+				{
+					ID = Guid.NewGuid(),
+					Duration = request.Duration,
+					Name = request.Name,
+					Trailer = request.Trailer,
+					Description = request.Description,
+					StarTime = request.StarTime,
+					Images = request.Images,
+					AgeAllowed = request.AgeAllowed,
+					Status = MovieStatus.Comingsoon,
+					GenreID = request.GenreID,
+					LenguageID = request.LenguageID,
+					CountryID = request.CountryID,
+					DirectorID = request.DirectorID,
+					CreatedTime = DateTime.Now,
+                    
+				};
+				await _context.Movies.AddAsync(movies);
+				await _context.SaveChangesAsync(cancellationToken);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Thêm thành công")
 
-                    Duration = request.Duration,
-                    Name = request.Name,
-                    Trailer = request.Trailer,
-                    Description = request.Description,
-                    StarTime = request.StarTime,
-                    Images = request.Images,
-                    AgeAllowed = request.AgeAllowed,
-                    Status = MovieStatus.Comingsoon,
-                    GenreID = request.GenreID,
-                    LenguageID = request.LenguageID,
-                    CountryID = request.CountryID,
-                    DirectorID = request.DirectorID,
-                    CreatedTime = DateTime.Now,
-
-                };
-                await _context.Movies.AddAsync(movies);
-                await _context.SaveChangesAsync(cancellationToken);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Thêm thành công")
-
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
-                };
-            }
-        }
+				};
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+				{
+					Content = new StringContent("có lỗi xảy ra" + ex.Message)
+				};
+			}
+		}
 
 
 
@@ -151,7 +150,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
                             }).ToList();
 
-            return new PaginationResponse<MovieDTO>() 
+            return new PaginationResponse<MovieDTO>()
             {
                 Data = dataview,
                 HasNext = result.HasNext,
@@ -173,10 +172,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
 
-                if (movie == null)
-                {
-                    return null; 
-                }
+            if (movie == null)
+            {
+                return null;
+            }
 
             var movieDTO = new MovieDTO
             {
@@ -211,7 +210,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                         Content = new StringContent("Không tìm thấy phim")
                     };
                 }
-                obj.Duration = request.Duration ;
+                obj.Duration = request.Duration;
                 obj.Name = request.Name;
                 obj.Status = request.Status;
                 obj.AgeAllowed = request.AgeAllowed;
@@ -223,6 +222,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 obj.LenguageID = request.LenguageID;
                 obj.StarTime = request.StarTime;
                 obj.ModifiedTime = DateTime.UtcNow;
+                obj.Images = request.Images;
                 _context.Movies.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)

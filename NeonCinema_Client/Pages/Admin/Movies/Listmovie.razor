@@ -1,4 +1,6 @@
 ﻿@page "/list-movie-admin"
+@using NeonCinema_Application.DataTransferObject.ActorMoives
+@using NeonCinema_Application.DataTransferObject.Actors
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.IMoviesServices
@@ -6,7 +8,7 @@
 @inject IMovieservices _movieservices
 @inject NavigationManager Navigation
 
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <h2 class="d-flex justify-content-center align-content-center m-auto">Danh Sách Phim</h2>
 <div class="container-fluid mt-5">
@@ -53,6 +55,7 @@
                 <th class="text-center">Tên</th>
                 <th class="text-center">Ngày phát hành</th>
                 <th class="text-center">Thời lượng</th>
+                * <th class="text-center">Diễn viên chính</th> 
                 <th class="text-center">Thể loại</th>
                 <th class="text-center">Độ tuổi</th>
                 <th class="text-center">Trạng thái</th>                
@@ -71,6 +74,7 @@
                         <td class="text-center align-middle">@item.Name</td>
                         <td class="text-center align-middle">@item.StarTime.ToString("dd/MM/yyyy")</td>
                         <td class="text-center align-middle">@item.Duration</td>
+                        @* <td class="text-center align-middle"></td> *@
                         <td class="text-center align-middle">@item.GenreName</td>
                         <td class="text-center align-middle">@item.AgeAllowed</td>
                         <td class="text-center align-middle">
@@ -79,8 +83,8 @@
                             </span>
                         </td>
                         <td class="text-center align-middle">
-                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToDetail(item.ID)">
-                                <i class="fa-light fa-circle-info"></i>
+                            <button class="btn btn-outline-primary btn-sm " style="border: none;" @onclick=" () => NavigateUpdate(item.ID)">
+                                <i class="fas fa-edit"></i>
                             </button>
                         </td>
                     </tr>
@@ -108,16 +112,35 @@
     private int countPage = 1;
     private int stt = 1;
     private string errorMessage;
-
+    private bool isActorModalOpen = false;
+    private CreateActorMoviesRequest requestmovies = new CreateActorMoviesRequest();
+    private ViewActorRequest requestActor = new ViewActorRequest();
     ViewMovieRequest request = new ViewMovieRequest();
     PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
+    PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadMovies();
-
+        actors = await _movieservices.GetActor(requestActor);
     }
-
+    private List<Guid> selectedActors = new List<Guid>();
+    private string selectedActorsText = string.Empty;
+    private void ToggleActorSelection(Guid actorId, bool isSelected)
+    {
+        if (isSelected)
+        {
+            if (!selectedActors.Contains(actorId))
+                selectedActors.Add(actorId);
+        }
+        else
+        {
+            selectedActors.Remove(actorId);
+        }
+        selectedActorsText = string.Join(", ", actors.Data
+        .Where(a => selectedActors.Contains(a.ID))
+        .Select(a => a.FullName));
+    }
     public async Task LoadMovies()
     {
         try
@@ -146,9 +169,29 @@
     {
         Navigation.NavigateTo($"/create-flims");
     }
+    private async Task NavigateUpdate(Guid id)
+    {
+        Navigation.NavigateTo($"/movie-update/{id}");
+    }
     private async Task NavigateToDetail(Guid id)
     {
         Navigation.NavigateTo($"/movies-dialog/{id}");
+    }
+    private void OpenActorDialog()
+    {
+        isActorModalOpen = true; // Mở modal
+    }
+
+    private void CloseActorDialog()
+    {
+        isActorModalOpen = false; // Đóng modal
+    }
+
+    private void SelectActors()
+    {
+        // Logic xử lý cho việc chọn diễn viên
+        // Có thể thêm logic khác nếu cần
+        CloseActorDialog(); // Đóng modal sau khi chọn
     }
 }
 
@@ -180,4 +223,56 @@
             font-size: 16px; /* Tăng kích thước chữ trong các thẻ td */
             padding: 12px; /* Tăng khoảng cách giữa nội dung và đường viền của ô */
         }
+
+    .modal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
+        z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
+    }
+
+    .modal-dialog {
+        max-width: 1500px; /* Tăng chiều rộng tối đa của dialog */
+        max-height: 80vh;
+        width: 50%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
+        margin: auto; /* Để căn giữa modal */
+        overflow-y: auto;
+    }
+
+    .modal-content {
+        padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
+    }
+
+
+    .no-hover {
+        border: none; /* Bỏ viền */
+        background-color: transparent; /* Bỏ nền */
+        outline: none; /* Bỏ viền ngoài */
+        cursor: pointer; /* Con trỏ vẫn là tay khi hover */
+    }
+
+        .no-hover:hover {
+            background-color: transparent;
+            color: inherit;
+            outline: none;
+        }
+
+        .no-hover:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+    .position-relative {
+        position: relative;
+    }
+
+    
+
+   
+
+
 </style>

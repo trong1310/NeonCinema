@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
-using NeonCinema_Application.Interface.Actors;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Application.Interface.Genre;
@@ -38,6 +37,8 @@ using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Application.Interface.UserFlims;
 using NeonCinema_Infrastructure.Implement.UserMovies;
 using NeonCinema_Infrastructure.Implement.Promotion_R;
+using NeonCinema_Infrastructure.Implement.Acotr;
+using NeonCinema_Infrastructure.Implement.ActorMovies;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -49,12 +50,12 @@ namespace NeonCinema_Infrastructure.Extention
             {
 
                 options.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True\"");
-              //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
-    
-             });
+                //  options.UseSqlServer("Server=CUONG;Database=NeonCenima;Trusted_Connection=True;TrustServerCertificate=True");
 
-            
-            
+            });
+
+
+
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
             services.AddTransient<IPointRepositories, PointRepositories>();
@@ -77,13 +78,14 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ISeatShowTimeStatusRepository, SeatShowTimeStatusRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();
-            services.AddScoped<IMovieTypeRepositories,MovieTypeRepositories>();
+            services.AddScoped<IMovieTypeRepositories, MovieTypeRepositories>();
             services.AddScoped<IMovieRepositories, MovieRepositories>();
-            services.AddScoped<ICategoryMovieRepositories,CategoriMovieRepositories>();
+            services.AddScoped<ICategoryMovieRepositories, CategoriMovieRepositories>();
             services.AddTransient<IUserMovies, UserMoviess>();
             services.AddScoped<IEntityRepository<Promotion>, PromotionRepository>();
             services.AddScoped<IEntityRepository<PromotionUsers>, PromotionCustomerResp>();
-            
+            services.AddTransient<ActorResp>();
+            services.AddTransient<ActorMoviesResp>();
             return services;
         }
     }

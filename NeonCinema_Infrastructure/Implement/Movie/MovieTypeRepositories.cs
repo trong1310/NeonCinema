@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using NeonCinema_Application.DataTransferObject.Actors;
+
 using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.Interface.Movie;
 using NeonCinema_Domain.Database.Entities;

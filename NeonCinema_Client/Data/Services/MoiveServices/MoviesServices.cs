@@ -1,5 +1,8 @@
 ﻿using Bogus.Hollywood.DataSets;
 using Bogus.Hollywood.Models;
+using NeonCinema_Application.DataTransferObject.ActorMoives;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
+using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
@@ -23,12 +26,12 @@ namespace NeonCinema_Client.Services.MoivesService
         {
             _httpClient = new HttpClient();
         }
-        public async Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request)
+		public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
         {
             
             try
             {
-                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", request);
+                var result = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Movie/Create", request,cancellationToken);
                 return result;
             }
             catch (Exception ex)
@@ -41,8 +44,17 @@ namespace NeonCinema_Client.Services.MoivesService
             }
 
         }
-		
-		public async Task<List<GenreDTO>> GetAllGenre()
+		public async Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActormovies", request);
+			return respones;
+		}
+		public async Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
+        {
+            var respones = await _httpClient.GetFromJsonAsync<PaginationResponse<ActorDTO>>("https://localhost:7211/api/Actor/getactor");
+            return respones;
+        }
+        public async Task<List<GenreDTO>> GetAllGenre()
         {
             var lst = await _httpClient.GetFromJsonAsync<List<GenreDTO>>("https://localhost:7211/api/Genre/get-all-genre");
             return lst;
@@ -90,6 +102,11 @@ namespace NeonCinema_Client.Services.MoivesService
             var respones = await _httpClient.GetFromJsonAsync<MovieDTO>($"https://localhost:7211/api/Movie/GetById?id={id}");
             return respones;
         }
+
+		public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 
