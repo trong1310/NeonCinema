@@ -1,4 +1,7 @@
-﻿using NeonCinema_Application.DataTransferObject.Countrys;
+﻿using NeonCinema_Application.DataTransferObject.ActorMoives;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
+using NeonCinema_Application.DataTransferObject.Actors;
+using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
@@ -16,8 +19,11 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
         public Task<List<CountryDTO>> GetAllCountry();
         public Task<List<DirectorDTO>> GetAllDirector();
         public Task<List<LanguageDTO>> GetAllLanguage();
-        public Task<HttpResponseMessage> CreateMovie(CreateMovieRequest request);
-        public Task<HttpResponseMessage> Update(UpdateMovieRequest request);
+		public Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken);
+		public Task<HttpResponseMessage> Update(UpdateMovieRequest request);
         public Task<MovieDTO> GetMovieById(Guid id);
-    }
+        public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request);
+		public Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request);
+        public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken);
+	}
 }

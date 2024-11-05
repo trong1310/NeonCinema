@@ -80,20 +80,21 @@
                     var claim = token.Claims;
                     var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                    var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone").Value;
-                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
-                    var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress").Value;
-                    var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
-                    var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender").Value;
-                    var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
-                    var images = claim.FirstOrDefault(c => c.Type == "profile_image_url").Value;
-                    await _localstorage.SetItemAsync("userId", nameidentifier.Trim());
-                    await _localstorage.SetItemAsync("mobilephone", mobilephone.Trim());
-                    await _localstorage.SetItemAsync("email", email.Trim());
-                    await _localstorage.SetItemAsync("address", address.Trim());
-                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth.Trim());
-                    await _localstorage.SetItemAsync("gender", gender.Trim());
-                    await _localstorage.SetItemAsync("name", name.Trim());
+                    var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value;
+                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+                    var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value;
+                    var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value;
+                    var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value;
+                    var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                    var images = claim.FirstOrDefault(c => c.Type == "profile_image_url")?.Value;
+                    await _localstorage.SetItemAsync("userId", nameidentifier?.Trim());
+                    await _localstorage.SetItemAsync("mobilephone", mobilephone?.Trim());
+                    await _localstorage.SetItemAsync("email", email?.Trim());
+                    await _localstorage.SetItemAsync("address", address?.Trim());
+                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth?.Trim());
+                    await _localstorage.SetItemAsync("gender", gender?.Trim());
+                    await _localstorage.SetItemAsync("name", name?.Trim());
+                    await _localstorage.SetItemAsync("role", role?.Trim());
 
                     if (role.Equals("Admin"))
                     {
