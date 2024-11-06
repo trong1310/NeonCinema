@@ -14,11 +14,12 @@ namespace NeonCinema_Domain.Database.Entities
         public string Location { get; set; }
         public string PhoneNumber { get; set; }
         public string WebSite { get; set; }
+        public Guid RoomId { get; set; }
         public string OpeningHours { get; set; }
         public string ClosingHours { get; set; }
         public int RoomNumber { get; set; }
 
-        public virtual ICollection<Room>? Rooms { get; set; }
+        public virtual Room? Rooms { get; set; }
         public virtual ICollection<Ticket>? TicketSeats { get; set; }
     }
 }
