@@ -31,7 +31,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Name = request.Name,
                 SeatingCapacity = request.SeatingCapacity,
                 Status = request.Status, 
-                CinemasID = request.CinemasID,
+              //  CinemasID = request.CinemasID,
                 SeatID = request.SeatID
             };
 

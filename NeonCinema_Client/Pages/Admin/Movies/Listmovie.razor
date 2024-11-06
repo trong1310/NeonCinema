@@ -1,5 +1,6 @@
 ﻿@page "/list-movie-admin"
 @using NeonCinema_Application.DataTransferObject.ActorMoives
+@using NeonCinema_Application.DataTransferObject.ActorMovies
 @using NeonCinema_Application.DataTransferObject.Actors
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Application.Pagination
@@ -12,267 +13,258 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <h2 class="d-flex justify-content-center align-content-center m-auto">Danh Sách Phim</h2>
 <div class="container-fluid mt-5">
-    <div class="row mb-4 p-3 search-filter-container">
-        <div class="col-md-4" style="margin-top:7px">
-            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
-        </div>
+	<div class="row mb-4 p-3 search-filter-container">
+		<div class="col-md-4" style="margin-top:7px">
+			<input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="request.SearchName" @oninput="SearchName" />
+		</div>
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-4">
+					<label class="form-label">Trạng thái:</label>
+				</div>
+				<div class="col-md-8">
+					<div class="d-flex">
+						<div class="form-check me-3">
+							<input class="form-check-input" type="radio" name="status" id="all" value="all" @onchange="StatusChanged" checked>
+							<label class="form-check-label" for="all">Tất Cả</label>
+						</div>
+						<div class="form-check me-3 ml-4">
+							<input class="form-check-input" type="radio" name="status" id="active" value="Active" @onchange="StatusChanged">
+							<label class="form-check-label" for="resigned">Phim sắp chiếu</label>
+						</div>
+					</div>
+					<div class="form-check mt-1">
+						<input class="form-check-input" type="radio" name="status" id="pendingConfirmation" value="Comingsoon" @onchange="StatusChanged">
+						<label class="form-check-label" for="resigned">Phim đang chiếu</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="NavigateToCreate">
+		<i class="fas fa-plus"></i> Thêm phim mới
+	</button>
+	<table class="table table-hover employee-table">
+		<thead>
+			<tr>
+				<th class="text-center">STT</th>
+				<th class="text-center">Ảnh</th>
+				<th class="text-center">Tên</th>
+				<th class="text-center">Ngày phát hành</th>
+				<th class="text-center">Thời lượng</th>
+				*
+				<th class="text-center">Diễn viên chính</th>
+				<th class="text-center">Thể loại</th>
+				<th class="text-center">Độ tuổi</th>
+				<th class="text-center">Trạng thái</th>
+				<th class="text-center">Hành động</th>
+			</tr>
+		</thead>
 
-        <div class="col-md-4" style="margin-top:7px">
-            <input type="text" class="form-control" placeholder="Tìm kiếm theo tuổi..." />
-        </div>
-        <div class="col-md-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <label class="form-label">Trạng thái:</label>
-                </div>
-                <div class="col-md-8">
-                    <div class="d-flex">
-                        <div class="form-check me-3">
-                            <input class="form-check-input" type="radio" name="status" id="all" value="all" checked>
-                            <label class="form-check-label" for="all">Tất Cả</label>
-                        </div>
-                        <div class="form-check me-3 ml-4">
-                            <input class="form-check-input" type="radio" name="status" id="active" value="active" >
-                            <label class="form-check-label" for="resigned">Phim sắp chiếu</label>
-                        </div>
-                    </div>
-                    <div class="form-check mt-1">
-                        <input class="form-check-input" type="radio" name="status" id="pendingConfirmation" value="pendingConfirmation" >
-                        <label class="form-check-label" for="resigned">Phim đang chiếu</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="NavigateToCreate">
-        <i class="fas fa-plus"></i> Thêm phim mới
-    </button>
-    <table class="table table-hover employee-table">
-        <thead>
-            <tr>
-                <th class="text-center">STT</th>
-                <th class="text-center">Ảnh</th>
-                <th class="text-center">Tên</th>
-                <th class="text-center">Ngày phát hành</th>
-                <th class="text-center">Thời lượng</th>
-               @*  * <th class="text-center">Diễn viên chính</th>  *@
-                <th class="text-center">Thể loại</th>
-                <th class="text-center">Độ tuổi</th>
-                <th class="text-center">Trạng thái</th>                
-                <th class="text-center">Hành động</th>
-            </tr>
-        </thead>
+		@if (movieDto.Data != null)
+		{
+			<tbody>
+				@foreach (var item in movieDto.Data)
+				{
 
-        @if (movieDto.Data != null)
-        {
-            <tbody>
-                @foreach (var item in movieDto.Data)
-                {
-                    <tr>
-                        <td class="text-center align-middle">@stt</td>
-                        <td class="text-center align-middle"><img src="@GetImageUrl(item.Images)" alt="Alternate Text" style="height: 90px; width: 70px" /></td>
-                        <td class="text-center align-middle">@item.Name</td>
-                        <td class="text-center align-middle">@item.StarTime.ToString("dd/MM/yyyy")</td>
-                        <td class="text-center align-middle">@item.Duration</td>
-                        @* <td class="text-center align-middle"></td> *@
-                        <td class="text-center align-middle">@item.GenreName</td>
-                        <td class="text-center align-middle">@item.AgeAllowed</td>
-                        <td class="text-center align-middle">
-                            <span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-success" : "bg-danger") text-light small-badge">
-                                @(item.Status == MovieStatus.Comingsoon ? "Commingsoon" : "Inactive")
-                            </span>
-                        </td>
-                        <td class="text-center align-middle">
-                            <button class="btn btn-outline-primary btn-sm " style="border: none;" @onclick=" () => NavigateUpdate(item.ID)">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    stt++;
-                }
-            </tbody>
-        }
-        else
-        {
-            <tbody>
-                <tr>
-                    <td colspan="7" class="text-center">Không có dữ liệu...</td>
-                </tr>
-            </tbody>
-        }
-    </table>
+					<tr>
+						<td class="text-center align-middle">@stt</td>
+						<td class="text-center align-middle"><img src="@GetImageUrl(item.Images)" alt="Alternate Text" style="height: 20%; width: 20%" /></td>
+						<td class="text-center align-middle">@item.Name</td>
+						<td class="text-center align-middle">@item.StarTime.ToString("dd/MM/yyyy")</td>
+						<td class="text-center align-middle">@item.Duration</td>
+						<td class="text-center align-middle">
+							@(item.ActorMovies != null && item.ActorMovies.Any()
+														? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
+														: "Không có diễn viên")
+						</td>
+						<td class="text-center align-middle">@item.GenreName</td>
+						<td class="text-center align-middle">@item.AgeAllowed</td>
+						<td class="text-center align-middle">
+							<span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-primary" : "bg-success") text-light small-badge">
+								@(item.Status == MovieStatus.Comingsoon ? "Sắp Chiếu" : "Đang chiếu")
+							</span>
+						</td>
+						<td class="text-center align-middle">
+							<button class="btn btn-outline-primary btn-sm " style="border: none;" @onclick=" () => NavigateUpdate(item.ID)">
+								<i class="fas fa-edit"></i>
+							</button>
+						</td>
+					</tr>
+					stt++;
+
+				}
+			</tbody>
+		}
+		else
+		{
+			<tbody>
+				<tr>
+					<td colspan="7" class="text-center">Không có dữ liệu...</td>
+				</tr>
+			</tbody>
+		}
+	</table>
 </div>
 
 <MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
-    <MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
+	<MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
 </MudBlazor.MudContainer>
 
 @code {
-    private bool hover = true;
-    private int countPage = 1;
-    private int stt = 1;
-    private string errorMessage;
-    private bool isActorModalOpen = false;
-    private CreateActorMoviesRequest requestmovies = new CreateActorMoviesRequest();
-    private ViewActorRequest requestActor = new ViewActorRequest();
-    ViewMovieRequest request = new ViewMovieRequest();
-    PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
-    PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
+	private bool hover = true;
+	private int countPage = 1;
+	private int stt = 1;
+	private string errorMessage;
+	private bool isActorModalOpen = false;
+	ViewMovieRequest request = new ViewMovieRequest();
+	PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
+	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
+	public Guid movieID;
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMovies();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadMovies();
-        actors = await _movieservices.GetActor(requestActor);
-    }
-    private List<Guid> selectedActors = new List<Guid>();
-    private string selectedActorsText = string.Empty;
-    private void ToggleActorSelection(Guid actorId, bool isSelected)
-    {
-        if (isSelected)
-        {
-            if (!selectedActors.Contains(actorId))
-                selectedActors.Add(actorId);
-        }
-        else
-        {
-            selectedActors.Remove(actorId);
-        }
-        selectedActorsText = string.Join(", ", actors.Data
-        .Where(a => selectedActors.Contains(a.ID))
-        .Select(a => a.FullName));
-    }
-    public async Task LoadMovies()
-    {
-        try
-        {
-            movieDto.Data = null;
-            request.PageNumber = countPage;
-            movieDto = await _movieservices.GetAllMovies(request);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Có lỗi xảy ra: {ex.Message}";
-        }
-    }
+	}
+	public async Task LoadMovies()
+	{
+		try
+		{
+			movieDto.Data = null;
+			request.PageNumber = countPage;
+			movieDto = await _movieservices.GetAllMovies(request);
+			foreach (var movies in movieDto.Data)
+			{
+				var actors = await _movieservices.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
+				movies.ActorMovies = actors;
+			}
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Có lỗi xảy ra: {ex.Message}";
+		}
+	}
 
-    public async Task OnPaginationSelectedChanged(int selectedPage)
-    {
-        countPage = selectedPage;
-        await LoadMovies();
-    }
+	public async Task OnPaginationSelectedChanged(int selectedPage)
+	{
+		countPage = selectedPage;
+		await LoadMovies();
+	}
 
-    private string GetImageUrl(string imageUrl)
-    {
-        return $"https://localhost:7211/api/Resources/{imageUrl}";
-    }
-    private async Task NavigateToCreate()
-    {
-        Navigation.NavigateTo($"/create-flims");
-    }
-    private async Task NavigateUpdate(Guid id)
-    {
-        Navigation.NavigateTo($"/movie-update/{id}");
-    }
-    private async Task NavigateToDetail(Guid id)
-    {
-        Navigation.NavigateTo($"/movies-dialog/{id}");
-    }
-    private void OpenActorDialog()
-    {
-        isActorModalOpen = true; // Mở modal
-    }
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private async Task NavigateToCreate()
+	{
+		Navigation.NavigateTo($"/create-flims");
+	}
+	private async Task NavigateUpdate(Guid id)
+	{
+		Navigation.NavigateTo($"/movie-update/{id}");
+	}
+	private async Task NavigateToDetail(Guid id)
+	{
+		Navigation.NavigateTo($"/movies-dialog/{id}");
+	}
 
-    private void CloseActorDialog()
-    {
-        isActorModalOpen = false; // Đóng modal
-    }
-
-    private void SelectActors()
-    {
-        // Logic xử lý cho việc chọn diễn viên
-        // Có thể thêm logic khác nếu cần
-        CloseActorDialog(); // Đóng modal sau khi chọn
-    }
+	public List<MovieDTO> filterFilms = new List<MovieDTO>();
+	private string selectedStatus = "all";
+	private void FilterFlims()
+	{
+		filterFilms = filterFilms.Where(u =>
+				u.Name == request.SearchName &&
+				(selectedStatus == "all" ||
+				(selectedStatus == "active" && u.Status == MovieStatus.Active) ||
+				(selectedStatus == "pendingConfirmation" && u.Status == MovieStatus.Comingsoon))).ToList();
+	}
+	private void SearchName (ChangeEventArgs e)
+	{
+		request.SearchName = e.Value?.ToString() ?? string.Empty;
+		FilterFlims();
+	}
+	private void StatusChanged(ChangeEventArgs e)
+	{
+		selectedStatus = e.Value?.ToString() ?? "all";
+		FilterFlims();
+	}
 }
 
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
-    }
-    .container-fluid {
-        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
-    }
+	body {
+		background-color: #f8f9fa;
+		font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+	}
 
-    .search-filter-container {
-        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
-        border-radius: 8px; /* Bo góc cho khung */
-        padding: 20px; /* Padding cho khung */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
-        margin-left: 1px;
-        margin-right: 1px;
-    }
-    .employee-table {
-        background-color: white; /* Màu nền bảng là trắng */
-        border-radius: 8px; /* Bo góc bảng */
-        overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
-    }
+	.container-fluid {
+		font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+	}
 
-        .employee-table td {
-            font-size: 16px; /* Tăng kích thước chữ trong các thẻ td */
-            padding: 12px; /* Tăng khoảng cách giữa nội dung và đường viền của ô */
-        }
+	.search-filter-container {
+		background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
+		border-radius: 8px; /* Bo góc cho khung */
+		padding: 20px; /* Padding cho khung */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
+		margin-left: 1px;
+		margin-right: 1px;
+	}
 
-    .modal {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
-        z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
-    }
+	.employee-table {
+		background-color: white; /* Màu nền bảng là trắng */
+		border-radius: 8px; /* Bo góc bảng */
+		overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+	}
 
-    .modal-dialog {
-        max-width: 1500px; /* Tăng chiều rộng tối đa của dialog */
-        max-height: 80vh;
-        width: 50%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
-        margin: auto; /* Để căn giữa modal */
-        overflow-y: auto;
-    }
+		.employee-table td {
+			font-size: 16px; /* Tăng kích thước chữ trong các thẻ td */
+			padding: 12px; /* Tăng khoảng cách giữa nội dung và đường viền của ô */
+		}
 
-    .modal-content {
-        padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
-    }
+	.modal {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
+		z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
+	}
+
+	.modal-dialog {
+		max-width: 1500px; /* Tăng chiều rộng tối đa của dialog */
+		max-height: 80vh;
+		width: 50%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
+		margin: auto; /* Để căn giữa modal */
+		overflow-y: auto;
+	}
+
+	.modal-content {
+		padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
+	}
 
 
-    .no-hover {
-        border: none; /* Bỏ viền */
-        background-color: transparent; /* Bỏ nền */
-        outline: none; /* Bỏ viền ngoài */
-        cursor: pointer; /* Con trỏ vẫn là tay khi hover */
-    }
+	.no-hover {
+		border: none; /* Bỏ viền */
+		background-color: transparent; /* Bỏ nền */
+		outline: none; /* Bỏ viền ngoài */
+		cursor: pointer; /* Con trỏ vẫn là tay khi hover */
+	}
 
-        .no-hover:hover {
-            background-color: transparent;
-            color: inherit;
-            outline: none;
-        }
+		.no-hover:hover {
+			background-color: transparent;
+			color: inherit;
+			outline: none;
+		}
 
-        .no-hover:focus {
-            outline: none;
-            box-shadow: none;
-        }
+		.no-hover:focus {
+			outline: none;
+			box-shadow: none;
+		}
 
-    .position-relative {
-        position: relative;
-    }
-
-    
-
-   
-
+	.position-relative {
+		position: relative;
+	}
 
 </style>
