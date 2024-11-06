@@ -3,6 +3,7 @@
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Promotion
 @using NeonCinema_Client.DataTransferObject.Users
+@using NeonCinema_Domain.Database.Entities
 @using NeonCinema_Infrastructure.Extention.Utilis
 @layout LayoutAdmin
 @inject NavigationManager _nav
@@ -159,6 +160,62 @@
 						</div>
 					</div>
 				}
+				else if (isModalVisible == 2)
+				{
+					<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content" style="width: 1000px; right: 30%;">
+								<div class="modal-header">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="col-5">
+												<h6>Danh sách khách hàng được áp dụng mã</h6>
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<div class="modal-body">
+									<div class="col-12 p-3">
+										<div class="row">
+											<div>
+												@* <div class="row">
+													<InputText @bind-Value="inputSearchUser" @oninput="OnInputChanged" class="form-control" Placeholder="Tìm kiếm theo tên" />
+												</div> *@
+												<div class="row rounded border mt-2 " style="height:300px; overflow-y: auto;">
+													<table class="table">
+														<thead style="position: sticky; top: 0; background-color: white;">
+															<tr>
+																<th>Tên đầy đủ</th>
+																<th>Số điện thoại</th>
+																<th>Email</th>
+															</tr>
+														</thead>
+														<tbody>
+															@foreach (var item in _lstUser)
+															{
+																<tr>
+																	<td>@item.FullName</td>
+																	<td>@item.PhoneNumber</td>
+																	<td>@item.Email</td>
+																</tr>
+															}
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
 				//Comfirm delete
 				else if (isModalVisible == 3)
 				{
@@ -299,7 +356,7 @@
 								<td>@item.value.EndDate.ToShortDateString()</td>
 								<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
 								<td>
-									<button @onclick="OpenModal2" class="btn"><i class="fa-solid fa-user-plus" style="color: #74C0FC;"></i></button>
+									<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 									<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
 									<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
 								</td>
@@ -337,7 +394,9 @@
 	int stt = 1;
 	private string inputSearchUser = "";
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
+	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
 	private List<CustomerViewModel_Promotion> _lstuser = new List<CustomerViewModel_Promotion>();
+	private List<UserDTO> _lstUser = new List<UserDTO>(); 
 	private PromotionCreateRequest input = new PromotionCreateRequest();
 	private PromotionDTO inputUpdate = new PromotionDTO();
 	private string messageString = null;
@@ -414,9 +473,10 @@
 		inputUpdate = new PromotionDTO();
 	}
 
-	private void OpenModal2()
+	private async Task OpenModal2(Guid id)
 	{
 		isModalVisible = 2;
+		_lstUser = await _prosv.GetPUbyProID(id);
 	}
 
 
@@ -454,10 +514,18 @@
 					};
 
 				lstPU.Add(x);
+
+				MailPromotionRequest mailitem = new MailPromotionRequest
+				{
+					ToEmail = item.Email,
+					Code = input.Code
+				};
+				_lstMail.Add(mailitem);
 			}
 
 			if (await _prosv.CreatePromotionUserAsync(lstPU))
-			{
+			{			
+				await _prosv.SendMailWithTemplateAsync(_lstMail);
 				messageString = "Thêm thành công";
 			}
 			else

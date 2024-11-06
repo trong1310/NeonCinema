@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Database.AppDbContext
 {
+
 	public class NeonCinemasContext : DbContext
 	{
 		public NeonCinemasContext()
