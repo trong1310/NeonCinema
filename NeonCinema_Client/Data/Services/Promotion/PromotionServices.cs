@@ -1,42 +1,47 @@
-﻿using MudBlazor;
+﻿using MailKit.Security;
+using Microsoft.EntityFrameworkCore;
+using MimeKit;
+using MudBlazor;
 using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.DataTransferObject.Roles;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Client.Data.IServices.Promotion;
+using NeonCinema_Domain.Database.Entities;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace NeonCinema_Client.Data.Services.Promotion
 {
-    public class PromotionServices : IPromotionServices
-    {
-        private readonly HttpClient _client;
-        public PromotionServices(HttpClient client)
-        {
-            _client = client;
-        }
+	public class PromotionServices : IPromotionServices
+	{
+		private readonly HttpClient _client;
+		public PromotionServices(HttpClient client)
+		{
+			_client = client;
+		}
 
 		public async Task<bool> CreatePromotionAsync(PromotionCreateRequest input)
 		{
-            try
-            {
-                var result = await _client.PostAsJsonAsync("https://localhost:7211/api/Promotion/post", input);
+			try
+			{
+				var result = await _client.PostAsJsonAsync("https://localhost:7211/api/Promotion/post", input);
 
 
-                if (result.IsSuccessStatusCode) 
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+				if (result.IsSuccessStatusCode)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
-            catch (Exception ex) 
-            {
-                return false;
-            }
+			catch (Exception ex)
+			{
+				return false;
+			}
 
 		}
 
@@ -50,12 +55,12 @@ namespace NeonCinema_Client.Data.Services.Promotion
 					{
 						var result = await _client.PostAsJsonAsync("https://localhost:7211/api/Promotion/create-promotion-user", item);
 					}
-					catch (Exception ex) 
+					catch (Exception ex)
 					{
 						continue;
 					}
-					
-				}	
+
+				}
 				return true;
 			}
 			catch (Exception ex)
@@ -68,7 +73,7 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		{
 			try
 			{
-				var result = await _client.DeleteAsync($"https://localhost:7211/api/Promotion/delete?id={id}" );
+				var result = await _client.DeleteAsync($"https://localhost:7211/api/Promotion/delete?id={id}");
 
 
 				if (result.IsSuccessStatusCode)
@@ -92,9 +97,9 @@ namespace NeonCinema_Client.Data.Services.Promotion
 			var result = await _client.GetFromJsonAsync<List<UserDTO>>("https://localhost:7211/api/User/get-all");
 			var lstrole = await _client.GetFromJsonAsync<List<RolesDTO>>("https://localhost:7211/api/Roles/get-all");
 
-			if(result != null && lstrole != null)
+			if (result != null && lstrole != null)
 			{
-				RolesDTO role = lstrole.FirstOrDefault(x => x.RoleName == "Customer");
+				RolesDTO role = lstrole.FirstOrDefault(x => x.RoleName == "Client");
 				lst = result.Where(x => x.RoleID == role.ID && x.FullName.Trim().ToLower().Contains(input.Trim().ToLower())).ToList();
 			}
 
@@ -107,7 +112,7 @@ namespace NeonCinema_Client.Data.Services.Promotion
 
 			var promotion = lst.Find(x => x.ID == id);
 
-			if(promotion != null)
+			if (promotion != null)
 			{
 				return promotion;
 			}
@@ -118,12 +123,12 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		}
 
 		public async Task<List<PromotionDTO>> GetPromotionListAsync()
-        {
-            
-            var result = await _client.GetFromJsonAsync<List<PromotionDTO>>("https://localhost:7211/api/Promotion/get-all");
+		{
 
-            return result;
-        }
+			var result = await _client.GetFromJsonAsync<List<PromotionDTO>>("https://localhost:7211/api/Promotion/get-all");
+
+			return result;
+		}
 
 		public Task<List<PromotionDTO>> SearchProByNameAsync(string input)
 		{
@@ -153,36 +158,30 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		}
 
 		//Gửi mail
-		public async Task SendMailWithTemplateAsync(string ToEmail, string Title, string TemplateName, List<string>? KeyReplace, List<string>? ValueReplace, string _URL)
+		public async Task SendMailWithTemplateAsync(List<MailPromotionRequest> lstMail)
 		{
-			using var httpClient = new HttpClient();
-			var body = new
+			try
 			{
-				ToEmail,
-				Title,
-				TemplateName,
-				KeyReplace,
-				ValueReplace
-			};
-
-			var httpRequestMessage = new HttpRequestMessage()
-			{
-				Method = HttpMethod.Post,
-				RequestUri = new Uri($"{_URL}/api/v1/Mail/SendMailWithTemplate"),
-				Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")
-			};
-
-			// Gửi yêu cầu và đợi phản hồi
-			var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-			// Kiểm tra phản hồi
-			if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
-			{
-				throw new Exception($"Http Response Code: {httpResponseMessage.StatusCode}");
+				var result = await _client.PostAsJsonAsync("https://localhost:7211/api/Promotion/send-mail", lstMail);
 			}
-
-			var result = await httpResponseMessage.Content.ReadAsStringAsync();
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
 		}
 
+		public async Task<List<UserDTO>> GetPUbyProID(Guid id)
+		{
+			try
+			{
+				var result = await _client.GetFromJsonAsync<List<UserDTO>>($"https://localhost:7211/api/Promotion/get-user-by-promotionid?id={id}");
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
+		}
 	}
 }

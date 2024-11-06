@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.DataTransferObject.Bills;
+﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Bills;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -49,9 +50,11 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
 			throw new NotImplementedException();
 		}
 
-		public Task<List<PromotionUsers>> GetAll(CancellationToken cancellationToken)
+		public async Task<List<PromotionUsers>> GetAll(CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			var lst = await _context.PromotionUsers.Include(x => x.User).ToListAsync();
+
+			return lst;
 		}
 
 		public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)
@@ -59,7 +62,7 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
 			throw new NotImplementedException();
 		}
 
-		public Task<PromotionUsers> GetById(Guid id, CancellationToken cancellationToken)
+		public async Task<PromotionUsers> GetById(Guid id, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}

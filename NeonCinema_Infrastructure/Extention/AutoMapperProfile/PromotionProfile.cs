@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NeonCinema_Application.DataTransferObject.Promotions;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
