@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.Pagination;
+﻿using NeonCinema_Application.DataTransferObject.ActorMovies;
+using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,6 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public string? LanguareName { get; set; }
         public string? CountryName { get; set; }
         public string? DirectorName { get; set; }
-        
-    }
+		public List<ActorMoviesDto> ActorMovies { get; set; }
+	}
 }
