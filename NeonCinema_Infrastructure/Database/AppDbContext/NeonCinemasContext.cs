@@ -59,6 +59,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Show_release> Show_release { get; set; }
 		public DbSet<Actor> Actor { get; set; }
 		public DbSet<ActorMovies> ActorMovies { get; set; }
+		public DbSet<BillTicket> BillTickets { get; set; }
 		public DbSet<Point> Points { get; set; }
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<PromotionUsers> PromotionUsers { get; set; }
