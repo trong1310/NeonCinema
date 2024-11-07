@@ -11,13 +11,15 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionDTO
     {
         public Guid ID { get; set; }  // Khóa chính
+		public string Name { get; set; }
 
 		[Required(ErrorMessage = "Không được để trống trường này")]
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
 		[Range(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
-		public double DiscountAmount { get; set; } // giảm theo %
+		public double DiscountPercentage { get; set; } // giảm theo %
+		public double DiscountAmount { get; set; } // giảm theo gia
 
 		[Required(ErrorMessage = "Start date is required.")]
 		[DataType(DataType.Date)]

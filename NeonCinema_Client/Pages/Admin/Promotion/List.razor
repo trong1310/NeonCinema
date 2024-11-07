@@ -86,6 +86,10 @@
 													<ChildContent Context="addContext">
 														<DataAnnotationsValidator />
 														<div class="mb-3">
+															<label for="" class="form-label">Tên khuyến mại</label>
+															<InputText @bind-Value="inputUpdate.Name" class="form-control" />
+														</div>
+														<div class="mb-3">
 															<label for="" class="form-label">Mã khuyến mại</label>
 															<InputText @bind-Value="codegen" class="form-control" readonly />
 														</div>
@@ -95,8 +99,17 @@
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Phần trăm giảm giá</label>
-															<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
-															<ValidationMessage For="@(() => input.DiscountAmount)" />
+															<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" readonly="@discountPercentage"/>
+
+																<ValidationMessage For="@(() => input.DiscountPercentage)" />
+
+														</div>
+														<div class="mb-3">
+															<label for="" class="form-label">Số tiền giảm</label>
+															<InputNumber @bind-Value="input.DiscountAmount" class="form-control" readonly="@discountAmount"/>
+													
+																@* <ValidationMessage For="@(() => input.DiscountAmount)" /> *@
+												
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
@@ -107,6 +120,14 @@
 															<label for="" class="form-label">Ngày kết thúc</label>
 															<InputDate @bind-Value="input.EndDate" class="form-control" />
 															<ValidationMessage For="@(() => input.EndDate)" />
+														</div>
+														<div class="mb-4">
+															<InputRadioGroup @bind-Value="IsPercentage">
+																<label class="form-label">Theo tiền </label>
+																<InputRadio Value="true" class="form-check-input"></InputRadio>
+																<label class="form-label">Theo % </label>
+																<InputRadio Value="false" class="form-check-input"></InputRadio>
+															</InputRadioGroup>
 														</div>
 														<button type="submit" class="btn btn-primary">Thêm</button>
 													</ChildContent>
@@ -211,7 +232,8 @@
 															<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
 														</div>
 													}
-													else if (messageString == "Thêm thất bại")
+
+													@if (messageString == "Thêm thất bại")
 													{
 														<div style="width:200px; height:200px">
 															<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
@@ -346,17 +368,17 @@
 									</div>
 								</div>
 								<div class="modal-body">
-									<EditForm Model="@inputUpdate" OnValidSubmit="async () => await UpdatePromotion()">
+									<EditForm Model="@inputUpdate" OnValidSubmit="OpenModalConfirm2">
 										<ChildContent Context="editContext">
 											<DataAnnotationsValidator />
+											<div class="mb-3">
+												<label for="" class="form-label">Tên khuyến mại</label>
+												<InputText @bind-Value="inputUpdate.Name" class="form-control" />
+											</div>
 											<div class="mb-3">
 												<label for="" class="form-label">Mã khuyến mại</label>
 												<InputText @bind-Value="inputUpdate.Code" class="form-control" />
 												<ValidationMessage For="@(() => inputUpdate.Code)" />
-											</div>
-											<div class="mb-3">
-												<label for="" class="form-label">Mô tả</label>
-												<InputText @bind-Value="inputUpdate.Description" class="form-control" />
 											</div>
 											<div class="mb-3">
 												<label for="" class="form-label">Phần trăm giảm giá</label>
@@ -374,17 +396,17 @@
 												<ValidationMessage For="@(() => inputUpdate.EndDate)" />
 											</div>
 											<div class="mb-3">
-												<!--Status-->
+												<label for="" class="form-label">Mô tả</label>
+												<InputText @bind-Value="inputUpdate.Description" class="form-control" />
 											</div>
-											@if (messageString == "Sửa thành công")
-											{
-												<p class="alert alert-success">@messageString</p>
-											}
-											else if (messageString == "Sửa thất bại")
-											{
-												<p class="alert alert-danger">@messageString</p>
-											}
-
+											<div class="mb-4">
+												<InputRadioGroup @bind-Value="IsPercentage">
+													<label class="form-label">Theo tiền </label>
+													<InputRadio Value="true" class="form-check-input"></InputRadio>
+													<label class="form-label">Theo % </label>
+													<InputRadio Value="false" class="form-check-input"></InputRadio>
+												</InputRadioGroup>
+											</div>
 											<button type="submit" class="btn btn-primary">Lưu</button>
 										</ChildContent>
 									</EditForm>
@@ -392,6 +414,42 @@
 							</div>
 						</div>
 					</div>
+					if (isModalVisibleConfirm == 3)
+					{
+						<div class="modal fade show modalConfirm" tabindex="-1" role="dialog" style="display: block;">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<div class="col-12">
+											<div class="row">
+												<div class="col-1">
+													<button type="button" class="close" @onclick="CloseModalConfirm" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="col-5">
+													<h6>Xác nhận</h6>
+												</div>
+											</div>
+
+										</div>
+									</div>
+									<div class="modal-body">
+										<div class="col-12">
+											<div class="row">
+												<div class="col-3 offset-3">
+													<button style="width: 100px" @onclick="async () => await UpdatePromotion()" class="btn btn-primary">Đồng ý</button>
+												</div>
+												<div class="col-6">
+													<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-danger">Hủy</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
 				}
 				<!--End modal-->
 
@@ -404,11 +462,13 @@
 				<thead>
 					<tr>
 						<th>#</th>
+						<th>Tên KM</th>
 						<th>Mã</th>
-						<th>Mô tả</th>
 						<th>Phần trăm giảm</th>
+						<th>Số tiền giảm</th>
 						<th>Ngày bắt đầu</th>
 						<th>Ngày kết thúc</th>
+						<th>Mô tả</th>
 						<th>Trạng thái</th>
 						<th>Hành động</th>
 					</tr>
@@ -420,11 +480,27 @@
 					{
 						<tr>
 							<td>@(item.index + 1)</td>
+							<td>@item.value.Name</td>
 							<td>@item.value.Code</td>
-							<td>@item.value.Description</td>
-							<td>@item.value.DiscountAmount%</td>
+							@if (item.value.DiscountPercentage == 0)
+							{
+								<td>X</td>
+							}
+							else
+							{
+								<td>@item.value.DiscountPercentage%</td>
+							}
+							@if(item.value.DiscountAmount == 0)
+							{
+								<td>X</td>
+							}
+							else
+							{
+								<td>@item.value.DiscountAmount<text>đ</text></td>
+							}
 							<td>@item.value.StartDate.ToShortDateString()</td>
 							<td>@item.value.EndDate.ToShortDateString()</td>
+							<td>@item.value.Description</td>
 							<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
 							<td>
 								<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
@@ -477,6 +553,30 @@
 	private string messageString = null;
 	private Guid idActive;
 	private bool selectAll = false;
+
+	//Chọn loại giảm giá
+	private bool discountPercentage = true;
+	private bool discountAmount = false;
+
+	public bool IsPercentage
+	{
+		get => discountPercentage;
+		set
+		{
+			if (!discountPercentage)
+			{
+				input.DiscountPercentage = 0;
+			}
+			else
+			{
+				input.DiscountAmount = 0;
+			}
+
+			discountPercentage = value;
+			discountAmount = !value; // Ngược lại với discountPercentage
+
+		}
+	}
 
 	//filter
 	private string searchName;
@@ -588,6 +688,11 @@
 	private async Task OpenModalConfirm1()
 	{
 		isModalVisibleConfirm = 1;
+	}
+
+	private async Task OpenModalConfirm2()
+	{
+		isModalVisibleConfirm = 2;
 	}
 
 
