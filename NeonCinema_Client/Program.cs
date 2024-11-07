@@ -109,6 +109,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
     options.AddPolicy("StaffPolicy", policy => policy.RequireRole("Staff"));
 });
+
+builder.Services.AddBlazorise(options => options.Immediate = true)
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
