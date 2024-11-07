@@ -87,7 +87,7 @@
 														<DataAnnotationsValidator />
 														<div class="mb-3">
 															<label for="" class="form-label">Tên khuyến mại</label>
-															<InputText @bind-Value="inputUpdate.Name" class="form-control" />
+															<InputText @bind-Value="input.Name" class="form-control" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Mã khuyến mại</label>
@@ -100,16 +100,12 @@
 														<div class="mb-3">
 															<label for="" class="form-label">Phần trăm giảm giá</label>
 															<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" readonly="@discountPercentage"/>
-
-																<ValidationMessage For="@(() => input.DiscountPercentage)" />
-
+														    <ValidationMessage For="@(() => input.DiscountPercentage)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Số tiền giảm</label>
 															<InputNumber @bind-Value="input.DiscountAmount" class="form-control" readonly="@discountAmount"/>
-													
-																@* <ValidationMessage For="@(() => input.DiscountAmount)" /> *@
-												
+															<ValidationMessage For="@(() => input.DiscountAmount)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
@@ -737,9 +733,6 @@
 				messageString = "Có lỗi khi thêm ưu đãi khách hàng";
 			}
 
-			//Mở modal thông báo
-			isModalVisibleConfirm = 2;
-
 			//Reset input và list
 			input = new PromotionCreateRequest();
 			await LoadPromotion();
@@ -751,6 +744,9 @@
 		{
 			messageString = "Thêm thất bại";
 		}
+
+		//Mở modal thông báo
+		isModalVisibleConfirm = 2;
 	}
 
 	//back
