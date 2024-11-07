@@ -47,13 +47,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Screening> Screening { get; set; }
 		public DbSet<Seat> Seat { get; set; }
 		public DbSet<SeatType> SeatTypes { get; set; }
-		public DbSet<Service> Service { get; set; }
 		public DbSet<FoodCombo> FoodCombos { get; set; }
 		public DbSet<ShiftChange> ShiftChange { get; set; }
-		public DbSet<TicketPrice> Ticket { get; set; }
+		public DbSet<TicketPrice> TicketPrice { get; set; }
 		public DbSet<WorkShift> WorkShift { get; set; }
 		public DbSet<CategoryMovies> CategoryMovies { get; set; }
-		public DbSet<Ticket> TicketSeats { get; set; }
+		public DbSet<Ticket> Tickets { get; set; }
 		public DbSet<Checkin> Checkin { get; set; }
 		public DbSet<Show_release> Show_release { get; set; }
 		public DbSet<Actor> Actor { get; set; }
@@ -240,7 +239,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "1",
 					Column = "1",
 					Row = "1",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				},
 				new Seat
@@ -249,7 +248,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "2",
 					Column = "2",
 					Row = "2",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				},
 				new Seat
@@ -258,7 +257,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "2",
 					Column = "2",
 					Row = "2",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				}
 			};
