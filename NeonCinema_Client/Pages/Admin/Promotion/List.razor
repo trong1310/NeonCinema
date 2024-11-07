@@ -544,6 +544,12 @@
 	private void OpenModal1()
 	{
 		isModalVisible = 1;
+
+		selectAll = false;
+		foreach (var user in _lstuser)
+		{
+			user.IsSelected = false;
+		}
 	}
 
 	private void CloseModal()
@@ -608,6 +614,8 @@
 
 				MailPromotionRequest mailitem = new MailPromotionRequest
 					{
+						FullName = item.FullName,
+						NamePromotion = "Chưa update",
 						ToEmail = item.Email,
 						Code = input.Code
 					};
