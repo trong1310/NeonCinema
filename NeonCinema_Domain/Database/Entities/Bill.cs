@@ -17,6 +17,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public EntityStatus Status { get; set; }
 		public virtual Users? Users { get; set; }
 		public virtual ICollection<FoodCombo>? FoodCombos { get; set; }
+		public virtual ICollection<BillTicket>? BillTickets { get; set; }
         // Quan hệ với khuyến mãi đã áp dụng
       
     }
