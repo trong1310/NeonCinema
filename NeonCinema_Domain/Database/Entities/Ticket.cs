@@ -12,7 +12,6 @@ namespace NeonCinema_Domain.Database.Entities
 	public class Ticket : EntityBase
 	{
 		public Guid  ID { get; set; }
-		public Guid CinemasID { get; set; }
 		public Guid RoomID { get; set; }
 		public Guid TicketPriceID { get; set; }
 		public Guid MovieID { get; set; }
@@ -23,7 +22,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public decimal Price { get; set; }
 		public EntityStatus Status { get; set; }
 
-		public virtual Cinemas? Cinemas { get; set; }
 		public virtual Room? Room { get; set; }
 		public virtual TicketPrice? TicketPrices { get; set; }
 		public virtual ICollection<BookTickets>? BookTickets { get; set; }
