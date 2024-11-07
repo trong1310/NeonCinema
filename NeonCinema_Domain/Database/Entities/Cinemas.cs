@@ -20,6 +20,5 @@ namespace NeonCinema_Domain.Database.Entities
         public int RoomNumber { get; set; }
 
         public virtual Room? Rooms { get; set; }
-        public virtual ICollection<Ticket>? TicketSeats { get; set; }
     }
 }
