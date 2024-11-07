@@ -14,10 +14,8 @@ using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Infrastructure.Implement.Directors;
 using NeonCinema_Infrastructure.Implement.Screenings;
-using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Implement.Checkin_R;
 using NeonCinema_Infrastructure.Implement.FoodCombo_R;
-using NeonCinema_Infrastructure.Implement.Services_R;
 using NeonCinema_Application.Interface.ShowReleases;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.Show_release;
@@ -58,7 +56,6 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<Checkin>, CheckinRepository>();
             services.AddScoped<IEntityRepository<FoodCombo>, FoodComboRepository>();
-            services.AddScoped<IEntityRepository<Service>, ServicesRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();

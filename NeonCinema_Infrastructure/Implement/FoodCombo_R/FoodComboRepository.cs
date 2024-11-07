@@ -28,8 +28,6 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
                     ID = Guid.NewGuid(),
                     Quantity = entity.Quantity,
                     TotalPrice = entity.TotalPrice,
-                    ServiceID = entity.ServiceID,
-                    BillID = entity.BillID,
                 };
 
                 _context.FoodCombos.Add(e);
@@ -84,7 +82,6 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
         {
             var lst = await _context.FoodCombos
                 .Include(x => x.Bills)
-                .Include(x => x.Service)
                 .ToListAsync(cancellationToken);
 
             return lst;
@@ -131,9 +128,6 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
 
                 e.Quantity = entity.Quantity;
                 e.TotalPrice = entity.TotalPrice;
-                e.ServiceID = entity.ServiceID;
-                e.BillID = entity.BillID;
-
                 _context.FoodCombos.Update(e);
                 await _context.SaveChangesAsync(cancellationToken);
 
