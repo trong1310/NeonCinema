@@ -1,0 +1,155 @@
+﻿@page "/book_ticket"
+@using NeonCinema_Application.DataTransferObject.ActorMovies
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.Services.BookTicket
+@layout LayoutAdmin
+@inject BookTicketServices _service
+
+<MudPaper Height="90%" Width="90%">
+	<MudContainer MaxWidth="MaxWidth.Large">
+		<MudPaper Height="100%" Width="100%" Square="true">
+			<div class="d-flex justify-content-center align-items-center">
+				<h4>Bán vé</h4>
+			</div>
+			<div class="col-md-4 d-flex justify-content-end ml-auto" style="margin:20px;">
+				<input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
+			</div>
+
+			<div class="border">
+				<div style="text-align: center;">
+					<h2 class="mb-4 mt-4 green-title">Phim đang chiếu</h2>
+				</div>
+				<div class="row">
+					@foreach (var  item in moviesNowShowing)
+					{
+						<div class="col-custom">
+							<div class="row">
+								<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
+									<div class="card movie-card d-flex justify-content-lg-start">
+										<div class="card-body">
+											<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
+											<div class="tags mb-2">
+												<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
+												<span class="badge bg-dark">Thời lượng: @item.Duration</span>
+												<span >Đạo diễn: @item.DirectorName</span>
+												<span >Ngày chiếu: @item.StarTime</span>
+												<span >
+													Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
+																			? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
+																			: "Không có diễn viên")
+												</span>
+												<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
+											</div>
+											<h5 class="card-title">@item.Name</h5>
+											<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+			<div class="border">
+				<div style="text-align: center;">
+					<h2 class="mb-4 mt-4 green-title">Phim sắp chiếu</h2>
+				</div>
+				<div class="row">
+					<div class="col-custom">
+						<div class="row">
+							@foreach (var item in moviesNowShowing)
+							{
+								<div class="col-custom">
+									<div class="row">
+										<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
+											<div class="card movie-card d-flex justify-content-lg-start">
+												<div class="card-body">
+													<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
+													<div class="tags mb-2">
+														<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
+														<span class="badge bg-dark">Thời lượng: @item.Duration</span>
+														<span>Đạo diễn: @item.DirectorName</span>
+														<span>Ngày chiếu: @item.StarTime</span>
+														<span>
+															Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
+																					? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
+																					: "Không có diễn viên")
+														</span>
+														<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
+													</div>
+													<h5 class="card-title">@item.Name</h5>
+													<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</MudPaper>
+	</MudContainer>
+</MudPaper>
+@code {
+	List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
+	List<MovieDTO> moviesComing = new List<MovieDTO>();
+	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMovies();
+
+	}
+	public async Task LoadMovies()
+	{
+		moviesNowShowing = await _service.MoviesNowShowing();
+		foreach (var movies in moviesNowShowing)
+		{
+			var actors = await _service.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
+			movies.ActorMovies = actors;
+		}
+		moviesComing = await _service.MoviesComing();
+		foreach (var movies in moviesComing)
+		{
+			var actors = await _service.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
+			movies.ActorMovies = actors;
+		}
+	}
+	
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+}
+<style>
+	.green-title {
+		color: limegreen; /* Màu chữ xanh lá cây */
+		border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
+		padding: 10px; /* Thêm khoảng cách giữa chữ và viền */
+		border-radius: 8px; /* Bo góc cho đường viền */
+		display: inline-block; /* Để viền chỉ bao quanh chữ */
+		font-weight: bold;
+	}
+
+	.movie-card {
+		margin: 15px; /* Thêm margin xung quanh card */
+		background-color: white;
+		border-radius: 10px;
+		overflow: hidden;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		transition: transform 0.3s, box-shadow 0.3s; /* Thêm hiệu ứng cho box-shadow */
+		width: calc(100% - 30px); /* Điều chỉnh width để bù cho margin */
+		height: auto; /* Sử dụng auto để có không gian cho nội dung */
+		position: relative;
+		display: flex;
+		flex-direction: column;
+	}
+
+		.movie-card img {
+			width: 100%;
+			height: auto;
+			object-fit: cover;
+		}
+</style>

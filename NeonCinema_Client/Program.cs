@@ -46,9 +46,7 @@ using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
+using NeonCinema_Client.Data.Services.BookTicket;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -93,6 +91,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
+builder.Services.AddScoped<BookTicketServices>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
 
 builder.Services.AddAuthentication("Bearer")
