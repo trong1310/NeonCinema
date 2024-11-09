@@ -4,7 +4,8 @@
 @using NeonCinema_Client.Data.IServices.Promotion
 @using NeonCinema_Client.DataTransferObject.Users
 @using NeonCinema_Domain.Database.Entities
-@using NeonCinema_Infrastructure.Extention.Utilis
+@using NeonCinema_Infrastructure.Extention.Utili
+
 @layout LayoutAdmin
 @inject NavigationManager _nav
 @inject IPromotionServices _prosv
@@ -583,8 +584,9 @@
 
 
 	//Gen code
-	private string codegen = "";
-	private Utilis utl = new Utilis();
+	private string codegen = Uliti.GenerateCode();
+	
+
 
 	//Modal
 	private int isModalVisible = 0;
@@ -596,7 +598,7 @@
 		await LoadPromotion();
 		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
-		codegen = utl.GenerateCode();
+	
 	}
 
 	//Get All promotion

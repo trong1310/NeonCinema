@@ -10,7 +10,6 @@ namespace NeonCinema_Domain.Enum
     {
         Active = 1, // dang hoat dong
         Inactive = 2, // KHÔNG HOẠT ĐỘNG
-
         PendingForConfirmation = 3, // cho xac nhan 
         PendingForApproval = 4, // cho phe duyet
         Locked = 5, // da khoa
@@ -20,5 +19,19 @@ namespace NeonCinema_Domain.Enum
         HD= 9, //trang thai hoat d
         KHD = 10
     }
+    public enum seatEnum
+    {
+		selected = 1, // đã được chọn
+        drum = 2, // trống
+		placed = 3 //đã đặt
+	}
+    public enum ticketEnum
+    {
+
+        waiting_for_payment = 1,
+        paid = 2,
+        cancel = 3,
+    }
+
 }
 
