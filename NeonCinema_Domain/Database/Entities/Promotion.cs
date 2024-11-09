@@ -11,9 +11,11 @@ namespace NeonCinema_Domain.Database.Entities
     public class Promotion : EntityBase
     {
         public Guid ID { get; set; }  // Khóa chính
+        public string Name { get; set; }
         public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
-        public double DiscountAmount { get; set; } // giảm theo %
+        public double DiscountAmount { get; set; } //giảm theo giá
+        public double DiscountPercentage { get; set; } //giảm theo %
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public PromotionStatus Status { get; set; }
