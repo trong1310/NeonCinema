@@ -12,11 +12,7 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid ID { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
-        public Guid ServiceID { get; set; }
-        public Guid BillID { get; set; }
 
-        ///
-        public virtual Bill? Bills { get; set; }
-        public virtual Service? Service { get; set; }
+        public virtual ICollection<Bill>? Bills { get; set; }
     }
 }

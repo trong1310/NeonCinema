@@ -47,15 +47,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Screening> Screening { get; set; }
 		public DbSet<Seat> Seat { get; set; }
 		public DbSet<SeatType> SeatTypes { get; set; }
-		public DbSet<Service> Service { get; set; }
 		public DbSet<FoodCombo> FoodCombos { get; set; }
 		public DbSet<ShiftChange> ShiftChange { get; set; }
-		public DbSet<TicketPrice> Ticket { get; set; }
+		public DbSet<TicketPrice> TicketPrice { get; set; }
 		public DbSet<WorkShift> WorkShift { get; set; }
 		public DbSet<CategoryMovies> CategoryMovies { get; set; }
-		public DbSet<Ticket> TicketSeats { get; set; }
+		public DbSet<Ticket> Tickets { get; set; }
 		public DbSet<Checkin> Checkin { get; set; }
-		public DbSet<Seat_ShowTime_Status> Seat_ShowTime_Status { get; set; }
 		public DbSet<Show_release> Show_release { get; set; }
 		public DbSet<Actor> Actor { get; set; }
 		public DbSet<ActorMovies> ActorMovies { get; set; }
@@ -67,7 +65,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source= vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -241,7 +239,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "1",
 					Column = "1",
 					Row = "1",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				},
 				new Seat
@@ -250,7 +248,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "2",
 					Column = "2",
 					Row = "2",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				},
 				new Seat
@@ -259,7 +257,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatNumber = "2",
 					Column = "2",
 					Row = "2",
-					Status = EntityStatus.Active,
+					Status = seatEnum.selected,
 					SeatTypeID = seatTypeData[0].ID
 				}
 			};
@@ -323,7 +321,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
 					StartTime = new TimeSpan(14, 0, 0), // 14:00
 					EndTime = new TimeSpan(16, 30, 0), // 16:30
-					Status = EntityStatus.Active
+					Status = EntityStatus.Active,
+					
 				},
 				new ShowTime
 				{
@@ -347,7 +346,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			{
 				new Movies
 				{
-					ID = Guid.NewGuid(),
+					ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
 					Name = "Movie A",
 					Duration = 120, // in minutes
 					Description = "An exciting action movie.",
@@ -381,6 +380,22 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				}
 			};
 			modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
+			var showreales = new List<Show_release>
+			{
+				new Show_release
+				{
+					ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+					MovieID =movieData[0].ID,
+					RoomID = roomData[0].ID,
+					Status = EntityStatus.Active,
+					TimeRelease = DateTime.Now.AddHours(2),
+					DateRelease = DateTime.Now.AddDays(1),
+					
+				},
+
+			};
+			modelBuilder.Entity<Show_release>(b => { b.HasData(showreales); });
+
 			var screeningData = new List<Screening>
 			{
 				new Screening
@@ -391,7 +406,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(2), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showreales[0].ID,
 				},
 				new Screening
 				{
@@ -401,7 +417,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(2), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showreales[0].ID,
 				}
 			};
 			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
