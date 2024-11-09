@@ -6,6 +6,7 @@ using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.Configuration;
+using NeonCinema_Infrastructure.Implement.BookTickets;
 
 namespace NeonCinema_API.Controllers
 {
@@ -13,14 +14,26 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class BookTicketController : ControllerBase
     {
-        IEntityRepository<BookTickets> _repos;
-        IMapper _mapper;
-        public BookTicketController(IEntityRepository<BookTickets> repos, IMapper mapper)
+        private readonly BookTicketResp _reps;
+        private readonly IMapper _mapper;
+        public BookTicketController(BookTicketResp reps,IMapper map)
         {
-            _repos = repos;
-            _mapper = mapper;
+           _reps = reps;
+            _mapper = map;
         }
-
+        [HttpPost("Bookticket")]
+        public async Task<IActionResult> BookTicket([FromBody]CreateBookTicketRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var respone = await _reps.BookTicketCounter(request, cancellationToken);
+                return Ok(respone);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
       
     }
 }
