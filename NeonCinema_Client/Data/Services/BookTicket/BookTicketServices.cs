@@ -1,4 +1,5 @@
 ﻿using NeonCinema_Application.DataTransferObject.ActorMovies;
+using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 
@@ -27,7 +28,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			try
 			{
-				var results = await _httpClient.GetFromJsonAsync<List<MovieDTO>>($"https://localhost:7211/api/Movie/GetNowShowing");
+				var results = await _httpClient.GetFromJsonAsync<List<MovieDTO>>($"https://localhost:7211/api/Movie/GetComing");
 				return results;
 			}
 			catch (Exception ex)
@@ -39,6 +40,18 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
 			return respones;
+		}
+		public async Task<ScreeningMoviesDto> GetScreeningMovies(Guid MovieId)
+		{
+			try
+			{
+				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/ScreeningByflims?moviesID={MovieId}");
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("co loi xay ra : " + ex.Message);
+			}
 		}
 	}
 }

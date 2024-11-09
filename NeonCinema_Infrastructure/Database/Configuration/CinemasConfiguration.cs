@@ -15,7 +15,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("Cinemas");
             builder.HasKey(x=>x.ID);
-            builder.HasOne(x=>x.Rooms).WithMany(x=>x.Cinemas).HasForeignKey(x=>x.RoomId).OnDelete(DeleteBehavior.Restrict);
             builder.Property(x => x.Name).HasMaxLength(50).IsFixedLength().IsUnicode(true);
             builder.Property(x => x.Location);
             builder.Property(x=>x.PhoneNumber).HasMaxLength(10).IsRequired();
