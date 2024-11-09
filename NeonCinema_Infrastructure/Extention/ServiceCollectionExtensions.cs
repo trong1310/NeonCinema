@@ -31,6 +31,7 @@ using NeonCinema_Infrastructure.Implement.Promotion_R;
 using NeonCinema_Infrastructure.Implement.Acotr;
 using NeonCinema_Infrastructure.Implement.ActorMovies;
 using NeonCinema_Application.Interface.Seats;
+using NeonCinema_Infrastructure.Implement.BookTickets;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -67,6 +68,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IEntityRepository<PromotionUsers>, PromotionCustomerResp>();
             services.AddTransient<ActorResp>();
             services.AddTransient<ActorMoviesResp>();
+            services.AddTransient<BookTicketResp>();
             return services;
         }
     }
