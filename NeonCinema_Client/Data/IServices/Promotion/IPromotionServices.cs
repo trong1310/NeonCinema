@@ -1,5 +1,6 @@
 ﻿using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.DataTransferObject.User;
+using NeonCinema_Domain.Database.Entities;
 
 namespace NeonCinema_Client.Data.IServices.Promotion
 {
@@ -13,7 +14,8 @@ namespace NeonCinema_Client.Data.IServices.Promotion
         Task<bool> DeletePromotionAsync(Guid id);
         Task<List<UserDTO>> GetAllUserAsync(string input);
         Task<bool> CreatePromotionUserAsync(List<PromotionUserDTO> lstinput);
-        Task SendMailWithTemplateAsync(string ToEmail, string Title, string TemplateName, List<string>? KeyReplace, List<string>? ValueReplace, string _URL);
+        Task<List<UserDTO>> GetPUbyProID(Guid id);
+        Task SendMailWithTemplateAsync(List<MailPromotionRequest> lstMail);
 
 	}
 }

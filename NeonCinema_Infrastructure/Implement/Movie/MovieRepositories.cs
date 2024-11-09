@@ -10,20 +10,11 @@ using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-
 
 
 namespace NeonCinema_Infrastructure.Implement.Movie
 {
-    public class MovieRepositories : IMovieRepositories
+	public class MovieRepositories : IMovieRepositories
     {
         private readonly NeonCinemasContext _context;
         private readonly IMapper _maps;
@@ -238,5 +229,79 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 };
             }
         }
-    }
+
+        public async Task<List<MovieDTO>> GetFilmsNowShowing()
+        {
+            var query = await _context.Movies
+                .Include(x => x.Genre)
+                .Include(x => x.Screening)
+                .Include(x => x.Director)
+                .Include(x => x.Lenguage)
+                .Include(x => x.Countrys)
+                .Include(x => x.TicketSeats)
+                .Where(x => x.Status == MovieStatus.Active)
+                .OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
+                .Take(8) // Lấy top 8 phim
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (query == null || !query.Any()) return null;
+
+            var movieDtos = query.Select(result => new MovieDTO
+            {
+                ID = result.ID,
+                Name = result.Name,
+                AgeAllowed = result.AgeAllowed,
+                CountryName = result.Countrys.CountryName,
+                Description = result.Description,
+                DirectorName = result.Director.FullName,
+                Duration = result.Duration,
+                GenreName = result.Genre.GenreName,
+                Images = result.Images,
+                LanguareName = result.Lenguage.LanguageName,
+                StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
+                Status = result.Status,
+                Trailer = result.Trailer,
+            }).ToList();
+
+            return movieDtos;
+        }
+
+		public async Task<List<MovieDTO>> GetFilmsComing()
+		{
+			var query = await _context.Movies
+				.Include(x => x.Genre)
+				.Include(x => x.Screening)
+				.Include(x => x.Director)
+				.Include(x => x.Lenguage)
+				.Include(x => x.Countrys)
+				.Include(x => x.TicketSeats)
+				.Where(x => x.Status == MovieStatus.Comingsoon)
+				.OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
+				.Take(8) // Lấy top 8 phim
+				.AsNoTracking()
+				.ToListAsync();
+
+			if (query == null || !query.Any()) return null;
+
+			var movieDtos = query.Select(result => new MovieDTO
+			{
+				ID = result.ID,
+				Name = result.Name,
+				AgeAllowed = result.AgeAllowed,
+				CountryName = result.Countrys.CountryName,
+				Description = result.Description,
+				DirectorName = result.Director.FullName,
+				Duration = result.Duration,
+				GenreName = result.Genre.GenreName,
+				Images = result.Images,
+				LanguareName = result.Lenguage.LanguageName,
+				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
+				Status = result.Status,
+				Trailer = result.Trailer,
+			}).ToList();
+
+			return movieDtos;
+		}
+	}
 }

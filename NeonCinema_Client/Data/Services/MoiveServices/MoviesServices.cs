@@ -103,9 +103,10 @@ namespace NeonCinema_Client.Services.MoivesService
             return respones;
         }
 
-		public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken)
+		public async Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+            var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
+            return respones;
 		}
 	}
 
