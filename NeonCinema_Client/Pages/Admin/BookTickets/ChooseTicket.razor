@@ -1,137 +1,167 @@
-﻿@page "/select-seat"
+﻿@page "/select-seat/{id:guid}"
 @using System.Collections.Generic
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
 
 <h3>Thông tin vé</h3>
 <div class="row">
-    <div class="col-md-4">
-        <div class="card">
-            <img src="img-url-here" class="card-img-top" alt="Movie Poster">
-            <div class="card-body text-center">
-                <p><strong>Suất chiếu:</strong> 12/08/2023 15:15</p>
-                <p><strong>Rạp:</strong> Rạp Cao Lỗ</p>
-                <p><strong>Phòng:</strong> Phòng 1</p>
-                <p><strong>Giới hạn độ tuổi:</strong> <span class="badge bg-danger">C16</span></p>
-                <hr>
-                <p><strong>Combo:</strong> </p>
-                <p><strong>Ghế:</strong> </p>
-                <p><strong>Tổng Tiền:</strong> 0 đ</p>
-            </div>
-        </div>
-    </div>
+	<div class="col-md-4 " style="width: 25%">
+		<div class="card">
+			<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" style="height: 33%; width: 100%" alt="Movie Poster">
+			<div class="card-body text-center">
+				<p><strong>Phim: </strong>@movieDto.Name</p>
+				<p><strong>Suất chiếu:</strong>@screenings.ShowDate.ToString("dd/MM/yyyy") @screenings.ShowTime</p>	
+				<p><strong>Phòng:</strong>@screenings.RoomName</p>
+				<p><strong>Giới hạn độ tuổi:</strong> <span class="badge bg-danger">@movieDto.AgeAllowed</span></p>
+				<hr>
+				<p><strong>Combo:</strong> </p>
+				<p><strong>Ghế:</strong> </p>
+				<p><strong>Tổng Tiền:</strong> 0 đ</p>
+			</div>
+		</div>
+	</div>
 
-    <div class="col-md-8">
-        <h3>Chọn Ghế</h3>
-        <div class="d-flex align-items-center">
-            <p><strong>Giá vé:</strong> </p>
-            <span class="badge bg-light text-dark mx-1">85,000 đ</span>
-            <span class="badge bg-warning text-dark mx-1">105,000 đ</span>
-            <span class="badge bg-danger mx-1">115,000 đ</span>
-        </div>
-        <div class="d-flex align-items-center">
-            <span class="badge bg-primary mx-1">Ghế đang chọn</span>
-            <span class="badge bg-secondary mx-1">Ghế đã bán</span>
-            <span class="badge bg-dark mx-1">Ghế bảo trì</span>
-        </div>
+	<div class="col-md-8">
+		<h3>Chọn Ghế</h3>
+		<div class="d-flex align-items-center">
+			<p><strong>Giá vé:</strong> </p>
+			<span class="badge bg-light text-dark mx-1">85,000 đ</span>
+			<span class="badge bg-warning text-dark mx-1">105,000 đ</span>
+			<span class="badge bg-danger mx-1">115,000 đ</span>
+		</div>
+		<div class="d-flex align-items-center">
+			<span class="badge bg-primary mx-1">Ghế đang chọn</span>
+			<span class="badge bg-secondary mx-1">Ghế đã bán</span>
+			<span class="badge bg-dark mx-1">Ghế bảo trì</span>
+		</div>
 
-        <div class="screen-area my-3">
-            <div class="screen text-center">Màn hình</div>
-        </div>
+		<div class="screen-area my-3">
+			<div class="screen text-center">Màn hình</div>
+		</div>
 
-        <div class="seat-layout">
-            @for (int row = 0; row < 8; row++)
-            {
-                <div class="seat-row d-flex justify-content-center">
-                    @for (int col = 0; col < 10; col++)
-                    {
-                        var seatId = $"{(char)('A' + row)}{col + 1}";
-                        <button class="seat @GetSeatClass(seatId)" @onclick="() => SelectSeat(seatId)">
-                            @seatId
-                        </button>
-                    }
-                </div>
-            }
-        </div>
-    </div>
+		<div class="seat-layout">
+			@for (int row = 0; row < 8; row++)
+			{
+				<div class="seat-row d-flex justify-content-center">
+					@for (int col = 0; col < 10; col++)
+					{
+						var seatId = $"{(char)('A' + row)}{col + 1}";
+						<button class="seat @GetSeatClass(seatId)" @onclick="() => SelectSeat(seatId)">
+							@seatId
+						</button>
+					}
+				</div>
+			}
+		</div>
+	</div>
 </div>
 
 @code {
-    private List<string> selectedSeats = new();
-    private List<string> soldSeats = new() { "A1", "A2", "B5", "C3" };
-    private List<string> maintenanceSeats = new() { "D5", "D6" };
+	[Parameter]
+	public Guid id { get; set; }
+	private List<string> selectedSeats = new();
+	private List<string> soldSeats = new() { "A1", "A2", "B5", "C3" };
+	private List<string> maintenanceSeats = new() { "D5", "D6" };
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	ScreeningMoviesDto screenings =new ScreeningMoviesDto();
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		screenings = await _services.GetScreeningMovies(id);
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private string GetSeatClass(string seatId)
+	{
+		if (selectedSeats.Contains(seatId)) return "seat-selected";
+		if (soldSeats.Contains(seatId)) return "seat-sold";
+		if (maintenanceSeats.Contains(seatId)) return "seat-maintenance";
+		return "seat-available";
+	}
 
-    private string GetSeatClass(string seatId)
-    {
-        if (selectedSeats.Contains(seatId)) return "seat-selected";
-        if (soldSeats.Contains(seatId)) return "seat-sold";
-        if (maintenanceSeats.Contains(seatId)) return "seat-maintenance";
-        return "seat-available";
-    }
+	private void SelectSeat(string seatId)
+	{
+		if (soldSeats.Contains(seatId) || maintenanceSeats.Contains(seatId))
+			return;
 
-    private void SelectSeat(string seatId)
-    {
-        if (soldSeats.Contains(seatId) || maintenanceSeats.Contains(seatId))
-            return;
-
-        if (selectedSeats.Contains(seatId))
-            selectedSeats.Remove(seatId);
-        else
-            selectedSeats.Add(seatId);
-    }
+		if (selectedSeats.Contains(seatId))
+			selectedSeats.Remove(seatId);
+		else
+			selectedSeats.Add(seatId);
+	}
 }
 <style>
-    .screen-area {
-    text-align: center;
-    margin: 20px 0;
-}
+	.screen-area {
+		text-align: center;
+		margin: 20px 0;
+	}
 
-.screen {
-    background-color: #ddd;
-    padding: 10px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
+	.screen {
+		background-color: #ddd;
+		padding: 10px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
 
-.seat-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+	.seat-layout {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 
-.seat-row {
-    display: flex;
-    justify-content: center;
-    margin: 5px 0;
-}
+	.seat-row {
+		display: flex;
+		justify-content: center;
+		margin: 5px 0;
+	}
 
-.seat {
-    width: 40px;
-    height: 40px;
-    margin: 2px;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-}
+	.seat {
+		width: 40px;
+		height: 40px;
+		margin: 2px;
+		text-align: center;
+		vertical-align: middle;
+		cursor: pointer;
+		border: none;
+		border-radius: 5px;
+	}
 
-.seat-available {
-    background-color: #ffc107; /* Màu ghế có giá trị thấp */
-    color: white;
-}
+	.seat-available {
+		background-color: #ffc107; /* Màu ghế có giá trị thấp */
+		color: white;
+	}
 
-.seat-selected {
-    background-color: #0d6efd; /* Màu ghế đang chọn */
-    color: white;
-}
+	.seat-selected {
+		background-color: #0d6efd; /* Màu ghế đang chọn */
+		color: white;
+	}
 
-.seat-sold {
-    background-color: #6c757d; /* Màu ghế đã bán */
-    color: white;
-}
+	.seat-sold {
+		background-color: #6c757d; /* Màu ghế đã bán */
+		color: white;
+	}
 
-.seat-maintenance {
-    background-color: #343a40; /* Màu ghế bảo trì */
-    color: white;
-}
+	.seat-maintenance {
+		background-color: #343a40; /* Màu ghế bảo trì */
+		color: white;
+	}
 
 </style>

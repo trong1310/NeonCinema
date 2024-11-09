@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NeonCinema_Application.DataTransferObject.BookTicket;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.Configuration;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
         public BookTicketProfile()
         {
             CreateMap<CreateBookTicketRequest, BookTickets>();
+            CreateMap<Screening,ScreeningMoviesDto>().ReverseMap();
         }
     }
 }

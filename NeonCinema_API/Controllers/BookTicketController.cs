@@ -34,6 +34,19 @@ namespace NeonCinema_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-      
-    }
+        [HttpGet("ScreeningByflims")]
+		public async Task<IActionResult> ScreeningByFilms([FromQuery] Guid moviesID, CancellationToken cancellationToken)
+		{
+			try
+			{
+                var respone = await _reps.GetScreeningMovies(moviesID);
+				return Ok(respone);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+	}
 }
