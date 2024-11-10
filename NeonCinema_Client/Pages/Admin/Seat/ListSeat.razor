@@ -51,10 +51,10 @@
                                        type="checkbox"
                                        role="switch"
                                        id="flexSwitchCheckDefault_@(seat.ID)"
-                                       checked="@(seat.Status == seatEnum.selected)"
+                                       checked="@(seat.Status == seatEnum.Selected)"
                                        @onchange="(e) => ToggleRoomStatus(seat, e)" />
                                 <label class="form-check-label" for="flexSwitchCheckDefault_@(seat.ID)">
-                                    @(seat.Status == seatEnum.selected ? "còn trống" : "đã đặt")
+                                    @(seat.Status == seatEnum.Selected ? "còn trống" : "đã đặt")
                                 </label>
                             </div>
                         </td>
@@ -128,13 +128,13 @@
         var seat = seats.FirstOrDefault(s => s.ID == seatId);
         if (seat != null)
         {
-            var status = seat.Status == seatEnum.selected? "Active" : "Locked";
+            var status = seat.Status == seatEnum.Selected? "Active" : "Locked";
             Navi.NavigateTo($"/updateseat/{seatId}?status={status}");
         }
     }
     private async Task ToggleRoomStatus(SeatDTO seat, ChangeEventArgs e)
     {
-        seat.Status = (bool)e.Value ? seatEnum.selected : seatEnum.drum;
+        seat.Status = (bool)e.Value ? seatEnum.Selected : seatEnum.Maintenance;
 
         var roomUpdateRequest = new UpdateSeatDTO
             {

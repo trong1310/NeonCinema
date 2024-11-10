@@ -81,15 +81,38 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
         {
 			TimeSpan currenTime = DateTime.Now.TimeOfDay;
             var date = DateTime.Now;
-			var screening = await _context.Screening.Include(x=>x.ShowTime).Include(x=>x.Rooms).AsNoTracking().Where(x=>x.MovieID == MovieId).ToListAsync();
-            var results = screening.Where(x => x.ShowTime.StartTime >= currenTime &&x.ShowDate.Day >= date.Day  && x.Status == NeonCinema_Domain.Enum.EntityStatus.Active).FirstOrDefault();
+			var screening = await _context.Screening.Include(x=>x.ShowTime)
+                .Include(x=>x.Rooms)
+                .ThenInclude(s=>s.Seats)
+                .ThenInclude(x=>x.SeatTypes)
+                .AsNoTracking().Where(x=>x.MovieID == MovieId).ToListAsync();
+
+            var results = screening.Where(x => x.ShowTime.StartTime >= currenTime &&x.ShowDate.Day 
+            >= date.Day  && x.Status == NeonCinema_Domain.Enum.EntityStatus.Active).FirstOrDefault();
             if (results == null) return null;
-            var dto = new ScreeningMoviesDto()
+			var seat = results.Rooms.Seats.Select(x =>
+			{
+				var ticketPrice = _context.TicketPrice
+					.Where(tp => tp.SeatTypeID == x.SeatTypes.ID)
+					.Select(tp => tp.Price)
+					.FirstOrDefault();
+
+				return new SeatDto
+				{
+					ID = x.ID,
+					SeatNumber = x.SeatNumber,
+					SeatType = x.SeatTypes.SeatTypeName,
+					Price = ticketPrice
+				};
+			}).ToList();
+
+			var dto = new ScreeningMoviesDto()
             {
                 Id = results.ID,
                 RoomName = results.Rooms.Name,
                 ShowDate = results.ShowDate,
                 ShowTime = results.ShowTime.StartTime,
+                Seats = seat,
             };
             return dto;
         }
