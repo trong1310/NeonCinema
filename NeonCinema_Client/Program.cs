@@ -50,6 +50,8 @@ using NeonCinema_Client.Data.Services.BookTicket;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using NeonCinema_Client.Data.IServices.Statistics;
+using NeonCinema_Client.Data.Services.StatisticService;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -68,6 +70,7 @@ builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 builder.Services.AddTransient<IUserServices, UserServices>();
 builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
