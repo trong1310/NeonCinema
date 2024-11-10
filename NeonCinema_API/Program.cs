@@ -19,6 +19,7 @@ using NeonCinema_Application.Interface.Room;
 using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Interface.ShiftChange;
 using NeonCinema_Application.Interface.ShowTime;
+using NeonCinema_Application.Interface.Statistics;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Infrastructure.Extention;
@@ -34,6 +35,7 @@ using NeonCinema_Infrastructure.Implement.Room;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
+using NeonCinema_Infrastructure.Implement.Statisticss;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 using System.Text;
@@ -59,6 +61,8 @@ builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Giới hạn kích thước file upload (20MB)
