@@ -1,109 +1,124 @@
 ﻿@page "/statistical"
-@using NeonCinema_Client.Data.IServices.Statistics
-@inject IStatisticsService StatisticsService
+@using MudBlazor
+@using NeonCinema_Domain.Database.Entities
+
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <div class="container my-4">
-    <h3>Thống Kê Doanh Thu</h3>
-
-    <!-- Form chọn ngày thống kê -->
-    <div class="mb-3">
-        <label for="currentDate" class="form-label">Chọn Ngày Hiện Tại:</label>
-        <input type="date" id="currentDate" class="form-control" @bind="CurrentDate" />
-    </div>
-
-    <div class="row g-3 mb-3">
-        <div class="col">
-            <label for="startDate" class="form-label">Từ Ngày:</label>
-            <input type="date" id="startDate" class="form-control" @bind="StartDate" />
-        </div>
-        <div class="col">
-            <label for="endDate" class="form-label">Đến Ngày:</label>
-            <input type="date" id="endDate" class="form-control" @bind="EndDate" />
-        </div>
-        <div class="col-auto d-flex align-items-end">
-            <button class="btn btn-primary" @onclick="LoadStatisticsData">Confirm</button>
-        </div>
-    </div>
-
-    <!-- Hiển thị các thống kê -->
+    <!-- Statistical Cards -->
     <div class="row g-3">
-        <!-- Card: Doanh thu trong ngày -->
         <div class="col-12 col-sm-6 col-md-3">
-            <div class="card shadow-sm">
+            <div class="card shadow h-100 position-relative">
                 <div class="card-body">
-                    <h6>DOANH THU TRONG NGÀY</h6>
-                    <h5 class="text-primary">@DailyRevenue.ToString() VND</h5>
-                    <p class="text-muted">@CurrentDate.ToString("dd/MM/yyyy")</p>
+                    <h6 class="text-secondary">DOANH THU TRONG NGÀY</h6>
+                    <h5 style="font-weight:bold">0 VND</h5>
                 </div>
+                <p class="text-muted ml-4">12-08-2023</p>
+                <span class="material-icons card-icon bg-primary">attach_money</span>
             </div>
         </div>
 
-        <!-- Card: Khách hàng mới -->
         <div class="col-12 col-sm-6 col-md-3">
-            <div class="card shadow-sm">
+            <div class="card shadow h-100 position-relative">
                 <div class="card-body">
-                    <h6>KHÁCH HÀNG MỚI</h6>
-                    <h5 class="text-success">@NewCustomers</h5>
-                    <p class="text-muted">@StartDate.ToString("dd/MM/yyyy") - @EndDate.ToString("dd/MM/yyyy")</p>
+                    <h6 class="text-secondary">KHÁCH HÀNG MỚI</h6>
+                    <h5 style="font-weight:bold">7</h5>
                 </div>
+                <p class="text-muted ml-4">12-08-2023</p>
+                <span class="material-icons card-icon bg-success">person_add</span>
             </div>
         </div>
 
-        <!-- Card: Tổng vé -->
         <div class="col-12 col-sm-6 col-md-3">
-            <div class="card shadow-sm">
+            <div class="card shadow h-100 position-relative">
                 <div class="card-body">
-                    <h6>TỔNG VÉ</h6>
-                    <h5 class="text-warning">@TotalTickets</h5>
-                    <p class="text-muted">@StartDate.ToString("dd/MM/yyyy") - @EndDate.ToString("dd/MM/yyyy")</p>
+                    <h6 class="text-secondary">TỔNG VÉ</h6>
+                    <h5 style="font-weight:bold">266</h5>
                 </div>
+                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <span class="material-icons card-icon bg-warning">confirmation_number</span>
             </div>
         </div>
 
-        <!-- Card: Tổng doanh thu -->
         <div class="col-12 col-sm-6 col-md-3">
-            <div class="card shadow-sm">
+            <div class="card shadow h-100 position-relative">
                 <div class="card-body">
-                    <h6>TỔNG DOANH THU</h6>
-                    <h5 class="text-danger">@TotalRevenue.ToString() VND</h5>
-                    <p class="text-muted">@StartDate.ToString("dd/MM/yyyy") - @EndDate.ToString("dd/MM/yyyy")</p>
+                    <h6 class="text-secondary">TỔNG DOANH THU</h6>
+                    <h5 style="font-weight:bold;">3.356.067.600 VND</h5>
                 </div>
+                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <span class="material-icons card-icon bg-danger">shopping_cart</span>
             </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow" style="border-radius: 8px;">
+        <div class="card-body">
+            <h5 class="card-title">Thống kê doanh thu</h5>
+            <form class="row g-3">
+                <div class="col-md-4">
+                    <label for="startDate" class="form-label">Ngày bắt đầu</label>
+                    <input type="date" id="startDate" class="form-control" value="2023-06-01">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="endDate" class="form-label">Ngày kết thúc</label>
+                    <input type="date" id="endDate" class="form-control" value="2023-08-12">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100">Chấp nhận</button>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="timeFilter" class="form-label">Lọc theo thời gian</label>
+                    <select id="timeFilter" class="form-select">
+                        <option selected>Lọc Theo Năm</option>
+                        <option>Theo Tháng</option>
+                        <option>Theo Tuần</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="theater" class="form-label">Rạp</label>
+                    <input type="text" id="theater" class="form-control" placeholder="Selected">
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<MudContainer>
+    <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="400px" />
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body1" Class="py-3 text-items-center">Biểu đồ thống kê vé bán và combo theo từng ngày trong tháng</MudText>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 @code {
-    private decimal DailyRevenue;
-    private int NewCustomers;
-    private int TotalTickets;
-    private decimal TotalRevenue;
-    private DateTime CurrentDate = DateTime.Today;
-    private DateTime StartDate = DateTime.Today.AddDays(-30);
-    private DateTime EndDate = DateTime.Today;
-
-    private async Task LoadStatisticsData()
+    // Dữ liệu thống kê theo từng ngày trong tháng
+        #region 
+    private List<string> XAxisLabels = Enumerable.Range(1, 30).Select(x => x.ToString()).ToList();
+    // Series 1: Thống kê theo vé bán
+    // Series 2: Thống kê theo combo
+    private List<ChartSeries> Series = new List<ChartSeries>
     {
-        try
+        new ChartSeries
         {
-            // Gọi API lấy dữ liệu thống kê
-            var statistics = await StatisticsService.GetAllStatisticsAsync(CurrentDate, StartDate, EndDate);
-            if (statistics != null)
-            {
-                DailyRevenue = statistics.DailyRevenue;
-                NewCustomers = statistics.NewCustomers;
-                TotalTickets = statistics.TotalTickets;
-                TotalRevenue = statistics.TotalRevenue;
-            }
-        }
-        catch (Exception ex)
+            Name = "Vé bán",
+            Data = new double[] { 120, 150, 180, 170, 190, 160, 175, 140, 135, 200, 210, 180, 190, 200, 170, 160, 150, 145, 155, 180, 195, 205, 190, 170, 180, 160, 150, 145, 135, 140 }
+        },
+        new ChartSeries
         {
-            Console.WriteLine($"Lỗi khi lấy dữ liệu thống kê: {ex.Message}");
+            Name = "Combo",
+            Data = new double[] { 80, 90, 85, 95, 100, 120, 110, 115, 90, 85, 95, 100, 110, 120, 115, 130, 125, 120, 110, 95, 100, 105, 110, 120, 115, 110, 105, 100, 95, 85 }
         }
-    }
+    };
+    #endregion 
 }
-
-
 <style>
     .bordered {
         border: 1px solid #ccc; 

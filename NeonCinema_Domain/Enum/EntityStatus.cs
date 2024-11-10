@@ -21,9 +21,10 @@ namespace NeonCinema_Domain.Enum
     }
     public enum seatEnum
     {
-		selected = 1, // đã được chọn
-        drum = 2, // trống
-		placed = 3 //đã đặt
+		Available,   // Ghế còn trống
+		Sold,        // Ghế đã bán
+		Selected,    // Ghế đã chọn
+		Maintenance  // Ghế bảo trì
 	}
     public enum ticketEnum
     {
