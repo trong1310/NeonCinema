@@ -135,9 +135,11 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
                     };
                 }
 
+                pro.Name = entity.Name;
                 pro.Code = entity.Code;
                 pro.Description = entity.Description;
                 pro.DiscountAmount = entity.DiscountAmount;
+                pro.DiscountPercentage = entity.DiscountPercentage;
                 pro.StartDate = entity.StartDate;
                 pro.EndDate = entity.EndDate;
                 pro.Status = entity.Status;
