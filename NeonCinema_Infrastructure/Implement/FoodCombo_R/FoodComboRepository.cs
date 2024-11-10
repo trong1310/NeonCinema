@@ -28,6 +28,8 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
                     ID = Guid.NewGuid(),
                     Quantity = entity.Quantity,
                     TotalPrice = entity.TotalPrice,
+                    Content = entity.Content,
+                    Description = entity.Description,
                 };
 
                 _context.FoodCombos.Add(e);
