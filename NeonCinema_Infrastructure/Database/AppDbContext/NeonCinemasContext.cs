@@ -65,7 +65,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
+
 			optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -228,62 +230,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			var seatTypeData = new List<SeatType>
 			{
 				new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
-				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now }
+				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
+				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
 			};
 			modelBuilder.Entity<SeatType>().HasData(seatTypeData);
-			var SeatData = new List<Seat>
-			{
-				new Seat
-				{
-					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					SeatNumber = "1",
-					Column = "1",
-					Row = "1",
-					Status = seatEnum.selected,
-					SeatTypeID = seatTypeData[0].ID
-				},
-				new Seat
-				{
-					ID = Guid.NewGuid(),
-					SeatNumber = "2",
-					Column = "2",
-					Row = "2",
-					Status = seatEnum.selected,
-					SeatTypeID = seatTypeData[0].ID
-				},
-				new Seat
-				{
-					ID = Guid.NewGuid(),
-					SeatNumber = "2",
-					Column = "2",
-					Row = "2",
-					Status = seatEnum.selected,
-					SeatTypeID = seatTypeData[0].ID
-				}
-			};
-			modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
-			var roomData = new List<Room>
-			{
-				new Room
-				{
-					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					Name = "Room 1",
-					SeatingCapacity = 100,
-					Status = EntityStatus.Active,
-					SeatID = SeatData[0].ID,
-					CreatedTime = DateTime.Now
-				},
-				new Room
-				{
-					ID = Guid.NewGuid(),
-					Name = "Room 2",
-					SeatingCapacity = 150,
-					Status = EntityStatus.Active,
-					SeatID = SeatData[0].ID,
-					CreatedTime = DateTime.Now
-				}
-			};
-			modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
 			var cinemaData = new List<Cinemas>
 			{
 				new Cinemas
@@ -297,7 +247,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ClosingHours = "10:00 PM",
 					RoomNumber = 5,
 					CreatedTime = DateTime.Now,
-					RoomId = roomData[0].ID,
 				},
 				new Cinemas
 				{
@@ -310,10 +259,65 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ClosingHours = "11:00 PM",
 					RoomNumber = 7,
 					CreatedTime = DateTime.Now,
-					RoomId = roomData[0].ID,
 				}
 			};
 			modelBuilder.Entity<Cinemas>(b => { b.HasData(cinemaData); });
+			var roomData = new List<Room>
+			{
+				new Room
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					Name = "Room 1",
+					SeatingCapacity = 100,
+					Status = EntityStatus.Active,
+					CreatedTime = DateTime.Now,
+							CinemasId = cinemaData[0].ID,
+				},
+				new Room
+				{
+					ID = Guid.NewGuid(),
+					Name = "Room 2",
+					SeatingCapacity = 150,
+					Status = EntityStatus.Active,
+					CreatedTime = DateTime.Now,
+					CinemasId = cinemaData[0].ID,
+				}
+			};
+			modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
+			var SeatData = new List<Seat>
+			{
+				new Seat
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					SeatNumber = "1",
+					Column = "1",
+					Row = "1",
+					Status = seatEnum.selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				},
+				new Seat
+				{
+					ID = Guid.NewGuid(),
+					SeatNumber = "2",
+					Column = "2",
+					Row = "2",
+					Status = seatEnum.selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				},
+				new Seat
+				{
+					ID = Guid.NewGuid(),
+					SeatNumber = "2",
+					Column = "2",
+					Row = "2",
+					Status = seatEnum.selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				}
+			};
+			modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
 			var showTimeData = new List<ShowTime>
 			{
 				new ShowTime
@@ -351,8 +355,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					Duration = 120, // in minutes
 					Description = "An exciting action movie.",
 					StarTime = DateTime.Parse("2024-10-22"),
-					Trailer = "trailerA.mp4",
-					Images = "movieA.jpg",
+					Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
+					Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
 					AgeAllowed = 18,
 					Status = MovieStatus.Active,
 					GenreID = genreData[0].ID,
@@ -368,10 +372,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					Duration = 150,
 					Description = "A thrilling mystery.",
 					StarTime = DateTime.Parse("2024-11-15"),
-					Trailer = "trailerB.mp4",
-					Images = "movieB.jpg",
+					Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
+					Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
 					AgeAllowed = 16,
-					Status = MovieStatus.Active,
+					Status = MovieStatus.Comingsoon,
 					GenreID = genreData[0].ID,
 					LenguageID = languageData[0].ID,
 					CountryID = countryData[0].ID,

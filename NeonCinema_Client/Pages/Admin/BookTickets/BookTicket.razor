@@ -5,6 +5,7 @@
 @using NeonCinema_Client.Data.Services.BookTicket
 @layout LayoutAdmin
 @inject BookTicketServices _service
+@inject NavigationManager _navi
 
 <MudPaper Height="90%" Width="90%">
 	<MudContainer MaxWidth="MaxWidth.Large">
@@ -43,6 +44,9 @@
 											</div>
 											<h5 class="card-title">@item.Name</h5>
 											<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+											<button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(item.ID)">
+												<i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+											</button>
 										</div>
 									</div>
 								</div>
@@ -58,7 +62,7 @@
 				<div class="row">
 					<div class="col-custom">
 						<div class="row">
-							@foreach (var item in moviesNowShowing)
+							@foreach (var item in moviesComing)
 							{
 								<div class="col-custom">
 									<div class="row">
@@ -121,6 +125,10 @@
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private async Task NagationToDetailBook(Guid id)
+	{
+		_navi.NavigateTo($"/select-seat/{id}");
 	}
 }
 <style>

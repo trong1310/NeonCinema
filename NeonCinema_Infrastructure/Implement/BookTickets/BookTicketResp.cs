@@ -77,5 +77,21 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<ScreeningMoviesDto> GetScreeningMovies(Guid MovieId)
+        {
+			TimeSpan currenTime = DateTime.Now.TimeOfDay;
+            var date = DateTime.Now;
+			var screening = await _context.Screening.Include(x=>x.ShowTime).Include(x=>x.Rooms).AsNoTracking().Where(x=>x.MovieID == MovieId).ToListAsync();
+            var results = screening.Where(x => x.ShowTime.StartTime >= currenTime &&x.ShowDate.Day >= date.Day  && x.Status == NeonCinema_Domain.Enum.EntityStatus.Active).FirstOrDefault();
+            if (results == null) return null;
+            var dto = new ScreeningMoviesDto()
+            {
+                Id = results.ID,
+                RoomName = results.Rooms.Name,
+                ShowDate = results.ShowDate,
+                ShowTime = results.ShowTime.StartTime,
+            };
+            return dto;
+        }
     }
 }
