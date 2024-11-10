@@ -56,7 +56,7 @@ namespace NeonCinema_Infrastructure.Implement.Statisticss
         public async Task<List<FoodCombo>> GetFoodCombos(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
             var foodCombos = await _context.FoodCombos
-                .Include(fc => fc.Service)
+                
                 .Include(fc => fc.Bills)
                 .Where(fc => fc.CreatedTime >= startDate && fc.CreatedTime <= endDate)
                 .ToListAsync(cancellationToken);
