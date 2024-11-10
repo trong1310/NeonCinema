@@ -459,8 +459,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<Ticket>().HasData(ticketData);
             var foodComboData = new List<FoodCombo>
     {
-        new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola"},
-        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola" }
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
     };
             modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 

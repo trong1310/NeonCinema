@@ -12,6 +12,7 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid ID { get; set; }
         public string Content { get; set; }
         public string Description { get; set; }
+        public string Images { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
 
