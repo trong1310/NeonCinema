@@ -12,5 +12,6 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket
 		public TimeSpan ShowTime { get; set; }
 		public DateTime ShowDate { get; set; }
 		public string RoomName { get; set; }
+		public List<SeatDto> Seats { get; set; }
 	}
 }
