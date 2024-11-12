@@ -5,6 +5,7 @@
 @using NeonCinema_Client.DataTransferObject.Users
 @using NeonCinema_Domain.Database.Entities
 @using NeonCinema_Infrastructure.Extention.Utili
+@using System.Transactions
 
 @layout LayoutAdmin
 @inject NavigationManager _nav
@@ -110,12 +111,12 @@
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
-															<InputDate @bind-Value="input.StartDate" class="form-control" />
+															<input type="datetime-local" @bind="input.StartDate" class="form-control" />
 															<ValidationMessage For="@(() => input.StartDate)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày kết thúc</label>
-															<InputDate @bind-Value="input.EndDate" class="form-control" />
+															<input type="datetime-local" @bind="input.EndDate" class="form-control" />
 															<ValidationMessage For="@(() => input.EndDate)" />
 														</div>
 														<div class="mb-4">
@@ -200,49 +201,6 @@
 													<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-danger">Hủy</button>
 												</div>
 											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					}
-
-					else if (isModalVisibleConfirm == 2)
-					{
-						<div class="modal fade show modalConfirm" tabindex="-1" role="dialog" style="display: block;">
-							<div class="modal-dialog" role="document">
-								<div class="modal-content">
-									<div class="p-3">
-										<div class="col-12">
-											<div class="row">
-												<div class="col-1">
-													<button type="button" class="close" @onclick="CloseModalConfirm" aria-label="Close">
-														<span aria-hidden="true">&times;</span>
-													</button>
-												</div>
-											</div>
-											<div class="row">
-												<div align="center">
-													@if (messageString == "Thêm thành công")
-													{
-														<div style="width:200px; height:200px">
-															<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
-														</div>
-													}
-
-													@if (messageString == "Thêm thất bại")
-													{
-														<div style="width:200px; height:200px">
-															<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
-														</div>
-													}
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="mb-2">
-										<div align="center">
-											<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-primary">Đồng ý</button>
 										</div>
 									</div>
 								</div>
@@ -448,6 +406,49 @@
 						</div>
 					}
 				}
+
+				@if (isModalVisibleConfirm == 2)
+				{
+					<div class="modal fade show modalConfirm" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="p-3">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModalConfirm" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+										</div>
+										<div class="row">
+											<div align="center">
+												@if (messageString == "Thêm thành công")
+												{
+													<div style="width:200px; height:200px">
+														<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
+													</div>
+												}
+
+												@if (messageString == "Thêm thất bại")
+												{
+													<div style="width:200px; height:200px">
+														<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
+													</div>
+												}
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="mb-2">
+									<div align="center">
+										<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-primary">Đồng ý</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
 				<!--End modal-->
 
 
@@ -540,16 +541,17 @@
 @code {
 
 	int stt = 1;
-	private string inputSearchUser = "";
+	private string inputSearchUser = ""; //tim kiem theo ten user
+	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
 	private List<CustomerViewModel_Promotion> _lstuser = new List<CustomerViewModel_Promotion>();
 	private List<UserDTO> _lstUser = new List<UserDTO>();
 	private PromotionCreateRequest input = new PromotionCreateRequest();
 	private PromotionDTO inputUpdate = new PromotionDTO();
-	private string messageString = null;
-	private Guid idActive;
-	private bool selectAll = false;
+	private string messageString = null; //thong bao confirm
+	private Guid idActive; //id update/delete promotion
+	private bool selectAll = false; //chon tat ca user
 
 	//Chọn loại giảm giá
 	private bool discountPercentage = true;
@@ -585,7 +587,7 @@
 
 	//Gen code
 	private string codegen = Uliti.GenerateCode();
-	
+
 
 
 	//Modal
@@ -598,7 +600,7 @@
 		await LoadPromotion();
 		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
-	
+
 	}
 
 	//Get All promotion
@@ -697,58 +699,78 @@
 	//Add
 	public async Task AddPromotion()
 	{
-		input.ID = Guid.NewGuid();
-		input.Code = codegen;
-		var check = await _prosv.CreatePromotionAsync(input);
-
-		if (check)
+		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
-			List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
-
-			foreach (var item in GetSelectedUser())
+			try
 			{
-				PromotionUserDTO x = new PromotionUserDTO
+				input.ID = Guid.NewGuid();
+				input.Code = codegen;
+				var check = await _prosv.CreatePromotionAsync(input);
+
+				if (check)
+				{
+					List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
+
+					foreach (var item in GetSelectedUser())
 					{
-						PromotionID = input.ID,
-						UserID = item.ID
-					};
+						PromotionUserDTO x = new PromotionUserDTO
+							{
+								PromotionID = input.ID,
+								UserID = item.ID
+							};
 
-				lstPU.Add(x);
+						lstPU.Add(x);
 
-				MailPromotionRequest mailitem = new MailPromotionRequest
+						MailPromotionRequest mailitem = new MailPromotionRequest
+							{
+								FullName = item.FullName,
+								NamePromotion = "Chưa update",
+								ToEmail = item.Email,
+								Code = input.Code
+							};
+						_lstMail.Add(mailitem);
+					}
+
+					if(lstPU.Count == 0)
 					{
-						FullName = item.FullName,
-						NamePromotion = "Chưa update",
-						ToEmail = item.Email,
-						Code = input.Code
-					};
-				_lstMail.Add(mailitem);
-			}
+						messageString = "Thêm thất bại";
+						return;
+					}
 
-			if (await _prosv.CreatePromotionUserAsync(lstPU))
+					if (await _prosv.CreatePromotionUserAsync(lstPU))
+					{
+						await _prosv.SendMailWithTemplateAsync(_lstMail);
+						scope.Complete();
+						messageString = "Thêm thành công";
+
+
+						//Reset input và list
+						input = new PromotionCreateRequest();
+						await LoadPromotion();
+					}
+					else
+					{
+						messageString = "Thêm thất bại";
+						return;
+					}
+				}
+				else
+				{
+					messageString = "Thêm thất bại";
+					return;
+				}
+			}
+			catch
 			{
-				await _prosv.SendMailWithTemplateAsync(_lstMail);
-				messageString = "Thêm thành công";
+				return;
 			}
-			else
+			finally
 			{
-				messageString = "Có lỗi khi thêm ưu đãi khách hàng";
+				//Mở modal thông báo
+				isModalVisibleConfirm = 2;
 			}
 
-			//Reset input và list
-			input = new PromotionCreateRequest();
-			await LoadPromotion();
-
-
-
-		}
-		else
-		{
-			messageString = "Thêm thất bại";
-		}
-
-		//Mở modal thông báo
-		isModalVisibleConfirm = 2;
+		}	
 	}
 
 	//back
@@ -768,9 +790,15 @@
 		{
 			_nav.NavigateTo("/list-promotion-admin");
 			idActive = Guid.Empty;
+			messageString = "Thêm thành công";
+		}
+		else
+		{
+			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo				
 		}
 
-		CloseModal();
+		isModalVisibleConfirm = 2;
+
 		await LoadPromotion();
 	}
 
