@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.Interface.Statistics;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -19,47 +20,37 @@ namespace NeonCinema_Infrastructure.Implement.Statisticss
             _context = context;
         }
 
-        public async Task<decimal> GetDailyRevenue(DateTime date, CancellationToken cancellationToken)
+        public async Task<decimal> GetDailyRevenueAsync(DateTime date)
         {
-            var dailyRevenue = await _context.BillDetails
-                .Where(b => b.CreatedTime == date.Date)
-                .SumAsync(b => b.TotalPrice, cancellationToken);
-            return dailyRevenue;
+            return await _context.BillDetails
+                .Where(b => b.CreatedTime == date.Date && b.Status == ticketEnum.paid)
+                .SumAsync(b => b.TotalPrice);
         }
 
-        public async Task<int> GetNewCustomers(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<int> GetNewCustomersCountAsync(DateTime date)
         {
-            var newCustomers = await _context.Users
-                .Where(u => u.CreatedTime >= startDate.Date && u.CreatedTime <= endDate.Date)
-                .CountAsync(cancellationToken);
-            return newCustomers;
-        }
-
-
-        public async Task<int> GetTotalTickets(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
-        {
-            var totalTickets = await _context.BillTickets
-                .Where(bt => bt.Bills!.CreatedTime >= startDate && bt.Bills.CreatedTime <= endDate)
-                .CountAsync(cancellationToken);
-            return totalTickets;
+            return await _context.Users
+                .Where(u => u.CreatedTime == date.Date &&
+                            u.RoleID == _context.Roles.FirstOrDefault(r => r.RoleName == "Client")!.ID)  // Ensure Role is "Client"
+                .CountAsync();
         }
 
 
-        public async Task<decimal> GetTotalRevenue(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<int> GetTotalTicketsSoldAsync(DateTime startDate, DateTime endDate)
         {
-            var totalRevenue = await _context.BillDetails
-                .Where(b => b.CreatedTime >= startDate && b.CreatedTime <= endDate)
-                .SumAsync(b => b.TotalPrice, cancellationToken);
-            return totalRevenue;
+            return await _context.BillTickets
+                .Where(bt => bt.Bills!.CreatedTime >= startDate.Date && bt.Bills.CreatedTime <= endDate.Date)
+                .CountAsync();
         }
 
-        public async Task<List<FoodCombo>> GetFoodCombos(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<decimal> GetTotalRevenueAsync(DateTime startDate, DateTime endDate)
         {
-            var foodCombos = await _context.FoodCombos
-                .Where(fc => fc.CreatedTime >= startDate && fc.CreatedTime <= endDate)
-                .ToListAsync(cancellationToken);
-            return foodCombos;
-        }
 
+            return await _context.BillDetails
+                .Where(b => b.CreatedTime >= startDate.Date && b.CreatedTime <= endDate.Date && b.Status == ticketEnum.paid)
+                .SumAsync(b => b.TotalPrice);
+
+        }
     }
+
 }
