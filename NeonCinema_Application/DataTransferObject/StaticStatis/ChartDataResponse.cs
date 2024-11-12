@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Application.DataTransferObject.StaticStatis
 {
-    public class StatisticsResponseDto
+    public class ChartDataResponse
     {
-        public decimal DailyRevenue { get; set; }
-        public int NewCustomers { get; set; }
-        public int TotalTickets { get; set; }
+        public List<string> Dates { get; set; } = new();
+        public List<decimal> Revenue { get; set; } = new();
+        public int TotalTicketsSold { get; set; }
         public decimal TotalRevenue { get; set; }
-        public List<FoodComboDto> FoodCombos { get; set; }
 
     }
 }

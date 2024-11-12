@@ -10,78 +10,84 @@ namespace NeonCinema_API.Controllers.Statisticss
     [ApiController]
     public class StatisticsController : ControllerBase
     {
-        private readonly IStatisticsRepository _statisticsRepository;
+        private readonly IStatisticsRepository _statisticalRepo;
         private readonly IMapper _mapper;
 
         public StatisticsController(IStatisticsRepository statisticsRepository, IMapper mapper)
         {
-            _statisticsRepository = statisticsRepository;
+            _statisticalRepo = statisticsRepository;
             _mapper = mapper;
         }
 
         [HttpGet("daily-revenue")]
-        public async Task<IActionResult> GetDailyRevenue([FromQuery] DateTime date, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetDailyRevenue([FromQuery] DateTime date)
         {
-            var dailyRevenue = await _statisticsRepository.GetDailyRevenue(date, cancellationToken);
-            return Ok(dailyRevenue);
+            var revenue = await _statisticalRepo.GetDailyRevenueAsync(date);
+            return Ok(new { Date = date, Revenue = revenue });
         }
 
         [HttpGet("new-customers")]
-        public async Task<IActionResult> GetNewCustomers([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetNewCustomersCount([FromQuery] DateTime date)
         {
-            var newCustomers = await _statisticsRepository.GetNewCustomers(startDate, endDate, cancellationToken);
-            return Ok(newCustomers);
+            var count = await _statisticalRepo.GetNewCustomersCountAsync(date);
+            return Ok(new { Date = date, NewCustomers = count });
         }
 
-        [HttpGet("total-tickets")]
-        public async Task<IActionResult> GetTotalTickets([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        [HttpGet("total-tickets-sold")]
+        public async Task<IActionResult> GetTotalTicketsSold([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var totalTickets = await _statisticsRepository.GetTotalTickets(startDate, endDate, cancellationToken);
-            return Ok(totalTickets);
+            var totalTickets = await _statisticalRepo.GetTotalTicketsSoldAsync(startDate, endDate);
+            return Ok(new { StartDate = startDate, EndDate = endDate, TotalTicketsSold = totalTickets });
         }
 
         [HttpGet("total-revenue")]
-        public async Task<IActionResult> GetTotalRevenue([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetTotalRevenue([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var totalRevenue = await _statisticsRepository.GetTotalRevenue(startDate, endDate, cancellationToken);
-            return Ok(totalRevenue);
+            var totalRevenue = await _statisticalRepo.GetTotalRevenueAsync(startDate, endDate);
+            return Ok(new { StartDate = startDate, EndDate = endDate, TotalRevenue = totalRevenue });
         }
-
-        [HttpGet("food-combos")]
-        public async Task<IActionResult> GetFoodCombos([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
-        {
-            var foodCombos = await _statisticsRepository.GetFoodCombos(startDate, endDate, cancellationToken);
-            var foodComboDtos = foodCombos.Select(fc => new FoodComboDto
-            {
-               
-                Quantity = fc.Quantity,
-                TotalPrice = fc.TotalPrice
-            }).ToList();
-            return Ok(foodComboDtos);
-        }
-
         [HttpGet("all-statistics")]
-        public async Task<IActionResult> GetAllStatistics([FromQuery] DateTime date, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllStatistics([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            var dailyRevenue = await _statisticsRepository.GetDailyRevenue(date, cancellationToken);
-            var newCustomers = await _statisticsRepository.GetNewCustomers(startDate, endDate, cancellationToken);
-            var totalTickets = await _statisticsRepository.GetTotalTickets(startDate, endDate, cancellationToken);
-            var totalRevenue = await _statisticsRepository.GetTotalRevenue(startDate, endDate, cancellationToken);
-            var foodCombos = await _statisticsRepository.GetFoodCombos(startDate, endDate, cancellationToken);
+            var dailyRevenue = await _statisticalRepo.GetDailyRevenueAsync(DateTime.Now);
+            var newCustomers = await _statisticalRepo.GetNewCustomersCountAsync(DateTime.Now);
+            var totalTicketsSold = await _statisticalRepo.GetTotalTicketsSoldAsync(startDate, endDate);
+            var totalRevenue = await _statisticalRepo.GetTotalRevenueAsync(startDate, endDate);
 
-            var foodComboss = await _statisticsRepository.GetFoodCombos(startDate, endDate, cancellationToken);
-            var foodComboDtos = _mapper.Map<List<FoodComboDto>>(foodComboss);
-            
-            var response = new StatisticsResponseDto
+            var result = new
             {
                 DailyRevenue = dailyRevenue,
                 NewCustomers = newCustomers,
-                TotalTickets = totalTickets,
-                TotalRevenue = totalRevenue,
-                FoodCombos = foodComboDtos
+                TotalTicketsSold = totalTicketsSold,
+                TotalRevenue = totalRevenue
             };
 
-            return Ok(response);
+            return Ok(result);
         }
+        // Lấy dữ liệu biểu đồ cho thống kê vé và combo bán ra
+        [HttpGet("chart-data")]
+        public async Task<IActionResult> GetChartData([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string timeFilter, [FromQuery] string theater)
+        {
+            // Lấy danh sách vé theo thời gian
+            var ticketSales = await _statisticalRepo.GetTotalTicketsSoldAsync(startDate, endDate);
+            var totalRevenue = await _statisticalRepo.GetTotalRevenueAsync(startDate, endDate);
+
+            // Thống kê vé bán ra theo ngày, tháng, năm
+            var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                  .Select(offset => startDate.AddDays(offset))
+                                  .ToList();
+            var revenueList = dates.Select(date => _statisticalRepo.GetDailyRevenueAsync(date).Result).ToList();
+
+            var chartData = new
+            {
+                Dates = dates.Select(d => d.ToString("yyyy-MM-dd")).ToList(),
+                Revenue = revenueList,
+                TotalTicketsSold = ticketSales,
+                TotalRevenue = totalRevenue
+            };
+
+            return Ok(chartData);
+        }
+
     }
 }

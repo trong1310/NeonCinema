@@ -66,7 +66,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
         }
 
@@ -460,7 +460,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             var foodComboData = new List<FoodCombo>
     {
         new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" },
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 330000,Content="Combo 3",Description ="2 bắp 3 cola",Images = "tải xuống.jfif" }
     };
             modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
@@ -492,6 +493,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             BillCode = "BILL002",
             Status = ticketEnum.paid,
             FoodID = foodComboData[0].ID
+        },
+          new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[2].ID,
+            TotalPrice = 6000000,
+            BillCode = "BILL002",
+            Status = ticketEnum.paid,
+            FoodID = foodComboData[1].ID
         }
     };
             modelBuilder.Entity<Bill>().HasData(billData);
