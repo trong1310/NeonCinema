@@ -45,9 +45,11 @@ namespace NeonCinema_Infrastructure.Implement.Statisticss
 
         public async Task<decimal> GetTotalRevenueAsync(DateTime startDate, DateTime endDate)
         {
+
             return await _context.BillDetails
                 .Where(b => b.CreatedTime >= startDate.Date && b.CreatedTime <= endDate.Date && b.Status == ticketEnum.paid)
                 .SumAsync(b => b.TotalPrice);
+
         }
     }
 

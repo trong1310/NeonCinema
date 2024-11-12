@@ -46,16 +46,13 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
                 };
                 await _context.Tickets.AddAsync(ticket);
                 await _context.SaveChangesAsync();
-                var food = _context.FoodCombos.Where(x=>x.ID == request.FoodComboId).FirstOrDefault();
                 var bill = new Bill()
                 {
                     ID = Guid.NewGuid(),
                     BillCode = Uliti.GenerateBillCode(),
                     CreatedTime = DateTime.Now,
                     Status = NeonCinema_Domain.Enum.ticketEnum.waiting_for_payment,
-                    TotalPrice = ticket.Price*food.TotalPrice,
                     UserID = request.CustomerID != null ? request.CustomerID : null,
-                    FoodID = request.FoodComboId != null? request.FoodComboId : null,
                 };
                 await _context.BillDetails.AddAsync(bill);
                 await _context.SaveChangesAsync();
