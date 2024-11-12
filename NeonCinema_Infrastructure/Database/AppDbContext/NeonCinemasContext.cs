@@ -67,7 +67,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 
-			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+            optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
 
 		}
 
@@ -455,60 +457,70 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<Show_release>().HasData(showReleaseData);
 
 
-			// 23. TicketSeat
-			var ticketPriceData = new List<TicketPrice>
-	{
-		new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
-		new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
-	};
-			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
-			// 22. Ticket
-			var ticketData = new List<Ticket>
-	{
-		new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
-		new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
-	};
-			modelBuilder.Entity<Ticket>().HasData(ticketData);
-			var foodComboData = new List<FoodCombo>
-	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
-	};
-			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
+
+            // 23. TicketSeat
+            var ticketPriceData = new List<TicketPrice>
+    {
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+    };
+            modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
+            // 22. Ticket
+            var ticketData = new List<Ticket>
+    {
+        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
+        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
+    };
+            modelBuilder.Entity<Ticket>().HasData(ticketData);
+            var foodComboData = new List<FoodCombo>
+    {
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" },
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 330000,Content="Combo 3",Description ="2 bắp 3 cola",Images = "tải xuống.jfif" }
+    };
+            modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
 
 
-			// 26. Checkin
-			var checkinData = new List<Checkin>
-	{
-		new Checkin { ID = Guid.NewGuid(), Code = "phonghhhhh",Type = "mua tại quầy", Name="hotdot", TicketID = ticketPriceData[0].ID },
-		new Checkin { ID = Guid.NewGuid(), Code = "hgdsad",Type = "mua tại quầy", Name="hotdsot", TicketID = ticketPriceData[1].ID  }
-	};
-			modelBuilder.Entity<Checkin>().HasData(checkinData);
-			var billData = new List<Bill>
-	{
-		new Bill
-		{
-			ID = Guid.NewGuid(),
-			UserID = userData[0].ID,
-			TotalPrice = 500000,
-			BillCode = "BILL001",
-			Status = ticketEnum.paid,
-		},
-		new Bill
-		{
-			ID = Guid.NewGuid(),
-			UserID = userData[1].ID,
-			TotalPrice = 300000,
-			BillCode = "BILL002",
-			Status = ticketEnum.paid,
-		}
-	};
-			modelBuilder.Entity<Bill>().HasData(billData);
-			var billCombo = new List<BillCombo>
-			{
-				new BillCombo
-				{
+            // 26. Checkin
+            var checkinData = new List<Checkin>
+    {
+        new Checkin { ID = Guid.NewGuid(), Code = "phonghhhhh",Type = "mua tại quầy", Name="hotdot", TicketID = ticketPriceData[0].ID },
+        new Checkin { ID = Guid.NewGuid(), Code = "hgdsad",Type = "mua tại quầy", Name="hotdsot", TicketID = ticketPriceData[1].ID  }
+    };
+            modelBuilder.Entity<Checkin>().HasData(checkinData);
+            var billData = new List<Bill>
+    {
+        new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[0].ID,
+            TotalPrice = 500000,
+            BillCode = "BILL001",
+            Status = ticketEnum.paid,
+            FoodID = foodComboData[0].ID
+        },
+        new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[1].ID,
+            TotalPrice = 300000,
+            BillCode = "BILL002",
+            Status = ticketEnum.paid,
+            FoodID = foodComboData[0].ID
+        },
+          new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[2].ID,
+            TotalPrice = 6000000,
+            BillCode = "BILL002",
+            Status = ticketEnum.paid,
+            FoodID = foodComboData[1].ID
+        }
+    };
+            modelBuilder.Entity<Bill>().HasData(billData);
+
 
 					 BillID = billData[0].ID,
 					 FoodComboID = foodComboData[0].ID,
