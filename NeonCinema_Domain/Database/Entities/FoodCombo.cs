@@ -16,6 +16,6 @@ namespace NeonCinema_Domain.Database.Entities
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
 
-        public virtual ICollection<Bill>? Bills { get; set; }
+        public virtual ICollection<BillCombo>? BillCombos { get; set; }
     }
 }
