@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionCreateRequest
     {
 		public Guid ID { get; set; }  // Khóa chính
+		[RegularExpression(@"^[a-zA-Z0-9/]*$", ErrorMessage = "Chỉ được chứa chữ cái, số và dấu /")]
 		public string Name { get; set; }  // Tên khuyến mãi
 		public string Code { get; set; }  
         public string Description { get; set; } = "Không có"; // Mô tả khuyến mãi
