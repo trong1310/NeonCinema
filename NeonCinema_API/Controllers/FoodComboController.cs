@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Infrastructure.Implement.FoodCombo_R;
 
 namespace NeonCinema_API.Controllers
 {
@@ -11,9 +12,9 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class FoodComboController : ControllerBase
     {
-        IEntityRepository<FoodCombo> _repos;
+        FoodComboRepository _repos;
         IMapper _mapper;
-        public FoodComboController(IEntityRepository<FoodCombo> repos, IMapper mapper)
+        public FoodComboController(FoodComboRepository repos, IMapper mapper)
         {
             _repos = repos;
             _mapper = mapper;
@@ -24,7 +25,7 @@ namespace NeonCinema_API.Controllers
         {
             var result = await _repos.GetAll(cancellationToken);
 
-            return Ok(result.Select(x => _mapper.Map<FoodComboDTO>(x)).ToList());
+            return Ok(result);
         }
 
         [HttpPost("create-foodcombo")]

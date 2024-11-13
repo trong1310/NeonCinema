@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Bills;
+using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -11,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
 {
-    public class FoodComboRepository : IEntityRepository<FoodCombo>
+    public class FoodComboRepository
     {
-        NeonCinemasContext _context;
+        private readonly NeonCinemasContext _context;
         public FoodComboRepository(NeonCinemasContext context)
         {
             _context = context;
@@ -28,6 +29,8 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
                     ID = Guid.NewGuid(),
                     Quantity = entity.Quantity,
                     TotalPrice = entity.TotalPrice,
+                    Content = entity.Content,
+                    Description = entity.Description,
                 };
 
                 _context.FoodCombos.Add(e);
@@ -78,13 +81,17 @@ namespace NeonCinema_Infrastructure.Implement.FoodCombo_R
             }
         }
 
-        public async Task<List<FoodCombo>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<FoodComboDTO>> GetAll(CancellationToken cancellationToken)
         {
-            var lst = await _context.FoodCombos
-                .Include(x => x.Bills)
-                .ToListAsync(cancellationToken);
-
-            return lst;
+           var food = await _context.FoodCombos.Select(x=> new FoodComboDTO
+           {
+               ID = x.ID,
+               Amount = x.TotalPrice,
+               Content= x.Content,
+               Description = x.Description,
+               Images = x.Images,
+           }).ToListAsync();
+            return food;
         }
 
         public List<BillDTO> GetBillByUser(Guid userID, CancellationToken cancellationToken)

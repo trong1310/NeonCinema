@@ -1,0 +1,236 @@
+﻿@page "/ticketprices"
+@using NeonCinema_Application.DataTransferObject.Screening
+@using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Application.DataTransferObject.ShowTime
+@using NeonCinema_Application.DataTransferObject.TicketPrice
+@using NeonCinema_Client.Data.IServices.Screenning
+@using NeonCinema_Client.Data.IServices.SeatType
+@using NeonCinema_Client.Data.IServices.TicketPrice
+@inject ITicketPriceService TicketPriceService
+@inject IShowTimeService ShowTimeService
+@inject ISeatTypeService SeatTypeService
+@inject IScreeningService ScreeningService
+
+<h3>Danh sách Giá Vé</h3>
+<button class="btn btn-primary" @onclick="ShowAddModal">Thêm Giá Vé Mới</button>
+<!-- Bảng Hiển Thị Giá Vé -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Giá Vé</th>
+            <th>Thời Gian Chiếu</th>
+            <th>Loại Ghế</th>
+            <th>Giờ chiếu</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ticketPrices == null)
+        {
+            <tr>
+                <td colspan="5">Đang tải dữ liệu...</td>
+            </tr>
+        }
+        else if (ticketPrices.Count == 0)
+        {
+            <tr>
+                <td colspan="5">Không có giá vé nào</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var ticketPrice in ticketPrices)
+            {
+                var startTime = showTimes.FirstOrDefault(st => st.ID == ticketPrice.ShowTimeID)?.StartTime;
+                var seatype = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatTypeID)?.SeatTypeName;
+                var screening = screenings.FirstOrDefault(st => st.ID == ticketPrice.ScreeningID)?.ShowDate;
+                <tr>
+                    <td>@ticketPrice.Price.ToString("F3")</td>
+                    <td>@startTime</td>
+                    <td>@seatype</td>
+                    <td>@screening</td>
+                    <td>
+                        <!-- Nút chỉnh sửa -->
+                        <button class="btn btn-warning" @onclick="() => ShowEditModal(ticketPrice.ID)">Chỉnh Sửa</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+ 
+<!-- Modal Thêm Giá Vé -->
+@if (isAddModalOpen)
+{
+    <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Giá Vé Mới</h5>
+                    <button type="button" class="close" @onclick="CloseAddModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="price">Giá Vé:</label>
+                        <input type="number" id="price" class="form-control" @bind="newTicketPrice.Price" />
+                    </div>
+                    <div class="form-group">
+                        <label for="showTime">Thời Gian Chiếu:</label>
+                        <select class="form-control" @bind="newTicketPrice.ShowTimeID">
+                            @foreach (var showTime in showTimes)
+                            {
+                                <option value="@showTime.ID">@showTime.StartTime</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="seatType">Loại Ghế:</label>
+                        <select class="form-control" @bind="newTicketPrice.SeatTypeID">
+                            @foreach (var seatType in seatTypes)
+                            {
+                                <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="screening">Lịch Chiếu:</label>
+                        <input type="text" class="form-control" @bind-value="newTicketPrice.ScreeningID" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseAddModal">Đóng</button>
+                    <button type="button" class="btn btn-primary" @onclick="HandleAddTicketPrice">Thêm Giá Vé</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Chỉnh Sửa Giá Vé -->
+@if (isEditModalOpen)
+{
+    <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh Sửa Giá Vé</h5>
+                    <button type="button" class="close" @onclick="CloseEditModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="price">Giá Vé:</label>
+                        <input type="number" id="price" class="form-control" @bind="newTicketPrice.Price" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Đóng</button>
+                    <button type="button" class="btn btn-primary" @onclick="HandleEditTicketPrice">Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isAddModalOpen = false;
+    private bool isEditModalOpen = false;
+    private TicketPriceDTO newTicketPrice = new TicketPriceDTO();
+    private List<TicketPriceDTO> ticketPrices = new List<TicketPriceDTO>();
+    private List<ShowTimeDTO> showTimes = new List<ShowTimeDTO>();
+    private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
+    private List<ScreeningDTO> screenings = new List<ScreeningDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Tải danh sách giá vé và các dữ liệu liên quan
+            ticketPrices = await TicketPriceService.GetTicketPricesAsync();
+            showTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
+            seatTypes = await SeatTypeService.GetAllSeatType();
+            screenings = await ScreeningService.GetAllScreeningsAsync();
+            Console.WriteLine($"Screenings count: {screenings.Count}");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors that occur during data loading
+            Console.Error.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private void ShowAddModal()
+    {
+        newTicketPrice = new TicketPriceDTO(); // Reset data
+        isAddModalOpen = true;
+    }
+
+    private void ShowEditModal(Guid id)
+    {
+        newTicketPrice = ticketPrices.FirstOrDefault(t => t.ID == id);
+        if (newTicketPrice != null)
+        {
+            isEditModalOpen = true;
+        }
+    }
+
+    private void CloseAddModal()
+    {
+        isAddModalOpen = false;
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalOpen = false;
+    }
+
+    private async Task HandleAddTicketPrice()
+    {
+        try
+        {
+            // Do not pass Price as it is calculated on the server side
+            var response = await TicketPriceService.SetupPrice(newTicketPrice);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Handle success, e.g., refresh the ticket price list
+                ticketPrices = await TicketPriceService.GetTicketPricesAsync();
+                CloseAddModal();
+            }
+            else
+            {
+                // Handle failure
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Error: " + error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+
+    private async Task HandleEditTicketPrice()
+    {
+        try
+        {
+            await TicketPriceService.UpdateTicketPriceAsync(newTicketPrice);
+            ticketPrices = await TicketPriceService.GetTicketPricesAsync(); // Refresh list
+            CloseEditModal();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error editing ticket price: {ex.Message}");
+        }
+    }
+}
+
+<style>
+    .custom-modal {
+        margin-top: 50px;
+
+    }
+</style>

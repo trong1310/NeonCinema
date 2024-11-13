@@ -56,7 +56,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IScreeningRepository, ScreeningRepository>();
             services.AddScoped<IEntityRepository<Checkin>, CheckinRepository>();
-            services.AddScoped<IEntityRepository<FoodCombo>, FoodComboRepository>();
+            services.AddScoped< FoodComboRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
             services.AddTransient<IShowReleaseRepository, ShowReleaseRepository>();
             services.AddTransient<ILanguageRepositories, LanguageRepositories>();
@@ -69,6 +69,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ActorResp>();
             services.AddTransient<ActorMoviesResp>();
             services.AddTransient<BookTicketResp>();
+            services.AddScoped<ITicketPriceRepository, TicketPriceRepository>();
             return services;
         }
     }
