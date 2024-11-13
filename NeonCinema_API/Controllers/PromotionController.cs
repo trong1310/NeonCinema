@@ -227,9 +227,10 @@ namespace NeonCinema_API.Controllers
 					var bodyEmail = new BodyBuilder
 					{
 						HtmlBody = @$"
-                <h1>Chúc Mừng Bạn Nhận Được Ưu Đãi Từ NeonCinemas!</h1>
-                <p>Xin chào Giáp,</p>
+                <h1>Chúc mừng bạn nhận được ưu đãi từ rạp chiếu phim NeonCinemas!</h1>
+                <p>Xin chào {item.FullName},</p>
                 <p>Chúng tôi vui mừng thông báo rằng bạn đã nhận được ưu đãi mới từ NeonCinemas!</p>
+				<p>{item.NamePromotion}</p>
                 <p>Mã ưu đãi của bạn: <strong>{item.Code}</strong></p>
                 <p>Hãy truy cập trang web của chúng tôi và nhập mã ưu đãi để nhận khuyến mãi đặc biệt này!</p>
                 <p>Trân trọng,<br>Đội ngũ hỗ trợ khách hàng NeonCinemas</p>"

@@ -16,12 +16,10 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 			builder.ToTable("Ticket");
 			builder.HasKey(x=>x.ID);
 			builder.HasOne(x=>x.Movies).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.NoAction);	
-			builder.HasOne(x=>x.Show_Release).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.Show_ReleaseID).OnDelete(DeleteBehavior.NoAction);	
 			builder.HasOne(x=>x.TicketPrices).WithMany(x=>x.Ticket).HasForeignKey(x=>x.TicketPriceID).OnDelete(DeleteBehavior.NoAction);
 			builder.HasOne(x => x.Screenings).WithMany(x => x.Ticket).HasForeignKey(x => x.ScreningID).OnDelete(DeleteBehavior.NoAction);
-			builder.HasOne(x=>x.Room).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);		
-			builder.HasOne(x=>x.Cinemas).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.CinemasID).OnDelete(DeleteBehavior.NoAction);		
-			builder.HasOne(x=>x.Seat).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.SeatID).OnDelete(DeleteBehavior.NoAction);		
+			builder.HasOne(x=>x.Room).WithMany(x=>x.TicketSeats).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);				
+			builder.HasOne(x=>x.Seat).WithMany(x=>x.Ticket).HasForeignKey(x=>x.SeatID).OnDelete(DeleteBehavior.NoAction);		
 		}
 	}
 }

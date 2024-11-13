@@ -24,6 +24,6 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public string? LanguareName { get; set; }
         public string? CountryName { get; set; }
         public string? DirectorName { get; set; }
-		public List<ActorMoviesDto> ActorMovies { get; set; }
+		public List<ActorMoviesDto>? ActorMovies { get; set; }
 	}
 }

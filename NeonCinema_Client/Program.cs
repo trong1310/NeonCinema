@@ -46,6 +46,14 @@ using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using NeonCinema_Client.Data.Services.BookTicket;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+using NeonCinema_Client.Data.IServices.Statistics;
+using NeonCinema_Client.Data.Services.StatisticService;
+using NeonCinema_Client.Data.IServices.TicketPrice;
+using NeonCinema_Client.Data.Services.TicketPriceService;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -64,6 +72,8 @@ builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 builder.Services.AddTransient<IUserServices, UserServices>();
 builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
@@ -90,6 +100,7 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
+builder.Services.AddScoped<BookTicketServices>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
 
 builder.Services.AddAuthentication("Bearer")
@@ -107,6 +118,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
     options.AddPolicy("StaffPolicy", policy => policy.RequireRole("Staff"));
 });
+
+builder.Services.AddBlazorise(options => options.Immediate = true)
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

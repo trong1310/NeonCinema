@@ -1,125 +1,192 @@
 ﻿@page "/statistical"
 @using MudBlazor
+@using NeonCinema_Client.Data.IServices.Statistics
 @using NeonCinema_Domain.Database.Entities
-
+@inject IStatisticsService StatisticsService
+@inject ISnackbar Snackbar
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <div class="container my-4">
-    <!-- Statistical Cards -->
     <div class="row g-3">
+        <!-- Thống kê doanh thu trong ngày -->
         <div class="col-12 col-sm-6 col-md-3">
             <div class="card shadow h-100 position-relative">
                 <div class="card-body">
                     <h6 class="text-secondary">DOANH THU TRONG NGÀY</h6>
-                    <h5 style="font-weight:bold">0 VND</h5>
+                    <h5 style="font-weight:bold">@DailyRevenue VND</h5>
                 </div>
-                <p class="text-muted ml-4">12-08-2023</p>
+                <p class="text-muted ml-4">@CurrentDate.ToString("dd-MM-yyyy")</p>
                 <span class="material-icons card-icon bg-primary">attach_money</span>
             </div>
         </div>
 
+        <!-- Thống kê khách hàng mới -->
         <div class="col-12 col-sm-6 col-md-3">
             <div class="card shadow h-100 position-relative">
                 <div class="card-body">
                     <h6 class="text-secondary">KHÁCH HÀNG MỚI</h6>
-                    <h5 style="font-weight:bold">7</h5>
+                    <h5 style="font-weight:bold">@NewCustomers</h5>
                 </div>
-                <p class="text-muted ml-4">12-08-2023</p>
+                <p class="text-muted ml-4">@CurrentDate.ToString("dd-MM-yyyy")</p>
                 <span class="material-icons card-icon bg-success">person_add</span>
             </div>
         </div>
 
+        <!-- Thống kê tổng vé -->
         <div class="col-12 col-sm-6 col-md-3">
             <div class="card shadow h-100 position-relative">
                 <div class="card-body">
                     <h6 class="text-secondary">TỔNG VÉ</h6>
-                    <h5 style="font-weight:bold">266</h5>
+                    <h5 style="font-weight:bold">@TotalTicketsSold</h5>
                 </div>
-                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <p class="text-muted ml-4">@StartDate.ToString("dd-MM-yyyy") | @EndDate.ToString("dd-MM-yyyy")</p>
                 <span class="material-icons card-icon bg-warning">confirmation_number</span>
             </div>
         </div>
 
+        <!-- Thống kê tổng doanh thu -->
         <div class="col-12 col-sm-6 col-md-3">
             <div class="card shadow h-100 position-relative">
                 <div class="card-body">
                     <h6 class="text-secondary">TỔNG DOANH THU</h6>
-                    <h5 style="font-weight:bold;">3.356.067.600 VND</h5>
+                    <h5 style="font-weight:bold;">@TotalRevenue VND</h5>
                 </div>
-                <p class="text-muted ml-4">01-01-2022 | 12-08-2023</p>
+                <p class="text-muted ml-4">@StartDate.ToString("dd-MM-yyyy") | @EndDate.ToString("dd-MM-yyyy")</p>
                 <span class="material-icons card-icon bg-danger">shopping_cart</span>
             </div>
         </div>
     </div>
 
-    <!-- Filter Section -->
+    <!-- Form lọc thống kê -->
     <div class="card mt-4 shadow" style="border-radius: 8px;">
         <div class="card-body">
             <h5 class="card-title">Thống kê doanh thu</h5>
             <form class="row g-3">
+                <!-- Ngày bắt đầu -->
                 <div class="col-md-4">
                     <label for="startDate" class="form-label">Ngày bắt đầu</label>
-                    <input type="date" id="startDate" class="form-control" value="2023-06-01">
+                    <input type="date" id="startDate" class="form-control" @bind="StartDate">
                 </div>
 
+                <!-- Ngày kết thúc -->
                 <div class="col-md-4">
                     <label for="endDate" class="form-label">Ngày kết thúc</label>
-                    <input type="date" id="endDate" class="form-control" value="2023-08-12">
+                    <input type="date" id="endDate" class="form-control" @bind="EndDate">
                 </div>
 
+                <!-- Nút Chấp nhận -->
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="button" class="btn btn-primary w-100">Chấp nhận</button>
+                    <button type="button" class="btn btn-primary w-100" @onclick="ApplyFilters">Chấp nhận</button>
                 </div>
 
+                <!-- Lọc theo thời gian -->
                 <div class="col-md-4">
                     <label for="timeFilter" class="form-label">Lọc theo thời gian</label>
-                    <select id="timeFilter" class="form-select">
-                        <option selected>Lọc Theo Năm</option>
-                        <option>Theo Tháng</option>
-                        <option>Theo Tuần</option>
+                    <select id="timeFilter" class="form-select" @bind="TimeFilter">
+                        <option value="Year">Lọc Theo Năm</option>
+                        <option value="Month">Lọc Theo Tháng</option>
+                        <option value="Week">Lọc Theo Tuần</option>
                     </select>
                 </div>
 
+                <!-- Rạp -->
                 <div class="col-md-4">
                     <label for="theater" class="form-label">Rạp</label>
-                    <input type="text" id="theater" class="form-control" placeholder="Selected">
+                    <input type="text" id="theater" class="form-control" @bind="Theater" placeholder="Nhập tên rạp">
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Biểu đồ doanh thu -->
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <h5 class="card-title">Biểu đồ doanh thu</h5>
+            <MudChart @ref="Chart" T="decimal" XAxisLabels="@XAxisLabels.ToArray()" ChartSeries="@RevenueChartSeries" />
+
+        </div>
+    </div>
 </div>
 
-<MudContainer>
-    <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels.ToArray()" Width="100%" Height="400px" />
-
-    <MudGrid>
-        <MudItem xs="12">
-            <MudText Typo="Typo.body1" Class="py-3 text-items-center">Biểu đồ thống kê vé bán và combo theo từng ngày trong tháng</MudText>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
 @code {
-    // Dữ liệu thống kê theo từng ngày trong tháng
-        #region 
-    private List<string> XAxisLabels = Enumerable.Range(1, 30).Select(x => x.ToString()).ToList();
-    // Series 1: Thống kê theo vé bán
-    // Series 2: Thống kê theo combo
-    private List<ChartSeries> Series = new List<ChartSeries>
+    private DateTime StartDate = DateTime.Now.AddMonths(-1); // Giá trị mặc định
+    private DateTime EndDate = DateTime.Now; // Giá trị mặc định
+    private DateTime CurrentDate = DateTime.Now;
+    private string TimeFilter = "Year"; // Lọc theo năm mặc định
+    private string Theater = ""; // Rạp mặc định
+
+    private decimal DailyRevenue = 0;
+    private int NewCustomers = 0;
+    private int TotalTicketsSold = 0;
+    private decimal TotalRevenue = 0;
+
+    private List<string> XAxisLabels = new();
+    private List<ChartSeries> RevenueChartSeries = new();
+    private MudChart Chart; // Biểu đồ
+
+    // Phương thức này sẽ được gọi khi trang được khởi tạo
+    protected override async Task OnInitializedAsync()
     {
-        new ChartSeries
+        await LoadStatistics();
+        await LoadChartData();
+    }
+
+    // Phương thức load thống kê
+    private async Task LoadStatistics()
+    {
+        try
         {
-            Name = "Vé bán",
-            Data = new double[] { 120, 150, 180, 170, 190, 160, 175, 140, 135, 200, 210, 180, 190, 200, 170, 160, 150, 145, 155, 180, 195, 205, 190, 170, 180, 160, 150, 145, 135, 140 }
-        },
-        new ChartSeries
-        {
-            Name = "Combo",
-            Data = new double[] { 80, 90, 85, 95, 100, 120, 110, 115, 90, 85, 95, 100, 110, 120, 115, 130, 125, 120, 110, 95, 100, 105, 110, 120, 115, 110, 105, 100, 95, 85 }
+            var result = await StatisticsService.GetAllStatistics(StartDate, EndDate);
+            DailyRevenue = result.DailyRevenue;
+            NewCustomers = result.NewCustomers;
+            TotalTicketsSold = result.TotalTicketsSold;
+            TotalRevenue = result.TotalRevenue;
         }
-    };
-    #endregion 
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading statistics: {ex.Message}", Severity.Error);
+        }
+    }
+
+    // Phương thức load dữ liệu biểu đồ
+    private async Task LoadChartData()
+    {
+        try
+        {
+            var chartData = await StatisticsService.GetChartDataAsync(StartDate, EndDate, TimeFilter, Theater);
+
+            if (chartData != null)
+            {
+                XAxisLabels = chartData.Dates;
+
+                RevenueChartSeries = new List<ChartSeries>
+                {
+                    new ChartSeries
+                    {
+                        Name = "Doanh thu",
+                        // Explicitly cast decimal values to double
+                        Data = chartData.Revenue.Select(r => (double)r).ToArray()
+                    }
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading chart data: {ex.Message}", Severity.Error);
+        }
+    }
+
+    // Phương thức khi người dùng nhấn nút "Chấp nhận"
+    private async Task ApplyFilters()
+    {
+        // Gọi API để lấy lại dữ liệu thống kê với các tham số lọc
+        await LoadStatistics();
+        await LoadChartData();
+    }
 }
+
+
 <style>
     .bordered {
         border: 1px solid #ccc; 

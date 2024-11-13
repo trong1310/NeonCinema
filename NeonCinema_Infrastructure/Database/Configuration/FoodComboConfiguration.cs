@@ -17,8 +17,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
             builder.HasKey(x=>x.ID);
             builder.Property(x => x.Quantity).HasDefaultValue(0).IsRequired();
             builder.Property(x=>x.TotalPrice).HasDefaultValue(0).IsRequired();
-
-            builder.HasOne(x=>x.Service).WithMany(x=>x.ServiceOders).HasForeignKey(x=>x.ServiceID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
