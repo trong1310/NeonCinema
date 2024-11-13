@@ -102,6 +102,7 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\Register.razor" />
     <_ContentIncludedByDefault Remove="Pages\Users.razor" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\Room\detail.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\User\LISTuser.css" />
   </ItemGroup>
 

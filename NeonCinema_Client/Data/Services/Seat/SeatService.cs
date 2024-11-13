@@ -45,6 +45,12 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
+        public async Task<List<RoomDTO>> GetAllRooms()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("api/Room/all");
+            return response ?? new List<RoomDTO>();
+        }
+
         public async Task<PaginationResponse<SeatDTO>> GetAllSeat(ViewSeatRequest request)
         {
             try

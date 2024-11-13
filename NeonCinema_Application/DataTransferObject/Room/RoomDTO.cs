@@ -13,8 +13,10 @@ namespace NeonCinema_Application.DataTransferObject.Room
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
         public EntityStatus Status { get; set; }
-        public Guid SeatID { get; set; }
+        public int RowNumber { get; set; }
+        public int ColumnNumber { get; set; }
+        public Guid CinemasId { get; set; }
 
-
+        //public List<string> SelectedSeats { get; set; }
     }
 }

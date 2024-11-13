@@ -1,0 +1,142 @@
+﻿@page "/roomdetails/{roomId:guid}"
+@using NeonCinema_Application.DataTransferObject.Cinemas
+@using NeonCinema_Application.DataTransferObject.Room
+@using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Domain.Enum
+@inject IRoomService RoomService
+@inject NavigationManager Navigation
+<link rel="stylesheet" href="/css/Room/detail.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<EditForm Model="request" OnValidSubmit="UpdateRoom">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container my-4">
+        <!-- Form Section -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-header">
+                    <h4>Thông Tin Phòng Chiếu</h4>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="roomName">Tên Phòng</label>
+                        <input id="roomName" class="form-control" @bind="request.Name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rowNumber">Số Hàng</label>
+                        <input id="rowNumber" type="number" class="form-control" @bind="request.RowNumber" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="columnNumber">Số Cột</label>
+                        <input id="columnNumber" type="number" class="form-control" @bind="request.ColumnNumber" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cinemasId">Chọn Rạp</label>
+                        <select id="cinemasId" class="form-control" @bind="request.CinemasId">
+                            @foreach (var cinema in cinemas)
+                            {
+                                <option value="@cinema.ID">@cinema.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Trạng Thái</label>
+                        <select id="status" class="form-control" @bind="request.Status">
+                            <option value="@(EntityStatus.Active)">Hoạt động</option>
+                            <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-secondary" @onclick="Cancel">Quay lại</button>
+                </div>
+            </div>
+
+            <!-- Seat Layout Section -->
+            <div class="col-md-6">
+                <div class="seat-header">
+                    <h4>Sơ Đồ Chỗ Ngồi</h4>
+                </div>
+                <div class="seat-section">
+                    <div class="screen text-center mb-3">Màn Hình</div>
+
+                    <div class="seat-layout"
+                         style="display: grid; grid-template-rows: repeat(@request.RowNumber, 1fr); grid-template-columns: repeat(@request.ColumnNumber, 1fr); grid-gap: 10px;">
+                        @for (int row = 0; row < request.RowNumber; row++)
+                        {
+                            @for (int col = 0; col < request.ColumnNumber; col++)
+                            {
+                                <button style="background-color: #641e16; color: white" class="btn btn-outline-secondary seat-btn" @onclick="() => SelectSeat(row, col)">
+                                    @($"{(char)('A' + row)}{col + 1}")
+                                </button>
+
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+    
+</EditForm>
+
+@code {
+    [Parameter] public Guid roomId { get; set; }
+    private RoomUpdateRequest request = new RoomUpdateRequest();
+    private List<CinemasDTO> cinemas = new List<CinemasDTO>();
+    private List<string> selectedSeats = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the room details by RoomId and populate the request object
+        var room = await RoomService.GetRoomById(roomId);
+        if (room != null)
+        {
+            request = new RoomUpdateRequest
+                {
+                    //ID = room.ID,
+                    Name = room.Name,
+                    RowNumber = room.RowNumber,
+                    ColumnNumber = room.ColumnNumber,
+                    CinemasId = room.CinemasId,
+                    Status = room.Status
+                };
+            /* selectedSeats = room.SelectedSeats; */ // Assuming room has a SelectedSeats property
+        }
+
+        cinemas = await RoomService.GetAllCinemas();
+    }
+
+    private void SelectSeat(int row, int col)
+    {
+        string seatLabel = $"{(char)('A' + row)}{col + 1}";
+        if (selectedSeats.Contains(seatLabel))
+        {
+            selectedSeats.Remove(seatLabel);
+        }
+        else
+        {
+            selectedSeats.Add(seatLabel);
+        }
+    }
+
+    private async Task UpdateRoom()
+    {
+        // Update the room details
+        await RoomService.UpdateRoom(request.ID, request);
+        Navigation.NavigateTo("/listroom");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/listroom");
+    }
+}

@@ -16,52 +16,51 @@ namespace NeonCinema_API.Controllers
         {
             _roomRepository = roomRepository;
         }
-        // POST: api/Room
         [HttpPost("create")]
         public async Task<IActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                return BadRequest("Request cannot be null.");
-            }
-            
-           
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var response = await _roomRepository.CreateRoom(request, cancellationToken);
-            return StatusCode((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
+            if (response.StatusCode == HttpStatusCode.Created)
+                return CreatedAtAction(nameof(GetRoomById), new { id = request.CinemasId }, null);
+
+            return StatusCode((int)response.StatusCode, "Failed to create room");
         }
 
-        // GET: api/Room
-        [HttpGet("getall")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllRooms(CancellationToken cancellationToken)
         {
             var rooms = await _roomRepository.GetAllRooms(cancellationToken);
             return Ok(rooms);
         }
 
-        // GET: api/Room/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoomById(Guid id, CancellationToken cancellationToken)
         {
-            var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
-            if (room == null)
-                return NotFound();
-
-            return Ok(room);
+            try
+            {
+                var room = await _roomRepository.GetByIDRoom(id, cancellationToken);
+                return Ok(room);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Room not found");
+            }
         }
 
-        // PUT: api/Room/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] RoomUpdateRequest request, CancellationToken cancellationToken)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] RoomUpdateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await _roomRepository.UpdateRoom(id, request, cancellationToken);
+            var response = await _roomRepository.UpdateRoom(id, request);
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok("Room updated successfully");
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                return Ok();
-
-            return StatusCode((int)response.StatusCode, response.ReasonPhrase);
+            return StatusCode((int)response.StatusCode, "Failed to update room");
         }
 
     }

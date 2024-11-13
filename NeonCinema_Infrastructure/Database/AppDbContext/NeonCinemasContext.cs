@@ -64,8 +64,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         public DbSet<PromotionUsers> PromotionUsers { get; set; }
         #endregion
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
 
             //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
