@@ -3,291 +3,496 @@
 @using NeonCinema_Application.DataTransferObject.BookTicket
 @using NeonCinema_Application.DataTransferObject.Countrys
 @using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
 @using NeonCinema_Application.DataTransferObject.Genre
 @using NeonCinema_Application.DataTransferObject.Language
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
+@using MudBlazor
+
 
 <div class="row m-2">
-    <div class="col-md-4" style="width: 25% ; height:80%">
-        <div class="card">
-            <img src="@GetImageUrl(movieDto.Images)" class="card-img-top" style="height: 33%; width: 100%" alt="Movie Poster">
-            <div class="card-body text-center">
-                <p><strong>Phim: </strong>@movieDto.Name</p>
-                <p><strong>Suất chiếu:</strong> @screenings.ShowDate.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
-                <p><strong>Phòng:</strong> @screenings.RoomName</p>
-                <p><strong>Giới hạn độ tuổi:</strong> <span class="badge bg-danger">@movieDto.AgeAllowed</span></p>
-                <hr>
-                <p><strong>Combo: </strong></p>
-                <p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-                <p><strong>Tổng Tiền: </strong>@totalPrices.ToString("C")</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-8 card shadow position-relative">
-        @if (_selectedIndex == 0)
-        {
-            <h3 class="text-center">Chọn Ghế</h3>
-            <hr />
-            <h5>@screenings.RoomName</h5>
-            <hr />
-            <div class="d-flex align-items-center">
-                <span>Giá vé: </span>
-                <div class="seat-type">
-                    <div class="seat-type-item">
-                        <span class="square bg-warning"></span>
-                        <span class="seat-name">Ghế thường</span>
-                    </div>
-                    <div class="seat-type-item">
-                        <span class="square bg-danger"></span>
-                        <span class="seat-name">Ghế vip</span>
-                    </div>
-                    <div class="seat-type-item">
-                        <span class="square bg-success"></span>
-                        <span class="seat-name">Ghế đôi</span>
-                    </div>
-                    <div class="seat-type-item">
-                        <span class="square bg-dark"></span>
-                        <span class="seat-name">Ghế đã bán</span>
-                    </div>
-                    <div class="seat-type-item">
-                        <span class="square bg-primary"></span>
-                        <span class="seat-name">Ghế bạn chọn</span>
-                    </div>
-                    <div class="seat-type-item">
-                        <span class="square bg-secondary"></span>
-                        <span class="seat-name">Ghế bảo trì</span>
-                    </div>
-                </div>
-            </div>
-            <div class="screen-area my-3">
-                <div class="screen text-center">Màn hình</div>
-            </div>
-            <div class="seat-selection">
-                @foreach (var row in groupedSeats)
-                {
-                    <div class="seat-row">
-                        @foreach (var seat in row.Value)
-                        {
-                            <div class="seat-box @GetSeatCssClass(seat) ms-2"
-                                 id="@seat.ID"
-                                 @onclick="() => SelectSeat(seat)">
-                                @seat.SeatNumber
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-            <button class="btn btn-primary" style="width: 30%" @onclick="NextTab">Tiếp theo</button>
-        }
-        else if (_selectedIndex == 1)
-        {
-            <h3>Chọn đồ ăn nhanh</h3>
-            <button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-            <button class="btn btn-primary" @onclick="NextTab">Tiếp tục</button>
-        }
-        else if (_selectedIndex == 2)
-        {
-            <h3>Thanh Toán</h3>
-            <p>Chọn phương thức thanh toán</p>
-            <button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-            <button class="btn btn-primary" @onclick="ConfirmPayment">Thanh toán</button>
-        }
-    </div>
+	<div class="col-md-4" style="width: 25% ; height:80%">
+		<div class="card">
+			<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" style="height: 33%; width: 100%" alt="Movie Poster">
+			<div class="card-body text-center">
+				<p><strong>Phim: </strong>@movieDto.Name</p>
+				<p><strong>Suất chiếu:</strong> @screenings.ShowDate.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
+				<p><strong>Phòng:</strong> @screenings.RoomName</p>
+				<p><strong>Giới hạn độ tuổi:</strong> <span class="badge bg-danger">@movieDto.AgeAllowed</span></p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8 card shadow position-relative">
+		@if (_selectedIndex == 0)
+		{
+			<h3 class="text-center">Chọn Ghế</h3>
+			<hr />
+			<h5>@screenings.RoomName</h5>
+			<hr />
+			<div class="d-flex align-items-center">
+				<span>Giá vé: </span>
+				<div class="seat-type">
+					<div class="seat-type-item">
+						<span class="square bg-warning"></span>
+						<span class="seat-name">Ghế thường</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-danger"></span>
+						<span class="seat-name">Ghế vip</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-success"></span>
+						<span class="seat-name">Ghế đôi</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-dark"></span>
+						<span class="seat-name">Ghế đã bán</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-primary"></span>
+						<span class="seat-name">Ghế bạn chọn</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-secondary"></span>
+						<span class="seat-name">Ghế bảo trì</span>
+					</div>
+				</div>
+			</div>
+			<div class="screen-area my-3">
+				<div class="screen text-center">Màn hình</div>
+			</div>
+			<div class="seat-selection">
+				@foreach (var row in groupedSeats)
+				{
+					<div class="seat-row">
+						@foreach (var seat in row.Value)
+						{
+							<div class="seat-box @GetSeatCssClass(seat) ms-2"
+								 id="@seat.ID"
+								 @onclick="() => SelectSeat(seat)">
+								@seat.SeatNumber
+							</div>
+						}
+					</div>
+				}
+			</div>
+			<div class="button-container">
+				<button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>
+			</div>
+		}
+		else if (_selectedIndex == 1)
+		{
+			<div class="cinema-concession-container d-flex">
+				<div class="combo-container">
+					<div class="tab-content concession-items">
+						<div class="text-center">
+							<h3>Combo Đồ Ăn</h3>
+						</div>
+						<hr class="dashed">
+						<div class="concession-item">
+							@foreach (var combo in foods)
+							{
+								<div class="icon-box featured-box align-middle icon-box-left text-left">
+									<div class="icon-box-img" style="width: 80px;">
+										<div class="icon">
+											<div class="icon-inner">
+												<img src="@GetImageUrl(combo.Images)">
+											</div>
+										</div>
+									</div>
+									<div class="icon-box-text last-reset">
+										<h4 class="">@combo.Content</h4>
+										<div class="stack stack-row justify-between items-center">
+											<span>@combo.Description</span>
+											<div class="quantity">
+												<div class="quantity">
+													<span class="minus" @onclick="() => Decrease(combo)">-</span>
+													<span class="number">
+														@GetComboQuantity(combo)
+													</span>
+													<span class="plus" @onclick="() => Increase(combo)">+</span>
+												</div>
+											</div>
+											<span class="price">@combo.Amount.ToString("C")</span>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+				<div class="payment-method-container">
+					<div class="card" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title">Phương thức thanh toán</h5>
+							<hr class="dashed">
+							<p>
+								<strong>Đồ ăn nhanh: </strong>
+								@foreach (var selectedCombo in selectedCombos)
+								{
+									<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
+
+									<br />
+								}
+							</p>
+							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
+							<p><strong>Tổng Tiền: </strong>@totalPrices.ToString("C")</p>
+							<div class="concession-item">
+								<div class="form-check">
+									<input class="form-check-input" type="radio">
+									<label class="form-check-label" for="flexRadioDefault1">
+										<i class="fa-solid fa-money-bill"></i> Tiền mặt
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+									<label class="form-check-label" for="flexRadioDefault2">
+										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+				</div>
+			</div>
+
+			<div class="button-container">
+				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
+				<button class="btn btn-primary" style="width: 25%" @onclick="ProcessPayment">Thanh toán</button>
+			</div>
+		}
+	</div>
 </div>
 
 @code {
-    [Parameter]
-    public Guid id { get; set; }
-    private MovieDTO movieDto = new MovieDTO();
-    List<GenreDTO> genres = new List<GenreDTO>();
-    List<LanguageDTO> languages = new List<LanguageDTO>();
-    List<CountryDTO> countries = new List<CountryDTO>();
-    List<DirectorDTO> directors = new List<DirectorDTO>();
-    ScreeningMoviesDto screenings = new ScreeningMoviesDto();
-    private int _selectedIndex = 0;
-    private string selectedPaymentMethod = "Visa";
-    private Dictionary<string, 
-    List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
-    List<SeatDto> seats = new List<SeatDto>();
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	private int _selectedIndex = 0;
+	private Dictionary<string,
+	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
+	List<SeatDto> seats = new List<SeatDto>();
+	List<FoodComboDTO> foods = new List<FoodComboDTO>();
+	private decimal totalPrices = 0;
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		screenings = await _services.GetScreeningMovies(id);
+		seats = screenings.Seats;
+		groupedSeats = seats
+					.GroupBy(seat => seat.SeatNumber.Substring(0, 1)) // Nhóm theo ký tự đầu
+					.OrderBy(g => g.Key) // Sắp xếp hàng từ A trở đi
+					.ToDictionary(
+						g => g.Key,
+						g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1))) // Sắp xếp theo số ghế trong từng hàng
+						.ToList()
+					);
+		foods = await _services.GetFoodCombo();
+	}
 
-    protected override async Task OnInitializedAsync()
-    {
-        movieDto = await _movieServices.GetMovieById(id);
-        genres = await _movieServices.GetAllGenre();
-        languages = await _movieServices.GetAllLanguage();
-        countries = await _movieServices.GetAllCountry();
-        directors = await _movieServices.GetAllDirector();
-        screenings = await _services.GetScreeningMovies(id);
-        seats = screenings.Seats;
-        groupedSeats = seats
-              .GroupBy(seat => seat.SeatNumber.Substring(0, 1)) // Nhóm theo ký tự đầu
-              .OrderBy(g => g.Key) // Sắp xếp hàng từ A trở đi
-              .ToDictionary(
-                  g => g.Key,
-                  g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1))) // Sắp xếp theo số ghế trong từng hàng
-                        .ToList()
-              );
-    }
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#region vé
+	private string GetSeatCssClass(SeatDto seat)
+	{
+		if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			return "selected";
+		}
+		return "available";
+	}
+	private void NextTab()
+	{
+		if (_selectedIndex < 2)
+		{
+			_selectedIndex++;
+		}
+	}
 
-    private string GetImageUrl(string imageUrl)
-    {
-        return $"https://localhost:7211/api/Resources/{imageUrl}";
-    }
-    #region vé
-    private string GetSeatCssClass(SeatDto seat)
-    {
-        if (selectedSeats.Contains(seat.SeatNumber))
-        {
-            return "selected";  
-        }
-        return "available"; 
-    }
-    private void NextTab()
-    {
-        if (_selectedIndex < 2)
-        {
-            _selectedIndex++;
-        }
-    }
+	private void PreviousTab()
+	{
+		if (_selectedIndex > 0)
+		{
+			_selectedIndex--;
+		}
+	}
+	private List<string> selectedSeats = new List<string>();
+	private string selectedSeatNumbers = "";
+	private void SelectSeat(SeatDto seat)
+	{
+		if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			selectedSeats.Remove(seat.SeatNumber);
+			totalPrices -= (decimal)seat.Price;
+		}
+		else
+		{
+			selectedSeats.Add(seat.SeatNumber);
+			totalPrices += (decimal)seat.Price;
+		}
+		selectedSeatNumbers = string.Join(", ", selectedSeats);
+	}
+	#endregion
+	#region combo
+	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
+	private int currentValue = 0;
 
-    private void PreviousTab()
-    {
-        if (_selectedIndex > 0)
-        {
-            _selectedIndex--;
-        }
-    }
 
-    private async Task ConfirmPayment()
-    {
-        bool? result = await DialogService.ShowMessageBox(
-            "Xác nhận thanh toán",
-            "Bạn có chắc chắn muốn thanh toán không?",
-            "Yes",
-            "No",
-            options: new DialogOptions { CloseButton = true }
-        );
+	private void Increase(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo))
+		{
+			selectedCombos[combo]++;
+			currentValue++;
+		}
+		else
+		{
+			selectedCombos[combo] = 1;
+		}
 
-        if (result == true)
-        {
-            await DialogService.ShowMessageBox("Thanh toán thành công", "Cảm ơn bạn đã thanh toán!");
-        }
-    }
-    private List<string> selectedSeats = new List<string>();
-    private decimal totalPrices = 0;
-    private string selectedSeatNumbers = "";
-    private void SelectSeat(SeatDto seat)
-    {
-        if (selectedSeats.Contains(seat.SeatNumber))
-        {
-            selectedSeats.Remove(seat.SeatNumber);
-            totalPrices -= (decimal) seat.Price;
-        }
-        else
-        {
-            selectedSeats.Add(seat.SeatNumber);
-            totalPrices += (decimal)seat.Price; 
-        }
-        selectedSeatNumbers = string.Join(", ", selectedSeats);
-    }
-    #endregion
+		// Cập nhật tổng tiền
+		totalPrices += combo.Amount;
+	}
 
+	private void Decrease(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
+		{
+			selectedCombos[combo]--;
+			currentValue++;
+			totalPrices -= combo.Amount;
+
+			// Nếu số lượng bằng 0, loại bỏ combo khỏi danh sách đã chọn
+			if (selectedCombos[combo] == 0)
+			{
+				selectedCombos.Remove(combo);
+			}
+		}
+	}
+	private int GetComboQuantity(FoodComboDTO combo)
+	{
+		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
+	}
+
+
+	#endregion
+	private string selectedPaymentMethod;
+	private string cardNumber;
+	private string expiryDate;
+	private string cvv;
+	private string paymentStatus;
+	CreateBookTicketRequest request = new CreateBookTicketRequest();
+	private void ProcessPayment()
+	{
+
+	}
 }
 <style>
-    .seat-type {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
 
-    .seat-type-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+	.seat-type {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
 
-    .square {
-        width: 20px;
-        height: 20px;
-        display: inline-block;
-    }
+	.seat-type-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
 
-    .seat-name {
-        font-size: 14px;
-    }
+	.square {
+		width: 20px;
+		height: 20px;
+		display: inline-block;
+	}
 
-    .screen-area {
-        text-align: center;
-        margin: 20px 0;
-    }
+	.seat-name {
+		font-size: 14px;
+	}
 
-    .screen {
-        background-color: #ddd;
-        padding: 10px;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-    .seat-selection {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
+	.screen-area {
+		text-align: center;
+		margin: 20px 0;
+	}
 
-    .seat-column {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+	.screen {
+		background-color: #ddd;
+		padding: 10px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
 
-    .seat-item {
-        margin: 10px;
-    }
+	.seat-selection {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
 
-    .seat-box {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+	.seat-column {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 
-    .btn-primary, .btn-secondary {
-        margin-top: 20px;
-    }
+	.seat-item {
+		margin: 10px;
+	}
 
-    .seat-selection {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
-    }
+	.seat-box {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 14px;
+	}
 
-    .seat-row {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-    }
-    .sold {
-        background-color: rgb(33 37 41);
-        cursor: not-allowed;
-    }
 
-    .selected {
-        background-color: rgb(13 110 253); 
-    }
+	.seat-selection {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 20px;
+	}
 
-    .available {
-        background-color: none; 
-    }
+	.seat-row {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 10px;
+	}
+
+	.sold {
+		background-color: rgb(33 37 41);
+		cursor: not-allowed;
+	}
+
+	.selected {
+		background-color: rgb(13 110 253);
+	}
+
+	.available {
+		background-color: none;
+	}
+
+	.combo-item {
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin: 10px;
+	}
+
+	.text-center h3 {
+		text-align: center;
+		margin: 20px 0;
+	}
+
+	.icon-box {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+	}
+
+	.icon-box-img img {
+		width: 80px;
+		height: 80px;
+		object-fit: cover;
+		margin-right: 15px;
+	}
+
+	.icon-box-text {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		margin-left: 20px;
+	}
+
+	.quantity {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+	}
+
+		.quantity .minus, .quantity .plus {
+			background-color: #ddd;
+			padding: 5px 10px;
+			font-size: 16px;
+			cursor: pointer;
+			border-radius: 5px;
+			transition: background-color 0.3s ease;
+		}
+
+			.quantity .minus:hover, .quantity .plus:hover {
+				background-color: #aaa;
+			}
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+		margin-top: 20px;
+	}
+
+	button {
+		padding: 10px 20px;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.cinema-concession-container {
+		display: flex;
+		justify-content: space-between;
+		gap: 20px; /* Tạo khoảng cách giữa 2 phần */
+	}
+
+	.combo-container {
+		flex: 1; /* Phần combo sẽ chiếm không gian còn lại */
+	}
+
+	.payment-method-container {
+		flex: 0 0 300px; /* Phần thanh toán có kích thước cố định, có thể thay đổi tùy ý */
+	}
+
+	.icon-box {
+		margin-bottom: 15px;
+	}
+
+	/* Đảm bảo các phần tử trong mỗi box có chiều rộng hợp lý */
+	.icon-box-img {
+		max-width: 80px;
+		width: 100%;
+	}
+
+	h3 {
+		font-size: 1.25rem;
+		margin-bottom: 15px;
+	}
+
+	.text-center {
+		margin-bottom: 10px;
+	}
 
 </style>

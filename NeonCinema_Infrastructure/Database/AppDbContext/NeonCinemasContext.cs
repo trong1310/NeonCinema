@@ -18,313 +18,326 @@ using System.Threading.Tasks;
 namespace NeonCinema_Infrastructure.Database.AppDbContext
 {
 
-    public class NeonCinemasContext : DbContext
-    {
-        public NeonCinemasContext()
-        {
-        }
 
-        public NeonCinemasContext(DbContextOptions<NeonCinemasContext> options) : base(options)
-        {
-        }
+	public class NeonCinemasContext : DbContext
+	{
+		public NeonCinemasContext()
+		{
+		}
 
-        #region DbSet
-        public DbSet<Bill> BillDetails { get; set; }
-        public DbSet<Cinemas> Cinema { get; set; }
-        public DbSet<Users> Users { get; set; }
-        public DbSet<Director> Directors { get; set; }
-        public DbSet<Genre> Genres { get; set; }
-        public DbSet<Language> Lenguages { get; set; }
-        public DbSet<RankMember> RankMembers { get; set; }
-        public DbSet<Movies> Movies { get; set; }
-        public DbSet<Roles> Roles { get; set; }
-        public DbSet<Countrys> Country { get; set; }
-        public DbSet<ShowTime> ShowTimes { get; set; }
-        public DbSet<BookTickets> BookTickets { get; set; }
-        public DbSet<MovieType> MoviesType { get; set; }
-        public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<Room> Room { get; set; }
-        public DbSet<Screening> Screening { get; set; }
-        public DbSet<Seat> Seat { get; set; }
-        public DbSet<SeatType> SeatTypes { get; set; }
-        public DbSet<FoodCombo> FoodCombos { get; set; }
-        public DbSet<ShiftChange> ShiftChange { get; set; }
-        public DbSet<TicketPrice> TicketPrice { get; set; }
-        public DbSet<WorkShift> WorkShift { get; set; }
-        public DbSet<CategoryMovies> CategoryMovies { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<Checkin> Checkin { get; set; }
-        public DbSet<Show_release> Show_release { get; set; }
-        public DbSet<Actor> Actor { get; set; }
-        public DbSet<ActorMovies> ActorMovies { get; set; }
-        public DbSet<BillTicket> BillTickets { get; set; }
-        public DbSet<Point> Points { get; set; }
-        public DbSet<Promotion> Promotions { get; set; }
-        public DbSet<PromotionUsers> PromotionUsers { get; set; }
-        #endregion
+		public NeonCinemasContext(DbContextOptions<NeonCinemasContext> options) : base(options)
+		{
+		}
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+		#region DbSet
+		public DbSet<Bill> BillDetails { get; set; }
+		public DbSet<Cinemas> Cinema { get; set; }
+		public DbSet<Users> Users { get; set; }
+		public DbSet<Director> Directors { get; set; }
+		public DbSet<Genre> Genres { get; set; }
+		public DbSet<Language> Lenguages { get; set; }
+		public DbSet<RankMember> RankMembers { get; set; }
+		public DbSet<Movies> Movies { get; set; }
+		public DbSet<Roles> Roles { get; set; }
+		public DbSet<Countrys> Country { get; set; }
+		public DbSet<ShowTime> ShowTimes { get; set; }
+		public DbSet<BookTickets> BookTickets { get; set; }
+		public DbSet<MovieType> MoviesType { get; set; }
+		public DbSet<PaymentMethod> PaymentMethods { get; set; }
+		public DbSet<Room> Room { get; set; }
+		public DbSet<Screening> Screening { get; set; }
+		public DbSet<Seat> Seat { get; set; }
+		public DbSet<SeatType> SeatTypes { get; set; }
+		public DbSet<FoodCombo> FoodCombos { get; set; }
+		public DbSet<BillCombo> BillCombos { get; set; }
+		public DbSet<ShiftChange> ShiftChange { get; set; }
+		public DbSet<TicketPrice> TicketPrice { get; set; }
+		public DbSet<WorkShift> WorkShift { get; set; }
+		public DbSet<CategoryMovies> CategoryMovies { get; set; }
+		public DbSet<Ticket> Tickets { get; set; }
+		public DbSet<Checkin> Checkin { get; set; }
+		public DbSet<Show_release> Show_release { get; set; }
+		public DbSet<Actor> Actor { get; set; }
+		public DbSet<ActorMovies> ActorMovies { get; set; }
+		public DbSet<BillTicket> BillTickets { get; set; }
+		public DbSet<Point> Points { get; set; }
+		public DbSet<Promotion> Promotions { get; set; }
+		public DbSet<PromotionUsers> PromotionUsers { get; set; }
+		#endregion
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
 
-        }
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            SeedData(modelBuilder);
+		}
 
-            modelBuilder.Entity<PromotionUsers>()
-                .HasKey(ma => new { ma.PromotionID, ma.UserID });
-        }
-        private void SeedData(ModelBuilder modelBuilder)
-        {
-            var roleData = new List<Roles>
-            {
-                new Roles
-                {
-                    ID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
-                    CreatedTime = DateTime.Now,
-                    Status = EntityStatus.Active,
-                    RoleName = "Admin"
-                },
-                new Roles
-                {
-                    ID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
-                    CreatedTime = DateTime.Now,
-                    Status = EntityStatus.Active,
-                    RoleName = "Client"
-                },
-                new Roles
-                {
-                    ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
-                    CreatedTime = DateTime.Now,
-                    Status = EntityStatus.Active,
-                    RoleName = "Staff"
-                }
-            };
-            modelBuilder.Entity<Roles>().HasData(roleData);
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			SeedData(modelBuilder);
 
-            var userData = new List<Users>
-            {
-                new Users
-                {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Admin",
-                    Email = "admin@gmail.com",
-                    PassWord = Hash.Encrypt("admin"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0862774830",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("25/12/2004"),
-                    Images = "images.jpg",
-                    Gender = true,
-                    RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d")
-                },
-                new Users
-                {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Client",
-                    Email = "client@gmail.com",
-                    PassWord = Hash.Encrypt("client"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0334555555",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("25/12/2004"),
-                    Images = "images.jpg",
-                    Gender = true,
-                    RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
-                },
-                new Users
-                {
-                    ID = Guid.NewGuid(),
-                    CreatedTime = DateTime.Now,
-                    FullName = "Staff",
-                    Email = "staff@gmail.com",
-                    PassWord = Hash.Encrypt("staff"),
-                    Status = EntityStatus.Active,
-                    PhoneNumber = "0987126125",
-                    Adderss = "Ba Vi",
-                    DateOrBriht= DateTime.Parse("20/12/2004"),
-                    Images = "images.jpg",
-                    Gender = true,
-                    RoleID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d")
-                }
-            };
-            modelBuilder.Entity<Users>().HasData(userData);
+			modelBuilder.Entity<PromotionUsers>()
+				.HasKey(ma => new { ma.PromotionID, ma.UserID });
+			modelBuilder.Entity<BillCombo>()
+				 .HasKey(bc => new { bc.BillID, bc.FoodComboID });  // Khóa chính composite cho BillCombo
 
-            var languageData = new List<Language>
-            {
-                new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "en" },
-                new Language { ID = Guid.NewGuid(), LanguageName = "vi" },
-                new Language { ID = Guid.NewGuid(), LanguageName = "ja" }
-            };
-            modelBuilder.Entity<Language>().HasData(languageData);
+			modelBuilder.Entity<Bill>()
+				.HasMany(b => b.BillCombos)
+				.WithOne(bc => bc.Bill)
+				.HasForeignKey(bc => bc.BillID);
+			modelBuilder.Entity<BillCombo>()
+				.HasOne(bc => bc.FoodCombo)
+				.WithMany()
+				.HasForeignKey(bc => bc.FoodComboID);
+		}
+		private void SeedData(ModelBuilder modelBuilder)
+		{
+			var roleData = new List<Roles>
+			{
+				new Roles
+				{
+					ID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+					CreatedTime = DateTime.Now,
+					Status = EntityStatus.Active,
+					RoleName = "Admin"
+				},
+				new Roles
+				{
+					ID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b"),
+					CreatedTime = DateTime.Now,
+					Status = EntityStatus.Active,
+					RoleName = "Client"
+				},
+				new Roles
+				{
+					ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
+					CreatedTime = DateTime.Now,
+					Status = EntityStatus.Active,
+					RoleName = "Staff"
+				}
+			};
+			modelBuilder.Entity<Roles>().HasData(roleData);
 
-            var directorData = new List<Director>
-            {
-                new Director
-                {
-                    ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-                    FullName = "Nguyễn Văn A",
-                    Address = "Hà Nội",
-                    Biography = "Có",
-                    Gender = "Nam",
-                    Nationality = "Ha Noi",
-                    Status = EntityStatus.Active
-                },
-                new Director
-                {
-                    ID = Guid.NewGuid(),
-                    FullName = "Nguyễn Văn D",
-                    Address = "Hà Nội",
-                    Biography = "Có",
-                    Gender = "Nam",
-                    Nationality = "Ha Noi",
-                    Status = EntityStatus.Active
-                },
-                new Director
-                {
-                    ID = Guid.NewGuid(),
-                    FullName = "Nguyễn Văn B",
-                    Address = "Hà Nội",
-                    Biography = "Có",
-                    Gender = "Nam",
-                    Nationality = "Ha Noi",
-                    Status = EntityStatus.Locked
-                },
-                new Director
-                {
-                    ID = Guid.NewGuid(),
-                    FullName = "Nguyễn Văn C",
-                    Address = "Hà Nội",
-                    Biography = "Có",
-                    Gender = "Nam",
-                    Nationality = "Ha Noi",
-                    Status = EntityStatus.Locked
-                }
-            };
-            modelBuilder.Entity<Director>().HasData(directorData);
+			var userData = new List<Users>
+			{
+				new Users
+				{
+					ID = Guid.NewGuid(),
+					CreatedTime = DateTime.Now,
+					FullName = "Admin",
+					Email = "admin@gmail.com",
+					PassWord = Hash.Encrypt("admin"),
+					Status = EntityStatus.Active,
+					PhoneNumber = "0862774830",
+					Adderss = "Ba Vi",
+					DateOrBriht= DateTime.Parse("25/12/2004"),
+					Images = "images.jpg",
+					Gender = true,
+					RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d")
+				},
+				new Users
+				{
+					ID = Guid.NewGuid(),
+					CreatedTime = DateTime.Now,
+					FullName = "Client",
+					Email = "client@gmail.com",
+					PassWord = Hash.Encrypt("client"),
+					Status = EntityStatus.Active,
+					PhoneNumber = "0334555555",
+					Adderss = "Ba Vi",
+					DateOrBriht= DateTime.Parse("25/12/2004"),
+					Images = "images.jpg",
+					Gender = true,
+					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+				},
+				new Users
+				{
+					ID = Guid.NewGuid(),
+					CreatedTime = DateTime.Now,
+					FullName = "Staff",
+					Email = "staff@gmail.com",
+					PassWord = Hash.Encrypt("staff"),
+					Status = EntityStatus.Active,
+					PhoneNumber = "0987126125",
+					Adderss = "Ba Vi",
+					DateOrBriht= DateTime.Parse("20/12/2004"),
+					Images = "images.jpg",
+					Gender = true,
+					RoleID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d")
+				}
+			};
+			modelBuilder.Entity<Users>().HasData(userData);
 
-            var genreData = new List<Genre>
-            {
-                new Genre { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), GenreName = "Kịch tính" },
-                new Genre { ID = Guid.NewGuid(), GenreName = "Tình cảm" },
-                new Genre { ID = Guid.NewGuid(), GenreName = "2D" },
-                new Genre { ID = Guid.NewGuid(), GenreName = "Hoạt hình" }
-            };
-            modelBuilder.Entity<Genre>().HasData(genreData);
+			var languageData = new List<Language>
+			{
+				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "en" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "vi" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "ja" }
+			};
+			modelBuilder.Entity<Language>().HasData(languageData);
 
-            var countryData = new List<Countrys>
-            {
-                new Countrys { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), CountryName = "Nhật Bản" },
-                new Countrys { ID = Guid.NewGuid(), CountryName = "Vương Quốc Anh" },
-                new Countrys { ID = Guid.NewGuid(), CountryName = "Trung Quốc" },
-                new Countrys { ID = Guid.NewGuid(), CountryName = "Việt Nam" }
-            };
-            modelBuilder.Entity<Countrys>().HasData(countryData);
+			var directorData = new List<Director>
+			{
+				new Director
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					FullName = "Nguyễn Văn A",
+					Address = "Hà Nội",
+					Biography = "Có",
+					Gender = "Nam",
+					Nationality = "Ha Noi",
+					Status = EntityStatus.Active
+				},
+				new Director
+				{
+					ID = Guid.NewGuid(),
+					FullName = "Nguyễn Văn D",
+					Address = "Hà Nội",
+					Biography = "Có",
+					Gender = "Nam",
+					Nationality = "Ha Noi",
+					Status = EntityStatus.Active
+				},
+				new Director
+				{
+					ID = Guid.NewGuid(),
+					FullName = "Nguyễn Văn B",
+					Address = "Hà Nội",
+					Biography = "Có",
+					Gender = "Nam",
+					Nationality = "Ha Noi",
+					Status = EntityStatus.Locked
+				},
+				new Director
+				{
+					ID = Guid.NewGuid(),
+					FullName = "Nguyễn Văn C",
+					Address = "Hà Nội",
+					Biography = "Có",
+					Gender = "Nam",
+					Nationality = "Ha Noi",
+					Status = EntityStatus.Locked
+				}
+			};
+			modelBuilder.Entity<Director>().HasData(directorData);
 
-            var seatTypeData = new List<SeatType>
-            {
-                new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
-                new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
-                new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Đôi",CreatedTime = DateTime.Now }
-            };
-            modelBuilder.Entity<SeatType>().HasData(seatTypeData);
-            var cinemaData = new List<Cinemas>
-            {
-                new Cinemas
-                {
-                    ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-                    Name = "Cinema A",
-                    Location = "Hà Nội",
-                    PhoneNumber = "0123456789",
-                    WebSite = "www.cinemaa.com",
-                    OpeningHours = "08:00 AM",
-                    ClosingHours = "10:00 PM",
-                    RoomNumber = 5,
-                    CreatedTime = DateTime.Now,
-                },
-                new Cinemas
-                {
-                    ID = Guid.NewGuid(),
-                    Name = "Cinema B",
-                    Location = "Đà Nẵng",
-                    PhoneNumber = "0987654321",
-                    WebSite = "www.cinemab.com",
-                    OpeningHours = "09:00 AM",
-                    ClosingHours = "11:00 PM",
-                    RoomNumber = 7,
-                    CreatedTime = DateTime.Now,
-                }
-            };
-            modelBuilder.Entity<Cinemas>(b => { b.HasData(cinemaData); });
-            var roomData = new List<Room>
-            {
-                new Room
-                {
-                    ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-                    Name = "Room 1",
-                    SeatingCapacity = 100,
-                    Status = EntityStatus.Active,
-                    CreatedTime = DateTime.Now,
-                            CinemasId = cinemaData[0].ID,
-                },
-                new Room
-                {
-                    ID = Guid.NewGuid(),
-                    Name = "Room 2",
-                    SeatingCapacity = 150,
-                    Status = EntityStatus.Active,
-                    CreatedTime = DateTime.Now,
-                    CinemasId = cinemaData[0].ID,
-                }
-            };
-            modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
-            var SeatData = new List<Seat>
-            {
-                new Seat
-                {
-                    ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-                    Column = "A",
-                    Row = "1",
-                    SeatNumber = "A1",
-                    Status = seatEnum.Selected,
-                    SeatTypeID = seatTypeData[0].ID,
-                    RoomID = roomData[0].ID,
-                },
-                new Seat
-                {
-                    ID = Guid.NewGuid(),
-                    SeatNumber = "B1",
-                    Column = "B",
-                    Row = "1",
-                    Status = seatEnum.Selected,
-                    SeatTypeID = seatTypeData[0].ID,
-                    RoomID = roomData[0].ID,
-                },
-                new Seat
-                {
-                    ID = Guid.NewGuid(),
-                    SeatNumber = "C1",
-                    Column = "C",
-                    Row = "1",
-                    Status = seatEnum.Selected,
-                    SeatTypeID = seatTypeData[0].ID,
-                    RoomID = roomData[0].ID,
-                }
-            };
-            modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
-            var showTimeData = new List<ShowTime>
-            {
-                new ShowTime
-                {
-                    ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-                    StartTime = new TimeSpan(14, 0, 0), // 14:00
+			var genreData = new List<Genre>
+			{
+				new Genre { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), GenreName = "Kịch tính" },
+				new Genre { ID = Guid.NewGuid(), GenreName = "Tình cảm" },
+				new Genre { ID = Guid.NewGuid(), GenreName = "2D" },
+				new Genre { ID = Guid.NewGuid(), GenreName = "Hoạt hình" }
+			};
+			modelBuilder.Entity<Genre>().HasData(genreData);
+
+			var countryData = new List<Countrys>
+			{
+				new Countrys { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), CountryName = "Nhật Bản" },
+				new Countrys { ID = Guid.NewGuid(), CountryName = "Vương Quốc Anh" },
+				new Countrys { ID = Guid.NewGuid(), CountryName = "Trung Quốc" },
+				new Countrys { ID = Guid.NewGuid(), CountryName = "Việt Nam" }
+			};
+			modelBuilder.Entity<Countrys>().HasData(countryData);
+
+			var seatTypeData = new List<SeatType>
+			{
+				new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
+				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
+				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
+			};
+			modelBuilder.Entity<SeatType>().HasData(seatTypeData);
+			var cinemaData = new List<Cinemas>
+			{
+				new Cinemas
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					Name = "Cinema A",
+					Location = "Hà Nội",
+					PhoneNumber = "0123456789",
+					WebSite = "www.cinemaa.com",
+					OpeningHours = "08:00 AM",
+					ClosingHours = "10:00 PM",
+					RoomNumber = 5,
+					CreatedTime = DateTime.Now,
+				},
+				new Cinemas
+				{
+					ID = Guid.NewGuid(),
+					Name = "Cinema B",
+					Location = "Đà Nẵng",
+					PhoneNumber = "0987654321",
+					WebSite = "www.cinemab.com",
+					OpeningHours = "09:00 AM",
+					ClosingHours = "11:00 PM",
+					RoomNumber = 7,
+					CreatedTime = DateTime.Now,
+				}
+			};
+			modelBuilder.Entity<Cinemas>(b => { b.HasData(cinemaData); });
+			var roomData = new List<Room>
+			{
+				new Room
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					Name = "Room 1",
+					SeatingCapacity = 100,
+					Status = EntityStatus.Active,
+					CreatedTime = DateTime.Now,
+					CinemasId = cinemaData[0].ID,
+				},
+				new Room
+				{
+					ID = Guid.NewGuid(),
+					Name = "Room 2",
+					SeatingCapacity = 150,
+					Status = EntityStatus.Active,
+					CreatedTime = DateTime.Now,
+					CinemasId = cinemaData[0].ID,
+				}
+			};
+			modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
+			var SeatData = new List<Seat>
+			{
+				new Seat
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					Column = "A",
+					Row = "1",
+					SeatNumber = "A1",
+					Status = seatEnum.Selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				},
+				new Seat
+				{
+					ID = Guid.NewGuid(),
+					SeatNumber = "B1",
+					Column = "B",
+					Row = "1",
+					Status = seatEnum.Selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				},
+				new Seat
+				{
+					ID = Guid.NewGuid(),
+					SeatNumber = "C1",
+					Column = "C",
+					Row = "1",
+					Status = seatEnum.Selected,
+					SeatTypeID = seatTypeData[0].ID,
+					RoomID = roomData[0].ID,
+				}
+			};
+			modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
+			var showTimeData = new List<ShowTime>
+			{
+				new ShowTime
+				{
+					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+					StartTime = new TimeSpan(14, 0, 0), // 14:00
+
 					EndTime = new TimeSpan(16, 30, 0), // 16:30
 					Status = EntityStatus.Active,
 
@@ -453,8 +466,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
             // 22. Ticket
             var ticketData = new List<Ticket>
-    {
-        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
+            {
+                new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
         new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
     };
             modelBuilder.Entity<Ticket>().HasData(ticketData);
@@ -483,7 +496,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             TotalPrice = 500000,
             BillCode = "BILL001",
             Status = ticketEnum.paid,
-            FoodID = foodComboData[0].ID
         },
         new Bill
         {
@@ -492,11 +504,23 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             TotalPrice = 300000,
             BillCode = "BILL002",
             Status = ticketEnum.paid,
-            FoodID = foodComboData[0].ID
         }
     };
             modelBuilder.Entity<Bill>().HasData(billData);
+            var billCombo = new List<BillCombo>
+            {
+                new BillCombo
+                {
 
+                     BillID = billData[0].ID,
+                     FoodComboID = foodComboData[0].ID,
+                },
+                 new BillCombo
+                {
+                     BillID = billData[0].ID,
+                     FoodComboID = foodComboData[1].ID,
+                }
+            };
             // Seed data cho bảng BillTicket
             var billTicketData = new List<BillTicket>
     {
