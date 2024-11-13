@@ -1,4 +1,5 @@
 ﻿@page "/listseat"
+@using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Application.DataTransferObject.SeatTypes
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Application.Pagination
@@ -25,6 +26,7 @@
                 <th>Cột</th>
                 <th>Hàng</th>
                 <th>Kiểu ghế</th>
+                <th>Phòng</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
             </tr>
@@ -40,21 +42,23 @@
             {
                 foreach (var seat in seats)
                 {
+                    var R = roomDTOs.FirstOrDefault(r => r.ID == seat.RoomID);
                     <tr>
                         <td style="font-weight: bold;" class="table-cell">@seat.SeatNumber</td>
                         <td>@seat.Column</td>
                         <td>@seat.Row</td>
                         <td >@seat.SeatTypeName</td>
+                        <td>@R?.Name</td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input"
                                        type="checkbox"
                                        role="switch"
                                        id="flexSwitchCheckDefault_@(seat.ID)"
-                                       checked="@(seat.Status == seatEnum.selected)"
+                                       checked="@(seat.Status == seatEnum.Selected)"
                                        @onchange="(e) => ToggleRoomStatus(seat, e)" />
                                 <label class="form-check-label" for="flexSwitchCheckDefault_@(seat.ID)">
-                                    @(seat.Status == seatEnum.selected ? "còn trống" : "đã đặt")
+                                    @(seat.Status == seatEnum.Selected ? "còn trống" : "đã đặt")
                                 </label>
                             </div>
                         </td>
@@ -83,13 +87,15 @@
 @code {
     public List<SeatDTO> seats = new List<SeatDTO>();
     public List<SeatTypeDTO> seattype = new List<SeatTypeDTO>();
+    private List<RoomDTO> roomDTOs;
     private int countPage = 1;
     PaginationResponse<SeatDTO> seatdto = new PaginationResponse<SeatDTO>();
     private string errorMessage;
     protected override async Task OnInitializedAsync()
     {
+        roomDTOs = await SeatService.GetAllRooms();
         await LoadSeat();
-
+        
     }
     public async Task LoadSeat()
     {
@@ -98,7 +104,7 @@
             var request = new ViewSeatRequest
                 {
                     PageNumber = 1,
-                    PageSize = 12
+                    PageSize = 122
                 };
             seatdto.Data = null;
             request.PageNumber = countPage;
@@ -128,13 +134,13 @@
         var seat = seats.FirstOrDefault(s => s.ID == seatId);
         if (seat != null)
         {
-            var status = seat.Status == seatEnum.selected? "Active" : "Locked";
+            var status = seat.Status == seatEnum.Selected? "Active" : "Locked";
             Navi.NavigateTo($"/updateseat/{seatId}?status={status}");
         }
     }
     private async Task ToggleRoomStatus(SeatDTO seat, ChangeEventArgs e)
     {
-        seat.Status = (bool)e.Value ? seatEnum.selected : seatEnum.drum;
+        seat.Status = (bool)e.Value ? seatEnum.Selected : seatEnum.Maintenance;
 
         var roomUpdateRequest = new UpdateSeatDTO
             {

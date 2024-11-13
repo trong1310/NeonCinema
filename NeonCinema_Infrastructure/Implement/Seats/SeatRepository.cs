@@ -15,6 +15,7 @@ using NeonCinema_Application.DataTransferObject.SeatTypes;
 using Com.CloudRail.SI.ServiceCode.Commands;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Infrastructure.Extention;
+using Twilio.TwiML.Voice;
 
 namespace NeonCinema_Infrastructure.Implement.Seats
 {
@@ -33,12 +34,13 @@ namespace NeonCinema_Infrastructure.Implement.Seats
         {
             try
             {
+                var room = new NeonCinema_Domain.Database.Entities.Room();
                 var seats = new Seat()
                 {
                     ID = Guid.NewGuid(),
                     SeatNumber = request.SeatNumber,
-                    Column = request.Column,
-                    Row = request.Row,
+                    Column = room.ColumnNumber.ToString(),
+                    Row = room.RowNumber.ToString(),
                     Status = request.Status,
                     SeatTypeID = request.SeatTypeID,
 
@@ -114,6 +116,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                                 Column = b.Column,
                                 Status = b.Status,
                                 Row = b.Row,
+                                RoomID = b.RoomID,
                                 SeatTypeID = b.SeatTypeID,
                                 SeatTypeName = b.SeatTypes.SeatTypeName
                             }).ToList();
@@ -140,6 +143,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 Column = seat.Column,
                 Status = seat.Status,
                 Row = seat.Row,
+                RoomID =seat.RoomID,
                 SeatTypeID = seat.SeatTypeID,
                 SeatTypeName = seat.SeatTypes.SeatTypeName
             };

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoBogus" Version="2.13.1" />
     <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="7.0.1" />
     <PackageReference Include="Bogus" Version="35.6.0" />
     <PackageReference Include="Bogus.Hollywood" Version="35.6.0" />
@@ -26,6 +27,7 @@
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     <PackageReference Include="Twilio" Version="7.3.0" />
     <PackageReference Include="Twilio.Api" Version="1.0.6" />
