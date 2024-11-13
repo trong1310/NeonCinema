@@ -99,16 +99,24 @@
 															<label for="" class="form-label">Mô tả</label>
 															<InputText @bind-Value="input.Description" class="form-control" />
 														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Phần trăm giảm giá</label>
-															<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" readonly="@discountPercentage"/>
-														    <ValidationMessage For="@(() => input.DiscountPercentage)" />
-														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Số tiền giảm</label>
-															<InputNumber @bind-Value="input.DiscountAmount" class="form-control" readonly="@discountAmount"/>
-															<ValidationMessage For="@(() => input.DiscountAmount)" />
-														</div>
+
+														@if(discountAmount == true)
+														{
+															<div class="mb-3">
+																<label for="" class="form-label">Số tiền giảm</label>
+																<InputNumber @bind-Value="input.DiscountAmount" class="form-control"/>
+																<ValidationMessage For="@(() => input.DiscountAmount)" />
+															</div>
+														}
+														else if(discountPercentage == true)
+														{
+															<div class="mb-3">
+																<label for="" class="form-label">Phần trăm giảm giá</label>
+																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control"/>
+																<ValidationMessage For="@(() => input.DiscountPercentage)" />
+															</div>
+														}
+														
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
 															<input type="datetime-local" @bind="input.StartDate" class="form-control" />
@@ -564,11 +572,11 @@
 		{
 			if (!discountPercentage)
 			{
-				input.DiscountPercentage = 0;
+				input.DiscountPercentage = null;
 			}
 			else
 			{
-				input.DiscountAmount = 0;
+				input.DiscountAmount = null;
 			}
 
 			discountPercentage = value;
