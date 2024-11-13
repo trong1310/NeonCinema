@@ -1,65 +1,65 @@
-﻿using NeonCinema_Application.DataTransferObject.Room;
+﻿using NeonCinema_Application.DataTransferObject.Cinemas;
+using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Seats;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Interface.Room;
 using NeonCinema_Client.Data.IServices.IRoom;
 using System.Text.Json;
+using System.Threading;
 
 namespace NeonCinema_Client.Data.Services.Room
 {
     public class RoomService : IRoomService
     {
-        private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
 
         public RoomService(HttpClient client)
         {
-            _client = client;
+            _httpClient = client;
         }
 
-        public async Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> CreateRoom(RoomCreateRequest request)
         {
-            return await _client.PostAsJsonAsync("api/Room/create", request, cancellationToken);
+            var response = await _httpClient.PostAsJsonAsync("api/Room/create", request);
+            return response;
         }
 
-        public async Task<RoomDTO> GetRoomById(Guid id, CancellationToken cancellationToken)
+        public async Task<List<CinemasDTO>> GetAllCinemas()
         {
-            return await _client.GetFromJsonAsync<RoomDTO>($"api/Room/{id}", cancellationToken);
+            return await _httpClient.GetFromJsonAsync<List<CinemasDTO>>("api/Cinemas");
         }
 
-        public async Task<List<RoomDTO>> GetAllRooms(CancellationToken cancellationToken)
+        public async Task<List<RoomDTO>> GetAllRooms()
         {
-            var response = await _client.GetAsync("api/Room/getall", cancellationToken);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<RoomDTO>>(cancellationToken: cancellationToken);
-            }
-            else
-            {
-                // Log error or throw exception
-                throw new Exception($"Failed to fetch rooms. Status code: {response.StatusCode}");
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("api/Room/all");
+            return response ?? new List<RoomDTO>();
         }
 
-        public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request, CancellationToken cancellationToken)
+        public async Task<List<SeatTypeDTO>> GetAllSeatType()
         {
-            return await _client.PutAsJsonAsync($"api/Room/{id}", request, cancellationToken);
+            return await _httpClient.GetFromJsonAsync<List<SeatTypeDTO>>("api/SeatType/Get-all");
         }
 
-        public async Task<List<SeatDTO>> GetSeats()
+        public async Task<RoomDTO> GetRoomById(Guid id)
         {
-            try
-            {
-                var response = await _client.GetAsync("https://localhost:7211/api/Seat/GetAll");
-                response.EnsureSuccessStatusCode();
+            var respones = await _httpClient.GetFromJsonAsync<RoomDTO>($"api/Room/{id}");
+            return respones;
+        }
 
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<SeatDTO>>(jsonResponse);
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON Deserialization Error: {ex.Message}");
-                return new List<SeatDTO>(); // Return an empty list to prevent null references
-            }
-            return await _client.GetFromJsonAsync<List<SeatDTO>>($"https://localhost:7211/api/Seat/GetAll");
+        public Task<List<SeatDTO>> GetSeat()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/Room/update/{id}", request);
+            return response;
+        }
+
+        public Task UpdateSeatType(UpdateSeatDTO seatDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }

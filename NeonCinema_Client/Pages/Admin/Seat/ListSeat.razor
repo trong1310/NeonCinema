@@ -1,4 +1,5 @@
 ﻿@page "/listseat"
+@using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Application.DataTransferObject.SeatTypes
 @using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Application.Pagination
@@ -25,6 +26,7 @@
                 <th>Cột</th>
                 <th>Hàng</th>
                 <th>Kiểu ghế</th>
+                <th>Phòng</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
             </tr>
@@ -40,11 +42,13 @@
             {
                 foreach (var seat in seats)
                 {
+                    var R = roomDTOs.FirstOrDefault(r => r.ID == seat.RoomID);
                     <tr>
                         <td style="font-weight: bold;" class="table-cell">@seat.SeatNumber</td>
                         <td>@seat.Column</td>
                         <td>@seat.Row</td>
                         <td >@seat.SeatTypeName</td>
+                        <td>@R?.Name</td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input"
@@ -83,13 +87,15 @@
 @code {
     public List<SeatDTO> seats = new List<SeatDTO>();
     public List<SeatTypeDTO> seattype = new List<SeatTypeDTO>();
+    private List<RoomDTO> roomDTOs;
     private int countPage = 1;
     PaginationResponse<SeatDTO> seatdto = new PaginationResponse<SeatDTO>();
     private string errorMessage;
     protected override async Task OnInitializedAsync()
     {
+        roomDTOs = await SeatService.GetAllRooms();
         await LoadSeat();
-
+        
     }
     public async Task LoadSeat()
     {
@@ -98,7 +104,7 @@
             var request = new ViewSeatRequest
                 {
                     PageNumber = 1,
-                    PageSize = 12
+                    PageSize = 122
                 };
             seatdto.Data = null;
             request.PageNumber = countPage;
