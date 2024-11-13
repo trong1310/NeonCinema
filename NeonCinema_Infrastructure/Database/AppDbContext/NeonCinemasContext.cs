@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 namespace NeonCinema_Infrastructure.Database.AppDbContext
 {
 
+
 	public class NeonCinemasContext : DbContext
 	{
 		public NeonCinemasContext()
@@ -336,259 +337,260 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				{
 					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
 					StartTime = new TimeSpan(14, 0, 0), // 14:00
+
 					EndTime = new TimeSpan(16, 30, 0), // 16:30
 					Status = EntityStatus.Active,
 
-				},
-				new ShowTime
-				{
-					ID = Guid.NewGuid(),
-					StartTime = new TimeSpan(18, 0, 0), // 18:00
+                },
+                new ShowTime
+                {
+                    ID = Guid.NewGuid(),
+                    StartTime = new TimeSpan(18, 0, 0), // 18:00
 					EndTime = new TimeSpan(20, 30, 0), // 20:30
 					Status = EntityStatus.Active
-				}
-			};
-			modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
-			var actorData = new List<Actor>
-			{
-				new Actor
-				{
-					ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-					Name = "Dang xuan phong",
-					Status = EntityStatus.Active,
-				}
-			};
-			var movieData = new List<Movies>
-			{
-				new Movies
-				{
-					ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-					Name = "Movie A",
-					Duration = 120, // in minutes
+                }
+            };
+            modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+            var actorData = new List<Actor>
+            {
+                new Actor
+                {
+                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+                    Name = "Dang xuan phong",
+                    Status = EntityStatus.Active,
+                }
+            };
+            var movieData = new List<Movies>
+            {
+                new Movies
+                {
+                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+                    Name = "Movie A",
+                    Duration = 120, // in minutes
 					Description = "An exciting action movie.",
-					StarTime = DateTime.Parse("2024-10-22"),
-					Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
-					Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
-					AgeAllowed = 18,
-					Status = MovieStatus.Active,
-					GenreID = genreData[0].ID,
-					LenguageID = languageData[0].ID,
-					CountryID = countryData[0].ID,
-					DirectorID = directorData[0].ID,
-					CreatedTime = DateTime.Now
-				},
-				new Movies
-				{
-					ID = Guid.NewGuid(),
-					Name = "Movie B",
-					Duration = 150,
-					Description = "A thrilling mystery.",
-					StarTime = DateTime.Parse("2024-11-15"),
-					Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
-					Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
-					AgeAllowed = 16,
-					Status = MovieStatus.Comingsoon,
-					GenreID = genreData[0].ID,
-					LenguageID = languageData[0].ID,
-					CountryID = countryData[0].ID,
-					DirectorID = directorData[0].ID,
-					CreatedTime = DateTime.Now
-				}
-			};
-			modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
-			var showreales = new List<Show_release>
-			{
-				new Show_release
-				{
-					ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-					MovieID =movieData[0].ID,
-					RoomID = roomData[0].ID,
-					Status = EntityStatus.Active,
-					TimeRelease = DateTime.Now.AddHours(2),
-					DateRelease = DateTime.Now.AddDays(1),
+                    StarTime = DateTime.Parse("2024-10-22"),
+                    Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
+                    Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
+                    AgeAllowed = 18,
+                    Status = MovieStatus.Active,
+                    GenreID = genreData[0].ID,
+                    LenguageID = languageData[0].ID,
+                    CountryID = countryData[0].ID,
+                    DirectorID = directorData[0].ID,
+                    CreatedTime = DateTime.Now
+                },
+                new Movies
+                {
+                    ID = Guid.NewGuid(),
+                    Name = "Movie B",
+                    Duration = 150,
+                    Description = "A thrilling mystery.",
+                    StarTime = DateTime.Parse("2024-11-15"),
+                    Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
+                    Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
+                    AgeAllowed = 16,
+                    Status = MovieStatus.Comingsoon,
+                    GenreID = genreData[0].ID,
+                    LenguageID = languageData[0].ID,
+                    CountryID = countryData[0].ID,
+                    DirectorID = directorData[0].ID,
+                    CreatedTime = DateTime.Now
+                }
+            };
+            modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
+            var showreales = new List<Show_release>
+            {
+                new Show_release
+                {
+                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
+                    MovieID =movieData[0].ID,
+                    RoomID = roomData[0].ID,
+                    Status = EntityStatus.Active,
+                    TimeRelease = DateTime.Now.AddHours(2),
+                    DateRelease = DateTime.Now.AddDays(1),
 
-				},
+                },
 
-			};
-			modelBuilder.Entity<Show_release>(b => { b.HasData(showreales); });
+            };
+            modelBuilder.Entity<Show_release>(b => { b.HasData(showreales); });
 
-			var screeningData = new List<Screening>
-			{
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
-					ShowTimeID = showTimeData[0].ID,
-					ShowDate = DateTime.Now.AddDays(2), // Two days from now
+            var screeningData = new List<Screening>
+            {
+                new Screening
+                {
+                    ID = Guid.NewGuid(),
+                    Status = EntityStatus.Active,
+                    ShowTimeID = showTimeData[0].ID,
+                    ShowDate = DateTime.Now.AddDays(2), // Two days from now
 					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showreales[0].ID,
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
-					ShowTimeID = showTimeData[0].ID,
-					ShowDate = DateTime.Now.AddDays(2), // Two days from now
+                    RoomID = roomData[0].ID,
+                    CreatedTime = DateTime.Now,
+                    Show_ReleaseID = showreales[0].ID,
+                },
+                new Screening
+                {
+                    ID = Guid.NewGuid(),
+                    Status = EntityStatus.Active,
+                    ShowTimeID = showTimeData[0].ID,
+                    ShowDate = DateTime.Now.AddDays(2), // Two days from now
 					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showreales[0].ID,
-				}
-			};
-			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
-			var paymentMethodData = new List<PaymentMethod>
-	{
-		new PaymentMethod { ID = Guid.NewGuid(), Name = "Credit Card", QRCode = "hh2", Status = EntityStatus.Active },
-		new PaymentMethod { ID = Guid.NewGuid(), Name = "Cash",QRCode = "mskt3", Status = EntityStatus.Active  }
-	};
-			modelBuilder.Entity<PaymentMethod>().HasData(paymentMethodData);
+                    RoomID = roomData[0].ID,
+                    CreatedTime = DateTime.Now,
+                    Show_ReleaseID = showreales[0].ID,
+                }
+            };
+            modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
+            var paymentMethodData = new List<PaymentMethod>
+    {
+        new PaymentMethod { ID = Guid.NewGuid(), Name = "Credit Card", QRCode = "hh2", Status = EntityStatus.Active },
+        new PaymentMethod { ID = Guid.NewGuid(), Name = "Cash",QRCode = "mskt3", Status = EntityStatus.Active  }
+    };
+            modelBuilder.Entity<PaymentMethod>().HasData(paymentMethodData);
 
 
-			// 19. Show_release
-			var showReleaseData = new List<Show_release>
-	{
-		new Show_release { ID = Guid.NewGuid(), MovieID = movieData[0].ID, RoomID = roomData[0].ID, Status = EntityStatus.Active , TimeRelease = DateTime.Now.AddMinutes(1),DateRelease =DateTime.Now.AddDays(1) },
-		new Show_release { ID = Guid.NewGuid(), MovieID = movieData[1].ID, RoomID = roomData[1].ID, Status = EntityStatus.Active, TimeRelease = DateTime.Now.AddMinutes(2),DateRelease =DateTime.Now.AddDays(2) }
-	};
-			modelBuilder.Entity<Show_release>().HasData(showReleaseData);
+            // 19. Show_release
+            var showReleaseData = new List<Show_release>
+    {
+        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[0].ID, RoomID = roomData[0].ID, Status = EntityStatus.Active , TimeRelease = DateTime.Now.AddMinutes(1),DateRelease =DateTime.Now.AddDays(1) },
+        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[1].ID, RoomID = roomData[1].ID, Status = EntityStatus.Active, TimeRelease = DateTime.Now.AddMinutes(2),DateRelease =DateTime.Now.AddDays(2) }
+    };
+            modelBuilder.Entity<Show_release>().HasData(showReleaseData);
 
 
-			// 23. TicketSeat
-			var ticketPriceData = new List<TicketPrice>
-	{
-		new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
-		new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
-	};
-			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
-			// 22. Ticket
-			var ticketData = new List<Ticket>
-	{
-		new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
-		new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
-	};
-			modelBuilder.Entity<Ticket>().HasData(ticketData);
-			var foodComboData = new List<FoodCombo>
-	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
-	};
-			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
+            // 23. TicketSeat
+            var ticketPriceData = new List<TicketPrice>
+    {
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+    };
+            modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
+            // 22. Ticket
+            var ticketData = new List<Ticket>
+            {
+                new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
+        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
+    };
+            modelBuilder.Entity<Ticket>().HasData(ticketData);
+            var foodComboData = new List<FoodCombo>
+    {
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
+        new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
+    };
+            modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
 
 
-			// 26. Checkin
-			var checkinData = new List<Checkin>
-	{
-		new Checkin { ID = Guid.NewGuid(), Code = "phonghhhhh",Type = "mua tại quầy", Name="hotdot", TicketID = ticketPriceData[0].ID },
-		new Checkin { ID = Guid.NewGuid(), Code = "hgdsad",Type = "mua tại quầy", Name="hotdsot", TicketID = ticketPriceData[1].ID  }
-	};
-			modelBuilder.Entity<Checkin>().HasData(checkinData);
-			var billData = new List<Bill>
-	{
-		new Bill
-		{
-			ID = Guid.NewGuid(),
-			UserID = userData[0].ID,
-			TotalPrice = 500000,
-			BillCode = "BILL001",
-			Status = ticketEnum.paid,
-		},
-		new Bill
-		{
-			ID = Guid.NewGuid(),
-			UserID = userData[1].ID,
-			TotalPrice = 300000,
-			BillCode = "BILL002",
-			Status = ticketEnum.paid,
-		}
-	};
-			modelBuilder.Entity<Bill>().HasData(billData);
-			var billCombo = new List<BillCombo>
-			{
-				new BillCombo
-				{
+            // 26. Checkin
+            var checkinData = new List<Checkin>
+    {
+        new Checkin { ID = Guid.NewGuid(), Code = "phonghhhhh",Type = "mua tại quầy", Name="hotdot", TicketID = ticketPriceData[0].ID },
+        new Checkin { ID = Guid.NewGuid(), Code = "hgdsad",Type = "mua tại quầy", Name="hotdsot", TicketID = ticketPriceData[1].ID  }
+    };
+            modelBuilder.Entity<Checkin>().HasData(checkinData);
+            var billData = new List<Bill>
+    {
+        new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[0].ID,
+            TotalPrice = 500000,
+            BillCode = "BILL001",
+            Status = ticketEnum.paid,
+        },
+        new Bill
+        {
+            ID = Guid.NewGuid(),
+            UserID = userData[1].ID,
+            TotalPrice = 300000,
+            BillCode = "BILL002",
+            Status = ticketEnum.paid,
+        }
+    };
+            modelBuilder.Entity<Bill>().HasData(billData);
+            var billCombo = new List<BillCombo>
+            {
+                new BillCombo
+                {
 
-					 BillID = billData[0].ID,
-					 FoodComboID = foodComboData[0].ID,
-				},
-				 new BillCombo
-				{
-					 BillID = billData[0].ID,
-					 FoodComboID = foodComboData[1].ID,
-				}
-			};
-			// Seed data cho bảng BillTicket
-			var billTicketData = new List<BillTicket>
-	{
-		new BillTicket
-		{
-			BillId = billData[0].ID,
-			TicketId = ticketData[0].ID
-		},
-		new BillTicket
-		{
-			BillId = billData[1].ID,
-			TicketId = ticketData[1].ID
-		}
-	};
-			modelBuilder.Entity<BillTicket>().HasData(billTicketData);
+                     BillID = billData[0].ID,
+                     FoodComboID = foodComboData[0].ID,
+                },
+                 new BillCombo
+                {
+                     BillID = billData[0].ID,
+                     FoodComboID = foodComboData[1].ID,
+                }
+            };
+            // Seed data cho bảng BillTicket
+            var billTicketData = new List<BillTicket>
+    {
+        new BillTicket
+        {
+            BillId = billData[0].ID,
+            TicketId = ticketData[0].ID
+        },
+        new BillTicket
+        {
+            BillId = billData[1].ID,
+            TicketId = ticketData[1].ID
+        }
+    };
+            modelBuilder.Entity<BillTicket>().HasData(billTicketData);
 
-			// Seed data cho bảng BookTickets
-			var bookTicketData = new List<BookTickets>
-	{
-		new BookTickets
-		{
-			ID = Guid.NewGuid(),
-			CustomerID = userData[0].ID,
-			TicketID = ticketData[0].ID,
-			Status = EntityStatus.Active
-		},
-		new BookTickets
-		{
-			ID = Guid.NewGuid(),
-			CustomerID = userData[1].ID,
-			TicketID = ticketData[1].ID,
-			Status = EntityStatus.Inactive
-		}
-	};
-			modelBuilder.Entity<BookTickets>().HasData(bookTicketData);
+            // Seed data cho bảng BookTickets
+            var bookTicketData = new List<BookTickets>
+    {
+        new BookTickets
+        {
+            ID = Guid.NewGuid(),
+            CustomerID = userData[0].ID,
+            TicketID = ticketData[0].ID,
+            Status = EntityStatus.Active
+        },
+        new BookTickets
+        {
+            ID = Guid.NewGuid(),
+            CustomerID = userData[1].ID,
+            TicketID = ticketData[1].ID,
+            Status = EntityStatus.Inactive
+        }
+    };
+            modelBuilder.Entity<BookTickets>().HasData(bookTicketData);
 
-			var rankMemberData = new List<RankMember>
+            var rankMemberData = new List<RankMember>
 {
-	new RankMember
-	{
-		ID = Guid.NewGuid(),
-		UserID =userData[0].ID,
-		Rank = "Gold",
-		MinPoint = 100,
-		Status = EntityStatus.Active,
-		StarDate = DateTime.Now
-	}
+    new RankMember
+    {
+        ID = Guid.NewGuid(),
+        UserID =userData[0].ID,
+        Rank = "Gold",
+        MinPoint = 100,
+        Status = EntityStatus.Active,
+        StarDate = DateTime.Now
+    }
 };
-			modelBuilder.Entity<RankMember>().HasData(rankMemberData);
-			// 29. Point
-			var pointData = new List<Point>
+            modelBuilder.Entity<RankMember>().HasData(rankMemberData);
+            // 29. Point
+            var pointData = new List<Point>
 {
-	new Point { ID = Guid.NewGuid(), TotalPoint = 50, DateEarned = DateTime.Now, UserID = userData[0].ID },
-	new Point { ID = Guid.NewGuid(), TotalPoint = 150, DateEarned = DateTime.Now, UserID = userData[1].ID }
+    new Point { ID = Guid.NewGuid(), TotalPoint = 50, DateEarned = DateTime.Now, UserID = userData[0].ID },
+    new Point { ID = Guid.NewGuid(), TotalPoint = 150, DateEarned = DateTime.Now, UserID = userData[1].ID }
 };
-			modelBuilder.Entity<Point>().HasData(pointData);
-			var workShiftData = new List<WorkShift>
+            modelBuilder.Entity<Point>().HasData(pointData);
+            var workShiftData = new List<WorkShift>
 {
-	new WorkShift
-	{
-		ID = Guid.NewGuid(),
-		WorkDate = DateTime.Now,
-		TimeStar = DateTime.Now.AddHours(-2),
-		TimeEnd = DateTime.Now.AddHours(2),
-		Status = EntityStatus.Active,
-		UserID = userData[0].ID
-	}
+    new WorkShift
+    {
+        ID = Guid.NewGuid(),
+        WorkDate = DateTime.Now,
+        TimeStar = DateTime.Now.AddHours(-2),
+        TimeEnd = DateTime.Now.AddHours(2),
+        Status = EntityStatus.Active,
+        UserID = userData[0].ID
+    }
 };
-			modelBuilder.Entity<WorkShift>().HasData(workShiftData);
+            modelBuilder.Entity<WorkShift>().HasData(workShiftData);
 
-		}
-	}
+        }
+    }
 }

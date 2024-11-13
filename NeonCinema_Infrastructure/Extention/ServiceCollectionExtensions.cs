@@ -69,6 +69,7 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ActorResp>();
             services.AddTransient<ActorMoviesResp>();
             services.AddTransient<BookTicketResp>();
+            services.AddScoped<ITicketPriceRepository, TicketPriceRepository>();
             return services;
         }
     }
