@@ -283,7 +283,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					SeatingCapacity = 100,
 					Status = EntityStatus.Active,
 					CreatedTime = DateTime.Now,
-							CinemasId = cinemaData[0].ID,
+					CinemasId = cinemaData[0].ID,
 				},
 				new Room
 				{

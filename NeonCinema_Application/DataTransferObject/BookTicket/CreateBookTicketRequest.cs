@@ -13,8 +13,8 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket
 		public Guid TicketPriceID { get; set; }
 		public Guid SeatID { get; set; }
 		public Guid ScreningID { get; set; }
-		public decimal Price { get; set; }
 		public Guid? CustomerID { get; set; }
-        public Guid? FoodComboId { get; set; }
+        public List<Guid>? FoodComboId { get; set; }
+        public int QuantityCombo { get; set; }
     }
 }

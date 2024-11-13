@@ -9,9 +9,12 @@
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
+@using MudBlazor
+
 
 <div class="row m-2">
 	<div class="col-md-4" style="width: 25% ; height:80%">
@@ -22,18 +25,6 @@
 				<p><strong>Suất chiếu:</strong> @screenings.ShowDate.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
 				<p><strong>Phòng:</strong> @screenings.RoomName</p>
 				<p><strong>Giới hạn độ tuổi:</strong> <span class="badge bg-danger">@movieDto.AgeAllowed</span></p>
-				<hr>
-				<p>
-					<strong>Combo: </strong>
-					@foreach (var selectedCombo in selectedCombos)
-					{
-						<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
-
-						<br />
-					}
-				</p>
-				<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-				<p><strong>Tổng Tiền: </strong>@totalPrices.ToString("C")</p>
 			</div>
 		</div>
 	</div>
@@ -97,13 +88,13 @@
 		}
 		else if (_selectedIndex == 1)
 		{
-			<div class="cinema-concession-container">
-				<div class="c-box">
-					<div class="text-center">
-						<h3>Combo Đồ Ăn </h3>
-					</div>
-					<hr class="dashed">
+			<div class="cinema-concession-container d-flex">
+				<div class="combo-container">
 					<div class="tab-content concession-items">
+						<div class="text-center">
+							<h3>Combo Đồ Ăn</h3>
+						</div>
+						<hr class="dashed">
 						<div class="concession-item">
 							@foreach (var combo in foods)
 							{
@@ -136,19 +127,46 @@
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="button-container">
-				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
-				<button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>
+				<div class="payment-method-container">
+					<div class="card" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title">Phương thức thanh toán</h5>
+							<hr class="dashed">
+							<p>
+								<strong>Đồ ăn nhanh: </strong>
+								@foreach (var selectedCombo in selectedCombos)
+								{
+									<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
+
+									<br />
+								}
+							</p>
+							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
+							<p><strong>Tổng Tiền: </strong>@totalPrices.ToString("C")</p>
+							<div class="concession-item">
+								<div class="form-check">
+									<input class="form-check-input" type="radio">
+									<label class="form-check-label" for="flexRadioDefault1">
+										<i class="fa-solid fa-money-bill"></i> Tiền mặt
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+									<label class="form-check-label" for="flexRadioDefault2">
+										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+				</div>
 			</div>
 
-		}
-		else if (_selectedIndex == 2)
-		{
-			<h3>Thanh Toán</h3>
-			<p>Chọn phương thức thanh toán</p>
-			<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-			<button class="btn btn-primary">Thanh toán</button>
+			<div class="button-container">
+				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
+				<button class="btn btn-primary" style="width: 25%" @onclick="ProcessPayment">Thanh toán</button>
+			</div>
 		}
 	</div>
 </div>
@@ -163,7 +181,6 @@
 	List<DirectorDTO> directors = new List<DirectorDTO>();
 	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
 	private int _selectedIndex = 0;
-	private string selectedPaymentMethod = "Visa";
 	private Dictionary<string,
 	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
 	List<SeatDto> seats = new List<SeatDto>();
@@ -236,7 +253,7 @@
 	#endregion
 	#region combo
 	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
-	private int currentValue = 0; 
+	private int currentValue = 0;
 
 
 	private void Increase(FoodComboDTO combo)
@@ -277,6 +294,16 @@
 
 
 	#endregion
+	private string selectedPaymentMethod;
+	private string cardNumber;
+	private string expiryDate;
+	private string cvv;
+	private string paymentStatus;
+	CreateBookTicketRequest request = new CreateBookTicketRequest();
+	private void ProcessPayment()
+	{
+
+	}
 }
 <style>
 
@@ -421,12 +448,6 @@
 				background-color: #aaa;
 			}
 
-	.cinema-concession-container {
-		display: flex;
-		align-items: center;
-		width: 100%;
-	}
-
 	.button-container {
 		display: flex;
 		justify-content: center;
@@ -439,6 +460,39 @@
 		font-size: 16px;
 		border-radius: 5px;
 		cursor: pointer;
+	}
+
+	.cinema-concession-container {
+		display: flex;
+		justify-content: space-between;
+		gap: 20px; /* Tạo khoảng cách giữa 2 phần */
+	}
+
+	.combo-container {
+		flex: 1; /* Phần combo sẽ chiếm không gian còn lại */
+	}
+
+	.payment-method-container {
+		flex: 0 0 300px; /* Phần thanh toán có kích thước cố định, có thể thay đổi tùy ý */
+	}
+
+	.icon-box {
+		margin-bottom: 15px;
+	}
+
+	/* Đảm bảo các phần tử trong mỗi box có chiều rộng hợp lý */
+	.icon-box-img {
+		max-width: 80px;
+		width: 100%;
+	}
+
+	h3 {
+		font-size: 1.25rem;
+		margin-bottom: 15px;
+	}
+
+	.text-center {
+		margin-bottom: 10px;
 	}
 
 </style>

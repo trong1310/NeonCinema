@@ -1,4 +1,5 @@
-﻿using NeonCinema_Application.DataTransferObject.ActorMovies;
+﻿using Microsoft.AspNetCore.Mvc;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -66,5 +67,18 @@ namespace NeonCinema_Client.Data.Services.BookTicket
                 throw new Exception("co loi xay ra : " + ex.Message);
             }
         }
-    }
+		public Task<HttpResponseMessage> BookTicket(CreateBookTicketRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var results = _httpClient.PostAsJsonAsync($"https://localhost:7211/api/BookTicket/Bookticket",request,cancellationToken);
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("co loi xay ra : " + ex.Message);
+			}
+		}
+
+	}
 }

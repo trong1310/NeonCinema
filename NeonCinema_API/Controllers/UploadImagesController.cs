@@ -6,10 +6,10 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 namespace NeonCinema_API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UploadImagesController : ControllerBase
-    {
+	[Route("api/[controller]")]
+	[ApiController]
+	public class UploadImagesController : ControllerBase
+	{
 		[HttpPost("upload-image")]
 		public async Task<IActionResult> UploadImage(IFormFile file)
 		{
