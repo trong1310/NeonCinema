@@ -49,7 +49,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         SeatNumber = $"{row}-{column}", 
                         Row = row.ToString(),
                         Column = column.ToString(),
-                        Status = seatEnum.drum, 
+                        Status = seatEnum.Available, 
                         RoomID = room.ID,
                         SeatTypeID = Guid.Parse("54634cf1-6e98-48bf-b97c-f9d065dd3c54") 
                     };
@@ -136,7 +136,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         // Cập nhật thông tin ghế nếu cần
                         existingSeat.Row = row.ToString();
                         existingSeat.Column = column.ToString();
-                        existingSeat.Status = seatEnum.drum; // Cập nhật trạng thái nếu cần
+                        existingSeat.Status = seatEnum.Maintenance; // Cập nhật trạng thái nếu cần
                     }
                     else
                     {
@@ -147,7 +147,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                             SeatNumber = seatNumber,
                             Row = row.ToString(),
                             Column = column.ToString(),
-                            Status = seatEnum.drum,
+                            Status = seatEnum.Available,
                             RoomID = room.ID,
                             SeatTypeID = Guid.Parse("54634cf1-6e98-48bf-b97c-f9d065dd3c54") // ID cố định hoặc thay đổi theo yêu cầu
                         };
