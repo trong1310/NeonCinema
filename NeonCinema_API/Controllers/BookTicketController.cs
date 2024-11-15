@@ -47,6 +47,19 @@ namespace NeonCinema_API.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
+		[HttpGet("AccountByPhone")]
+		public async Task<IActionResult> AccountByPhone([FromQuery] string phone, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var respone = await _reps.GetAccountByPhone(phone,cancellationToken);
+				return Ok(respone);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 
 	}
 }

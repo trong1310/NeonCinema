@@ -41,7 +41,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Roles> Roles { get; set; }
 		public DbSet<Countrys> Country { get; set; }
 		public DbSet<ShowTime> ShowTimes { get; set; }
-		public DbSet<BookTickets> BookTickets { get; set; }
 		public DbSet<MovieType> MoviesType { get; set; }
 		public DbSet<PaymentMethod> PaymentMethods { get; set; }
 		public DbSet<Room> Room { get; set; }
@@ -536,27 +535,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         }
     };
             modelBuilder.Entity<BillTicket>().HasData(billTicketData);
-
-            // Seed data cho bảng BookTickets
-            var bookTicketData = new List<BookTickets>
-    {
-        new BookTickets
-        {
-            ID = Guid.NewGuid(),
-            CustomerID = userData[0].ID,
-            TicketID = ticketData[0].ID,
-            Status = EntityStatus.Active
-        },
-        new BookTickets
-        {
-            ID = Guid.NewGuid(),
-            CustomerID = userData[1].ID,
-            TicketID = ticketData[1].ID,
-            Status = EntityStatus.Inactive
-        }
-    };
-            modelBuilder.Entity<BookTickets>().HasData(bookTicketData);
-
             var rankMemberData = new List<RankMember>
 {
     new RankMember

@@ -1,6 +1,5 @@
 ﻿using NeonCinema_Domain.Database.Base;
 using NeonCinema_Domain.Enum;
-using NeonCinema_Infrastructure.Database.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
