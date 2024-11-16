@@ -1,18 +1,18 @@
 ﻿@page "/select-seat/{id:guid}"
-@using System.Collections.Generic
-@using NeonCinema_Application.DataTransferObject.BookTicket
-@using NeonCinema_Application.DataTransferObject.Countrys
-@using NeonCinema_Application.DataTransferObject.Directors
-@using NeonCinema_Application.DataTransferObject.FoodCombos
-@using NeonCinema_Application.DataTransferObject.Genre
-@using NeonCinema_Application.DataTransferObject.Language
-@using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Application.DataTransferObject.User
-@using NeonCinema_Client.Data.IServices.IMoviesServices
-@using NeonCinema_Client.Data.Services.BookTicket
-@using NeonCinema_Client.Models.Enums
-@using NeonCinema_Domain.Database.Entities
-@using NeonCinema_Infrastructure.Database.AppDbContext
+@	using System.Collections.Generic
+@	using NeonCinema_Application.DataTransferObject.BookTicket
+@	using NeonCinema_Application.DataTransferObject.Countrys
+@	using NeonCinema_Application.DataTransferObject.Directors
+@	using NeonCinema_Application.DataTransferObject.FoodCombos
+@	using NeonCinema_Application.DataTransferObject.Genre
+@	using NeonCinema_Application.DataTransferObject.Language
+@	using NeonCinema_Application.DataTransferObject.Movie
+@	using NeonCinema_Application.DataTransferObject.User
+@	using NeonCinema_Client.Data.IServices.IMoviesServices
+@	using NeonCinema_Client.Data.Services.BookTicket
+@	using NeonCinema_Client.Models.Enums
+@	using NeonCinema_Domain.Database.Entities
+@	using NeonCinema_Infrastructure.Database.AppDbContext
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService

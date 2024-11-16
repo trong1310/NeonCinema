@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NeonCinema_Application.DataTransferObject.BookTicket;
+using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
@@ -10,7 +10,7 @@ using NeonCinema_Infrastructure.Implement.BookTickets;
 
 namespace NeonCinema_API.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     public class BookTicketController : ControllerBase
     {
