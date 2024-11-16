@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.BookTicket;
+using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -16,13 +17,85 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			_context = context;
 		}
 		public async Task<HttpResponseMessage> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
-		{
+		{	
+			using var transaction = await _context.Database.BeginTransactionAsync();
 			try
 			{
-				var respone = _context.Screening.Where(x => x.MovieID == request.MovieId);
+				List<Guid> TicketID = new List<Guid>();
+				decimal price = 0;
+				foreach(var seatId in request.SeatID)
+				{
+					var seat = await _context.Seat.FindAsync(seatId);
+					if (seat == null || seat.Status != NeonCinema_Domain.Enum.seatEnum.Available)
+						throw new Exception($"Ghế {seatId} không thể đặt bây giờ");
+					var ticketPrice = seat.TicketPrice.Where(x => x.SeatID == seatId).FirstOrDefault();
+					var ticket = new Ticket
+					{
+						ScreningID = request.ScreeningID,
+						SeatID = seatId,
+						Price = ticketPrice.Price,
+						ID = Guid.NewGuid(),
+						MovieID = request.MovieId,
+						CreatedTime = DateTime.Now,
+						Status = NeonCinema_Domain.Enum.ticketEnum.checkin,	
+					};
+					_context.Tickets.Add(ticket);
+					seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
+					_context.Update(seat);
+					TicketID.Add(ticket.ID);
+					price += ticketPrice.Price;
+				}
+				await _context.SaveChangesAsync();
+				decimal comboPrice = 0;
+				foreach(var combo in request.BillCombos)
+				{
+					var foodCombo = await _context.FoodCombos.FindAsync(combo.FoodComboId);
+					if(foodCombo != null)
+					{
+						comboPrice += foodCombo.TotalPrice * combo.Quantity;
+					}
+				}
+				var bill = new Bill()
+				{
+					ID = Guid.NewGuid(),
+					CreatedTime = DateTime.UtcNow,
+					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
+					BillCode = Uliti.GenerateBillCode(),
+					TotalPrice  = price+comboPrice,
+					
+				};
+				await _context.BillDetails.AddAsync(bill);
+				await _context.SaveChangesAsync();
 
-				return new HttpResponseMessage(HttpStatusCode.OK);
+				// 4. Liên kết vé với hóa đơn
+				foreach (var ticketId in TicketID)
+				{
+					_context.BillTickets.Add(new BillTicket
+					{
+						BillId = bill.ID,
+						TicketId = ticketId
+					});
+				}
+
+				// 5. Liên kết combo đồ ăn với hóa đơn
+				foreach (var combo in request.BillCombos)
+				{
+					_context.BillCombos.Add(new BillCombo
+					{
+						BillID = bill.ID,
+						FoodComboID = combo.FoodComboId,
+						Quantity = combo.Quantity,
+					});
+				}
+
+				await _context.SaveChangesAsync();
+				await transaction.CommitAsync();
+				return new HttpResponseMessage(HttpStatusCode.OK)
+				{
+					Content =new StringContent("Đặt vé thành công"),
+				};
 			}
+
 			catch (Exception ex)
 			{
 				throw;
