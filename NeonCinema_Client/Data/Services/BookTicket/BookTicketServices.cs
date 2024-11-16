@@ -56,7 +56,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("co loi xay ra : " + ex.Message);
 			}
 		}
-        public async Task<List<FoodComboDTO>> GetFoodCombo()
+		public async Task<List<FoodComboDTO>> GetFoodCombo()
         {
             try
             {

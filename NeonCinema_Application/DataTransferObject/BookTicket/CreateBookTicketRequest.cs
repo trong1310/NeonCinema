@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket
     public class CreateBookTicketRequest 
     {
 		public Guid RoomID { get; set; }
+		public Guid MovieId { get; set; }
 		public Guid TicketPriceID { get; set; }
 		public Guid SeatID { get; set; }
 		public Guid ScreningID { get; set; }

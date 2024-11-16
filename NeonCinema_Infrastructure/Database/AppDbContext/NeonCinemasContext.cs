@@ -335,17 +335,18 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new ShowTime
 				{
 					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					StartTime = new TimeSpan(14, 0, 0), // 14:00
+					StartTime = new TimeSpan(23, 59, 59), 
 
-					EndTime = new TimeSpan(16, 30, 0), // 16:30
+					EndTime = new TimeSpan(12, 30, 0), 
 					Status = EntityStatus.Active,
 
                 },
                 new ShowTime
                 {
                     ID = Guid.NewGuid(),
-                    StartTime = new TimeSpan(18, 0, 0), // 18:00
-					EndTime = new TimeSpan(20, 30, 0), // 20:30
+				   StartTime = new TimeSpan(12, 59, 59), 
+
+					EndTime = new TimeSpan(23, 30, 0),  
 					Status = EntityStatus.Active
                 }
             };
@@ -431,7 +432,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                     ID = Guid.NewGuid(),
                     Status = EntityStatus.Active,
                     ShowTimeID = showTimeData[0].ID,
-                    ShowDate = DateTime.Now.AddDays(2), // Two days from now
+                    ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
                     RoomID = roomData[0].ID,
                     CreatedTime = DateTime.Now,
@@ -459,15 +460,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             // 23. TicketSeat
             var ticketPriceData = new List<TicketPrice>
     {
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatID = SeatData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatID = SeatData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
     };
             modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
             // 22. Ticket
             var ticketData = new List<Ticket>
             {
-                new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
-        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
+                new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid},
+        new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid }
     };
             modelBuilder.Entity<Ticket>().HasData(ticketData);
             var foodComboData = new List<FoodCombo>
