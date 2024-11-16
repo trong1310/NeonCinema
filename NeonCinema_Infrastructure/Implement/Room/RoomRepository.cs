@@ -46,12 +46,12 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     var seat = new NeonCinema_Domain.Database.Entities.Seat
                     {
                         ID = Guid.NewGuid(),
-                        SeatNumber = $"{row}-{column}", 
+                        SeatNumber = $"{row}-{column}",
                         Row = row.ToString(),
                         Column = column.ToString(),
-                        Status = seatEnum.Available, 
-                        RoomID = room.ID,
-                        SeatTypeID = Guid.Parse("54634cf1-6e98-48bf-b97c-f9d065dd3c54") 
+             Status = seatEnum.Available,
+       RoomID = room.ID,
+                        SeatTypeID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
                     };
                     seats.Add(seat);
                 }
@@ -75,7 +75,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     ColumnNumber = room.ColumnNumber,
                     CinemasId = room.CinemasId
                 })
-                .ToListAsync(cancellationToken);
+.ToListAsync(cancellationToken);
         }
 
         public async Task<RoomDTO> GetByIDRoom(Guid id, CancellationToken cancellationToken)
@@ -136,7 +136,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         // Cập nhật thông tin ghế nếu cần
                         existingSeat.Row = row.ToString();
                         existingSeat.Column = column.ToString();
-                        existingSeat.Status = seatEnum.Maintenance; // Cập nhật trạng thái nếu cần
+                        existingSeat.Status = seatEnum.Available; // Cập nhật trạng thái nếu cần
                     }
                     else
                     {
@@ -149,7 +149,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                             Column = column.ToString(),
                             Status = seatEnum.Available,
                             RoomID = room.ID,
-                            SeatTypeID = Guid.Parse("54634cf1-6e98-48bf-b97c-f9d065dd3c54") // ID cố định hoặc thay đổi theo yêu cầu
+                            SeatTypeID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e") // ID cố định hoặc thay đổi theo yêu cầu
                         };
                         seatsToAdd.Add(newSeat);
                     }
