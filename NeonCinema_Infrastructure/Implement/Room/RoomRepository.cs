@@ -49,8 +49,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         SeatNumber = $"{row}-{column}",
                         Row = row.ToString(),
                         Column = column.ToString(),
-                        Status = seatEnum.Available,
-                        RoomID = room.ID,
+             Status = seatEnum.Available,
+       RoomID = room.ID,
                         SeatTypeID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
                     };
                     seats.Add(seat);

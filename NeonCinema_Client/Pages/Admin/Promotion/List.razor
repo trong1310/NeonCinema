@@ -90,6 +90,7 @@
 														<div class="mb-3">
 															<label for="" class="form-label">Tên khuyến mại</label>
 															<InputText @bind-Value="input.Name" class="form-control" />
+															<ValidationMessage For="@(() => input.Name)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Mã khuyến mại</label>
@@ -337,6 +338,7 @@
 											<div class="mb-3">
 												<label for="" class="form-label">Tên khuyến mại</label>
 												<InputText @bind-Value="inputUpdate.Name" class="form-control" />
+												<ValidationMessage For="@(() => input.Name)" />
 											</div>
 											<div class="mb-3">
 												<label for="" class="form-label">Mã khuyến mại</label>
