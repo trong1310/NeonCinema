@@ -105,10 +105,10 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 		{
 			TimeSpan currentTime = DateTime.Now.TimeOfDay;
 			var date = DateTime.Now;
-			var screenings = await _context.Screening
+			var screenings = await _context!.Screening
 				.Include(x => x.ShowTime)
 				.Include(x => x.Rooms)
-					.ThenInclude(s => s.Seats)
+					.ThenInclude(s => s.Seats!)
 						.ThenInclude(x => x.SeatTypes)
 				.Where(x => x.MovieID == MovieId)
 				.ToListAsync();
@@ -118,7 +118,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				.ThenBy(x => x.ShowTime.StartTime)
 				.FirstOrDefault();
 			if (upcomingScreening == null) return null;
-			var seats = upcomingScreening.Rooms.Seats.Select(x =>
+			var seats = upcomingScreening.Rooms!.Seats!.Select(x =>
 			{
 				var ticketPrice = _context.TicketPrice
 					.Where(tp => tp.SeatID == x.ID)

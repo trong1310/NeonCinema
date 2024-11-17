@@ -213,8 +213,8 @@
 
 
 @code {
-	[Parameter]
-	public Guid id { get; set; }
+	// Các tham số và biến đã khai báo sẵn
+	[Parameter] public Guid id { get; set; }
 	private MovieDTO movieDto = new MovieDTO();
 	private IBrowserFile selectedFile;
 	private bool isActorModalOpen = false;
@@ -234,7 +234,6 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
-
 	}
 	private bool isEditing = false;
 	#region update
