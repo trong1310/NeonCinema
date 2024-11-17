@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.BookTicket;
+using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 
 namespace NeonCinema_Client.Data.Services.BookTicket
 {
-    public class BookTicketServices
+	public class BookTicketServices
     {
         private readonly HttpClient _httpClient;
         public BookTicketServices(HttpClient httpClient)
@@ -55,7 +57,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("co loi xay ra : " + ex.Message);
 			}
 		}
-        public async Task<List<FoodComboDTO>> GetFoodCombo()
+		public async Task<List<FoodComboDTO>> GetFoodCombo()
         {
             try
             {
@@ -66,7 +68,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
             {
                 throw new Exception("co loi xay ra : " + ex.Message);
             }
-        }
+		}
 		public Task<HttpResponseMessage> BookTicket(CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
 			try
