@@ -54,6 +54,7 @@ using NeonCinema_Client.Data.IServices.Statistics;
 using NeonCinema_Client.Data.Services.StatisticService;
 using NeonCinema_Client.Data.IServices.TicketPrice;
 using NeonCinema_Client.Data.Services.TicketPriceService;
+using NeonCinema_Infrastructure.Implement.Promotion_R;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -140,7 +141,8 @@ app.MapBlazorHub();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapFallbackToPage("/_Host"); 
+	endpoints.MapHub<PromoHub>("/promohub");
+	endpoints.MapFallbackToPage("/_Host"); 
 });
 
 

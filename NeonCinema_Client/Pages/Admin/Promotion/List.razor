@@ -1,9 +1,11 @@
 ﻿@page "/list-promotion-admin"
+@using Microsoft.AspNetCore.SignalR.Client
 @using NeonCinema_Application.DataTransferObject.Promotions
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Promotion
 @using NeonCinema_Client.DataTransferObject.Users
 @using NeonCinema_Domain.Database.Entities
+@using NeonCinema_Domain.Enum
 @using NeonCinema_Infrastructure.Extention.Utili
 @using System.Transactions
 
@@ -509,7 +511,7 @@
 							<td>@item.value.StartDate.ToShortDateString()</td>
 							<td>@item.value.EndDate.ToShortDateString()</td>
 							<td>@item.value.Description</td>
-							<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
+							<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
 							<td>
 								<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
@@ -604,6 +606,18 @@
 	private int isModalVisible = 0;
 	private int isModalVisibleConfirm = 0;
 
+	//Màu trạng thái
+	private string GetStatusClass(PromotionStatus status)
+	{
+	    return status switch
+		{
+			PromotionStatus.Active => "bg-success",    // Màu xanh khi trạng thái là "Active"
+			PromotionStatus.InActive => "bg-warning",  // Màu vàng khi trạng thái là "InActive"
+			PromotionStatus.Expired => "bg-danger",    // Màu đỏ khi trạng thái là "Expired"
+		};
+	}
+	private HubConnection? hubConnection;
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -611,6 +625,38 @@
 		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
 
+		await ConnectToSignalRHub();
+	}
+
+	private async Task ConnectToSignalRHub()
+	{
+		// Tạo kết nối với SignalR Hub
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(_nav.ToAbsoluteUri("/promohub"))
+			.Build();
+
+		// Đăng ký sự kiện nhận thông báo
+		hubConnection.On<string>("ReceivePromotionUpdate", async (message) =>
+		{
+			// Cập nhật trạng thái khi nhận được thông báo
+			await InvokeAsync(async () =>
+			{
+				// Tải lại danh sách mã khuyến mại hoặc cập nhật trực tiếp
+				await LoadPromotion();
+				StateHasChanged(); // Cập nhật lại UI
+			});
+		});
+
+		// Bắt đầu kết nối SignalR
+		await hubConnection.StartAsync();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}
 	}
 
 	//Get All promotion

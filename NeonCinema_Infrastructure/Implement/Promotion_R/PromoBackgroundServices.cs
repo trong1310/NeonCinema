@@ -15,6 +15,7 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IHubContext<PromoHub> _hubcontext;
 
+
 		public PromoBackgroundServices(IServiceProvider serviceProvider, IHubContext<PromoHub> hubcontext)
 		{
 			_serviceProvider = serviceProvider;
@@ -25,10 +26,10 @@ namespace NeonCinema_Client.Data.Services.Promotion
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				using var scope = _serviceProvider.CreateScope();
-				var dbContext = scope.ServiceProvider.GetRequiredService<NeonCinemasContext>();
+                using var scope = _serviceProvider.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<NeonCinemasContext>();
 
-				var now = DateTime.UtcNow;
+				var now = DateTime.Now;
 
 				// Lấy tất cả mã khuyến mại cần kiểm tra
 				var promotions = await dbContext.Promotions.ToListAsync(stoppingToken);
@@ -39,14 +40,16 @@ namespace NeonCinema_Client.Data.Services.Promotion
 					if (promo.StartDate <= now && now < promo.EndDate && promo.Status == PromotionStatus.InActive)
 					{
 						promo.Status = PromotionStatus.Active;
-						await _hubcontext.Clients.All.SendAsync("ReceiveLog", $"Promotion '{promo.Code}' activated", stoppingToken);
+						await _hubcontext.Clients.All.SendAsync("ReceivePromotionUpdate", $"Promotion '{promo.Code}' activated");
 					}
 					// Kiểm tra thời gian kết thúc
 					else if (now >= promo.EndDate)
 					{
 						promo.Status = PromotionStatus.Expired;
-						await _hubcontext.Clients.All.SendAsync("ReceiveLog", $"Promotion '{promo.Code}' expired", stoppingToken);
+						await _hubcontext.Clients.All.SendAsync("ReceivePromotionUpdate", $"Promotion '{promo.Code}' expired");
 					}
+				
+					dbContext.Promotions.Update(promo);
 				}
 
 				await dbContext.SaveChangesAsync(stoppingToken);

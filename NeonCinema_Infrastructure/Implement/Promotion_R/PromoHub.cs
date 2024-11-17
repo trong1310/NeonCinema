@@ -11,7 +11,7 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
 	{
 		public async Task NotifyPromotionStatus(string message)
 		{
-			await Clients.All.SendAsync("ReceiveLog", message);
+			await Clients.All.SendAsync("ReceivePromotionUpdate", message);
 		}
 	}
 }
