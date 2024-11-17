@@ -102,6 +102,8 @@ builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
+builder.Services.AddHostedService<PromoBackgroundServices>();
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication("Bearer")
 	.AddJwtBearer("Bearer", options =>

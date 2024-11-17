@@ -9,19 +9,18 @@ namespace NeonCinema_Domain.Enum
 {
 	public enum PromotionStatus
 	{
-		[Display(Name = "Riêng tư")]
-		Private = 1,
-		[Display(Name = "Công khai")]
-		Public = 2,
-		[Display(Name = "Đã hết hạn")]
-		Expired = 3,
-		[Display(Name = "Đã áp dụng")]
-		Applied = 4,
+        //Promotion
+        [Display(Name = "Không hoạt động")]
+        InActive = 1,
+        [Display(Name = "Hoạt động")]
+        Active = 2,
+        [Display(Name = "Đã hết hạn")]
+        Expired = 3,
 
-		//
-		[Display(Name = "Chưa sử dụng")]
-		Unused = 5,
-		[Display(Name = "Đã sử dụng")]
-		Used = 6,
-	}
+        //Promotion User
+        [Display(Name = "Chưa sử dụng")]
+        Unused = 5,
+        [Display(Name = "Đã sử dụng")]
+        Used = 6,
+    }
 }
