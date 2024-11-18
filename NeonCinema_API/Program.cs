@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddScoped<TwilioClient, TwilioClient>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRolesRepository, RoleRepository>();
-builder.Services.AddScoped<ICountryRepository,CountryRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
 //builder.Services.AddScoped<IActorRepositories, ActorResp>();
@@ -61,6 +61,9 @@ builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+
+
 
 builder.Services.Configure<FormOptions>(options =>
 {
