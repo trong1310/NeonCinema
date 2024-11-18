@@ -1,18 +1,16 @@
 ﻿@page "/select-seat/{id:guid}"
-@	using System.Collections.Generic
-@	using NeonCinema_Application.DataTransferObject.BookTicket
-@	using NeonCinema_Application.DataTransferObject.Countrys
-@	using NeonCinema_Application.DataTransferObject.Directors
-@	using NeonCinema_Application.DataTransferObject.FoodCombos
-@	using NeonCinema_Application.DataTransferObject.Genre
-@	using NeonCinema_Application.DataTransferObject.Language
-@	using NeonCinema_Application.DataTransferObject.Movie
-@	using NeonCinema_Application.DataTransferObject.User
-@	using NeonCinema_Client.Data.IServices.IMoviesServices
-@	using NeonCinema_Client.Data.Services.BookTicket
-@	using NeonCinema_Client.Models.Enums
-@	using NeonCinema_Domain.Database.Entities
-@	using NeonCinema_Infrastructure.Database.AppDbContext
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.BookTicket.Request
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Collections.Generic
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
@@ -357,29 +355,7 @@
 	NeonCinemasContext _context = new NeonCinemasContext();
 	private async void ProcessPayment()
 	{
-		foreach(var item2 in selectedCombos )
-		{
-			request.FoodComboId = item2.Key.ID;
-		}
-		foreach (var item1 in seats)
-		{
-			request.SeatID = item1.ID;
-		}
-		var room = _context.Room.Where(x => x.Name == screenings.RoomName).FirstOrDefault();
-		var acc = _context.Users.Where(x => x.PhoneNumber == phoneNumber).FirstOrDefault();
-		request = new CreateBookTicketRequest()
-		{
-			CustomerID = acc!=null? acc.ID: null,
-			ScreningID = screenings.Id,
-			 RoomID = room.ID,
-		};
-		var bookTicket = await _services.BookTicket(request,CancellationToken.None);
-		if(bookTicket.IsSuccessStatusCode){
-			Console.WriteLine("thanh cong");
-		}
-		else{
-			Console.WriteLine("that bai");
-		}
+		
 	}
 }
 <style>
