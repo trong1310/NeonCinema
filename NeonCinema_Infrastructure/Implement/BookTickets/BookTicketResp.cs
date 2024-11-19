@@ -21,7 +21,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			using var transaction = await _context.Database.BeginTransactionAsync();
 			try
 			{
-				// Lấy lịch chiếu từ database
 				var screening = await _context.Screening
 					.Include(x => x.Rooms)
 						.ThenInclude(r => r.Seats)
@@ -29,8 +28,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				if (screening == null)
 					throw new Exception("Lịch chiếu không tồn tại.");
-
-				// Kiểm tra tính khả dụng của các ghế
 				var unavailableSeats = screening.Rooms.Seats
 					.Where(s => request.SeatID.Contains(s.ID) && s.Status == NeonCinema_Domain.Enum.seatEnum.Available)
 					.Select(s => s.SeatNumber)
@@ -41,18 +38,28 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					if (seat != null)
 						seat.Status = NeonCinema_Domain.Enum.seatEnum.Available;
 				}
-				var price = await _context.TicketPrice.Include(x=>x.Seats).Where(x=> request.SeatID.Contains(x.SeatID)).FirstOrDefaultAsync();	
-				var tickets = request.SeatID.Select(seatId => new Ticket
+				var ticketPrices = await _context.TicketPrice.Include(x=>x.Seats).Where(x=> request.SeatID.Contains(x.SeatID)).ToListAsync();
+				var tickets = request.SeatID.Select(seatId =>
 				{
-					ID = Guid.NewGuid(),
-					ScreningID = request.ScreeningID,
-					SeatID = seatId,
-					CreatedTime = DateTime.Now,
-					MovieID = request.MovieId,
-					Price = price.Price
+					var ticketPrice = ticketPrices.FirstOrDefault(x => x.SeatID == seatId);
+
+					if (ticketPrice == null)
+					{
+						throw new Exception($"Không tìm thấy giá vé cho ghế có ID: {seatId}");
+					}
+
+					return new Ticket
+					{
+						ID = Guid.NewGuid(),
+						ScreningID = request.ScreeningID,
+						SeatID = seatId,
+						CreatedTime = DateTime.Now,
+						MovieID = request.MovieId,
+						Price = ticketPrice.Price
+					};
 				}).ToList();
 				await	_context.Tickets.AddRangeAsync(tickets);
-				await _context.SaveChangesAsync();
+				 await _context.SaveChangesAsync();
 				Bill bill = new Bill();
 				bill.ID = Guid.NewGuid();
 				bill.BillCode = Uliti.GenerateBillCode();

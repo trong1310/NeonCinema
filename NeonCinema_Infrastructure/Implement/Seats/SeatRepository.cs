@@ -38,12 +38,12 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 var seats = new Seat()
                 {
                     ID = Guid.NewGuid(),
-                    SeatNumber = request.SeatNumber,
-                    Column = room.ColumnNumber.ToString(),
-                    Row = room.RowNumber.ToString(),
+                    SeatNumber = request.Column+request.Row,
+                    Column = request.Column,
+                    Row = request.Row,
                     Status = request.Status,
                     SeatTypeID = request.SeatTypeID,
-
+                    RoomID = request.RoomID,
 
                 };
                 await _context.Seat.AddAsync(seats);
