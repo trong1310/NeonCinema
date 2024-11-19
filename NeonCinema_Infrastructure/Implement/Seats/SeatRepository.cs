@@ -39,8 +39,8 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 {
                     ID = Guid.NewGuid(),
                     SeatNumber = request.Column+request.Row,
-                    Column = request.Column,
-                    Row = request.Row,
+                    Column = room.ColumnNumber.ToString(),
+                    Row = room.RowNumber.ToString(),
                     Status = request.Status,
                     SeatTypeID = request.SeatTypeID,
                     RoomID = request.RoomID,
