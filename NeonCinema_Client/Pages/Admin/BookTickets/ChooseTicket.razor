@@ -144,7 +144,6 @@
 								</p>
 								<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
 								<span style="cursor: pointer;" id="amount-display">@totalPrices</span>
-								<input type="text" class="form-control" placeholder="Số điện thoại khách hàng nếu có" value="@phoneNumber">
 								<div class="concession-item">
 									<div class="form-check">
 										<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('ẩn')" id="cashRadio" checked>
@@ -194,6 +193,46 @@
 			}
 
 		}
+		@if (paymentStatus == "success")
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentSuccessLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="paymentSuccessLabel">Thanh toán thành công</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hóa đơn của bạn đã được xác nhận thành công!</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		@if (paymentStatus == "failure")
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentFailureLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="paymentFailureLabel">Thanh toán thất bại</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
 	</div>
 </div>
 <script>
@@ -234,11 +273,6 @@
 		showConfirmModal = true;
 	}
 
-	// Phương thức đóng modal
-	private void CloseModal()
-	{
-		showConfirmModal = false;
-	}
 	protected override async Task OnInitializedAsync()
 	{
 		movieDto = await _movieServices.GetMovieById(id);
@@ -276,6 +310,7 @@
 			return "selected";
 		}
 		return "available";
+		OnClickToEditAmount();
 	}
 	private void NextTab()
 	{
@@ -295,23 +330,76 @@
 	}
 	private List<string> selectedSeats = new List<string>();
 	private string selectedSeatNumbers = "";
+	private List<Guid> selectedSeatsId = new List<Guid>(); // Danh sách lưu trữ ID ghế được chọn
+
 	private async void SelectSeat(SeatDto seat)
 	{
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			await JS.InvokeVoidAsync("alert", "Không thể chọn quá 10 ghế!");
+			return;
+		}
+
+		if (!selectedSeats.Contains(seat.SeatNumber))
+		{
+			char currentRow = seat.SeatNumber[0];
+			int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+			foreach (var selectedSeat in selectedSeats)
+			{
+				char selectedRow = selectedSeat[0];
+				int selectedCol = int.Parse(selectedSeat.Substring(1));
+
+				if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
+				{
+					int middleCol = (currentCol + selectedCol) / 2;
+					string middleSeat = $"{currentRow}{middleCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						await JS.InvokeVoidAsync("alert", "Không được để trống ghế giữa!");
+						return;
+					}
+				}
+					
+				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
+				{
+					// Tìm ghế ở giữa theo hàng
+					char middleRow = (char)((currentRow + selectedRow) / 2);
+					string middleSeat = $"{middleRow}{currentCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						await JS.InvokeVoidAsync("alert", "Không được để trống ghế giữa!");
+						return;
+					}
+				}
+			}
+		}
+
+		// Xử lý chọn/bỏ ghế
 		if (selectedSeats.Contains(seat.SeatNumber))
 		{
+			Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+			selectedSeatsId.Remove(seat.ID);
 			selectedSeats.Remove(seat.SeatNumber);
 			totalPrices -= (decimal)seat.Price;
 		}
 		else
 		{
+			Console.WriteLine($"Adding seat: {seat.SeatNumber}");
 			selectedSeats.Add(seat.SeatNumber);
+			selectedSeatsId.Add(seat.ID);
 			totalPrices += (decimal)seat.Price;
 		}
+
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
+		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+		OnClickToEditAmount();
 	}
 	#endregion
 	#region combo
 	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
+	private List<Guid> selectedComboId = new List<Guid>();
 	private int currentValue = 0;
 	private void Increase(FoodComboDTO combo)
 	{
@@ -323,25 +411,28 @@
 		else
 		{
 			selectedCombos[combo] = 1;
+			currentValue++;
 		}
+
 		totalPrices += combo.Amount;
 		OnClickToEditAmount();
 	}
 
-	private  void Decrease(FoodComboDTO combo)
+	private void Decrease(FoodComboDTO combo)
 	{
 		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
 		{
 			selectedCombos[combo]--;
-			currentValue++;
+			currentValue--;
 			totalPrices -= combo.Amount;
 			if (selectedCombos[combo] == 0)
 			{
 				selectedCombos.Remove(combo);
 			}
 		}
-		OnClickToEditAmount();
+		OnClickToEditAmount(); // Cập nhật giao diện
 	}
+
 	private int GetComboQuantity(FoodComboDTO combo)
 	{
 		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
@@ -353,9 +444,75 @@
 
 	CreateBookTicketRequest request = new CreateBookTicketRequest();
 	NeonCinemasContext _context = new NeonCinemasContext();
+	private string paymentStatus = string.Empty; // Trạng thái thanh toán
+
 	private async void ProcessPayment()
 	{
-		
+		request = new CreateBookTicketRequest()
+			{
+				ScreeningID = screenings.Id,
+				SeatID = selectedSeatsId,
+				MovieId = movieDto.ID,
+				BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+				{
+					FoodComboId = combo.Key.ID,
+					Quantity = combo.Value,
+				}).ToList(),
+			};
+
+		try
+		{
+			var createBill = await _services.BookTicket(request, CancellationToken.None);
+
+			if (createBill.IsSuccessStatusCode)
+			{
+				selectedCombos.Clear();
+				selectedComboId.Clear(); 
+				currentValue = 0; 
+				totalPrices = 0; 
+
+				paymentStatus = "success"; 
+				Console.WriteLine("Thành công");
+			}
+			else
+			{
+				paymentStatus = "failure"; 
+				Console.WriteLine("Thất bại");
+			}
+		}
+		catch (Exception ex)
+		{
+			paymentStatus = "failure"; 
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+		}
+
+		StateHasChanged(); 
+	}
+	private string GetPaymentMessage(string status)
+	{
+		return status switch
+		{
+			"success" => "Thanh toán thành công!",
+			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+			_ => string.Empty,
+		};
+	}
+
+	private string GetAlertClass(string status)
+	{
+		return status switch
+		{
+			"success" => "alert-success",
+			"failure" => "alert-danger",
+			_ => string.Empty,
+		};
+	}
+
+	private void CloseModal()
+	{
+		showConfirmModal = false; 
+		paymentStatus = string.Empty; 
+		StateHasChanged(); 
 	}
 }
 <style>
@@ -548,19 +705,21 @@
 	.cinema-concession-container {
 		display: flex;
 		justify-content: space-between;
-		gap: 20px; 
+		gap: 20px;
 	}
 
 	.combo-container {
-		flex: 1; 
+		flex: 1;
 	}
 
 	.payment-method-container {
 		flex: 0 0 300px;
 	}
+
 	.icon-box {
 		margin-bottom: 15px;
 	}
+
 	.icon-box-img {
 		max-width: 80px;
 		width: 100%;
