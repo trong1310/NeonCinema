@@ -25,7 +25,7 @@ namespace NeonCinema_Infrastructure.Implement
             var ticketPrice = await _context.TicketPrice
                 .Where(t => t.ID == id)
                 .Include(t => t.Screening)
-                .Include(t => t.SeatTypes)
+                .Include(t => t.Seats)
                 .Include(t => t.ShowTimes)
                 .FirstOrDefaultAsync();
 
@@ -38,7 +38,7 @@ namespace NeonCinema_Infrastructure.Implement
             {
                 ID = ticketPrice.ID,
                 Price = ticketPrice.Price,
-                SeatTypeID = ticketPrice.SeatTypeID,
+				SeatID = ticketPrice.SeatID,
                 ShowTimeID = ticketPrice.ShowTimeID,
                 ScreeningID = ticketPrice.ScreeningID
             };
@@ -48,7 +48,7 @@ namespace NeonCinema_Infrastructure.Implement
         {
             var ticketPrices = await _context.TicketPrice
                 .Include(t => t.Screening)
-                .Include(t => t.SeatTypes)
+                .Include(t => t.Seats)
                 .Include(t => t.ShowTimes)
                 .ToListAsync();
 
@@ -56,7 +56,7 @@ namespace NeonCinema_Infrastructure.Implement
             {
                 ID = ticketPrice.ID,
                 Price = ticketPrice.Price,
-                SeatTypeID = ticketPrice.SeatTypeID,
+                SeatID = ticketPrice.SeatID,
                 ShowTimeID = ticketPrice.ShowTimeID,
                 ScreeningID = ticketPrice.ScreeningID
             }).ToList();
@@ -86,7 +86,7 @@ namespace NeonCinema_Infrastructure.Implement
             {
                 ID = Guid.NewGuid(),
                 Price = (ticketPriceDTO.Price == 0 || !ticketPriceDTO.Price.HasValue) ? basePrice : ticketPriceDTO.Price.Value,
-                SeatTypeID = ticketPriceDTO.SeatTypeID,
+                SeatID = ticketPriceDTO.SeatTypeID,
                 ShowTimeID = ticketPriceDTO.ShowTimeID,
                 ScreeningID = ticketPriceDTO.ScreeningID
             };

@@ -28,7 +28,7 @@ namespace NeonCinema_Domain.Enum
 	}
     public enum ticketEnum
     {
-
+        checkin =0,
         waiting_for_payment = 1,
         paid = 2,
         cancel = 3,

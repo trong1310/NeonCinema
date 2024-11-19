@@ -42,7 +42,7 @@
             @foreach (var ticketPrice in ticketPrices)
             {
                 var startTime = showTimes.FirstOrDefault(st => st.ID == ticketPrice.ShowTimeID)?.StartTime;
-                var seatype = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatTypeID)?.SeatTypeName;
+                var seatype = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatID)?.SeatTypeName;
                 var screening = screenings.FirstOrDefault(st => st.ID == ticketPrice.ScreeningID)?.ShowDate;
                 <tr>
                     <td>@ticketPrice.Price.ToString("F3")</td>
@@ -87,7 +87,7 @@
                     </div>
                     <div class="form-group">
                         <label for="seatType">Loại Ghế:</label>
-                        <select class="form-control" @bind="newTicketPrice.SeatTypeID">
+                        <select class="form-control" @bind="newTicketPrice.SeatID">
                             @foreach (var seatType in seatTypes)
                             {
                                 <option value="@seatType.ID">@seatType.SeatTypeName</option>

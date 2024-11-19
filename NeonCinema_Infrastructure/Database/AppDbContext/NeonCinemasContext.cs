@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
 using Bogus.Hollywood.Models;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -66,9 +67,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-
-			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -118,128 +117,314 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			};
 			modelBuilder.Entity<Roles>().HasData(roleData);
 
-			var userData = new List<Users>
-			{
-				new Users
-				{
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Admin",
-					Email = "admin@gmail.com",
-					PassWord = Hash.Encrypt("admin"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0862774830",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("25/12/2004"),
-					Images = "images.jpg",
-					Gender = true,
-					RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d")
-				},
-				new Users
-				{
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Client",
-					Email = "client@gmail.com",
-					PassWord = Hash.Encrypt("client"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0334555555",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("25/12/2004"),
-					Images = "images.jpg",
-					Gender = true,
-					RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
-				},
-				new Users
-				{
-					ID = Guid.NewGuid(),
-					CreatedTime = DateTime.Now,
-					FullName = "Staff",
-					Email = "staff@gmail.com",
-					PassWord = Hash.Encrypt("staff"),
-					Status = EntityStatus.Active,
-					PhoneNumber = "0987126125",
-					Adderss = "Ba Vi",
-					DateOrBriht= DateTime.Parse("20/12/2004"),
-					Images = "images.jpg",
-					Gender = true,
-					RoleID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d")
-				}
-			};
-			modelBuilder.Entity<Users>().HasData(userData);
+            var userData = new List<Users>
+{
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Nguyễn Thị Mai",
+        Email = "mainguyen@gmail.com",
+        PassWord = Hash.Encrypt("mainguyen123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0901123456",
+        Adderss = "Hà Nội",
+        DateOrBriht = DateTime.Parse("01/01/1990"),
+        Images = "images/mai.jpg",
+        Gender = false,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Phạm Văn Nam",
+        Email = "nampham@gmail.com",
+        PassWord = Hash.Encrypt("nampham123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0902123457",
+        Adderss = "Hải Phòng",
+        DateOrBriht = DateTime.Parse("05/06/1992"),
+        Images = "images/nam.jpg",
+        Gender = true,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Lê Thị Thu",
+        Email = "thule@gmail.com",
+        PassWord = Hash.Encrypt("thule123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0903123458",
+        Adderss = "Đà Nẵng",
+        DateOrBriht = DateTime.Parse("12/12/1993"),
+        Images = "images/thu.jpg",
+        Gender = false,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Trần Văn Tùng",
+        Email = "tungtran@gmail.com",
+        PassWord = Hash.Encrypt("tungtran123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0904123459",
+        Adderss = "TP. Hồ Chí Minh",
+        DateOrBriht = DateTime.Parse("20/09/1988"),
+        Images = "images/tung.jpg",
+        Gender = true,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Vũ Thị Lan",
+        Email = "lanvu@gmail.com",
+        PassWord = Hash.Encrypt("lanvu123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0905123460",
+        Adderss = "Nghệ An",
+        DateOrBriht = DateTime.Parse("15/04/1995"),
+        Images = "images/lan.jpg",
+        Gender = false,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Đỗ Văn Hùng",
+        Email = "hungdo@gmail.com",
+        PassWord = Hash.Encrypt("hungdo123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0906123461",
+        Adderss = "Bắc Ninh",
+        DateOrBriht = DateTime.Parse("30/03/1990"),
+        Images = "images/hung.jpg",
+        Gender = true,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Nguyễn Văn Bình",
+        Email = "binhnguyen@gmail.com",
+        PassWord = Hash.Encrypt("binhnguyen123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0907123462",
+        Adderss = "Thái Bình",
+        DateOrBriht = DateTime.Parse("25/11/1985"),
+        Images = "images/binh.jpg",
+        Gender = true,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Trần Thị Hạnh",
+        Email = "hanhtran@gmail.com",
+        PassWord = Hash.Encrypt("hanhtran123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0908123463",
+        Adderss = "Hưng Yên",
+        DateOrBriht = DateTime.Parse("18/05/1994"),
+        Images = "images/hanh.jpg",
+        Gender = false,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Lê Văn Long",
+        Email = "longle@gmail.com",
+        PassWord = Hash.Encrypt("longle123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0909123464",
+        Adderss = "Nam Định",
+        DateOrBriht = DateTime.Parse("10/07/1986"),
+        Images = "images/long.jpg",
+        Gender = true,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    },
+    new Users
+    {
+        ID = Guid.NewGuid(),
+        CreatedTime = DateTime.Now,
+        FullName = "Phạm Thị Ngọc",
+        Email = "ngocpham@gmail.com",
+        PassWord = Hash.Encrypt("ngocpham123"),
+        Status = EntityStatus.Active,
+        PhoneNumber = "0910123465",
+        Adderss = "Quảng Ninh",
+        DateOrBriht = DateTime.Parse("22/10/1997"),
+        Images = "images/ngoc.jpg",
+        Gender = false,
+        RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+    }
+};
 
-			var languageData = new List<Language>
+            modelBuilder.Entity<Users>().HasData(userData);
+
+            var languageData = new List<Language>
 			{
 				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "en" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "vi" },
-				new Language { ID = Guid.NewGuid(), LanguageName = "ja" }
+				new Language { ID = Guid.NewGuid(), LanguageName = "ja" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "ThaiLans" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "USA" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "Korea" }
 			};
 			modelBuilder.Entity<Language>().HasData(languageData);
 
-			var directorData = new List<Director>
-			{
-				new Director
-				{
-					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					FullName = "Nguyễn Văn A",
-					Address = "Hà Nội",
-					Biography = "Có",
-					Gender = "Nam",
-					Nationality = "Ha Noi",
-					Status = EntityStatus.Active
-				},
-				new Director
-				{
-					ID = Guid.NewGuid(),
-					FullName = "Nguyễn Văn D",
-					Address = "Hà Nội",
-					Biography = "Có",
-					Gender = "Nam",
-					Nationality = "Ha Noi",
-					Status = EntityStatus.Active
-				},
-				new Director
-				{
-					ID = Guid.NewGuid(),
-					FullName = "Nguyễn Văn B",
-					Address = "Hà Nội",
-					Biography = "Có",
-					Gender = "Nam",
-					Nationality = "Ha Noi",
-					Status = EntityStatus.Locked
-				},
-				new Director
-				{
-					ID = Guid.NewGuid(),
-					FullName = "Nguyễn Văn C",
-					Address = "Hà Nội",
-					Biography = "Có",
-					Gender = "Nam",
-					Nationality = "Ha Noi",
-					Status = EntityStatus.Locked
-				}
-			};
-			modelBuilder.Entity<Director>().HasData(directorData);
+            var directorData = new List<Director>
+{
+    new Director
+    {
+        ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
+        FullName = "Trấn Thành",
+        Address = "TP Hồ Chí Minh",
+        Biography = "Nghệ sĩ đa tài, nổi tiếng với các vai trò MC, diễn viên và đạo diễn. Được biết đến qua các bộ phim hài và điện ảnh như 'Bố Già'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Lý Hải",
+        Address = "TP Hồ Chí Minh",
+        Biography = "Ca sĩ, đạo diễn nổi tiếng với loạt phim hành động 'Lật Mặt' thu hút hàng triệu khán giả.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Victor Vũ",
+        Address = "Hà Nội",
+        Biography = "Đạo diễn nổi tiếng với các bộ phim kinh dị và ly kỳ như 'Thiên Mệnh Anh Hùng', 'Mắt Biếc'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Charlie Nguyễn",
+        Address = "TP Hồ Chí Minh",
+        Biography = "Đạo diễn kiêm nhà sản xuất phim nổi tiếng với các bộ phim hài hành động như 'Để Mai Tính', 'Tèo Em'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Ngô Thanh Vân",
+        Address = "Hồ Chí Minh",
+        Biography = "Diễn viên, nhà sản xuất và đạo diễn nổi tiếng với các bộ phim hành động như 'Hai Phượng'.",
+        Gender = "Nữ",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Đỗ Đức Thịnh",
+        Address = "Hà Nội",
+        Biography = "Đạo diễn và diễn viên nổi tiếng với các bộ phim hài và tình cảm như 'Siêu Sao Siêu Ngố'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Phan Gia Nhật Linh",
+        Address = "Hồ Chí Minh",
+        Biography = "Đạo diễn nổi tiếng với các bộ phim như 'Em Là Bà Nội Của Anh'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Vũ Ngọc Đãng",
+        Address = "Hà Nội",
+        Biography = "Đạo diễn nổi tiếng với các bộ phim lãng mạn và hài như 'Bỗng Dưng Muốn Khóc'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Nguyễn Quang Dũng",
+        Address = "Hồ Chí Minh",
+        Biography = "Đạo diễn nổi tiếng với các bộ phim hài hước và tình cảm như 'Nụ Hôn Thần Chết'.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    },
+    new Director
+    {
+        ID = Guid.NewGuid(),
+        FullName = "Huỳnh Đông",
+        Address = "Cần Thơ",
+        Biography = "Đạo diễn kiêm diễn viên nổi tiếng với các bộ phim hành động và lịch sử.",
+        Gender = "Nam",
+        Nationality = "Việt Nam",
+        Status = EntityStatus.Active
+    }
+};
 
-			var genreData = new List<Genre>
-			{
-				new Genre { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), GenreName = "Kịch tính" },
-				new Genre { ID = Guid.NewGuid(), GenreName = "Tình cảm" },
-				new Genre { ID = Guid.NewGuid(), GenreName = "2D" },
-				new Genre { ID = Guid.NewGuid(), GenreName = "Hoạt hình" }
-			};
-			modelBuilder.Entity<Genre>().HasData(genreData);
+            modelBuilder.Entity<Director>().HasData(directorData);
 
-			var countryData = new List<Countrys>
-			{
-				new Countrys { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), CountryName = "Nhật Bản" },
-				new Countrys { ID = Guid.NewGuid(), CountryName = "Vương Quốc Anh" },
-				new Countrys { ID = Guid.NewGuid(), CountryName = "Trung Quốc" },
-				new Countrys { ID = Guid.NewGuid(), CountryName = "Việt Nam" }
-			};
-			modelBuilder.Entity<Countrys>().HasData(countryData);
 
-			var seatTypeData = new List<SeatType>
+            // Dữ liệu thể loại phim (Genre)
+            var genreData = new List<Genre>
+{
+    new Genre { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), GenreName = "Kịch tính" },
+    new Genre { ID = Guid.NewGuid(), GenreName = "Tình cảm" },
+    new Genre { ID = Guid.NewGuid(), GenreName = "Hành động" }, // Thêm thể loại Hành động
+    new Genre { ID = Guid.NewGuid(), GenreName = "Kinh dị" }, // Thêm thể loại Kinh dị
+    new Genre { ID = Guid.NewGuid(), GenreName = "Hoạt hình" },
+    new Genre { ID = Guid.NewGuid(), GenreName = "Phiêu lưu" }, // Thêm thể loại Phiêu lưu
+    new Genre { ID = Guid.NewGuid(), GenreName = "Hài hước" }, // Thêm thể loại Hài hước
+    new Genre { ID = Guid.NewGuid(), GenreName = "Lãng mạn" }, // Thêm thể loại Lãng mạn
+    new Genre { ID = Guid.NewGuid(), GenreName = "Tâm lý" }, // Thêm thể loại Tâm lý
+    new Genre { ID = Guid.NewGuid(), GenreName = "Khoa học viễn tưởng" } // Thêm thể loại Khoa học viễn tưởng
+};
+            modelBuilder.Entity<Genre>().HasData(genreData);
+
+            // Dữ liệu quốc gia (Countrys)
+            var countryData = new List<Countrys>
+{
+    new Countrys { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), CountryName = "Nhật Bản" },
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Vương Quốc Anh" },
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Trung Quốc" },
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Việt Nam" },
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Mỹ" }, // Thêm quốc gia Mỹ
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Hàn Quốc" }, // Thêm quốc gia Hàn Quốc
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Pháp" }, // Thêm quốc gia Pháp
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Hồng Kông" }, // Thêm quốc gia Hồng Kông
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Ấn Độ" }, // Thêm quốc gia Ấn Độ
+    new Countrys { ID = Guid.NewGuid(), CountryName = "Úc" } // Thêm quốc gia Úc
+};
+            modelBuilder.Entity<Countrys>().HasData(countryData);
+
+
+            var seatTypeData = new List<SeatType>
 			{
 				new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
 				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
@@ -296,60 +481,125 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				}
 			};
 			modelBuilder.Entity<Room>(b => { b.HasData(roomData); });
-			var SeatData = new List<Seat>
-			{
-				new Seat
-				{
-					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					Column = "A",
-					Row = "1",
-					SeatNumber = "A1",
-					Status = seatEnum.Selected,
-					SeatTypeID = seatTypeData[0].ID,
-					RoomID = roomData[0].ID,
-				},
-				new Seat
-				{
-					ID = Guid.NewGuid(),
-					SeatNumber = "B1",
-					Column = "B",
-					Row = "1",
-					Status = seatEnum.Selected,
-					SeatTypeID = seatTypeData[0].ID,
-					RoomID = roomData[0].ID,
-				},
-				new Seat
-				{
-					ID = Guid.NewGuid(),
-					SeatNumber = "C1",
-					Column = "C",
-					Row = "1",
-					Status = seatEnum.Selected,
-					SeatTypeID = seatTypeData[0].ID,
-					RoomID = roomData[0].ID,
-				}
-			};
-			modelBuilder.Entity<Seat>(b => { b.HasData(SeatData); });
-			var showTimeData = new List<ShowTime>
-			{
-				new ShowTime
-				{
-					ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
-					StartTime = new TimeSpan(14, 0, 0), // 14:00
+			// Dữ liệu ghế cho 2 phòng
+var seatData = new List<Seat>();
 
-					EndTime = new TimeSpan(16, 30, 0), // 16:30
-					Status = EntityStatus.Active,
+// Tạo ghế cho Room 1 (10 hàng x 10 cột = 100 ghế)
+for (int row = 1; row <= 10; row++) // 10 hàng
+{
+    for (char col = 'A'; col <= 'J'; col++) // 10 cột (A đến J)
+    {
+        seatData.Add(new Seat
+        {
+            ID = Guid.NewGuid(),
+            Column = col.ToString(),
+            Row = row.ToString(),
+            SeatNumber = $"{col}{row}",
+            Status = seatEnum.Selected,  // Bạn có thể thay đổi trạng thái ghế
+            SeatTypeID = seatTypeData[0].ID,  // Loại ghế "Ghế thường"
+            RoomID = roomData[0].ID  // Phòng 1
+        });
+    }
+}
 
-                },
-                new ShowTime
-                {
-                    ID = Guid.NewGuid(),
-                    StartTime = new TimeSpan(18, 0, 0), // 18:00
-					EndTime = new TimeSpan(20, 30, 0), // 20:30
-					Status = EntityStatus.Active
-                }
-            };
+// Tạo ghế cho Room 2 (15 hàng x 10 cột = 150 ghế)
+for (int row = 1; row <= 15; row++) // 15 hàng
+{
+    for (char col = 'A'; col <= 'J'; col++) // 10 cột (A đến J)
+    {
+        seatData.Add(new Seat
+        {
+            ID = Guid.NewGuid(),
+            Column = col.ToString(),
+            Row = row.ToString(),
+            SeatNumber = $"{col}{row}",
+            Status = seatEnum.Selected,  // Bạn có thể thay đổi trạng thái ghế
+            SeatTypeID = seatTypeData[0].ID,  // Loại ghế "Ghế thường"
+            RoomID = roomData[1].ID  // Phòng 2
+        });
+    }
+}
+
+// Chèn dữ liệu vào database
+modelBuilder.Entity<Seat>(b => { b.HasData(seatData); });
+
+            var showTimeData = new List<ShowTime>
+{
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(8, 0, 0),   // 08:00 AM
+		EndTime = new TimeSpan(10, 0, 0),    // 10:00 AM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(10, 15, 0), // 10:15 AM
+		EndTime = new TimeSpan(12, 15, 0),   // 12:15 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(12, 30, 0), // 12:30 PM
+		EndTime = new TimeSpan(14, 30, 0),   // 02:30 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(14, 45, 0), // 02:45 PM
+		EndTime = new TimeSpan(16, 45, 0),   // 04:45 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(17, 0, 0),  // 05:00 PM
+		EndTime = new TimeSpan(19, 0, 0),    // 07:00 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(19, 15, 0), // 07:15 PM
+		EndTime = new TimeSpan(21, 15, 0),   // 09:15 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(21, 30, 0), // 09:30 PM
+		EndTime = new TimeSpan(23, 30, 0),   // 11:30 PM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(23, 45, 0), // 11:45 PM
+		EndTime = new TimeSpan(1, 45, 0),    // 01:45 AM (ngày hôm sau)
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(2, 0, 0),   // 02:00 AM
+		EndTime = new TimeSpan(4, 0, 0),     // 04:00 AM
+		Status = EntityStatus.Active
+    },
+    new ShowTime
+    {
+        ID = Guid.NewGuid(),
+        StartTime = new TimeSpan(4, 30, 0),  // 04:30 AM
+		EndTime = new TimeSpan(6, 30, 0),    // 06:30 AM
+		Status = EntityStatus.Active
+    }
+};
+
+            // Thêm dữ liệu vào model
             modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+
             var actorData = new List<Actor>
             {
                 new Actor
@@ -360,58 +610,193 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
                 }
             };
             var movieData = new List<Movies>
-            {
-                new Movies
-                {
-                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-                    Name = "Movie A",
-                    Duration = 120, // in minutes
-					Description = "An exciting action movie.",
-                    StarTime = DateTime.Parse("2024-10-22"),
-                    Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
-                    Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
-                    AgeAllowed = 18,
-                    Status = MovieStatus.Active,
-                    GenreID = genreData[0].ID,
-                    LenguageID = languageData[0].ID,
-                    CountryID = countryData[0].ID,
-                    DirectorID = directorData[0].ID,
-                    CreatedTime = DateTime.Now
-                },
-                new Movies
-                {
-                    ID = Guid.NewGuid(),
-                    Name = "Movie B",
-                    Duration = 150,
-                    Description = "A thrilling mystery.",
-                    StarTime = DateTime.Parse("2024-11-15"),
-                    Trailer = "https://www.youtube.com/watch?v=IkaP0KJWTsQ",
-                    Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
-                    AgeAllowed = 16,
-                    Status = MovieStatus.Comingsoon,
-                    GenreID = genreData[0].ID,
-                    LenguageID = languageData[0].ID,
-                    CountryID = countryData[0].ID,
-                    DirectorID = directorData[0].ID,
-                    CreatedTime = DateTime.Now
-                }
-            };
+{
+    // 5 phim đang chiếu
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Bố Già 2",
+        Duration = 130,
+        Description = "Hành trình cảm động về tình cha con giữa Sài Gòn.",
+        StarTime = DateTime.Parse("2024-08-15"),
+        Trailer = "https://www.youtube.com/watch?v=bogia2-trailer",
+        Images = "bogia2.png",
+        AgeAllowed = 16,
+        Status = MovieStatus.Active,
+        GenreID = genreData[0].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[0].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Chị Mười Ba: Cuộc Chiến Nhân Tình",
+        Duration = 120,
+        Description = "Những mâu thuẫn căng thẳng giữa các băng nhóm trong thế giới ngầm.",
+        StarTime = DateTime.Parse("2024-09-10"),
+        Trailer = "https://www.youtube.com/watch?v=chimuoiba-trailer",
+        Images = "chimuoiba.png",
+        AgeAllowed = 18,
+        Status = MovieStatus.Active,
+        GenreID = genreData[1].ID,
+        LenguageID = languageData[1].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[1].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Nhà Bà Nữ",
+        Duration = 110,
+        Description = "Cuộc sống đầy biến động của một gia đình truyền thống Việt.",
+        StarTime = DateTime.Parse("2024-07-25"),
+        Trailer = "https://www.youtube.com/watch?v=nhabanu-trailer",
+        Images = "nhabanu.png",
+        AgeAllowed = 13,
+        Status = MovieStatus.Active,
+        GenreID = genreData[2].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[2].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Gái Già Lắm Chiêu 6",
+        Duration = 140,
+        Description = "Cuộc sống sang chảnh và những bí mật động trời của giới thượng lưu.",
+        StarTime = DateTime.Parse("2024-06-20"),
+        Trailer = "https://www.youtube.com/watch?v=gaigialamchieu-trailer",
+        Images = "gaigialamchieu.png",
+        AgeAllowed = 15,
+        Status = MovieStatus.Active,
+        GenreID = genreData[3].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[3].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Tiệc Trăng Máu 2",
+        Duration = 125,
+        Description = "Bữa tiệc đầy những bí mật được phơi bày qua trò chơi mạo hiểm.",
+        StarTime = DateTime.Parse("2024-09-01"),
+        Trailer = "https://www.youtube.com/watch?v=tiectrangmau-trailer",
+        Images = "tiectrangmau.png",
+        AgeAllowed = 18,
+        Status = MovieStatus.Active,
+        GenreID = genreData[4].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[4].ID,
+        CreatedTime = DateTime.Now
+    },
+
+    // 5 phim sắp chiếu
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Rừng Thế Mạng 2",
+        Duration = 115,
+        Description = "Hành trình sinh tồn đầy kịch tính trong khu rừng bí ẩn.",
+        StarTime = DateTime.Parse("2024-12-15"),
+        Trailer = "https://www.youtube.com/watch?v=rungthemanh-trailer",
+        Images = "rungthemanh.png",
+        AgeAllowed = 16,
+        Status = MovieStatus.Comingsoon,
+        GenreID = genreData[0].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[0].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Em Và Trịnh 2",
+        Duration = 150,
+        Description = "Câu chuyện tình yêu đầy lãng mạn và cảm động của Trịnh Công Sơn.",
+        StarTime = DateTime.Parse("2024-11-30"),
+        Trailer = "https://www.youtube.com/watch?v=emvatrinh-trailer",
+        Images = "emvatrinh.png",
+        AgeAllowed = 13,
+        Status = MovieStatus.Comingsoon,
+        GenreID = genreData[1].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[1].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Mắt Biếc 2",
+        Duration = 130,
+        Description = "Tiếp tục câu chuyện tình yêu day dứt giữa Ngạn và Hà Lan.",
+        StarTime = DateTime.Parse("2024-12-01"),
+        Trailer = "https://www.youtube.com/watch?v=matbiec-trailer",
+        Images = "matbiec.png",
+        AgeAllowed = 12,
+        Status = MovieStatus.Comingsoon,
+        GenreID = genreData[2].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[2].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Người Nhện Việt Nam",
+        Duration = 145,
+        Description = "Phiên bản Việt của Người Nhện với những pha hành động gay cấn.",
+        StarTime = DateTime.Parse("2024-12-20"),
+        Trailer = "https://www.youtube.com/watch?v=nguoinhenvietnam-trailer",
+        Images = "nguoinhenvietnam.png",
+        AgeAllowed = 15,
+        Status = MovieStatus.Comingsoon,
+        GenreID = genreData[3].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[3].ID,
+        CreatedTime = DateTime.Now
+    },
+    new Movies
+    {
+        ID = Guid.NewGuid(),
+        Name = "Sài Gòn Trong Cơn Mưa 2",
+        Duration = 100,
+        Description = "Những câu chuyện tình yêu lãng mạn tại Sài Gòn mưa rơi.",
+        StarTime = DateTime.Parse("2024-11-25"),
+        Trailer = "https://www.youtube.com/watch?v=saigonmuaroi-trailer",
+        Images = "saigontrongmuaroi.png",
+        AgeAllowed = 13,
+        Status = MovieStatus.Comingsoon,
+        GenreID = genreData[4].ID,
+        LenguageID = languageData[0].ID,
+        CountryID = countryData[0].ID,
+        DirectorID = directorData[4].ID,
+        CreatedTime = DateTime.Now
+    }
+};
+
+            // Thêm dữ liệu vào model
             modelBuilder.Entity<Movies>(b => { b.HasData(movieData); });
-            var showreales = new List<Show_release>
-            {
-                new Show_release
-                {
-                    ID = Guid.Parse("127d38f8-f339-40a6-9626-0dbd122d7f5f"),
-                    MovieID =movieData[0].ID,
-                    RoomID = roomData[0].ID,
-                    Status = EntityStatus.Active,
-                    TimeRelease = DateTime.Now.AddHours(2),
-                    DateRelease = DateTime.Now.AddDays(1),
 
-                },
+            // 19. Show_release
+            var showReleaseData = new List<Show_release>
+    {
+        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[0].ID, RoomID = roomData[0].ID, Status = EntityStatus.Active , TimeRelease = DateTime.Now.AddMinutes(1),DateRelease =DateTime.Now.AddDays(1) },
+        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[1].ID, RoomID = roomData[1].ID, Status = EntityStatus.Active, TimeRelease = DateTime.Now.AddMinutes(2),DateRelease =DateTime.Now.AddDays(2) }
+    };
+            modelBuilder.Entity<Show_release>().HasData(showReleaseData);
 
-            };
-            modelBuilder.Entity<Show_release>(b => { b.HasData(showreales); });
 
             var screeningData = new List<Screening>
             {
@@ -424,18 +809,18 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					MovieID = movieData[0].ID,
                     RoomID = roomData[0].ID,
                     CreatedTime = DateTime.Now,
-                    Show_ReleaseID = showreales[0].ID,
+                    Show_ReleaseID = showReleaseData[0].ID,
                 },
                 new Screening
                 {
                     ID = Guid.NewGuid(),
                     Status = EntityStatus.Active,
                     ShowTimeID = showTimeData[0].ID,
-                    ShowDate = DateTime.Now.AddDays(2), // Two days from now
+                    ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
                     RoomID = roomData[0].ID,
                     CreatedTime = DateTime.Now,
-                    Show_ReleaseID = showreales[0].ID,
+                    Show_ReleaseID = showReleaseData[0].ID,
                 }
             };
             modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
@@ -447,27 +832,20 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             modelBuilder.Entity<PaymentMethod>().HasData(paymentMethodData);
 
 
-            // 19. Show_release
-            var showReleaseData = new List<Show_release>
-    {
-        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[0].ID, RoomID = roomData[0].ID, Status = EntityStatus.Active , TimeRelease = DateTime.Now.AddMinutes(1),DateRelease =DateTime.Now.AddDays(1) },
-        new Show_release { ID = Guid.NewGuid(), MovieID = movieData[1].ID, RoomID = roomData[1].ID, Status = EntityStatus.Active, TimeRelease = DateTime.Now.AddMinutes(2),DateRelease =DateTime.Now.AddDays(2) }
-    };
-            modelBuilder.Entity<Show_release>().HasData(showReleaseData);
-
+           
 
             // 23. TicketSeat
             var ticketPriceData = new List<TicketPrice>
     {
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData[0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData[1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatID = seatData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatID = seatData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
     };
             modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
             // 22. Ticket
             var ticketData = new List<Ticket>
             {
-                new Ticket { ID = Guid.NewGuid(), RoomID = roomData[0].ID, ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = SeatData[0].ID, Price = 100000 , Status = ticketEnum.paid, TicketPriceID = ticketPriceData[0].ID},
-        new Ticket { ID = Guid.NewGuid(), RoomID = roomData[1].ID, ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = SeatData[1].ID, Price = 2100000 , Status = ticketEnum.paid , TicketPriceID = ticketPriceData[1].ID}
+                new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = seatData [0].ID, Price = 100000 , Status = ticketEnum.paid},
+        new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = seatData [1].ID, Price = 2100000 , Status = ticketEnum.paid }
     };
             modelBuilder.Entity<Ticket>().HasData(ticketData);
             var foodComboData = new List<FoodCombo>
@@ -487,25 +865,100 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
     };
             modelBuilder.Entity<Checkin>().HasData(checkinData);
             var billData = new List<Bill>
+{
+    new Bill
     {
-        new Bill
-        {
-            ID = Guid.NewGuid(),
-            UserID = userData[0].ID,
-            TotalPrice = 500000,
-            BillCode = "BILL001",
-            Status = ticketEnum.paid,
-        },
-        new Bill
-        {
-            ID = Guid.NewGuid(),
-            UserID = userData[1].ID,
-            TotalPrice = 300000,
-            BillCode = "BILL002",
-            Status = ticketEnum.paid,
-        }
-    };
+        ID = Guid.NewGuid(),
+        UserID = userData[0].ID,
+        TotalPrice = 500000,
+        BillCode = "BILL001",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[1].ID,
+        TotalPrice = 300000,
+        BillCode = "BILL002",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[2].ID,
+        TotalPrice = 150000,
+        BillCode = "BILL003",
+        Status = ticketEnum.cancel,
+        CreatedTime = DateTime.Now.AddMinutes(-30)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[3].ID,
+        TotalPrice = 200000,
+        BillCode = "BILL004",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now.AddMinutes(-45)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[4].ID,
+        TotalPrice = 250000,
+        BillCode = "BILL005",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now.AddMinutes(-60)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[5].ID,
+        TotalPrice = 600000,
+        BillCode = "BILL006",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now.AddMinutes(-90)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[6].ID,
+        TotalPrice = 800000,
+        BillCode = "BILL007",
+        Status = ticketEnum.waiting_for_payment,
+        CreatedTime = DateTime.Now.AddMinutes(-120)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[7].ID,
+        TotalPrice = 450000,
+        BillCode = "BILL008",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now.AddMinutes(-150)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[8].ID,
+        TotalPrice = 350000,
+        BillCode = "BILL009",
+        Status = ticketEnum.checkin,
+        CreatedTime = DateTime.Now.AddMinutes(-180)
+    },
+    new Bill
+    {
+        ID = Guid.NewGuid(),
+        UserID = userData[9].ID,
+        TotalPrice = 700000,
+        BillCode = "BILL010",
+        Status = ticketEnum.paid,
+        CreatedTime = DateTime.Now.AddMinutes(-200)
+    }
+};
             modelBuilder.Entity<Bill>().HasData(billData);
+
             var billCombo = new List<BillCombo>
             {
                 new BillCombo

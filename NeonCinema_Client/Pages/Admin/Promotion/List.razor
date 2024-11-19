@@ -1,9 +1,11 @@
 ﻿@page "/list-promotion-admin"
+@using Microsoft.AspNetCore.SignalR.Client
 @using NeonCinema_Application.DataTransferObject.Promotions
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Promotion
 @using NeonCinema_Client.DataTransferObject.Users
 @using NeonCinema_Domain.Database.Entities
+@using NeonCinema_Domain.Enum
 @using NeonCinema_Infrastructure.Extention.Utili
 @using System.Transactions
 
@@ -26,20 +28,32 @@
 				</div>
 				<div class="form-check">
 					<div class="row mt-3">
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
-								   value="option1" checked>
-							<label class="form-check-label" for="exampleRadio1">
-								Lựa chọn 1
-							</label>
-						</div>
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
-								   value="option2">
-							<label class="form-check-label" for="exampleRadio2">
-								Lựa chọn 2
-							</label>
-						</div>
+						<InputRadioGroup @bind-Value="selectedStatus">
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="null" checked />
+								<label class="form-check-label" for="exampleRadio4">
+									Tất cả
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.InActive">
+								<label class="form-check-label" for="exampleRadio1">
+									Không hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Active">
+								<label class="form-check-label" for="exampleRadio2">
+									Hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Expired">
+								<label class="form-check-label" for="exampleRadio3">
+									Hết hạn
+								</label>
+							</div>
+						</InputRadioGroup>
 					</div>
 				</div>
 			</div>
@@ -101,23 +115,23 @@
 															<InputText @bind-Value="input.Description" class="form-control" />
 														</div>
 
-														@if(discountAmount == true)
+														@if (discountAmount == true)
 														{
 															<div class="mb-3">
 																<label for="" class="form-label">Số tiền giảm</label>
-																<InputNumber @bind-Value="input.DiscountAmount" class="form-control"/>
+																<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
 																<ValidationMessage For="@(() => input.DiscountAmount)" />
 															</div>
 														}
-														else if(discountPercentage == true)
+														else if (discountPercentage == true)
 														{
 															<div class="mb-3">
 																<label for="" class="form-label">Phần trăm giảm giá</label>
-																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control"/>
+																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" />
 																<ValidationMessage For="@(() => input.DiscountPercentage)" />
 															</div>
 														}
-														
+
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
 															<input type="datetime-local" @bind="input.StartDate" class="form-control" />
@@ -136,7 +150,7 @@
 																<InputRadio Value="false" class="form-check-input"></InputRadio>
 															</InputRadioGroup>
 														</div>
-														<button type="submit" class="btn btn-primary">Thêm</button>
+														<button type="submit" class="btn btn-primary">Thêm khuyến mại</button>
 													</ChildContent>
 												</EditForm>
 											</div>
@@ -498,7 +512,7 @@
 							{
 								<td>@item.value.DiscountPercentage%</td>
 							}
-							@if(item.value.DiscountAmount == 0)
+							@if (item.value.DiscountAmount == 0)
 							{
 								<td>X</td>
 							}
@@ -509,7 +523,7 @@
 							<td>@item.value.StartDate.ToShortDateString()</td>
 							<td>@item.value.EndDate.ToShortDateString()</td>
 							<td>@item.value.Description</td>
-							<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
+							<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
 							<td>
 								<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
@@ -551,7 +565,9 @@
 @code {
 
 	int stt = 1;
+	//
 	private string inputSearchUser = ""; //tim kiem theo ten user
+	private PromotionStatus? selectedStatus = null; // Mặc định trạng thái "Tất cả"
 	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
@@ -604,6 +620,18 @@
 	private int isModalVisible = 0;
 	private int isModalVisibleConfirm = 0;
 
+	//Màu trạng thái
+	private string GetStatusClass(PromotionStatus status)
+	{
+		return status switch
+		{
+			PromotionStatus.Active => "bg-success",    // Màu xanh khi trạng thái là "Active"
+			PromotionStatus.InActive => "bg-warning",  // Màu vàng khi trạng thái là "InActive"
+			PromotionStatus.Expired => "bg-danger",    // Màu đỏ khi trạng thái là "Expired"
+		};
+	}
+	private HubConnection? hubConnection;
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -611,6 +639,38 @@
 		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
 
+		await ConnectToSignalRHub();
+	}
+
+	private async Task ConnectToSignalRHub()
+	{
+		// Tạo kết nối với SignalR Hub
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(_nav.ToAbsoluteUri("/promohub"))
+			.Build();
+
+		// Đăng ký sự kiện nhận thông báo
+		hubConnection.On<string>("ReceivePromotionUpdate", async (message) =>
+		{
+			// Cập nhật trạng thái khi nhận được thông báo
+			await InvokeAsync(async () =>
+			{
+				// Tải lại danh sách mã khuyến mại hoặc cập nhật trực tiếp
+				await LoadPromotion();
+				StateHasChanged(); // Cập nhật lại UI
+			});
+		});
+
+		// Bắt đầu kết nối SignalR
+		await hubConnection.StartAsync();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}
 	}
 
 	//Get All promotion
@@ -741,7 +801,7 @@
 						_lstMail.Add(mailitem);
 					}
 
-					if(lstPU.Count == 0)
+					if (lstPU.Count == 0)
 					{
 						messageString = "Thêm thất bại";
 						return;
@@ -780,7 +840,7 @@
 				isModalVisibleConfirm = 2;
 			}
 
-		}	
+		}
 	}
 
 	//back
@@ -804,7 +864,7 @@
 		}
 		else
 		{
-			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo				
+			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo
 		}
 
 		isModalVisibleConfirm = 2;
