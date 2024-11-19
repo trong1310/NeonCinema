@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.Hollywood;
 using Bogus.Hollywood.Models;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -66,9 +67,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-
-			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
