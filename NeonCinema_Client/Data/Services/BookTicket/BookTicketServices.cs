@@ -49,7 +49,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			try
 			{
-				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/ScreeningByflims?moviesID={MovieId}");
+				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/screening/{MovieId}");
 				return results;
 			}
 			catch (Exception ex)
@@ -73,7 +73,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			try
 			{
-				var results = _httpClient.PostAsJsonAsync($"https://localhost:7211/api/BookTicket/Bookticket",request,cancellationToken);
+				var results = _httpClient.PostAsJsonAsync($"https://localhost:7211/api/BookTicket/book-ticket",request,cancellationToken);
 				return results;
 			}
 			catch (Exception ex)

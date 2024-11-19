@@ -59,7 +59,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					};
 				}).ToList();
 				await	_context.Tickets.AddRangeAsync(tickets);
-				await _context.SaveChangesAsync();
+				 await _context.SaveChangesAsync();
 				Bill bill = new Bill();
 				bill.ID = Guid.NewGuid();
 				bill.BillCode = Uliti.GenerateBillCode();
