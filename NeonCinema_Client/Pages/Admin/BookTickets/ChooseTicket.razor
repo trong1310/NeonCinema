@@ -451,6 +451,7 @@
 
 
 	#endregion
+<<<<<<< HEAD
 	CreateBookTicketRequest request = new CreateBookTicketRequest();
 	NeonCinemasContext _context = new NeonCinemasContext();
 	private string paymentStatus = string.Empty; // Trạng thái thanh toán
@@ -523,6 +524,38 @@
 		paymentStatus = string.Empty;
 		StateHasChanged();
 
+=======
+	//	UserDTO account = new UserDTO();
+
+
+	// CreateBookTicketRequest request = new CreateBookTicketRequest();
+	// NeonCinemasContext _context = new NeonCinemasContext();
+	// private async void ProcessPayment()
+	// {
+	// 	foreach(var item2 in selectedCombos )
+	// 	{
+	// 		request.FoodComboId = item2.Key.ID;
+	// 	}
+	// 	foreach (var item1 in seats)
+	// 	{
+	// 		request.SeatID = item1.ID;
+	// 	}
+	// 	var room = _context.Room.Where(x => x.Name == screenings.RoomName).FirstOrDefault();
+	// 	var acc = _context.Users.Where(x => x.PhoneNumber == phoneNumber).FirstOrDefault();
+	// 	request = new CreateBookTicketRequest()
+	// 	{
+	// 		CustomerID = acc!=null? acc.ID: null,
+	// 		ScreningID = screenings.Id,
+	// 		 RoomID = room.ID,
+	// 	};
+	// 	var bookTicket = await _services.BookTicket(request,CancellationToken.None);
+	// 	if(bookTicket.IsSuccessStatusCode){
+	// 		Console.WriteLine("thanh cong");
+	// 	}
+	// 	else{
+	// 		Console.WriteLine("that bai");
+	// 	}
+>>>>>>> 636166f67d6e346c78d476990dd1d44e79585843
 	}
 }
 <style>

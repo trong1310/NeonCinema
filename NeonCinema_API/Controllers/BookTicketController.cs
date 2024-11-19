@@ -7,6 +7,7 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Implement.BookTickets;
+using System.Net;
 
 namespace NeonCinema_API.Controllers
 {
@@ -14,52 +15,70 @@ namespace NeonCinema_API.Controllers
     [ApiController]
     public class BookTicketController : ControllerBase
     {
-        private readonly BookTicketResp _reps;
+        private readonly BookTicketResp _bookTicketResp;
         private readonly IMapper _mapper;
-        public BookTicketController(BookTicketResp reps,IMapper map)
+        public BookTicketController(BookTicketResp bookTicketResp, IMapper map)
         {
-           _reps = reps;
+            _bookTicketResp = bookTicketResp;
             _mapper = map;
         }
-        [HttpPost("Bookticket")]
-        public async Task<IActionResult> BookTicket([FromBody]CreateBookTicketRequest request, CancellationToken cancellationToken)
+        // Đặt vé cho khách hàng
+        [HttpPost("book-ticket")]
+        public async Task<IActionResult> BookTicket([FromBody] CreateBookTicketRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var respone = await _reps.BookTicketCounter(request, cancellationToken);
-                return Ok(respone);
+                var response = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return Ok(response.Content);
+                }
+
+                return BadRequest("Đặt vé không thành công");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
             }
         }
-        [HttpGet("ScreeningByflims")]
-		public async Task<IActionResult> ScreeningByFilms([FromQuery] Guid moviesID, CancellationToken cancellationToken)
-		{
-			try
-			{
-                var respone = await _reps.GetScreeningMovies(moviesID);
-				return Ok(respone);
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
-		[HttpGet("AccountByPhone")]
-		public async Task<IActionResult> AccountByPhone([FromQuery] string phone, CancellationToken cancellationToken)
-		{
-			try
-			{
-				var respone = await _reps.GetAccountByPhone(phone,cancellationToken);
-				return Ok(respone);
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
 
-	}
+        // Lấy thông tin lịch chiếu cho phim
+        [HttpGet("screening/{movieId}")]
+        public async Task<IActionResult> GetScreeningMovies(Guid movieId)
+        {
+            try
+            {
+                var screeningMovies = await _bookTicketResp.GetScreeningMovies(movieId);
+                if (screeningMovies == null)
+                {
+                    return NotFound("Không tìm thấy lịch chiếu cho phim này");
+                }
+                return Ok(screeningMovies);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
+
+        // Lấy thông tin tài khoản người dùng theo số điện thoại
+        [HttpGet("account/{phone}")]
+        public async Task<IActionResult> GetAccountByPhone(string phone, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _bookTicketResp.GetAccountByPhone(phone, cancellationToken);
+                if (user == null)
+                {
+                    return NotFound("Không tìm thấy tài khoản với số điện thoại này");
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
+
+    }
 }

@@ -25,7 +25,7 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
         {
             try
             {
-                entity.Status = PromotionStatus.Applied;
+                entity.Status = PromotionStatus.InActive;
                 _context.Promotions.Add(entity);
                 await _context.SaveChangesAsync();
 
