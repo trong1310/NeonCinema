@@ -7,10 +7,21 @@
 @using NeonCinema_Application.DataTransferObject.Genre
 @using NeonCinema_Application.DataTransferObject.Language
 @using NeonCinema_Application.DataTransferObject.Movie
-@using NeonCinema_Client.Data.IServices.IMoviesServices
-@using NeonCinema_Client.Data.Services.BookTicket
 @using NeonCinema_Infrastructure.Database.AppDbContext
 @using System.Collections.Generic
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
+@using NeonCinema_Domain.Database.Entities
+@using NeonCinema_Infrastructure.Database.AppDbContext
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
@@ -74,8 +85,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat) ms-2"
-							id="@seat.ID"
-							@onclick="() => SelectSeat(seat)">
+								 id="@seat.ID"
+								 @onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -185,7 +196,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
-								<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
+								@* <button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button> *@
 							</div>
 						</div>
 					</div>
@@ -360,7 +371,7 @@
 						return;
 					}
 				}
-					
+
 				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
 				{
 					// Tìm ghế ở giữa theo hàng
@@ -440,8 +451,6 @@
 
 
 	#endregion
-	//	UserDTO account = new UserDTO();
-
 	CreateBookTicketRequest request = new CreateBookTicketRequest();
 	NeonCinemasContext _context = new NeonCinemasContext();
 	private string paymentStatus = string.Empty; // Trạng thái thanh toán
@@ -467,26 +476,26 @@
 			if (createBill.IsSuccessStatusCode)
 			{
 				selectedCombos.Clear();
-				selectedComboId.Clear(); 
-				currentValue = 0; 
-				totalPrices = 0; 
+				selectedComboId.Clear();
+				currentValue = 0;
+				totalPrices = 0;
 
-				paymentStatus = "success"; 
+				paymentStatus = "success";
 				Console.WriteLine("Thành công");
 			}
 			else
 			{
-				paymentStatus = "failure"; 
+				paymentStatus = "failure";
 				Console.WriteLine("Thất bại");
 			}
 		}
 		catch (Exception ex)
 		{
-			paymentStatus = "failure"; 
+			paymentStatus = "failure";
 			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
 		}
 
-		StateHasChanged(); 
+		StateHasChanged();
 	}
 	private string GetPaymentMessage(string status)
 	{
@@ -510,9 +519,10 @@
 
 	private void CloseModal()
 	{
-		showConfirmModal = false; 
-		paymentStatus = string.Empty; 
-		StateHasChanged(); 
+		showConfirmModal = false;
+		paymentStatus = string.Empty;
+		StateHasChanged();
+
 	}
 }
 <style>
