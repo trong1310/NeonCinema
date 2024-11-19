@@ -28,20 +28,32 @@
 				</div>
 				<div class="form-check">
 					<div class="row mt-3">
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
-								   value="option1" checked>
-							<label class="form-check-label" for="exampleRadio1">
-								Lựa chọn 1
-							</label>
-						</div>
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
-								   value="option2">
-							<label class="form-check-label" for="exampleRadio2">
-								Lựa chọn 2
-							</label>
-						</div>
+						<InputRadioGroup @bind-Value="selectedStatus">
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="null" checked />
+								<label class="form-check-label" for="exampleRadio4">
+									Tất cả
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.InActive">
+								<label class="form-check-label" for="exampleRadio1">
+									Không hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Active">
+								<label class="form-check-label" for="exampleRadio2">
+									Hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Expired">
+								<label class="form-check-label" for="exampleRadio3">
+									Hết hạn
+								</label>
+							</div>
+						</InputRadioGroup>
 					</div>
 				</div>
 			</div>
@@ -103,23 +115,23 @@
 															<InputText @bind-Value="input.Description" class="form-control" />
 														</div>
 
-														@if(discountAmount == true)
+														@if (discountAmount == true)
 														{
 															<div class="mb-3">
 																<label for="" class="form-label">Số tiền giảm</label>
-																<InputNumber @bind-Value="input.DiscountAmount" class="form-control"/>
+																<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
 																<ValidationMessage For="@(() => input.DiscountAmount)" />
 															</div>
 														}
-														else if(discountPercentage == true)
+														else if (discountPercentage == true)
 														{
 															<div class="mb-3">
 																<label for="" class="form-label">Phần trăm giảm giá</label>
-																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control"/>
+																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" />
 																<ValidationMessage For="@(() => input.DiscountPercentage)" />
 															</div>
 														}
-														
+
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
 															<input type="datetime-local" @bind="input.StartDate" class="form-control" />
@@ -500,7 +512,7 @@
 							{
 								<td>@item.value.DiscountPercentage%</td>
 							}
-							@if(item.value.DiscountAmount == 0)
+							@if (item.value.DiscountAmount == 0)
 							{
 								<td>X</td>
 							}
@@ -553,7 +565,9 @@
 @code {
 
 	int stt = 1;
+	//
 	private string inputSearchUser = ""; //tim kiem theo ten user
+	private PromotionStatus? selectedStatus = null; // Mặc định trạng thái "Tất cả"
 	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
@@ -609,7 +623,7 @@
 	//Màu trạng thái
 	private string GetStatusClass(PromotionStatus status)
 	{
-	    return status switch
+		return status switch
 		{
 			PromotionStatus.Active => "bg-success",    // Màu xanh khi trạng thái là "Active"
 			PromotionStatus.InActive => "bg-warning",  // Màu vàng khi trạng thái là "InActive"
@@ -787,7 +801,7 @@
 						_lstMail.Add(mailitem);
 					}
 
-					if(lstPU.Count == 0)
+					if (lstPU.Count == 0)
 					{
 						messageString = "Thêm thất bại";
 						return;
@@ -826,7 +840,7 @@
 				isModalVisibleConfirm = 2;
 			}
 
-		}	
+		}
 	}
 
 	//back
@@ -850,7 +864,7 @@
 		}
 		else
 		{
-			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo				
+			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo
 		}
 
 		isModalVisibleConfirm = 2;
