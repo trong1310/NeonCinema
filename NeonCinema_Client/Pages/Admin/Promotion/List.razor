@@ -111,10 +111,6 @@
 															<label for="" class="form-label">Mã khuyến mại</label>
 															<InputText @bind-Value="codegen" class="form-control" readonly />
 														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Mô tả</label>
-															<InputText @bind-Value="input.Description" class="form-control" />
-														</div>
 
 														@if (discountAmount == true)
 														{
@@ -142,6 +138,10 @@
 															<label for="" class="form-label">Ngày kết thúc</label>
 															<input type="datetime-local" @bind="input.EndDate" class="form-control" />
 															<ValidationMessage For="@(() => input.EndDate)" />
+														</div>
+														<div class="mb-3">
+															<label for="" class="form-label">Mô tả</label>
+															<InputText @bind-Value="input.Description" class="form-control" />
 														</div>
 														<div class="mb-4">
 															<InputRadioGroup @bind-Value="IsPercentage">
@@ -355,16 +355,22 @@
 												<InputText @bind-Value="inputUpdate.Name" class="form-control" />
 												<ValidationMessage For="@(() => input.Name)" />
 											</div>
-											<div class="mb-3">
-												<label for="" class="form-label">Mã khuyến mại</label>
-												<InputText @bind-Value="inputUpdate.Code" class="form-control" />
-												<ValidationMessage For="@(() => inputUpdate.Code)" />
-											</div>
-											<div class="mb-3">
-												<label for="" class="form-label">Phần trăm giảm giá</label>
-												<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
-												<ValidationMessage For="@(() => inputUpdate.DiscountAmount)" />
-											</div>
+											@if (discountAmount == true)
+											{
+												<div class="mb-3">
+													<label for="" class="form-label">Số tiền giảm</label>
+													<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
+													<ValidationMessage For="@(() => input.DiscountAmount)" />
+												</div>
+											}
+											else if (discountPercentage == true)
+											{
+												<div class="mb-3">
+													<label for="" class="form-label">Phần trăm giảm giá</label>
+													<InputNumber @bind-Value="inputUpdate.DiscountPercentage" class="form-control" />
+													<ValidationMessage For="@(() => input.DiscountPercentage)" />
+												</div>
+											}
 											<div class="mb-3">
 												<label for="" class="form-label">Ngày bắt đầu</label>
 												<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
@@ -381,9 +387,9 @@
 											</div>
 											<div class="mb-4">
 												<InputRadioGroup @bind-Value="IsPercentage">
-													<label class="form-label">Theo tiền </label>
-													<InputRadio Value="true" class="form-check-input"></InputRadio>
 													<label class="form-label">Theo % </label>
+													<InputRadio Value="true" class="form-check-input"></InputRadio>
+													<label class="form-label">Theo tiền </label>
 													<InputRadio Value="false" class="form-check-input"></InputRadio>
 												</InputRadioGroup>
 											</div>
@@ -448,14 +454,14 @@
 										</div>
 										<div class="row">
 											<div align="center">
-												@if (messageString == "Thêm thành công")
+												@if (messageString == "Success")
 												{
 													<div style="width:200px; height:200px">
 														<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
 													</div>
 												}
 
-												@if (messageString == "Thêm thất bại")
+												@if (messageString == "Faild")
 												{
 													<div style="width:200px; height:200px">
 														<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
@@ -505,21 +511,21 @@
 								<td>@(item.index + 1)</td>
 								<td>@item.value.Name</td>
 								<td>@item.value.Code</td>
-								@if (item.value.DiscountPercentage == 0)
+								@if (item.value.DiscountPercentage == null)
 								{
-									<td>X</td>
+									<td>Không có</td>
 								}
 								else
 								{
-									<td>@item.value.DiscountPercentage%</td>
+									<td><mark class="p-1">@item.value.DiscountPercentage%</mark></td>
 								}
-								@if (item.value.DiscountAmount == 0)
+								@if (item.value.DiscountAmount == null)
 								{
-									<td>X</td>
+									<td>Không có</td>
 								}
 								else
 								{
-									<td>@item.value.DiscountAmount<text>đ</text></td>
+									<td><mark class="p-1">@item.value.DiscountAmount<text><u>đ</u></text></mark></td>
 								}
 								<td>@item.value.StartDate.ToShortDateString()</td>
 								<td>@item.value.EndDate.ToShortDateString()</td>
@@ -590,10 +596,12 @@
 			if (!discountPercentage)
 			{
 				input.DiscountPercentage = null;
+				inputUpdate.DiscountPercentage = null;
 			}
 			else
 			{
 				input.DiscountAmount = null;
+				inputUpdate.DiscountAmount = null;
 			}
 
 			discountPercentage = value;
@@ -762,7 +770,7 @@
 
 	private async Task OpenModalConfirm2()
 	{
-		isModalVisibleConfirm = 2;
+		isModalVisibleConfirm = 3;
 	}
 
 
@@ -794,16 +802,21 @@
 						MailPromotionRequest mailitem = new MailPromotionRequest
 							{
 								FullName = item.FullName,
-								NamePromotion = "Chưa update",
+								NamePromotion = input.Name,
 								ToEmail = item.Email,
-								Code = input.Code
+								Code = input.Code,
+								StartDate = input.StartDate,
+								EndDate = input.EndDate,
+								DiscountPercentage = input.DiscountPercentage,
+								DiscountAmount = input.DiscountAmount
+								
 							};
 						_lstMail.Add(mailitem);
 					}
 
 					if (lstPU.Count == 0)
 					{
-						messageString = "Thêm thất bại";
+						messageString = "Faild";
 						return;
 					}
 
@@ -811,7 +824,7 @@
 					{
 						await _prosv.SendMailWithTemplateAsync(_lstMail);
 						scope.Complete();
-						messageString = "Thêm thành công";
+						messageString = "Success";
 
 
 						//Reset input và list
@@ -820,13 +833,13 @@
 					}
 					else
 					{
-						messageString = "Thêm thất bại";
+						messageString = "Faild";
 						return;
 					}
 				}
 				else
 				{
-					messageString = "Thêm thất bại";
+					messageString = "Faild";
 					return;
 				}
 			}
@@ -875,18 +888,30 @@
 	//Update
 	public async Task UpdatePromotion()
 	{
-		var check = await _prosv.UpdatePromotionAsync(inputUpdate);
-
-		if (check)
+		try
 		{
-			messageString = "Sửa thành công";
-			await LoadPromotion();
+			var check = await _prosv.UpdatePromotionAsync(inputUpdate);
 
+			if (check)
+			{
+				messageString = "Success";
+				await LoadPromotion();
+
+			}
+			else
+			{
+				messageString = "Faild";
+			}
 		}
-		else
+		catch(Exception ex)
 		{
-			messageString = "Sửa thất bại";
+			messageString = "Faild";
 		}
+		finally
+		{
+			//Mở modal thông báo
+			isModalVisibleConfirm = 2;
+		}	
 	}
 
 	//Select

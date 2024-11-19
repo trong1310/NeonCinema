@@ -12,5 +12,10 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public string ToEmail {  get; set; }
 		public string NamePromotion { get; set; }
 		public string Code { get; set; }
+		public double? DiscountPercentage { get; set; } // giảm theo %
+		public double? DiscountAmount { get; set; } // giảm theo gia
+
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
 	}
 }
