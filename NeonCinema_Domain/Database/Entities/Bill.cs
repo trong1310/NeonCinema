@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Database.Base;
+﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Domain.Database.Base;
 using NeonCinema_Domain.Enum;
 using System;
 using System.Collections;
@@ -13,6 +14,7 @@ namespace NeonCinema_Domain.Database.Entities
     {
 		public Guid ID { get; set; }
 		public Guid? UserID { get; set; }
+		[Precision(18, 2)]
 		public decimal TotalPrice { get; set; }
 		public string BillCode { get; set; }
 		public ticketEnum Status { get; set; }
