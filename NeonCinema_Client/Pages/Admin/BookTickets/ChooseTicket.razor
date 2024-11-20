@@ -77,8 +77,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat) ms-2"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -239,20 +239,18 @@
 	</div>
 </div>
 <script>
-	function hienThiQR(hienThi) {
-	const qrCode = document.getElementById("qrcode");
+		  function hienThiQR(hienThi) {
+		const qrCode = document.getElementById("qrcode");
+		qrCode.style.display = hienThi === 'hiện' ? 'block' : 'none';
 
-	if (hienThi === 'hiện') {
-	qrCode.style.display = 'block';
-	DotNet.invokeMethodAsync('NeonCinema_Client', 'OnClickToEditAmount')
-	.then(() => {
-	console.log('Cập nhật giá tiền thành công');
-	})
-	.catch(error => console.error('Lỗi khi gọi OnClickToEditAmount:', error));
-	} else {
-	qrCode.style.display = 'none';
+		if (hienThi === 'hiện') {
+			DotNet.invokeMethodAsync('NeonCinema_Client', 'OnClickToEditAmount')
+				.then(() => console.log('Cập nhật giá tiền thành công'))
+				.catch(error => console.warn('Lỗi khi gọi OnClickToEditAmount:', error));
+		}
 	}
 	}
+
 </script>
 @code {
 	[Parameter]
@@ -308,20 +306,24 @@
 	#region vé
 	private string GetSeatCssClass(SeatDto seat)
 	{
+		if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Sold) return "bg-dark"; // Ghế đã bán
+		if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance) return "bg-secondary"; // Ghế bảo trì
 		if (selectedSeats.Contains(seat.SeatNumber))
 		{
 			return "selected";
 		}
 		return "available";
 		OnClickToEditAmount();
+
 	}
 	private void NextTab()
 	{
 		if (_selectedIndex < 1)
 		{
 			_selectedIndex++;
+			OnClickToEditAmount();
 		}
-		OnClickToEditAmount();
+		
 	}
 
 	private void PreviousTab()
@@ -469,6 +471,8 @@
 			{
 				selectedCombos.Clear();
 				selectedComboId.Clear();
+				selectedSeats.Clear();
+				selectedSeatsId.Clear();
 				currentValue = 0;
 				totalPrices = 0;
 

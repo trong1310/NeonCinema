@@ -38,10 +38,10 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					if (seat != null)
 						seat.Status = NeonCinema_Domain.Enum.seatEnum.Available;
 				}
-				var ticketPrices = await _context.TicketPrice.Include(x=>x.Seats).Where(x=> request.SeatID.Contains(x.SeatID)).ToListAsync();
+				var ticketPrices = await _context.TicketPrice.Include(x=>x.SeatTypeID).Where(x=> request.SeatID.Contains(x.SeatTypeID)).ToListAsync(); // note 1
 				var tickets = request.SeatID.Select(seatId =>
 				{
-					var ticketPrice = ticketPrices.FirstOrDefault(x => x.SeatID == seatId);
+					var ticketPrice = ticketPrices.FirstOrDefault(x => x.SeatTypeID == seatId);  // note 2
 
 					if (ticketPrice == null)
 					{
@@ -58,6 +58,13 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						Price = ticketPrice.Price
 					};
 				}).ToList();
+				var seatsToUpdate = _context.Seat.Where(x => request.SeatID.Contains(x.ID)).ToList();
+				foreach (var seat in seatsToUpdate)
+				{
+					seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
+				}
+					_context.UpdateRange(seatsToUpdate);
+				await _context.SaveChangesAsync();
 				await	_context.Tickets.AddRangeAsync(tickets);
 				 await _context.SaveChangesAsync();
 				Bill bill = new Bill();
@@ -129,7 +136,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			var seats = upcomingScreening.Rooms!.Seats!.Select(x =>
 			{
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatID == x.ID)
+					.Where(tp => tp.SeatTypeID == x.ID) // note 3
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
 
