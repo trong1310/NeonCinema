@@ -837,8 +837,8 @@ modelBuilder.Entity<Seat>(b => { b.HasData(seatData); });
             // 23. TicketSeat
             var ticketPriceData = new List<TicketPrice>
     {
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatID = seatData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
-        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatID = seatData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active },
+        new TicketPrice { ID = Guid.NewGuid(), ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
     };
             modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
             // 22. Ticket

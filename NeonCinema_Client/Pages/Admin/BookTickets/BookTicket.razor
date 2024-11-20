@@ -22,37 +22,37 @@
 					<h2 class="mb-4 mt-4 green-title">Phim đang chiếu</h2>
 				</div>
 				<div class="row">
-					@foreach (var  item in moviesNowShowing)
-					{
-						<div class="col-custom">
-							<div class="row">
-								<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
-									<div class="card movie-card d-flex justify-content-lg-start">
-										<div class="card-body">
-											<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
-											<div class="tags mb-2">
-												<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
-												<span class="badge bg-dark">Thời lượng: @item.Duration</span>
-												<span >Đạo diễn: @item.DirectorName</span>
-												<span >Ngày chiếu: @item.StarTime</span>
-												<span >
-													Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
-																			? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
-																			: "Không có diễn viên")
-												</span>
-												<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
-											</div>
-											<h5 class="card-title">@item.Name</h5>
-											<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-											<button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(item.ID)">
-												<i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-											</button>
+					<div class="row">
+						@foreach (var item in moviesNowShowing)
+						{
+							<div class="col-lg-3 col-md-4 col-sm-6 mb-4 col-custom">
+								<div class="card movie-card">
+									<div class="card-body">
+										<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
+										<div class="tags mb-2">
+											<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
+											<span class="badge bg-dark">Thời lượng: @item.Duration</span>
+											<span>Đạo diễn: @item.DirectorName</span>
+											<span>Ngày chiếu: @item.StarTime</span>
+											<span>
+												Các diễn viên chính:
+												@(item.ActorMovies != null && item.ActorMovies.Any()
+																						? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
+																						: "Không có diễn viên")
+											</span>
+											<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
 										</div>
+										<h5 class="card-title">@item.Name</h5>
+										<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+										<button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(item.ID)">
+											<i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+										</button>
 									</div>
 								</div>
 							</div>
-						</div>
-					}
+						}
+					</div>
+
 				</div>
 			</div>
 			<div class="border">
@@ -62,34 +62,37 @@
 				<div class="row">
 					<div class="col-custom">
 						<div class="row">
-							@foreach (var item in moviesComing)
-							{
-								<div class="col-custom">
-									<div class="row">
-										<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
-											<div class="card movie-card d-flex justify-content-lg-start">
-												<div class="card-body">
-													<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
-													<div class="tags mb-2">
-														<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
-														<span class="badge bg-dark">Thời lượng: @item.Duration</span>
-														<span>Đạo diễn: @item.DirectorName</span>
-														<span>Ngày chiếu: @item.StarTime</span>
-														<span>
-															Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
-																					? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
-																					: "Không có diễn viên")
-														</span>
-														<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
-													</div>
-													<h5 class="card-title">@item.Name</h5>
-													<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+							<div class="row">
+								@foreach (var item in moviesComing)
+								{
+									<div class="col-lg-3 col-md-4 col-sm-6 mb-4 col-custom">
+										<div class="card movie-card">
+											<div class="card-body">
+												<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
+												<div class="tags mb-2">
+													<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
+													<span class="badge bg-dark">Thời lượng: @item.Duration</span>
+													<span>Đạo diễn: @item.DirectorName</span>
+													<span>Ngày chiếu: @item.StarTime</span>
+													<span>
+														Các diễn viên chính:
+														@(item.ActorMovies != null && item.ActorMovies.Any()
+																											? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
+																											: "Không có diễn viên")
+													</span>
+													<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
 												</div>
+												<h5 class="card-title">@item.Name</h5>
+												<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+												<button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(item.ID)">
+													<i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+												</button>
 											</div>
 										</div>
 									</div>
-								</div>
-							}
+								}
+							</div>
+
 						</div>
 					</div>
 				</div>
@@ -121,7 +124,7 @@
 			movies.ActorMovies = actors;
 		}
 	}
-	
+
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
@@ -132,6 +135,15 @@
 	}
 }
 <style>
+	.col-custom {
+		padding: 10px;
+	}
+
+	.card-img-top {
+		object-fit: cover;
+		height: 200px; /* hoặc kích thước mong muốn */
+	}
+
 	.green-title {
 		color: limegreen; /* Màu chữ xanh lá cây */
 		border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
