@@ -29,12 +29,7 @@ namespace NeonCinema_API.Controllers
             try
             {
                 var response = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return Ok(response.Content);
-                }
-
-                return BadRequest("Đặt vé không thành công");
+                return Ok(response);
             }
             catch (Exception ex)
             {

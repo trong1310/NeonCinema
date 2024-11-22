@@ -21,7 +21,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			using var transaction = await _context.Database.BeginTransactionAsync();
 			try
 			{
-				// Lấy lịch chiếu từ database
 				var screening = await _context.Screening
 					.Include(x => x.Rooms)
 						.ThenInclude(r => r.Seats)
@@ -29,30 +28,50 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				if (screening == null)
 					throw new Exception("Lịch chiếu không tồn tại.");
-
-				// Kiểm tra tính khả dụng của các ghế
 				var unavailableSeats = screening.Rooms.Seats
 					.Where(s => request.SeatID.Contains(s.ID) && s.Status == NeonCinema_Domain.Enum.seatEnum.Available)
 					.Select(s => s.SeatNumber)
 					.ToList();
-				foreach (var seatId in request.SeatID)
+				//foreach (var seatId in request.SeatID)
+				//{	
+				//	var seat = screening.Rooms.Seats.FirstOrDefault(s => s.ID == seatId);
+				//	if (seat != null)
+				//		seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
+				//}
+				var seatTypes = screening.Rooms.Seats
+						.Where(s => request.SeatID.Contains(s.ID))
+						.ToDictionary(s => s.ID, s => s.SeatTypeID);
+				var ticketPrices = await _context.TicketPrice
+						.Where(tp => seatTypes.Values.Contains(tp.SeatTypeID))
+						.ToListAsync();
+				var tickets = request.SeatID.Select(seatId =>
 				{
-					var seat = screening.Rooms.Seats.FirstOrDefault(s => s.ID == seatId);
-					if (seat != null)
-						seat.Status = NeonCinema_Domain.Enum.seatEnum.Available;
-				}
-				var price = await _context.TicketPrice.Include(x=>x.Seats).Where(x=> request.SeatID.Contains(x.SeatID)).FirstOrDefaultAsync();	
-				var tickets = request.SeatID.Select(seatId => new Ticket
-				{
-					ID = Guid.NewGuid(),
-					ScreningID = request.ScreeningID,
-					SeatID = seatId,
-					CreatedTime = DateTime.Now,
-					MovieID = request.MovieId,
-					Price = price.Price
+					if (!seatTypes.TryGetValue(seatId, out var seatTypeId))
+						throw new Exception($"Không tìm thấy kiểu ghế cho ghế có ID: {seatId}");
+
+					var ticketPrice = ticketPrices.FirstOrDefault(tp => tp.SeatTypeID == seatTypeId);
+					if (ticketPrice == null)
+						throw new Exception($"Không tìm thấy giá vé cho kiểu ghế ID: {seatTypeId}");
+
+					return new Ticket
+					{
+						ID = Guid.NewGuid(),
+						ScreningID = request.ScreeningID,
+						SeatID = seatId,
+						CreatedTime = DateTime.Now,
+						MovieID = request.MovieId,
+						Price = ticketPrice.Price
+					};
 				}).ToList();
-				await	_context.Tickets.AddRangeAsync(tickets);
+				var seatsToUpdate = _context.Seat.Where(x => request.SeatID.Contains(x.ID)).ToList();
+				foreach (var seat in seatsToUpdate)
+				{
+					seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
+				}
+					_context.UpdateRange(seatsToUpdate);
 				await _context.SaveChangesAsync();
+				await	_context.Tickets.AddRangeAsync(tickets);
+				 await _context.SaveChangesAsync();
 				Bill bill = new Bill();
 				bill.ID = Guid.NewGuid();
 				bill.BillCode = Uliti.GenerateBillCode();
@@ -97,7 +116,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				await transaction.RollbackAsync();
 				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
-					Content = new StringContent($"Đã xảy ra lỗi: {ex.Message}")
+					Content = new StringContent($"Đã xảy ra lỗi: {ex.Message}, {ex.StackTrace}")
 				};
 			}
 		}
@@ -122,7 +141,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			var seats = upcomingScreening.Rooms!.Seats!.Select(x =>
 			{
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatID == x.ID)
+					.Where(tp => tp.SeatTypeID == x.ID) // note 3
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
 
