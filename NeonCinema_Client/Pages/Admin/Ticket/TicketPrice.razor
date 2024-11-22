@@ -1,98 +1,125 @@
 ﻿@page "/ticket-pricing"
+@using NeonCinema_Application.DataTransferObject.TicketPriceSetting
+@using NeonCinema_Client.Data.IServices.TicketPriceSetting
+@inject ITicketPriceSettingService TicketPriceSettingService
+@inject NavigationManager NavigationManager
 
-<div class="card-header text-center mb-1">
-    <h3>Quản lý giá vé</h3>
-</div>
-<div class="card" style="border: none">
-    
-    <div class="card-body p-2">
-        <table class="table table-bordered ">
-            <thead class="table-primary">
-                <tr>
-                    <th class="text-center align-middle"></th>
-                    <th class="text-center align-middle">Học Sinh, Sinh Viên</th>
-                    <th class="text-center align-middle">Người Lớn</th>
-                    <th class="text-center align-middle">Người Già, Trẻ Em</th>
-                    <th class="text-center align-middle">Thành Viên, Vé Trực Tuyến</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h">
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">Thứ 6, Thứ 7, Chủ Nhật</td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                    <td>
-                        <input type="number" class="form-control" placeholder="Trước 17h" />
-                        <input type="number" class="form-control mt-1" placeholder="Sau 17h" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table class="table table-bordered mt-3">
-            <thead class="table-primary">
-                <tr>
-                    <th colspan="2" class="text-center align-middle">Phụ Thu</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">3D</td>
-                    <td><input type="number" class="form-control" /></td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">4D</td>
-                    <td><input type="number" class="form-control" /></td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
-                    <td><input type="number" class="form-control" /></td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">Ghế vip</td>
-                    <td><input type="number" class="form-control" /></td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle" style="font-weight:bold">Ghế couple</td>
-                    <td><input type="number" class="form-control" /></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="card-footer text-end">
-        <button class="btn btn-primary">Lưu</button>
-    </div>
+<div class="alert alert-success" role="alert" style="display:@(string.IsNullOrEmpty(successMessage) ? "none" : "block")">
+    @successMessage
 </div>
 
+<div class="alert alert-danger" role="alert" style="display:@(string.IsNullOrEmpty(errorMessage) ? "none" : "block")">
+    @errorMessage
+</div>
+<EditForm Model="ticketPriceSetting" OnValidSubmit="HandleValidSubmit">
+    <div class="card-header text-center mb-1">
+        <h3>Quản lý giá vé</h3>
+    </div>
+    <div class="card" style="border: none">
+
+        <div class="card-body p-2">
+            <table class="table table-bordered ">
+                <thead class="table-primary">
+                    <tr>
+                        <th></th>
+                        <th class="text-center">TRƯỚC 17H</th>
+                        <th class="text-center">SAU 17H</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
+                        <td>
+                            <input type="number" class="form-control" placeholder="Trước 17h"
+                                   @bind-value="ticketPriceSetting.PriceBefore17hWeekDay">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control mt-1" placeholder="Sau 17h" @bind-value="ticketPriceSetting.PriceAfter17hWeekDay" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">Thứ 6, Thứ 7, Chủ Nhật</td>
+                        <td>
+                            <input type="number" class="form-control" placeholder="Trước 17h" @bind-value="ticketPriceSetting.PriceAfter17hWeekeend">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control mt-1" placeholder="Sau 17h" @bind-value="ticketPriceSetting.PriceBefore17hWeekeend" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr>
+                        <th colspan="2" class="text-center align-middle">Phụ Thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">3D</td>
+                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.Surcharge3D" /></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">4D</td>
+                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.Surcharge4D" /></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
+                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeIMAX" /></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">Ghế vip</td>
+                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeVIP" /></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center align-middle" style="font-weight:bold">Ghế couple</td>
+                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeCouple" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+
+    private TicketPriceSettingDTO ticketPriceSetting = new TicketPriceSettingDTO();
+    [Parameter] public int Id { get; set; }
+    private string successMessage;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the existing ticket price setting based on the Id parameter
+        ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(Guid.Parse("F45B65A9-F32D-4F95-A211-75A7AF545F46"));
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await TicketPriceSettingService.Update(ticketPriceSetting);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Cập nhật thành công, làm mới dữ liệu và hiển thị thông báo thành công
+            successMessage = "Cập nhật thành công!";
+            ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(ticketPriceSetting.ID);
+            StateHasChanged(); // Refresh the component
+        }
+        else
+        {
+            // Xử lý lỗi nếu có và hiển thị thông báo lỗi
+            errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Cập nhật không thành công: {errorMessage}");
+        }
+    }
+
+}
 <style>
     .form-control {
         width: 100%;
@@ -106,3 +133,4 @@
         vertical-align: middle;
     }
 </style>
+

@@ -63,11 +63,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Point> Points { get; set; }
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<PromotionUsers> PromotionUsers { get; set; }
+		public DbSet<TicketPriceSetting> TicketPriceSettings { get; set; }
 		#endregion
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -855,7 +856,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	{
 		new TicketPriceSetting
 	{
-		ID = Guid.NewGuid(),
+		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
 		PriceBefore17hWeekDay = 50.00m,
 		PriceAfter17hWeekDay = 70.00m,
 		PriceBefore17hWeekeend = 60.00m,
