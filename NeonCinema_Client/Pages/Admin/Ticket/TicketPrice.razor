@@ -4,6 +4,7 @@
 @inject ITicketPriceSettingService TicketPriceSettingService
 @inject NavigationManager NavigationManager
 
+
 <div class="alert alert-success" role="alert" style="display:@(string.IsNullOrEmpty(successMessage) ? "none" : "block")">
     @successMessage
 </div>
@@ -12,6 +13,7 @@
     @errorMessage
 </div>
 <EditForm Model="ticketPriceSetting" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
     <div class="card-header text-center mb-1">
         <h3>Quản lý giá vé</h3>
     </div>
@@ -30,21 +32,40 @@
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
                         <td>
-                            <input type="number" class="form-control" placeholder="Trước 17h"
-                                   @bind-value="ticketPriceSetting.PriceBefore17hWeekDay">
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.PriceBefore17hWeekDay" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.PriceBefore17hWeekDay)" />
                         </td>
                         <td>
-                            <input type="number" class="form-control mt-1" placeholder="Sau 17h" @bind-value="ticketPriceSetting.PriceAfter17hWeekDay" />
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.PriceAfter17hWeekDay" />
+                                <span class="currency-unit">VND</span>
+                            </div>                            
+                            <ValidationMessage For="@(() => ticketPriceSetting.PriceAfter17hWeekDay)" />
                         </td>
 
                     </tr>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">Thứ 6, Thứ 7, Chủ Nhật</td>
                         <td>
-                            <input type="number" class="form-control" placeholder="Trước 17h" @bind-value="ticketPriceSetting.PriceAfter17hWeekeend">
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.PriceBefore17hWeekeend" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.PriceBefore17hWeekeend)" />
                         </td>
                         <td>
-                            <input type="number" class="form-control mt-1" placeholder="Sau 17h" @bind-value="ticketPriceSetting.PriceBefore17hWeekeend" />
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.PriceAfter17hWeekeend" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.PriceAfter17hWeekeend)" />
                         </td>
                     </tr>
                 </tbody>
@@ -59,23 +80,58 @@
                 <tbody>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">3D</td>
-                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.Surcharge3D" /></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.Surcharge3D" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.Surcharge3D)" />
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">4D</td>
-                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.Surcharge4D" /></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.Surcharge4D" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </td>
+                        <ValidationMessage For="@(() => ticketPriceSetting.Surcharge4D)" />
                     </tr>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
-                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeIMAX" /></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.SurchargeIMAX" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.SurchargeIMAX)" />
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">Ghế vip</td>
-                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeVIP" /></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.SurchargeVIP" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.SurchargeVIP)" />
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-center align-middle" style="font-weight:bold">Ghế couple</td>
-                        <td><input type="number" class="form-control" @bind-value="ticketPriceSetting.SurchargeCouple" /></td>
+                        <td>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind-value="ticketPriceSetting.SurchargeCouple" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                            <ValidationMessage For="@(() => ticketPriceSetting.SurchargeCouple)" />
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -121,6 +177,7 @@
 
 }
 <style>
+    
     .form-control {
         width: 100%;
     }
@@ -132,5 +189,28 @@
     .align-middle {
         vertical-align: middle;
     }
+
+    .input-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+        .input-container input {
+            width: 100%;
+            padding-right: 50px; /* Tạo không gian cho chữ VND */
+            box-sizing: border-box;
+        }
+
+        .input-container .currency-unit {
+            position: absolute;
+            top: 50%;
+            right: 10px; /* Đặt chữ VND cách cạnh phải một khoảng */
+            transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+            color: #aaa;
+            pointer-events: none; /* Không làm ảnh hưởng đến hành vi nhập */
+            font-size: 1rem;
+            font-weight: 500;
+        }
 </style>
 

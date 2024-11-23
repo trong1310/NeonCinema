@@ -19,7 +19,7 @@ namespace NeonCinema_API.Controllers.TicketPriceSetting
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById(Guid id)
 		{
-			var obj = await _repository.GetByIdAsync(Guid.Parse("F45B65A9-F32D-4F95-A211-75A7AF545F46"));
+			var obj = await _repository.GetByIdAsync(Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 			if (obj == null)
 			{
 				return NotFound($"Không tìm thấy vé {id}.");
