@@ -55,6 +55,8 @@ using NeonCinema_Client.Data.Services.StatisticService;
 using NeonCinema_Client.Data.IServices.TicketPrice;
 using NeonCinema_Client.Data.Services.TicketPriceService;
 using NeonCinema_Infrastructure.Implement.Promotion_R;
+using NeonCinema_Client.Data.Services.TicketPriceSetting;
+using NeonCinema_Client.Data.IServices.TicketPriceSetting;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -75,6 +77,7 @@ builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
+builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {

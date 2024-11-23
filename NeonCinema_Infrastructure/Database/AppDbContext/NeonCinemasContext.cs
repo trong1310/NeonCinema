@@ -857,29 +857,17 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new TicketPriceSetting
 	{
 		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
-		PriceBefore17hWeekDay = 50.00m,
-		PriceAfter17hWeekDay = 70.00m,
-		PriceBefore17hWeekeend = 60.00m,
-		PriceAfter17hWeekeend = 90.00m,
-		Surcharge3D = 30.00m,
-		Surcharge4D = 50.00m,
-		SurchargeIMAX = 100.00m,
-		SurchargeVIP = 150.00m,
-		SurchargeCouple = 200.00m
+		PriceBefore17hWeekDay = 50,
+		PriceAfter17hWeekDay = 70,
+		PriceBefore17hWeekeend = 60,
+		PriceAfter17hWeekeend = 90,
+		Surcharge3D = 30,
+		Surcharge4D = 50,
+		SurchargeIMAX = 100,
+		SurchargeVIP = 150,
+		SurchargeCouple = 200
 	},
-	new TicketPriceSetting
-	{
-		ID = Guid.NewGuid(),
-		PriceBefore17hWeekDay = 55.00m,
-		PriceAfter17hWeekDay = 75.00m,
-		PriceBefore17hWeekeend = 65.00m,
-		PriceAfter17hWeekeend = 95.00m,
-		Surcharge3D = 35.00m,
-		Surcharge4D = 55.00m,
-		SurchargeIMAX = 110.00m,
-		SurchargeVIP = 160.00m,
-		SurchargeCouple = 210.00m
-	},
+	
 	};
 			modelBuilder.Entity<TicketPriceSetting>().HasData(ticketSeting);
 
@@ -887,8 +875,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			// 23. TicketSeat
 			var ticketPriceData = new List<TicketPrice>
 	{
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active,  },
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[1].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50, Status = EntityStatus.Active,  },
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60, Status = EntityStatus.Active  }
 	};
 			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
 			// 22. Ticket
