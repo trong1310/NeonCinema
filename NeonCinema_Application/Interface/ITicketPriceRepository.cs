@@ -10,9 +10,9 @@ namespace NeonCinema_Application.Interface
 {
     public interface ITicketPriceRepository
     {
-        Task<List<TicketPriceDTO>> GetTicketPricesAsync();
-        Task<TicketPriceDTO> GetTicketPriceByIdAsync(Guid id);
-        Task<HttpResponseMessage> UpdateTicketPriceAsync(TicketPriceDTO ticketPrice);
-        Task<HttpResponseMessage> SetupPrice(TicketPriceCreateRequest ticketPrice);
+        Task<List<TicketPriceDTO>> GetAllTicketPrices();
+        Task<TicketPriceDTO> GetTicketPriceById(Guid id);
+        Task<HttpResponseMessage> UpdateTicketPrice(TicketPriceDTO ticketPrice);
+        Task<HttpResponseMessage> CreateTicketPrice(TicketPriceCreateRequest ticketPrice);
     }
 }
