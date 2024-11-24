@@ -123,18 +123,12 @@
 
     private List<string> XAxisLabels = new();
     private List<ChartSeries> RevenueChartSeries = new();
-    private MudChart? Chart; // Biểu đồ
-
-    // Khởi tạo dữ liệu khi trang được tải
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadStatistics();
-        await LoadChartData();
-    }
+    private MudChart Chart; // Biểu đồ
 
     // Phương thức khi người dùng nhấn nút "Chấp nhận"
     private async Task ApplyFilters()
     {
+        // Gọi API để lấy lại dữ liệu thống kê với các tham số lọc
         await LoadStatistics();
         await LoadChartData();
     }
@@ -157,6 +151,7 @@
     }
 
     // Phương thức load dữ liệu biểu đồ
+    // Phương thức load dữ liệu biểu đồ
     private async Task LoadChartData()
     {
         try
@@ -168,13 +163,14 @@
                 XAxisLabels = chartData.Dates;
 
                 RevenueChartSeries = new List<ChartSeries>
+            {
+                new ChartSeries
                 {
-                    new ChartSeries
-                    {
-                        Name = "Doanh thu",
-                        Data = chartData.Revenue.Select(r => (double)r).ToArray()
-                    }
-                };
+                    Name = "Doanh thu",
+                    // Explicitly cast decimal values to double
+                    Data = chartData.Revenue.Select(r => (double)r).ToArray()
+                }
+            };
             }
         }
         catch (Exception ex)
@@ -182,6 +178,7 @@
             Snackbar.Add($"Error loading chart data: {ex.Message}", Severity.Error);
         }
     }
+
 }
 
 <style>
