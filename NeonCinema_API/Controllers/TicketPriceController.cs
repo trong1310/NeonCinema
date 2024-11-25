@@ -55,6 +55,19 @@ namespace NeonCinema_API.Controllers
             return Ok(ticketPrices);
         }
 
+        [HttpGet("get-screening")]
+        public async Task<IActionResult> GetAllScreening(CancellationToken cancellationToken)
+        {
+            var ticketPrices = await _ticketPriceRepository.GetAllScreening();
+
+            if (ticketPrices == null)
+            {
+                return NotFound("Không có lịch chiếu naò!");
+            }
+
+            return Ok(ticketPrices);
+        }
+
         [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetTicketPriceById(Guid id, CancellationToken cancellationToken)
         {

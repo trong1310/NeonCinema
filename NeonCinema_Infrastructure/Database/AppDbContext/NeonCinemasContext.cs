@@ -92,7 +92,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				.HasOne(bc => bc.FoodCombo)
 				.WithMany(fc => fc.BillCombos)
 				.HasForeignKey(bc => bc.FoodComboID);
-		}
+            modelBuilder.Entity<Screening>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+            });
+        }
 		private void SeedData(ModelBuilder modelBuilder)
 		{
 			var roleData = new List<Roles>
@@ -858,14 +862,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	{
 		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
 		PriceBefore17hWeekDay = 50,
-		PriceAfter17hWeekDay = 70,
+		PriceAfter17hWeekDay = 60,
 		PriceBefore17hWeekeend = 60,
-		PriceAfter17hWeekeend = 90,
+		PriceAfter17hWeekeend = 70,
 		Surcharge3D = 30,
-		Surcharge4D = 50,
-		SurchargeIMAX = 100,
-		SurchargeVIP = 150,
-		SurchargeCouple = 200
+		Surcharge4D = 40,
+		SurchargeIMAX = 50,
+		SurchargeVIP = 30,
+		SurchargeCouple = 50
 	},
 	
 	};

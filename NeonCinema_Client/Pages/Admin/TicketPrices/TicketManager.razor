@@ -43,7 +43,7 @@
             <label>Giờ chiếu</label>
             <select class="form-control" @onchange="OnShowTimeChanged" >
                 <option value="">Tất cả</option>
-                @foreach (var showTime in showTimes)
+                @foreach (var showTime in showTimes.OrderBy(st => st.StartTime))
                 {
                     <option value="@showTime.ID">@showTime.StartTime</option>
                 }
@@ -53,8 +53,9 @@
         <!-- Lọc theo Ngày -->
         <div class="col-md-3">
             <label>Ngày chiếu</label>
-            <input type="date" class="form-control" />
+            <input type="date" class="form-control" @bind="dateFilter" @oninput="OnShowDateChanged" />
         </div>
+
 
     </div>
     <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="ShowAddModal">
@@ -68,40 +69,39 @@
                 <th class="text-center">Giá Vé</th>
                 <th class="text-center">Thời gian chiếu</th>
                 <th class="text-center">Loại ghế</th>
-                <th class="text-center">Giờ chiếu</th>
+                <th class="text-center">Ngày chiếu</th>
                 <th class="text-center">Hành động</th>
             </tr>
         </thead>
         <tbody>
-            @if (filteredPrices == null && !filteredPrices.Any())
-            {
-                <tr>
-                    <td colspan="5">Không có giá vé nào phù hợp với tiêu chí lọc.</td>
-                </tr>
-            }
-            else
+            @if (filteredPrices != null && filteredPrices.Any()) // Nếu có kết quả lọc
             {
                 @foreach (var ticketPrice in filteredPrices)
                 {
                     var startTime = showTimes.FirstOrDefault(st => st.ID == ticketPrice.ShowTimeID)?.StartTime;
                     var seatTypeName = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatTypeID)?.SeatTypeName;
-                    var screeningDate = screenings.FirstOrDefault(s => s.ID == ticketPrice.ScreeningID)?.ShowDate;
                     <tr>
                         <td class="text-center align-middle">@(@filteredPrices.IndexOf(ticketPrice) + 1)</td>
                         <td class="text-center align-middle">@ticketPrice.Price VND</td>
                         <td class="text-center align-middle">@startTime</td>
                         <td class="text-center align-middle">@seatTypeName</td>
-                        <td class="text-center align-middle">@screeningDate?.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center align-middle">@ticketPrice.ShowDate.ToString("dd/MM/yyyy")</td>
                         <td class="text-center align-middle">
                             <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick="() => ShowEditModal(ticketPrice.ID)">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            @* <button class="btn btn-warning" @onclick="() => ShowEditModal(ticketPrice.ID)">Chỉnh Sửa</button> *@
                         </td>
                     </tr>
                 }
             }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">Không có giá vé nào phù hợp.</td>
+                </tr>
+            }
         </tbody>
+
     </table>
 
     <!-- Modal Thêm Giá Vé -->
@@ -111,7 +111,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Thêm Giá Vé Mới</h5>
+                        <h5 class="modal-title">Thêm giá vé mới</h5>
                         <button type="button" class="close" @onclick="CloseAddModal" aria-label="Close">
                             <span class="material-icons" aria-hidden="true">close</span>
                         </button>
@@ -124,7 +124,7 @@
                             </div>
                         }
                         <div class="form-group">
-                            <label for="price">Giá Vé:</label>
+                            <label for="price">Giá vé:</label>
                             <div class="input-container">
                                 <input type="text" class="form-control"
                                        @bind="newTicketPrice.Price" />
@@ -132,16 +132,16 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="showTime">Thời Gian Chiếu:</label>
+                            <label for="showTime">Thời gian chiếu:</label>
                             <select class="form-control" @bind="newTicketPrice.ShowTimeID">
-                                @foreach (var showTime in showTimes)
+                                @foreach (var showTime in showTimes.OrderBy(st => st.StartTime))
                                 {
                                     <option value="@showTime.ID">@showTime.StartTime</option>
                                 }
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="seatType">Loại Ghế:</label>
+                            <label for="seatType">Loại ghế:</label>
                             <select class="form-control" @bind="newTicketPrice.SeatTypeID">
                                 @foreach (var seatType in seatTypes)
                                 {
@@ -150,13 +150,20 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="screening">Lịch Chiếu:</label>
-                            <input type="text" class="form-control" @bind-value="newTicketPrice.ScreeningID" />
+                            <label for="screening">Ngày chiếu:</label>
+                            <select class="form-control" @bind="newTicketPrice.ScreeningID">
+                                @foreach (var screening in screenings
+                               .Where(s => s.ShowDate >= DateTime.Now) // Filter out past dates
+                               .OrderBy(s => s.ShowDate))
+                                {
+                                    <option value="@screening.ID">@screening.ShowDate?.ToString("dd/MM/yyyy")</option>
+                                }
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="CloseAddModal">Đóng</button>
-                        <button type="button" class="btn btn-primary" @onclick="HandleAddTicketPrice">Thêm Giá Vé</button>
+                        <button type="button" class="btn btn-primary" @onclick="HandleAddTicketPrice">Thêm giá vé</button>
                     </div>
                 </div>
             </div>
@@ -221,14 +228,24 @@
 
     private void ApplyFilters()
     {
-        filteredPrices = ticketPrices
-            .Where(tp =>
-                (priceFilter == null || tp.Price.ToString().Contains(priceFilter.ToString())) &&
-                (seatTypeFilter == null || tp.SeatTypeID == seatTypeFilter) &&
-                (showTimeFilter == null || tp.ShowTimeID == showTimeFilter) &&
-                (dateFilter == null || screenings
-                    .FirstOrDefault(s => s.ID == tp.ScreeningID)?.ShowDate.Date == dateFilter.Value.Date)
-            ).ToList();
+        filteredPrices = ticketPrices; // Bắt đầu với tất cả giá vé ban đầu
+
+        if (priceFilter.HasValue) // Kiểm tra xem price có giá trị không
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.Price.ToString().Contains(priceFilter.ToString())).ToList();
+        }
+        if (seatTypeFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.SeatTypeID == seatTypeFilter.Value).ToList();
+        }
+        if (showTimeFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.ShowTimeID == showTimeFilter.Value).ToList();
+        }
+        if (dateFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.ShowDate.Date == dateFilter.Value.Date).ToList();
+        }
     }
     private void OnPriceFilterChanged(ChangeEventArgs e)
     {
@@ -272,6 +289,20 @@
 
         ApplyFilters();
     }
+    private void OnShowDateChanged(ChangeEventArgs e)
+    {
+        // Kiểm tra nếu giá trị không rỗng
+        if (DateTime.TryParse(e.Value?.ToString(), out var selectedGuid))
+        {
+            dateFilter = selectedGuid;
+        }
+        else
+        {
+            dateFilter = null;
+        }
+
+        ApplyFilters();
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -280,8 +311,9 @@
             ticketPrices = await TicketPriceService.GetTicketPricesAsync();
             showTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
             seatTypes = await SeatTypeService.GetAllSeatType();
-            screenings = await ScreeningService.GetAllScreeningsAsync();
-            filteredPrices = ticketPrices.ToList();
+            screenings = await TicketPriceService.GetAllScreening();
+            ApplyFilters();
+            // filteredPrices = new List<TicketPriceDTO>(ticketPrices);
         }
         catch (Exception ex)
         {
@@ -335,6 +367,12 @@
                 notificationType = "Lỗi";
                 return;
             }
+            if (newTicketPrice.Price < 0)
+            {
+                notificationMessage = "Giá vé không được là số âm.";
+                notificationType = "Lỗi";
+                return;
+            }
             // Do not pass Price as it is calculated on the server side
             var response = await TicketPriceService.SetupPrice(newTicketPrice);
 
@@ -343,6 +381,7 @@
                 var success = await response.Content.ReadAsStringAsync();
                 // Handle success, e.g., refresh the ticket price list
                 ticketPrices = await TicketPriceService.GetTicketPricesAsync();
+                filteredPrices = ticketPrices.ToList();
                 notificationMessage = $"{success}";
                 notificationType = "success";
             }
@@ -365,6 +404,12 @@
     {
         try
         {
+            if (newTicketPrice.Price < 0)
+            {
+                editNotificationMessage = "Giá vé không được là số âm.";
+                notificationType = "Lỗi";
+                return;
+            }
             var response = await TicketPriceService.UpdateTicketPriceAsync(newTicketPrice);
             if (response.IsSuccessStatusCode)
             {

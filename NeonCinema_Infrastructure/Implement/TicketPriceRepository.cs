@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.TicketPrice;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
@@ -85,17 +86,30 @@ namespace NeonCinema_Infrastructure.Implement
             return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
         }
 
-        public async Task<List<TicketPriceDTO>> GetAllTicketPrices()
+		public async Task<List<ScreeningDTO>> GetAllScreening()
+		{
+            var screening = await _context.Screening
+                .Select(x => new ScreeningDTO
+                {
+                    ID = x.ID,
+                    ShowDate = x.ShowDate
+                }).ToListAsync();
+            return screening;
+		}
+
+		public async Task<List<TicketPriceDTO>> GetAllTicketPrices()
         {
             var ticketPrice = await _context.TicketPrice
-                    .Select(x => new TicketPriceDTO
-                    {
-                        ID = x.ID,
-                        ScreeningID = x.ScreeningID,
-                        ShowTimeID = x.ShowTimeID,
-                        SeatTypeID = x.SeatTypeID,
-                        Price = x.Price,
-                    }).ToListAsync();
+                .Include(x => x.Screening)
+                   .Select(x => new TicketPriceDTO
+                   {
+                       ID = x.ID,
+                       ScreeningID = x.ScreeningID,
+                       ShowDate = x.Screening.ShowDate,
+                       ShowTimeID = x.ShowTimeID,
+                       SeatTypeID = x.SeatTypeID,
+                       Price = x.Price,
+                   }).ToListAsync();
             return ticketPrice;
         }
 
