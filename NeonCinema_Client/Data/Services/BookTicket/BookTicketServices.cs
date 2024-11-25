@@ -1,12 +1,18 @@
-﻿using NeonCinema_Application.DataTransferObject.ActorMovies;
+﻿using Microsoft.AspNetCore.Mvc;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.BookTicket;
+using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Enum;
+using System.Net.Http.Json;
+using System.Threading;
 
 namespace NeonCinema_Client.Data.Services.BookTicket
 {
-    public class BookTicketServices
+	public class BookTicketServices
     {
         private readonly HttpClient _httpClient;
         public BookTicketServices(HttpClient httpClient)
@@ -46,7 +52,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			try
 			{
-				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/ScreeningByflims?moviesID={MovieId}");
+				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/screening/{MovieId}");
 				return results;
 			}
 			catch (Exception ex)
@@ -54,7 +60,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("co loi xay ra : " + ex.Message);
 			}
 		}
-        public async Task<List<FoodComboDTO>> GetFoodCombo()
+		public async Task<List<FoodComboDTO>> GetFoodCombo()
         {
             try
             {
@@ -65,6 +71,38 @@ namespace NeonCinema_Client.Data.Services.BookTicket
             {
                 throw new Exception("co loi xay ra : " + ex.Message);
             }
-        }
-    }
+		}
+		public Task<HttpResponseMessage> BookTicket(CreateBookTicketRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var results = _httpClient.PostAsJsonAsync($"https://localhost:7211/api/BookTicket/book-ticket",request,cancellationToken);
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("co loi xay ra : " + ex.Message);
+			}
+		}
+		public async Task<HttpResponseMessage> UpdateStateSeats(Guid seatId, seatEnum status)
+		{
+			try
+			{
+				var seatUpdateData = new
+				{
+					SeatId = seatId,
+					Status = status
+				};
+
+				var results = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/BookTicket/UpdateSeatStatus", seatUpdateData);
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
+
+
+	}
 }

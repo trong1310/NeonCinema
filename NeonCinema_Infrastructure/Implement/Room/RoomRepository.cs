@@ -75,7 +75,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     ColumnNumber = room.ColumnNumber,
                     CinemasId = room.CinemasId
                 })
-                .ToListAsync(cancellationToken);
+.ToListAsync(cancellationToken);
         }
 
         public async Task<RoomDTO> GetByIDRoom(Guid id, CancellationToken cancellationToken)

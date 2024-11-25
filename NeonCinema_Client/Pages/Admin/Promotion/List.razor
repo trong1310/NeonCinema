@@ -1,10 +1,13 @@
 ﻿@page "/list-promotion-admin"
+@using Microsoft.AspNetCore.SignalR.Client
 @using NeonCinema_Application.DataTransferObject.Promotions
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Promotion
 @using NeonCinema_Client.DataTransferObject.Users
 @using NeonCinema_Domain.Database.Entities
+@using NeonCinema_Domain.Enum
 @using NeonCinema_Infrastructure.Extention.Utili
+@using System.Transactions
 
 @layout LayoutAdmin
 @inject NavigationManager _nav
@@ -25,20 +28,32 @@
 				</div>
 				<div class="form-check">
 					<div class="row mt-3">
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio1"
-								   value="option1" checked>
-							<label class="form-check-label" for="exampleRadio1">
-								Lựa chọn 1
-							</label>
-						</div>
-						<div class="col-2">
-							<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadio2"
-								   value="option2">
-							<label class="form-check-label" for="exampleRadio2">
-								Lựa chọn 2
-							</label>
-						</div>
+						<InputRadioGroup @bind-Value="selectedStatus">
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="null" checked />
+								<label class="form-check-label" for="exampleRadio4">
+									Tất cả
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.InActive">
+								<label class="form-check-label" for="exampleRadio1">
+									Không hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Active">
+								<label class="form-check-label" for="exampleRadio2">
+									Hoạt động
+								</label>
+							</div>
+							<div class="col-1">
+								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Expired">
+								<label class="form-check-label" for="exampleRadio3">
+									Hết hạn
+								</label>
+							</div>
+						</InputRadioGroup>
 					</div>
 				</div>
 			</div>
@@ -89,6 +104,7 @@
 														<div class="mb-3">
 															<label for="" class="form-label">Tên khuyến mại</label>
 															<InputText @bind-Value="input.Name" class="form-control" />
+															<ValidationMessage For="@(() => input.Name)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Mã khuyến mại</label>
@@ -98,35 +114,43 @@
 															<label for="" class="form-label">Mô tả</label>
 															<InputText @bind-Value="input.Description" class="form-control" />
 														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Phần trăm giảm giá</label>
-															<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" readonly="@discountPercentage"/>
-														    <ValidationMessage For="@(() => input.DiscountPercentage)" />
-														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Số tiền giảm</label>
-															<InputNumber @bind-Value="input.DiscountAmount" class="form-control" readonly="@discountAmount"/>
-															<ValidationMessage For="@(() => input.DiscountAmount)" />
-														</div>
+
+														@if (discountAmount == true)
+														{
+															<div class="mb-3">
+																<label for="" class="form-label">Số tiền giảm</label>
+																<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
+																<ValidationMessage For="@(() => input.DiscountAmount)" />
+															</div>
+														}
+														else if (discountPercentage == true)
+														{
+															<div class="mb-3">
+																<label for="" class="form-label">Phần trăm giảm giá</label>
+																<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" />
+																<ValidationMessage For="@(() => input.DiscountPercentage)" />
+															</div>
+														}
+
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày bắt đầu</label>
-															<InputDate @bind-Value="input.StartDate" class="form-control" />
+															<input type="datetime-local" @bind="input.StartDate" class="form-control" />
 															<ValidationMessage For="@(() => input.StartDate)" />
 														</div>
 														<div class="mb-3">
 															<label for="" class="form-label">Ngày kết thúc</label>
-															<InputDate @bind-Value="input.EndDate" class="form-control" />
+															<input type="datetime-local" @bind="input.EndDate" class="form-control" />
 															<ValidationMessage For="@(() => input.EndDate)" />
 														</div>
 														<div class="mb-4">
 															<InputRadioGroup @bind-Value="IsPercentage">
-																<label class="form-label">Theo tiền </label>
-																<InputRadio Value="true" class="form-check-input"></InputRadio>
 																<label class="form-label">Theo % </label>
+																<InputRadio Value="true" class="form-check-input"></InputRadio>
+																<label class="form-label">Theo tiền </label>
 																<InputRadio Value="false" class="form-check-input"></InputRadio>
 															</InputRadioGroup>
 														</div>
-														<button type="submit" class="btn btn-primary">Thêm</button>
+														<button type="submit" class="btn btn-primary">Thêm khuyến mại</button>
 													</ChildContent>
 												</EditForm>
 											</div>
@@ -200,49 +224,6 @@
 													<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-danger">Hủy</button>
 												</div>
 											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					}
-
-					else if (isModalVisibleConfirm == 2)
-					{
-						<div class="modal fade show modalConfirm" tabindex="-1" role="dialog" style="display: block;">
-							<div class="modal-dialog" role="document">
-								<div class="modal-content">
-									<div class="p-3">
-										<div class="col-12">
-											<div class="row">
-												<div class="col-1">
-													<button type="button" class="close" @onclick="CloseModalConfirm" aria-label="Close">
-														<span aria-hidden="true">&times;</span>
-													</button>
-												</div>
-											</div>
-											<div class="row">
-												<div align="center">
-													@if (messageString == "Thêm thành công")
-													{
-														<div style="width:200px; height:200px">
-															<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
-														</div>
-													}
-
-													@if (messageString == "Thêm thất bại")
-													{
-														<div style="width:200px; height:200px">
-															<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
-														</div>
-													}
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="mb-2">
-										<div align="center">
-											<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-primary">Đồng ý</button>
 										</div>
 									</div>
 								</div>
@@ -371,6 +352,7 @@
 											<div class="mb-3">
 												<label for="" class="form-label">Tên khuyến mại</label>
 												<InputText @bind-Value="inputUpdate.Name" class="form-control" />
+												<ValidationMessage For="@(() => input.Name)" />
 											</div>
 											<div class="mb-3">
 												<label for="" class="form-label">Mã khuyến mại</label>
@@ -448,6 +430,49 @@
 						</div>
 					}
 				}
+
+				@if (isModalVisibleConfirm == 2)
+				{
+					<div class="modal fade show modalConfirm" tabindex="-1" role="dialog" style="display: block;">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="p-3">
+									<div class="col-12">
+										<div class="row">
+											<div class="col-1">
+												<button type="button" class="close" @onclick="CloseModalConfirm" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+										</div>
+										<div class="row">
+											<div align="center">
+												@if (messageString == "Thêm thành công")
+												{
+													<div style="width:200px; height:200px">
+														<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
+													</div>
+												}
+
+												@if (messageString == "Thêm thất bại")
+												{
+													<div style="width:200px; height:200px">
+														<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
+													</div>
+												}
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="mb-2">
+									<div align="center">
+										<button style="width: 100px" @onclick="CloseModalConfirm" class="btn btn-primary">Đồng ý</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
 				<!--End modal-->
 
 
@@ -487,7 +512,7 @@
 							{
 								<td>@item.value.DiscountPercentage%</td>
 							}
-							@if(item.value.DiscountAmount == 0)
+							@if (item.value.DiscountAmount == 0)
 							{
 								<td>X</td>
 							}
@@ -498,7 +523,7 @@
 							<td>@item.value.StartDate.ToShortDateString()</td>
 							<td>@item.value.EndDate.ToShortDateString()</td>
 							<td>@item.value.Description</td>
-							<td><span class="bg-success text-white rounded">@item.value.Status</span></td>
+							<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
 							<td>
 								<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
@@ -540,16 +565,19 @@
 @code {
 
 	int stt = 1;
-	private string inputSearchUser = "";
+	//
+	private string inputSearchUser = ""; //tim kiem theo ten user
+	private PromotionStatus? selectedStatus = null; // Mặc định trạng thái "Tất cả"
+	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
 	private List<CustomerViewModel_Promotion> _lstuser = new List<CustomerViewModel_Promotion>();
 	private List<UserDTO> _lstUser = new List<UserDTO>();
 	private PromotionCreateRequest input = new PromotionCreateRequest();
 	private PromotionDTO inputUpdate = new PromotionDTO();
-	private string messageString = null;
-	private Guid idActive;
-	private bool selectAll = false;
+	private string messageString = null; //thong bao confirm
+	private Guid idActive; //id update/delete promotion
+	private bool selectAll = false; //chon tat ca user
 
 	//Chọn loại giảm giá
 	private bool discountPercentage = true;
@@ -562,11 +590,11 @@
 		{
 			if (!discountPercentage)
 			{
-				input.DiscountPercentage = 0;
+				input.DiscountPercentage = null;
 			}
 			else
 			{
-				input.DiscountAmount = 0;
+				input.DiscountAmount = null;
 			}
 
 			discountPercentage = value;
@@ -585,12 +613,24 @@
 
 	//Gen code
 	private string codegen = Uliti.GenerateCode();
-	
+
 
 
 	//Modal
 	private int isModalVisible = 0;
 	private int isModalVisibleConfirm = 0;
+
+	//Màu trạng thái
+	private string GetStatusClass(PromotionStatus status)
+	{
+		return status switch
+		{
+			PromotionStatus.Active => "bg-success",    // Màu xanh khi trạng thái là "Active"
+			PromotionStatus.InActive => "bg-warning",  // Màu vàng khi trạng thái là "InActive"
+			PromotionStatus.Expired => "bg-danger",    // Màu đỏ khi trạng thái là "Expired"
+		};
+	}
+	private HubConnection? hubConnection;
 
 
 	protected override async Task OnInitializedAsync()
@@ -598,7 +638,39 @@
 		await LoadPromotion();
 		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
 		await LoadUser();
-	
+
+		await ConnectToSignalRHub();
+	}
+
+	private async Task ConnectToSignalRHub()
+	{
+		// Tạo kết nối với SignalR Hub
+		hubConnection = new HubConnectionBuilder()
+			.WithUrl(_nav.ToAbsoluteUri("/promohub"))
+			.Build();
+
+		// Đăng ký sự kiện nhận thông báo
+		hubConnection.On<string>("ReceivePromotionUpdate", async (message) =>
+		{
+			// Cập nhật trạng thái khi nhận được thông báo
+			await InvokeAsync(async () =>
+			{
+				// Tải lại danh sách mã khuyến mại hoặc cập nhật trực tiếp
+				await LoadPromotion();
+				StateHasChanged(); // Cập nhật lại UI
+			});
+		});
+
+		// Bắt đầu kết nối SignalR
+		await hubConnection.StartAsync();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (hubConnection is not null)
+		{
+			await hubConnection.DisposeAsync();
+		}
 	}
 
 	//Get All promotion
@@ -697,58 +769,78 @@
 	//Add
 	public async Task AddPromotion()
 	{
-		input.ID = Guid.NewGuid();
-		input.Code = codegen;
-		var check = await _prosv.CreatePromotionAsync(input);
-
-		if (check)
+		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
-			List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
-
-			foreach (var item in GetSelectedUser())
+			try
 			{
-				PromotionUserDTO x = new PromotionUserDTO
+				input.ID = Guid.NewGuid();
+				input.Code = codegen;
+				var check = await _prosv.CreatePromotionAsync(input);
+
+				if (check)
+				{
+					List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
+
+					foreach (var item in GetSelectedUser())
 					{
-						PromotionID = input.ID,
-						UserID = item.ID
-					};
+						PromotionUserDTO x = new PromotionUserDTO
+							{
+								PromotionID = input.ID,
+								UserID = item.ID
+							};
 
-				lstPU.Add(x);
+						lstPU.Add(x);
 
-				MailPromotionRequest mailitem = new MailPromotionRequest
+						MailPromotionRequest mailitem = new MailPromotionRequest
+							{
+								FullName = item.FullName,
+								NamePromotion = "Chưa update",
+								ToEmail = item.Email,
+								Code = input.Code
+							};
+						_lstMail.Add(mailitem);
+					}
+
+					if (lstPU.Count == 0)
 					{
-						FullName = item.FullName,
-						NamePromotion = "Chưa update",
-						ToEmail = item.Email,
-						Code = input.Code
-					};
-				_lstMail.Add(mailitem);
-			}
+						messageString = "Thêm thất bại";
+						return;
+					}
 
-			if (await _prosv.CreatePromotionUserAsync(lstPU))
+					if (await _prosv.CreatePromotionUserAsync(lstPU))
+					{
+						await _prosv.SendMailWithTemplateAsync(_lstMail);
+						scope.Complete();
+						messageString = "Thêm thành công";
+
+
+						//Reset input và list
+						input = new PromotionCreateRequest();
+						await LoadPromotion();
+					}
+					else
+					{
+						messageString = "Thêm thất bại";
+						return;
+					}
+				}
+				else
+				{
+					messageString = "Thêm thất bại";
+					return;
+				}
+			}
+			catch
 			{
-				await _prosv.SendMailWithTemplateAsync(_lstMail);
-				messageString = "Thêm thành công";
+				return;
 			}
-			else
+			finally
 			{
-				messageString = "Có lỗi khi thêm ưu đãi khách hàng";
+				//Mở modal thông báo
+				isModalVisibleConfirm = 2;
 			}
-
-			//Reset input và list
-			input = new PromotionCreateRequest();
-			await LoadPromotion();
-
-
 
 		}
-		else
-		{
-			messageString = "Thêm thất bại";
-		}
-
-		//Mở modal thông báo
-		isModalVisibleConfirm = 2;
 	}
 
 	//back
@@ -768,9 +860,15 @@
 		{
 			_nav.NavigateTo("/list-promotion-admin");
 			idActive = Guid.Empty;
+			messageString = "Thêm thành công";
+		}
+		else
+		{
+			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo
 		}
 
-		CloseModal();
+		isModalVisibleConfirm = 2;
+
 		await LoadPromotion();
 	}
 

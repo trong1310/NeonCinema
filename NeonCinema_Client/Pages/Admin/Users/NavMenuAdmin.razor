@@ -4,7 +4,6 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 
-
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
 @* <style>
@@ -109,7 +108,15 @@
         <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
         <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
         <MudNavLink Href="/list-promotion-admin" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
-        <MudNavLink Href="/ticket-pricing" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
+
+        <MudNavGroup Title="Quản lý vé" Icon="@Icons.Material.Filled.CardTravel" IconColor="Color.Error">
+            <MudNavLink Href="/ticketprices" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary">Quản lý giá vé</MudNavLink>
+            <MudNavLink Href="/ticket-pricing" Icon="@Icons.Material.Filled.Event" IconColor="Color.Secondary">Danh sách giá vé</MudNavLink>
+            <MudNavLink Href="/book_ticket" Icon="@Icons.Material.Filled.BookOnline" IconColor="Color.Success">Đặt vé</MudNavLink>
+        </MudNavGroup>
+
+        
+
         <MudNavLink Href="/statistical" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
 
         <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info">
