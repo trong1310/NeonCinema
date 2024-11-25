@@ -71,12 +71,8 @@
     [Parameter] public Guid seatId { get; set; }
     private UpdateSeatDTO seatToUpdate = new UpdateSeatDTO();
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
-    
-
     protected override async Task OnInitializedAsync()
     {
-       
-
         seatTypes = await SeatTypeService.GetAllSeatType();
         var seatResponse = await SeatService.GetSeatById(seatId);
         if (seatResponse != null)
@@ -89,7 +85,6 @@
                     Row = seatResponse.Row,
                     Status = seatResponse.Status,
                     SeatTypeID = seatResponse.SeatTypeID
-
             };
         }
     }
@@ -97,16 +92,13 @@
     private async Task HandleValidSubmit()
     {
         var result = await SeatService.UpdateSeate(seatToUpdate.ID, seatToUpdate);
-
-        
         if (result != null && result.IsSuccessStatusCode)
         {
             Navigation.NavigateTo("/listseat");
         }
         else
         {
-            Console.WriteLine("Error: Could not update seat information.");
-            
+            Console.WriteLine("Error: Could not update seat information."); 
         }
     }
 
