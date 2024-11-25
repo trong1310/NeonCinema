@@ -123,10 +123,17 @@
 
     private List<string> XAxisLabels = new();
     private List<ChartSeries> RevenueChartSeries = new();
-    private MudChart Chart; // Biểu đồ
+    private MudChart? Chart; // Biểu đồ
 
-    // Phương thức này sẽ được gọi khi trang được khởi tạo
+    // Khởi tạo dữ liệu khi trang được tải
     protected override async Task OnInitializedAsync()
+    {
+        await LoadStatistics();
+        await LoadChartData();
+    }
+
+    // Phương thức khi người dùng nhấn nút "Chấp nhận"
+    private async Task ApplyFilters()
     {
         await LoadStatistics();
         await LoadChartData();
@@ -165,7 +172,6 @@
                     new ChartSeries
                     {
                         Name = "Doanh thu",
-                        // Explicitly cast decimal values to double
                         Data = chartData.Revenue.Select(r => (double)r).ToArray()
                     }
                 };
@@ -176,21 +182,12 @@
             Snackbar.Add($"Error loading chart data: {ex.Message}", Severity.Error);
         }
     }
-
-    // Phương thức khi người dùng nhấn nút "Chấp nhận"
-    private async Task ApplyFilters()
-    {
-        // Gọi API để lấy lại dữ liệu thống kê với các tham số lọc
-        await LoadStatistics();
-        await LoadChartData();
-    }
 }
-
 
 <style>
     .bordered {
-        border: 1px solid #ccc; 
-        border-radius: 4px; 
+        border: 1px solid #ccc;
+        border-radius: 4px;
         padding: 4px;
     }
 
@@ -233,4 +230,4 @@
         border-radius: 50%; /* Makes the background circular */
         font-size: 1rem; /* Adjust icon size */
     }
-</style>
+</style> 

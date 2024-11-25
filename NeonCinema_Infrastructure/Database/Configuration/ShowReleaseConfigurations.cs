@@ -15,8 +15,8 @@ namespace NeonCinema_Infrastructure.Database.Configuration
 		{
 			builder.ToTable(nameof(Show_release));
 			builder.HasKey(x => x.ID);
-			builder.HasOne(x=>x.Movies).WithMany(x=>x.Show_Releases).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.NoAction);
-			builder.HasOne(x=>x.Room).WithMany(x=>x.Show_Releases).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.NoAction);
+			builder.HasOne(x=>x.Movies).WithMany(x=>x.Show_Releases).HasForeignKey(x=>x.MovieID).OnDelete(DeleteBehavior.Cascade);
+			builder.HasOne(x=>x.Room).WithMany(x=>x.Show_Releases).HasForeignKey(x=>x.RoomID).OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }

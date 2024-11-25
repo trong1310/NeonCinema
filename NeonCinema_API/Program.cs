@@ -20,6 +20,7 @@ using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Interface.ShiftChange;
 using NeonCinema_Application.Interface.ShowTime;
 using NeonCinema_Application.Interface.Statistics;
+using NeonCinema_Application.Interface.TicketPriceSetting;
 using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Infrastructure.Extention;
@@ -36,6 +37,7 @@ using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
 using NeonCinema_Infrastructure.Implement.Statisticss;
+using NeonCinema_Infrastructure.Implement.TicketPriceSetting;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
 using System.Text;
@@ -49,7 +51,7 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddScoped<TwilioClient, TwilioClient>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRolesRepository, RoleRepository>();
-builder.Services.AddScoped<ICountryRepository,CountryRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICinemasRepository, CinemasRepository>();
 builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
 //builder.Services.AddScoped<IActorRepositories, ActorResp>();
@@ -61,7 +63,11 @@ builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
-builder.Services.AddScoped<IStatisticsRepository,StatisticsRepository>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
+builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
+
+
 
 builder.Services.Configure<FormOptions>(options =>
 {

@@ -19,21 +19,16 @@ using NeonCinema_Client.Data.IServices.IMoviesServices;
 using NeonCinema_Client.Services.MoivesService;
 using NeonCinema_Client.Data.IServices.Language;
 using Blazored.Toast;
-
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Client.Data.Services.Screenning;
 using NeonCinema_Client.Data.IServices.Promotion;
 using NeonCinema_Client.Data.Services.Promotion;
-
 using NeonCinema_Client.Data.IServices.Director;
 using NeonCinema_Client.Data.Services.Director;
 using NeonCinema_Client.Data.IServices.MovieType;
 using NeonCinema_Client.Data.Services.MovieType;
 using Microsoft.Extensions.FileProviders;
 using NeonCinema_Client.Data.IServices.SeatType;
-using NeonCinema_Client.Data.Services.SeatType;
-//using NeonCinema_Client.Data.IServices.Seat;
-//using NeonCinema_Client.Data.Services.Seat;
 using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Application.Interface;
@@ -54,6 +49,13 @@ using NeonCinema_Client.Data.IServices.Statistics;
 using NeonCinema_Client.Data.Services.StatisticService;
 using NeonCinema_Client.Data.IServices.TicketPrice;
 using NeonCinema_Client.Data.Services.TicketPriceService;
+using NeonCinema_Infrastructure.Implement.Promotion_R;
+
+using NeonCinema_Client.Data.Services.SeatType;
+
+using NeonCinema_Client.Data.Services.TicketPriceSetting;
+using NeonCinema_Client.Data.IServices.TicketPriceSetting;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -74,6 +76,7 @@ builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
+builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
@@ -102,6 +105,8 @@ builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
+//builder.Services.AddHostedService<PromoBackgroundServices>();
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication("Bearer")
 	.AddJwtBearer("Bearer", options =>
@@ -138,7 +143,8 @@ app.MapBlazorHub();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapFallbackToPage("/_Host"); 
+	endpoints.MapHub<PromoHub>("/promohub");
+	endpoints.MapFallbackToPage("/_Host"); 
 });
 
 

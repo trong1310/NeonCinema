@@ -32,6 +32,10 @@ using NeonCinema_Infrastructure.Implement.Acotr;
 using NeonCinema_Infrastructure.Implement.ActorMovies;
 using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Infrastructure.Implement.BookTickets;
+using NeonCinema_Application.Interface.Statistics;
+using NeonCinema_Infrastructure.Implement.Statisticss;
+using NeonCinema_Application.Interface.TicketPriceSetting;
+using NeonCinema_Infrastructure.Implement.TicketPriceSetting;
 
 namespace NeonCinema_Infrastructure.Extention
 {
@@ -70,6 +74,10 @@ namespace NeonCinema_Infrastructure.Extention
             services.AddTransient<ActorMoviesResp>();
             services.AddTransient<BookTicketResp>();
             services.AddScoped<ITicketPriceRepository, TicketPriceRepository>();
+            services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+            services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
+            services.AddTransient<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
+
             return services;
         }
     }

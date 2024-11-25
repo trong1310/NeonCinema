@@ -186,7 +186,6 @@
 
 	private async Task<string> GetImageUrl(IBrowserFile file)
 	{
-		// Chỉ tạo URL cho các tệp hình ảnh
 		if (file.ContentType.StartsWith("image/"))
 		{
 			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20);
@@ -195,7 +194,6 @@
 			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
 			return $"data:{file.ContentType};base64,{imageBase64}";
 		}
-
 		return null;
 	}
 

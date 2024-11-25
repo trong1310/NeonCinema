@@ -17,6 +17,7 @@ namespace NeonCinema_Domain.Database.Entities
         public seatEnum Status { get; set; }
         public Guid SeatTypeID { get; set; }
         public Guid RoomID { get; set; }
+	//	public virtual ICollection<TicketPrice>? TicketPrice { get; set; }
 		public virtual ICollection<Ticket>? Ticket { get; set; }
 		public virtual SeatType? SeatTypes { get; set; }
         public virtual Room? Rooms { get; set; }

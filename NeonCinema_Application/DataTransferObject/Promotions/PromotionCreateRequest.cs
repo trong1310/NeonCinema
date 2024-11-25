@@ -10,15 +10,16 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionCreateRequest
     {
 		public Guid ID { get; set; }  // Khóa chính
+		[RegularExpression(@"^[a-zA-Z0-9/]*$", ErrorMessage = "Chỉ được chứa chữ cái, số và dấu /")]
 		public string Name { get; set; }  // Tên khuyến mãi
 		public string Code { get; set; }  
         public string Description { get; set; } = "Không có"; // Mô tả khuyến mãi
 
-        //[Range(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
-		public double DiscountPercentage { get; set; } // giảm theo %
+		[ConditionalRange(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
+		public double? DiscountPercentage { get; set; } // giảm theo %
 
-		//[Range(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
-		public double DiscountAmount { get; set; } 
+		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
+		public double? DiscountAmount { get; set; } 
 
 		[Required(ErrorMessage = "Start date is required.")]
 		[DataType(DataType.Date)]
@@ -53,6 +54,33 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 			if ((instance.EndDate - instance.StartDate).TotalDays < 1)
 			{
 				return new ValidationResult("Ngày kết thúc phải lớn hơn ngày bắt đầu 1 ngày");
+			}
+
+			return ValidationResult.Success;
+		}
+	}
+
+	public class ConditionalRangeAttribute : ValidationAttribute
+	{
+		private readonly double _min;
+		private readonly double _max;
+
+		public ConditionalRangeAttribute(double min, double max)
+		{
+			_min = min;
+			_max = max;
+		}
+
+		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+		{
+			if (value == null)
+			{
+				return ValidationResult.Success;
+			}
+
+			if (value is double doubleValue && (doubleValue < _min || doubleValue > _max))
+			{
+				return new ValidationResult(ErrorMessage ?? $"Giá trị phải từ {_min} đến {_max}");
 			}
 
 			return ValidationResult.Success;
