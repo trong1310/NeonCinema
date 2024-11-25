@@ -1,4 +1,6 @@
-﻿using NeonCinema_Application.DataTransferObject.TicketPrice;
+﻿using NeonCinema_Application.DataTransferObject.Genre;
+using NeonCinema_Application.DataTransferObject.Screening;
+using NeonCinema_Application.DataTransferObject.TicketPrice;
 using NeonCinema_Client.Data.IServices.TicketPrice;
 using System.Threading;
 
@@ -72,6 +74,19 @@ namespace NeonCinema_Client.Data.Services.TicketPriceService
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public async Task<List<ScreeningDTO>> GetAllScreening()
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<ScreeningDTO>>("https://localhost:7211/api/TicketPrice/get-screening");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new List<ScreeningDTO>();
             }
         }
     }

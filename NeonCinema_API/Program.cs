@@ -65,6 +65,7 @@ builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
+builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 
 
 
