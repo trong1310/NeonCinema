@@ -5,6 +5,8 @@ using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Implement.BookTickets;
 using System.Net;
@@ -17,10 +19,12 @@ namespace NeonCinema_API.Controllers
     {
         private readonly BookTicketResp _bookTicketResp;
         private readonly IMapper _mapper;
-        public BookTicketController(BookTicketResp bookTicketResp, IMapper map)
+        private readonly NeonCinemasContext _context;
+        public BookTicketController(BookTicketResp bookTicketResp, IMapper map,NeonCinemasContext context)
         {
             _bookTicketResp = bookTicketResp;
             _mapper = map;
+            _context = context;
         }
         // Đặt vé cho khách hàng
         [HttpPost("book-ticket")]
@@ -74,6 +78,24 @@ namespace NeonCinema_API.Controllers
                 return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
             }
         }
+		public class SeatUpdateRequest
+		{
+			public Guid SeatId { get; set; }
+			public seatEnum Status { get; set; }
+		}
 
-    }
+		[HttpPut("UpdateSeatStatus")]
+		public async Task<IActionResult> UpdateSeatStatus([FromBody] SeatUpdateRequest request)
+		{
+			var seat = await _context.Seat.FindAsync(request.SeatId);
+			if (seat == null)
+				return NotFound();
+
+			seat.Status = request.Status;
+			await _context.SaveChangesAsync();
+			return Ok();
+		}
+
+
+	}
 }
