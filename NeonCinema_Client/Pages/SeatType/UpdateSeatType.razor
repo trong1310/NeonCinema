@@ -57,23 +57,18 @@ else
 
     private async Task HandleValidSubmit()
     {
-        // Basic validation for empty SeatTypeName
         if (string.IsNullOrWhiteSpace(seatType.SeatTypeName))
         {
             errorMessage = "Seat Type Name không được để trống.";
             return;
         }
-
-        // Check for duplicate SeatTypeName
         var existingSeatTypes = await SV.GetAllSeatType();
         if (existingSeatTypes.Any(st => st.SeatTypeName == seatType.SeatTypeName))
         {
             errorMessage = "Seat Type Name đã tồn tại.";
             return;
         }
-
-        // If valid, proceed with creation
-        errorMessage = string.Empty; // Clear error message
+        errorMessage = string.Empty; 
         var update = new UpdateSeatTypeDTO
             {
                 ID = seatType.ID,
