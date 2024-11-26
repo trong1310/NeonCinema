@@ -4,6 +4,7 @@
 @inject ITicketPriceSettingService TicketPriceSettingService
 @inject NavigationManager NavigationManager
 
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
 <div class="alert alert-success" role="alert" style="display:@(string.IsNullOrEmpty(successMessage) ? "none" : "block")">
     @successMessage
@@ -177,7 +178,10 @@
 
 }
 <style>
-    
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+    }
     .form-control {
         width: 100%;
     }
