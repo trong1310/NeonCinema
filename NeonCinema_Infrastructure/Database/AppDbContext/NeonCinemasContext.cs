@@ -305,9 +305,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			var languageData = new List<Language>
 			{
-				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "en" },
-				new Language { ID = Guid.NewGuid(), LanguageName = "vi" },
-				new Language { ID = Guid.NewGuid(), LanguageName = "ja" },
+				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "EN" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "VIE" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "JPN" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "ThaiLans" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "USA" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "Korea" }
