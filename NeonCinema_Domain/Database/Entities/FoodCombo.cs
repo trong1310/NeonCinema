@@ -15,7 +15,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Description { get; set; }
         public string Images { get; set; }
         public int Quantity { get; set; }
-		[Precision(18, 2)]
+		[Precision(18, 3)]
 		public decimal TotalPrice { get; set; }
 
         public virtual ICollection<BillCombo>? BillCombos { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.TicketPrice;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
@@ -20,14 +21,105 @@ namespace NeonCinema_Infrastructure.Implement
             _context = context;
         }
 
-        public async Task<TicketPriceDTO> GetTicketPriceByIdAsync(Guid id)
+        public async Task<HttpResponseMessage> CreateTicketPrice(TicketPriceCreateRequest ticketPriceDTO)
+        {
+            var screening = await _context.Screening.FindAsync(ticketPriceDTO.ScreeningID);
+            var showTime = await _context.ShowTimes.FindAsync(ticketPriceDTO.ShowTimeID);
+            var seatType = await _context.SeatTypes.FindAsync(ticketPriceDTO.SeatTypeID);
+            var ticketPriceSetting = await _context.TicketPriceSettings
+                .FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3")); // Assuming you have one global setting
+
+            if (screening == null || showTime == null || seatType == null || ticketPriceSetting == null)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Screening, ShowTime, SeatType, or TicketPriceSetting not found.")
+                };
+            }
+
+            decimal basePrice = 0;
+            DateTime screeningDate = screening.ShowDate;
+            TimeSpan showStartTime = showTime.StartTime;
+
+            // Xác định giá cơ bản theo ngày trong tuần và giờ chiếu
+            if (screeningDate.DayOfWeek == DayOfWeek.Monday ||
+                screeningDate.DayOfWeek == DayOfWeek.Tuesday ||
+                screeningDate.DayOfWeek == DayOfWeek.Wednesday ||
+                screeningDate.DayOfWeek == DayOfWeek.Thursday)
+            {
+                basePrice = showStartTime < new TimeSpan(17, 0, 0)
+                    ? ticketPriceSetting.PriceBefore17hWeekDay
+                    : ticketPriceSetting.PriceAfter17hWeekDay;
+            }
+            else if (screeningDate.DayOfWeek == DayOfWeek.Friday ||
+                     screeningDate.DayOfWeek == DayOfWeek.Saturday ||
+                     screeningDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                basePrice = showStartTime < new TimeSpan(17, 0, 0)
+                    ? ticketPriceSetting.PriceBefore17hWeekeend
+                    : ticketPriceSetting.PriceAfter17hWeekeend;
+            }
+
+            // Thêm phụ phí cho loại ghế
+            if (seatType.SeatTypeName == "Ghế Vip")
+            {
+                basePrice += ticketPriceSetting.SurchargeVIP;
+            }
+            else if (seatType.SeatTypeName == "Ghế đôi")
+            {
+                basePrice += ticketPriceSetting.SurchargeCouple;
+            }
+
+            // Create the TicketPrice entity to insert or update
+            var ticketPrice = new TicketPrice
+            {
+                ID = Guid.NewGuid(),
+                Price = ticketPriceDTO.Price > 0 ? ticketPriceDTO.Price : basePrice,
+                SeatTypeID = ticketPriceDTO.SeatTypeID,
+                ShowTimeID = ticketPriceDTO.ShowTimeID,
+                ScreeningID = ticketPriceDTO.ScreeningID,
+                TicketPriceSettingID = Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3")
+            };
+
+            _context.TicketPrice.Add(ticketPrice);
+            await _context.SaveChangesAsync();
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        }
+
+		public async Task<List<ScreeningDTO>> GetAllScreening()
+		{
+            var screening = await _context.Screening
+                .Select(x => new ScreeningDTO
+                {
+                    ID = x.ID,
+                    ShowDate = x.ShowDate
+                }).ToListAsync();
+            return screening;
+		}
+
+		public async Task<List<TicketPriceDTO>> GetAllTicketPrices()
         {
             var ticketPrice = await _context.TicketPrice
-                .Where(t => t.ID == id)
-                .Include(t => t.Screening)
-                .Include(t => t.SeatTypeID)
-                .Include(t => t.ShowTimes)
-                .FirstOrDefaultAsync();
+                .Include(x => x.Screening)
+                   .Select(x => new TicketPriceDTO
+                   {
+                       ID = x.ID,
+                       ScreeningID = x.ScreeningID,
+                       ShowDate = x.Screening.ShowDate,
+                       ShowTimeID = x.ShowTimeID,
+                       SeatTypeID = x.SeatTypeID,
+                       Price = x.Price,
+                   }).ToListAsync();
+            return ticketPrice;
+        }
+
+        public async Task<TicketPriceDTO> GetTicketPriceById(Guid id)
+        {
+            var ticketPrice = await _context.TicketPrice
+              .Include(t => t.Screening)
+              .Include(t => t.SeatTypeID)
+              .Include(t => t.ShowTimes)
+              .FirstOrDefaultAsync();
 
             if (ticketPrice == null)
             {
@@ -38,94 +130,29 @@ namespace NeonCinema_Infrastructure.Implement
             {
                 ID = ticketPrice.ID,
                 Price = ticketPrice.Price,
-				SeatID = ticketPrice.SeatTypeID,
+                SeatTypeID = ticketPrice.SeatTypeID,
                 ShowTimeID = ticketPrice.ShowTimeID,
                 ScreeningID = ticketPrice.ScreeningID
             };
         }
 
-        public async Task<List<TicketPriceDTO>> GetTicketPricesAsync()
-        {
-            var ticketPrices = await _context.TicketPrice
-                .Include(t => t.Screening)
-                .Include(t => t.SeatTypeID)
-                .Include(t => t.ShowTimes)
-                .ToListAsync();
-
-            return ticketPrices.Select(ticketPrice => new TicketPriceDTO
-            {
-                ID = ticketPrice.ID,
-                Price = ticketPrice.Price,
-                SeatID = ticketPrice.SeatTypeID,
-                ShowTimeID = ticketPrice.ShowTimeID,
-                ScreeningID = ticketPrice.ScreeningID
-            }).ToList();
-        }
-
-        public async Task<HttpResponseMessage> SetupPrice(TicketPriceCreateRequest ticketPriceDTO)
-        {
-            // Validate the existence of the Screening, ShowTime, and SeatType
-            var screening = await _context.Screening.FindAsync(ticketPriceDTO.ScreeningID);
-            var showTime = await _context.ShowTimes.FindAsync(ticketPriceDTO.ShowTimeID);
-            var seatType = await _context.SeatTypes.FindAsync(ticketPriceDTO.SeatTypeID);
-
-            if (screening == null || showTime == null || seatType == null)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
-            }
-
-            DateTime screeningDate = screening.ShowDate;
-            TimeSpan showStartTime = showTime.StartTime;
-            decimal basePrice = CalculateBasePrice(screeningDate, showStartTime, seatType); 
-
-
-            basePrice = decimal.Parse(basePrice.ToString("F3"));
-
-            // Create the TicketPrice entity to insert or update
-            var ticketPrice = new TicketPrice
-            {
-                ID = Guid.NewGuid(),
-                Price = (ticketPriceDTO.Price == 0 || !ticketPriceDTO.Price.HasValue) ? basePrice : ticketPriceDTO.Price.Value,
-				SeatTypeID = ticketPriceDTO.SeatTypeID,
-                ShowTimeID = ticketPriceDTO.ShowTimeID,
-                ScreeningID = ticketPriceDTO.ScreeningID
-            };
-
-            // Check if the ticket price exists, update or add it
-            var existingTicketPrice = await _context.TicketPrice
-                .FirstOrDefaultAsync(tp => tp.ID == ticketPriceDTO.ID);
-
-            //if (existingTicketPrice != null)
-            //{
-            //    existingTicketPrice.Price = ticketPriceDTO.Price; // Update the price
-            //    _context.TicketPrice.Update(existingTicketPrice);
-            //}
-            //else
-            //{
-            //    _context.TicketPrice.Add(ticketPrice); // Insert new ticket price
-            //}
-            _context.TicketPrice.Add(ticketPrice);
-            await _context.SaveChangesAsync();
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-        }
-
-        public async Task<HttpResponseMessage> UpdateTicketPriceAsync(TicketPriceDTO ticketPriceDTO)
+        public async Task<HttpResponseMessage> UpdateTicketPrice(TicketPriceDTO ticketPrice)
         {
             var existingTicketPrice = await _context.TicketPrice
-                .FirstOrDefaultAsync(tp => tp.ID == ticketPriceDTO.ID);
+                .FirstOrDefaultAsync(tp => tp.ID == ticketPrice.ID);
 
             if (existingTicketPrice == null)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
             }
 
-            existingTicketPrice.Price = ticketPriceDTO.Price;
+            existingTicketPrice.Price = ticketPrice.Price;
             await _context.SaveChangesAsync();
 
             return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
         }
-
-        private decimal CalculateBasePrice(DateTime screeningDate, TimeSpan showStartTime, SeatType seatType)
+        private decimal CalculateBasePrice(DateTime screeningDate, TimeSpan showStartTime, SeatType seatType,
+            NeonCinema_Domain.Database.Entities.TicketPriceSetting ticketPriceSetting)
         {
             decimal basePrice = 0;
 
@@ -135,23 +162,23 @@ namespace NeonCinema_Infrastructure.Implement
                 screeningDate.DayOfWeek == DayOfWeek.Wednesday ||
                 screeningDate.DayOfWeek == DayOfWeek.Thursday)
             {
-                basePrice = showStartTime < new TimeSpan(17, 0, 0) ? 50m : 60m;
+                basePrice = showStartTime < new TimeSpan(17, 0, 0) ? ticketPriceSetting.PriceBefore17hWeekDay  : ticketPriceSetting.PriceAfter17hWeekDay ;
             }
             else if (screeningDate.DayOfWeek == DayOfWeek.Friday ||
                      screeningDate.DayOfWeek == DayOfWeek.Saturday ||
                      screeningDate.DayOfWeek == DayOfWeek.Sunday)
             {
-                basePrice = showStartTime < new TimeSpan(17, 0, 0) ? 60m : 70m;
+                basePrice = showStartTime < new TimeSpan(17, 0, 0) ? ticketPriceSetting.PriceBefore17hWeekeend  : ticketPriceSetting.PriceAfter17hWeekeend ;
             }
 
             // Additional charges for seat types
             if (seatType.SeatTypeName == "Ghế Vip")
             {
-                basePrice += 30m;
+                basePrice += ticketPriceSetting.SurchargeVIP;
             }
-            else if (seatType.SeatTypeName == "Ghế Đôi")
+            else if (seatType.SeatTypeName == "Ghế đôi")
             {
-                basePrice += 50m;
+                basePrice += ticketPriceSetting.SurchargeCouple;
             }
 
             return basePrice;

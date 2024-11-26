@@ -10,8 +10,9 @@ namespace NeonCinema_Application.DataTransferObject.TicketPrice
     {
         public Guid ID { get; set; }
         public Guid ShowTimeID { get; set; }
-        public Guid SeatID { get; set; }
+        public Guid SeatTypeID { get; set; }
         public Guid ScreeningID { get; set; }
+        public DateTime ShowDate { get; set; }
         public decimal Price { get; set; }
     }
 }

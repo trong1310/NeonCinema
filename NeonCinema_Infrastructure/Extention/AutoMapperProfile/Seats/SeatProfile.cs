@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NeonCinema_Application.DataTransferObject.Seats;
+using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.DataTransferObject.ShowRelease;
 using NeonCinema_Application.DataTransferObject.TicketSeats;
 using NeonCinema_Domain.Database.Entities;
@@ -15,7 +16,9 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile.Seats
     {
         public SeatProfile()
         {
-                CreateMap<Seat, SeatDTO>().ReverseMap();
+            CreateMap<Seat, SeatDTO>();
+            CreateMap<SeatTypeDTO, SeatType>();
+            CreateMap<Seat, SeatDTO>().ReverseMap();
                 CreateMap<Seat, CreateSeatDTO>().ReverseMap();
                 CreateMap<Seat, UpdateSeatDTO>().ReverseMap();
            
