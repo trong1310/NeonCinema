@@ -10,140 +10,299 @@
 @inject IShowTimeService ShowTimeService
 @inject ISeatTypeService SeatTypeService
 @inject IScreeningService ScreeningService
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-<h3>Danh sách Giá Vé</h3>
-<button class="btn btn-primary" @onclick="ShowAddModal">Thêm Giá Vé Mới</button>
-<!-- Bảng Hiển Thị Giá Vé -->
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Giá Vé</th>
-            <th>Thời Gian Chiếu</th>
-            <th>Loại Ghế</th>
-            <th>Giờ chiếu</th>
-            <th>Hành Động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (ticketPrices == null)
-        {
+<div class="container-fluid mt-5">
+    <h3 class="text-center text-secondary-emphasis">Danh sách giá vé</h3>
+    <div class="row mb-4 p-3 search-filter-container">
+        <!-- Lọc theo Giá -->
+        <div class="col-md-3">
+            <label for="priceFilter">Giá vé</label>
+            <div class="input-container">
+                <input type="number" class="form-control" placeholder="Nhập giá vé" @bind="priceFilter" @oninput="OnPriceFilterChanged" />
+                <span class="currency-unit">VND</span>
+            </div>
+            
+        </div>
+
+        <!-- Lọc theo Loại ghế -->
+        <div class="col-md-3">
+            <label>Loại ghế</label>
+            <select class="form-control" @onchange="OnSeatTypeChanged">
+                <option value="">Tất cả</option>
+                @foreach (var seatType in seatTypes)
+                {
+                    <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                }
+            </select>
+        </div>
+
+        <!-- Lọc theo Giờ chiếu -->
+        <div class="col-md-3">
+            <label>Giờ chiếu</label>
+            <select class="form-control" @onchange="OnShowTimeChanged" >
+                <option value="">Tất cả</option>
+                @foreach (var showTime in showTimes.OrderBy(st => st.StartTime))
+                {
+                    <option value="@showTime.ID">@showTime.StartTime</option>
+                }
+            </select>
+        </div>
+
+        <!-- Lọc theo Ngày -->
+        <div class="col-md-3">
+            <label>Ngày chiếu</label>
+            <input type="date" class="form-control" @bind="dateFilter" @oninput="OnShowDateChanged" />
+        </div>
+
+
+    </div>
+    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="ShowAddModal">
+        <i class="fas fa-plus"></i> Thêm giá vé mới
+    </button>
+    <!-- Bảng Hiển Thị Giá Vé -->
+    <table class="table table-hover ticket-table">
+        <thead>
             <tr>
-                <td colspan="5">Đang tải dữ liệu...</td>
+                <th class="text-center">STT</th>
+                <th class="text-center">Giá Vé</th>
+                <th class="text-center">Thời gian chiếu</th>
+                <th class="text-center">Loại ghế</th>
+                <th class="text-center">Ngày chiếu</th>
+                <th class="text-center">Hành động</th>
             </tr>
-        }
-        else if (ticketPrices.Count == 0)
-        {
-            <tr>
-                <td colspan="5">Không có giá vé nào</td>
-            </tr>
-        }
-        else
-        {
-            @foreach (var ticketPrice in ticketPrices)
+        </thead>
+        <tbody>
+            @if (filteredPrices != null && filteredPrices.Any()) // Nếu có kết quả lọc
             {
-                var startTime = showTimes.FirstOrDefault(st => st.ID == ticketPrice.ShowTimeID)?.StartTime;
-                var seatype = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatID)?.SeatTypeName;
-                var screening = screenings.FirstOrDefault(st => st.ID == ticketPrice.ScreeningID)?.ShowDate;
+                @foreach (var ticketPrice in filteredPrices)
+                {
+                    var startTime = showTimes.FirstOrDefault(st => st.ID == ticketPrice.ShowTimeID)?.StartTime;
+                    var seatTypeName = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatTypeID)?.SeatTypeName;
+                    <tr>
+                        <td class="text-center align-middle">@(@filteredPrices.IndexOf(ticketPrice) + 1)</td>
+                        <td class="text-center align-middle">@ticketPrice.Price VND</td>
+                        <td class="text-center align-middle">@startTime</td>
+                        <td class="text-center align-middle">@seatTypeName</td>
+                        <td class="text-center align-middle">@ticketPrice.ShowDate.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center align-middle">
+                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick="() => ShowEditModal(ticketPrice.ID)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
                 <tr>
-                    <td>@ticketPrice.Price.ToString("F3")</td>
-                    <td>@startTime</td>
-                    <td>@seatype</td>
-                    <td>@screening</td>
-                    <td>
-                        <!-- Nút chỉnh sửa -->
-                        <button class="btn btn-warning" @onclick="() => ShowEditModal(ticketPrice.ID)">Chỉnh Sửa</button>
-                    </td>
+                    <td colspan="6" class="text-center">Không có giá vé nào phù hợp.</td>
                 </tr>
             }
-        }
-    </tbody>
-</table>
- 
-<!-- Modal Thêm Giá Vé -->
-@if (isAddModalOpen)
-{
-    <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Thêm Giá Vé Mới</h5>
-                    <button type="button" class="close" @onclick="CloseAddModal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="price">Giá Vé:</label>
-                        <input type="number" id="price" class="form-control" @bind="newTicketPrice.Price" />
-                    </div>
-                    <div class="form-group">
-                        <label for="showTime">Thời Gian Chiếu:</label>
-                        <select class="form-control" @bind="newTicketPrice.ShowTimeID">
-                            @foreach (var showTime in showTimes)
-                            {
-                                <option value="@showTime.ID">@showTime.StartTime</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="seatType">Loại Ghế:</label>
-                        <select class="form-control" @bind="newTicketPrice.SeatID">
-                            @foreach (var seatType in seatTypes)
-                            {
-                                <option value="@seatType.ID">@seatType.SeatTypeName</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="screening">Lịch Chiếu:</label>
-                        <input type="text" class="form-control" @bind-value="newTicketPrice.ScreeningID" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseAddModal">Đóng</button>
-                    <button type="button" class="btn btn-primary" @onclick="HandleAddTicketPrice">Thêm Giá Vé</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+        </tbody>
 
-<!-- Modal Chỉnh Sửa Giá Vé -->
-@if (isEditModalOpen)
-{
-    <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh Sửa Giá Vé</h5>
-                    <button type="button" class="close" @onclick="CloseEditModal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="price">Giá Vé:</label>
-                        <input type="number" id="price" class="form-control" @bind="newTicketPrice.Price" />
+    </table>
+
+    <!-- Modal Thêm Giá Vé -->
+    @if (isAddModalOpen)
+    {
+        <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm giá vé mới</h5>
+                        <button type="button" class="close" @onclick="CloseAddModal" aria-label="Close">
+                            <span class="material-icons" aria-hidden="true">close</span>
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Đóng</button>
-                    <button type="button" class="btn btn-primary" @onclick="HandleEditTicketPrice">Lưu Thay Đổi</button>
+                    <div class="modal-body">
+                        @if (!string.IsNullOrEmpty(notificationMessage))
+                        {
+                            <div class="alert @GetNotificationClass()" role="alert">
+                                @notificationMessage
+                            </div>
+                        }
+                        <div class="form-group">
+                            <label for="price">Giá vé:</label>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind="newTicketPrice.Price" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="showTime">Thời gian chiếu:</label>
+                            <select class="form-control" @bind="newTicketPrice.ShowTimeID">
+                                @foreach (var showTime in showTimes.OrderBy(st => st.StartTime))
+                                {
+                                    <option value="@showTime.ID">@showTime.StartTime</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="seatType">Loại ghế:</label>
+                            <select class="form-control" @bind="newTicketPrice.SeatTypeID">
+                                @foreach (var seatType in seatTypes)
+                                {
+                                    <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="screening">Ngày chiếu:</label>
+                            <select class="form-control" @bind="newTicketPrice.ScreeningID">
+                                @foreach (var screening in screenings
+                               .Where(s => s.ShowDate >= DateTime.Now) // Filter out past dates
+                               .OrderBy(s => s.ShowDate))
+                                {
+                                    <option value="@screening.ID">@screening.ShowDate?.ToString("dd/MM/yyyy")</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseAddModal">Đóng</button>
+                        <button type="button" class="btn btn-primary" @onclick="HandleAddTicketPrice">Thêm giá vé</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
+
+    <!-- Modal Chỉnh Sửa Giá Vé -->
+    @if (isEditModalOpen)
+    {
+        <div class="modal fade show custom-modal" style="display:block;" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chỉnh Sửa Giá Vé</h5>
+                        <button type="button" class="close" @onclick="CloseEditModal" aria-label="Close">
+                            <span class="material-icons" aria-hidden="true">close</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if (!string.IsNullOrEmpty(editNotificationMessage))
+                        {
+                            <div class="alert @GetNotificationClass()" role="alert">
+                                @editNotificationMessage
+                            </div>
+                        }
+                        <div class="form-group">
+                            <label for="price">Giá Vé:</label>
+                            <div class="input-container">
+                                <input type="text" class="form-control"
+                                       @bind="newTicketPrice.Price" />
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Đóng</button>
+                        <button type="button" class="btn btn-primary" @onclick="HandleEditTicketPrice">Lưu Thay Đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     private bool isAddModalOpen = false;
     private bool isEditModalOpen = false;
     private TicketPriceDTO newTicketPrice = new TicketPriceDTO();
     private List<TicketPriceDTO> ticketPrices = new List<TicketPriceDTO>();
+    private List<TicketPriceDTO> filteredPrices = new List<TicketPriceDTO>();
     private List<ShowTimeDTO> showTimes = new List<ShowTimeDTO>();
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
     private List<ScreeningDTO> screenings = new List<ScreeningDTO>();
+    private string notificationMessage = string.Empty;
+    private string notificationType = string.Empty;
 
+    private string editNotificationMessage = string.Empty;
+    private decimal? priceFilter;
+    private Guid? seatTypeFilter;
+    private Guid? showTimeFilter;
+    private DateTime? dateFilter;
+
+    private void ApplyFilters()
+    {
+        filteredPrices = ticketPrices; // Bắt đầu với tất cả giá vé ban đầu
+
+        if (priceFilter.HasValue) // Kiểm tra xem price có giá trị không
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.Price.ToString().Contains(priceFilter.ToString())).ToList();
+        }
+        if (seatTypeFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.SeatTypeID == seatTypeFilter.Value).ToList();
+        }
+        if (showTimeFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.ShowTimeID == showTimeFilter.Value).ToList();
+        }
+        if (dateFilter.HasValue)
+        {
+            filteredPrices = filteredPrices.Where(tp => tp.ShowDate.Date == dateFilter.Value.Date).ToList();
+        }
+    }
+    private void OnPriceFilterChanged(ChangeEventArgs e)
+    {
+        // Attempt to parse the input string to decimal
+        if (decimal.TryParse(e.Value?.ToString(), out var parsedPrice))
+        {
+            priceFilter = parsedPrice;
+        }
+        else
+        {
+            priceFilter = null;
+        }
+
+        ApplyFilters();
+    }
+    private void OnSeatTypeChanged(ChangeEventArgs e)
+    {
+        // Kiểm tra nếu giá trị không rỗng
+        if (Guid.TryParse(e.Value?.ToString(), out var selectedGuid))
+        {
+            seatTypeFilter = selectedGuid;
+        }
+        else
+        {
+            seatTypeFilter = null; 
+        }
+
+        ApplyFilters();
+    }
+    private void OnShowTimeChanged(ChangeEventArgs e)
+    {
+        // Kiểm tra nếu giá trị không rỗng
+        if (Guid.TryParse(e.Value?.ToString(), out var selectedGuid))
+        {
+            showTimeFilter = selectedGuid;
+        }
+        else
+        {
+            showTimeFilter = null;
+        }
+
+        ApplyFilters();
+    }
+    private void OnShowDateChanged(ChangeEventArgs e)
+    {
+        // Kiểm tra nếu giá trị không rỗng
+        if (DateTime.TryParse(e.Value?.ToString(), out var selectedGuid))
+        {
+            dateFilter = selectedGuid;
+        }
+        else
+        {
+            dateFilter = null;
+        }
+
+        ApplyFilters();
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -152,8 +311,9 @@
             ticketPrices = await TicketPriceService.GetTicketPricesAsync();
             showTimes = await ShowTimeService.GetAllShowTimes(CancellationToken.None);
             seatTypes = await SeatTypeService.GetAllSeatType();
-            screenings = await ScreeningService.GetAllScreeningsAsync();
-            Console.WriteLine($"Screenings count: {screenings.Count}");
+            screenings = await TicketPriceService.GetAllScreening();
+            ApplyFilters();
+            // filteredPrices = new List<TicketPriceDTO>(ticketPrices);
         }
         catch (Exception ex)
         {
@@ -180,36 +340,63 @@
     private void CloseAddModal()
     {
         isAddModalOpen = false;
+        notificationMessage = string.Empty;
+        notificationType = string.Empty;
     }
 
     private void CloseEditModal()
     {
         isEditModalOpen = false;
+        editNotificationMessage = string.Empty;
+        notificationType = string.Empty;
     }
 
     private async Task HandleAddTicketPrice()
     {
         try
         {
+            var existingTicketPrice = ticketPrices.FirstOrDefault(tp =>
+           tp.ShowTimeID == newTicketPrice.ShowTimeID &&
+           tp.ScreeningID == newTicketPrice.ScreeningID &&
+            tp.SeatTypeID == newTicketPrice.SeatTypeID);
+
+            if (existingTicketPrice != null)
+            {
+                // Cập nhật thông báo lỗi
+                notificationMessage = "Giá vé cho lịch chiếu, giờ chiếu và ghế này đã tồn tại!";
+                notificationType = "Lỗi";
+                return;
+            }
+            if (newTicketPrice.Price < 0)
+            {
+                notificationMessage = "Giá vé không được là số âm.";
+                notificationType = "Lỗi";
+                return;
+            }
             // Do not pass Price as it is calculated on the server side
             var response = await TicketPriceService.SetupPrice(newTicketPrice);
 
             if (response.IsSuccessStatusCode)
             {
+                var success = await response.Content.ReadAsStringAsync();
                 // Handle success, e.g., refresh the ticket price list
                 ticketPrices = await TicketPriceService.GetTicketPricesAsync();
-                CloseAddModal();
+                filteredPrices = ticketPrices.ToList();
+                notificationMessage = $"{success}";
+                notificationType = "success";
             }
             else
             {
                 // Handle failure
                 var error = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Error: " + error);
+                notificationMessage = $"Lỗi: {error}";
+                notificationType = "Lỗi";
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error: " + ex.Message);
+            notificationType = "Lỗi";
         }
     }
 
@@ -217,20 +404,101 @@
     {
         try
         {
-            await TicketPriceService.UpdateTicketPriceAsync(newTicketPrice);
-            ticketPrices = await TicketPriceService.GetTicketPricesAsync(); // Refresh list
-            CloseEditModal();
+            if (newTicketPrice.Price < 0)
+            {
+                editNotificationMessage = "Giá vé không được là số âm.";
+                notificationType = "Lỗi";
+                return;
+            }
+            var response = await TicketPriceService.UpdateTicketPriceAsync(newTicketPrice);
+            if (response.IsSuccessStatusCode)
+            {
+                // Lấy thông tin phản hồi thành công
+                var successMessage = await response.Content.ReadAsStringAsync();
+                editNotificationMessage = $"{successMessage}";
+                notificationType = "success";
+
+                // Làm mới danh sách giá vé
+                ticketPrices = await TicketPriceService.GetTicketPricesAsync();
+            }
+            else
+            {
+                // Lấy thông tin lỗi từ phản hồi
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                editNotificationMessage = $"Lỗi: {errorMessage}";
+                notificationType = "error";
+            }
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error editing ticket price: {ex.Message}");
+            editNotificationMessage = $"Lỗi: {ex.Message}";
+            notificationType = "error";
         }
+    }
+    private string GetNotificationClass()
+    {
+        return notificationType == "success" ? "alert-success" : "alert-danger";
     }
 }
 
 <style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+    }
+    .container-fluid {
+        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+    }
+
+    .ticket-table {
+        background-color: white; /* Màu nền bảng là trắng */
+        border-radius: 8px; /* Bo góc bảng */
+        overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+    }
     .custom-modal {
         margin-top: 50px;
+    }
 
+    .alert {
+        margin-top: 15px;
+    }
+
+    .input-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+        .input-container input {
+            width: 100%;
+            padding-right: 50px; /* Tạo không gian cho chữ VND */
+            box-sizing: border-box;
+        }
+
+        .input-container .currency-unit {
+            position: absolute;
+            top: 50%;
+            right: 10px; /* Đặt chữ VND cách cạnh phải một khoảng */
+            transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+            color: #aaa;
+            pointer-events: none; /* Không làm ảnh hưởng đến hành vi nhập */
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+    .search-filter-container {
+        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
+        border-radius: 8px; /* Bo góc cho khung */
+        padding: 20px; /* Padding cho khung */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
+        margin-left: 1px;
+        margin-right: 1px;
+    }
+
+    .form-control {
+        border-radius: 5px; /* Bo góc cho ô input */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho ô input */
     }
 </style>

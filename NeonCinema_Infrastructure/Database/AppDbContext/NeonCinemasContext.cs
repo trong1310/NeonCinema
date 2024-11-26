@@ -63,12 +63,18 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Point> Points { get; set; }
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<PromotionUsers> PromotionUsers { get; set; }
+		public DbSet<TicketPriceSetting> TicketPriceSettings { get; set; }
 		#endregion
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-		}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+
+
+            //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+        }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -91,7 +97,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				.HasOne(bc => bc.FoodCombo)
 				.WithMany(fc => fc.BillCombos)
 				.HasForeignKey(bc => bc.FoodComboID);
-		}
+            modelBuilder.Entity<Screening>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+            });
+        }
 		private void SeedData(ModelBuilder modelBuilder)
 		{
 			var roleData = new List<Roles>
@@ -295,9 +305,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			var languageData = new List<Language>
 			{
-				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "en" },
-				new Language { ID = Guid.NewGuid(), LanguageName = "vi" },
-				new Language { ID = Guid.NewGuid(), LanguageName = "ja" },
+				new Language { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), LanguageName = "EN" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "VIE" },
+				new Language { ID = Guid.NewGuid(), LanguageName = "JPN" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "ThaiLans" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "USA" },
 				new Language { ID = Guid.NewGuid(), LanguageName = "Korea" }
@@ -855,30 +865,18 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	{
 		new TicketPriceSetting
 	{
-		ID = Guid.NewGuid(),
-		PriceBefore17hWeekDay = 50.00m,
-		PriceAfter17hWeekDay = 70.00m,
-		PriceBefore17hWeekeend = 60.00m,
-		PriceAfter17hWeekeend = 90.00m,
-		Surcharge3D = 30.00m,
-		Surcharge4D = 50.00m,
-		SurchargeIMAX = 100.00m,
-		SurchargeVIP = 150.00m,
-		SurchargeCouple = 200.00m
+		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
+		PriceBefore17hWeekDay = 50,
+		PriceAfter17hWeekDay = 60,
+		PriceBefore17hWeekeend = 60,
+		PriceAfter17hWeekeend = 70,
+		Surcharge3D = 30,
+		Surcharge4D = 40,
+		SurchargeIMAX = 50,
+		SurchargeVIP = 30,
+		SurchargeCouple = 50
 	},
-	new TicketPriceSetting
-	{
-		ID = Guid.NewGuid(),
-		PriceBefore17hWeekDay = 55.00m,
-		PriceAfter17hWeekDay = 75.00m,
-		PriceBefore17hWeekeend = 65.00m,
-		PriceAfter17hWeekeend = 95.00m,
-		Surcharge3D = 35.00m,
-		Surcharge4D = 55.00m,
-		SurchargeIMAX = 110.00m,
-		SurchargeVIP = 160.00m,
-		SurchargeCouple = 210.00m
-	},
+	
 	};
 			modelBuilder.Entity<TicketPriceSetting>().HasData(ticketSeting);
 
@@ -886,8 +884,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			// 23. TicketSeat
 			var ticketPriceData = new List<TicketPrice>
 	{
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active,  },
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[1].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50, Status = EntityStatus.Active,  },
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60, Status = EntityStatus.Active  }
 	};
 			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
 			// 22. Ticket

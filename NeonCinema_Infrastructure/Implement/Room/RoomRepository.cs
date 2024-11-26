@@ -49,8 +49,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         SeatNumber = $"{row}-{column}",
                         Row = row.ToString(),
                         Column = column.ToString(),
-             Status = seatEnum.Available,
-       RoomID = room.ID,
+                        Status = seatEnum.Available,
+                        RoomID = room.ID,
                         SeatTypeID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
                     };
                     seats.Add(seat);
@@ -97,6 +97,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 CinemasId = room.CinemasId
             };
         }
+
+
 
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request)
         {
@@ -177,5 +179,32 @@ namespace NeonCinema_Infrastructure.Implement.Room
             await _context.SaveChangesAsync();
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        public async Task<List<SeatDTO>> GetSeatsByRoomId(Guid roomId, CancellationToken cancellationToken)
+        {
+            if (roomId == Guid.Empty)
+            {
+                return new List<SeatDTO>();
+            }
+
+          
+            var seats = await _context.Seat
+                .Where(seat => seat.RoomID == roomId)  
+                .Select(seat => new SeatDTO
+                {
+                    ID = seat.ID,
+                    SeatNumber = seat.SeatNumber,
+                    Row = seat.Row,
+                    Column = seat.Column,
+                    Status = seat.Status,
+                    RoomID = seat.RoomID,
+                    SeatTypeID = seat.SeatTypeID,
+                    SeatTypeName = seat.SeatTypes != null ? seat.SeatTypes.SeatTypeName : "N/A"
+                })
+                .ToListAsync(cancellationToken);
+            return seats ?? new List<SeatDTO>();
+        }
     }
 }
+
+

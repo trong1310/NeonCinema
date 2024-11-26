@@ -2,39 +2,47 @@
 @using NeonCinema_Application.DataTransferObject.Cinemas
 @using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Application.DataTransferObject.SeatTypes
+@using NeonCinema_Application.DataTransferObject.Seats
 @using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Client.Data.IServices.Seat
+@using NeonCinema_Client.Data.IServices.SeatType
 @using NeonCinema_Domain.Database.Entities
 @using NeonCinema_Domain.Enum
 @inject IRoomService RoomService
+@inject ISeatService seatservice
+@inject ISeatTypeService seattypeservice
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+<script src="js/Customer/MovieList.js"></script>
 <link rel="stylesheet" href="/css/Room/detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<h3 style="text-align: center"><strong>Chỉnh Sửa Phòng Chiếu</strong></h3>
-
+<h3 style="text-align: center; margin-top: 30px"><strong>Chỉnh Sửa Phòng Chiếu</strong></h3>
 <EditForm Model="request" OnValidSubmit="UpdateRoom">
     <DataAnnotationsValidator />
-    <ValidationSummary />
+   
     <div class="container my-4" style="margin-top: 30px">
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-6" style="width: 400px">
                 <div class="form-header">
-                    <h4>Thông Tin Phòng Chiếu</h4>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="roomName">Tên Phòng</label>
+                        <label for="roomName"><strong>tên phòng</strong></label>
                         <InputText id="roomName" class="form-control" @bind-Value="request.Name" />
+                        <ValidationMessage For="@(() => request.Name)" />
                     </div>
                     <div class="form-group">
-                        <label for="rowNumber">Số Hàng</label>
+                        <label for="rowNumber"><strong>số hàng</strong></label>
                         <InputNumber id="rowNumber" type="number" class="form-control" @bind-Value="request.RowNumber" />
+                        <ValidationMessage For="@(() => request.RowNumber)" />
                     </div>
                     <div class="form-group">
-                        <label for="columnNumber">Số Cột</label>
+                        <label for="columnNumber"><strong>số cột</strong></label>
                         <InputNumber id="columnNumber" type="number" class="form-control" @bind-Value="request.ColumnNumber" />
+                        <ValidationMessage For="@(() => request.ColumnNumber)" />
                     </div>
                     <div class="form-group">
-                        <label for="cinemasId">Chọn Rạp</label>
+                        <label for="cinemasId"><strong>chọn rạp</strong></label>
                         <InputSelect id="cinemasId" class="form-control" @bind-Value="request.CinemasId">
                             @foreach (var cinema in cinemas)
                             {
@@ -43,128 +51,125 @@
                         </InputSelect>
                     </div>
                     <div class="form-group">
-                        <label for="status">Trạng Thái</label>
+                        <label for="status"><strong>trạng thái</strong></label>
                         <InputSelect id="status" class="form-control" @bind-Value="request.Status">
-                            <option value="@(EntityStatus.Active)">Hoạt động</option>
-                            <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
+                            <option value="@(EntityStatus.Active)">hoạt động</option>
+                            <option value="@(EntityStatus.Inactive)">không hoạt động</option>
                         </InputSelect>
+                        
                     </div>
-                    <button type="submit" class="btn btn-primary">Cập Nhật</button>
-                    <button @onclick="Cancel" class="btn btn-primary">Hủy</button>
+                    <button type="submit" class=" btn btn-primary">cập nhật</button>
+                    <button @onclick="Cancel" class="btn btn-primary">hủy</button>
                 </div>
             </div>
-             <div class="col-md-6"> 
+            <div class="col-md-6">
                 <div class="seat-header">
-                    <h4>Sơ Đồ Chỗ Ngồi</h4>
-                </div>
-                <div class="seat-section">
-                    <div class="screen text-center mb-3">Màn Hình</div>
-
-                    <div class="seat-layout" style="display: grid; grid-template-rows: repeat(request.RowNumber, 1fr); grid-template-columns: repeat(request.ColumnNumber + 1, 1fr); grid-gap: 10px;">
-                        @for (int row = 0; row < request.RowNumber; row++)
+                    <div class="seat-section">
+                        <div style="height: 10px; font-size: 15px" class="screen text-center mb-3">màn hình</div>
+                        @if (seats == null)
                         {
-                            <div style="display: flex; flex-direction: row; align-items: center;">
-                                <button type="button" style="color: black; margin-right: 5px; flex-shrink: 0"
-                                        class="btn btn-outline-secondary seat-btn"
-                                        @onclick="() => EditSeat(row, -1)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                @for (int col = 0; col < request.ColumnNumber; col++)
-                                {
-                                    string seatLabel = $"{(char)('A' + row)}{col + 1}";
-                                    string seatColor = seatTypeMapping.ContainsKey(seatLabel) && seatTypeMapping[seatLabel] == "VIP"
-                                    ? "yellow" 
-                                    : "red"; 
-
-                                    <div class="seat-item" style="display: flex; align-items: center;">
-                                        <button style="color: black; margin-right: 5px; background-color: @seatColor"
-                                                class="btn btn-outline-secondary seat-btn"
-                                                @onclick="() => SelectSeat(row, col)">
-                                            @seatLabel
-                                        </button>
-                                    </div>
-                                }
-                            </div>
+                            <p>dang tải danh sách ghế...</p>
                         }
+                        else if (seats.Count == 0)
+                        {
+                            <p>không có ghế nào được thêm vào phòng này.</p>
+                        }
+                        else
+                        {
+                            @for (int row = 1; row <= request.RowNumber; row++)
+                            {
+                                 <tr>
+                                    @for (int col = 1; col <= request.ColumnNumber; col++)
+                                    {
+                                        var seat = seats.FirstOrDefault(s => s.Row == row.ToString() && s.Column == col.ToString());
+                                        string rowLabel = GetRowLabel(row);
+                                        string seatLabel = $"{rowLabel}{col}";
+                                        <td>
+                                            @if (seat != null)
+                                            {
+                                            <div class="seat" style="font-size: 12px">
+                                                <button style="@GetSeatColor(seat.SeatTypeID); color: white; font-weight: bold" @onclick="() => ShowSeatModal(seat)" @onclick:preventDefault="true">
+                                                       @seatLabel
+                                                </button>
+                                                <button disabled style="@GetStatusColor(seat.Status.ToString()); width: 15px; height: 3px"></button>
+                                            </div>
+                                            }
+                                            else
+                                            {
+                                            <div class="seat empty">
+                                                  @seatLabel
+                                            </div>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            } 
+                        }
+                       <div class="seatcolor">
+                            <div class="seat-legend">
+                                <p><span style="background-color: #f08c1a; color: white; padding: 5px;"></span> - ghế đôi</p>
+                                <p><span style="background-color: #fa5d5d; color: white; padding: 5px;"></span> - ghế thường</p>
+                                <p><span style="background-color: purple; color: white; padding: 5px;"></span> - ghế VIP</p>
+                            </div>
 
-                    </div>
+                            <div class="seat-legend">
+                                <p><span style="background-color: green; color: white; padding: 5px;"></span> - ghế còn trống</p>
+                                <p><span style="background-color: blue; color: white; padding: 5px;"></span> - ghế đã chọn</p>
+                                <p><span style="background-color: gray; color: white; padding: 5px;"></span> - ghế đang bảo trì</p>
+                            </div>
+                       </div>
 
-                    <div class="color-legend mt-4">
-                        <p>
-                            <span class="color-box" style="background-color: red;"></span> Ghế Thường
-                        </p>
-                        <p>
-                            <span class="color-box" style="background-color: yellow;"></span> Ghế Vip
-                        </p>
+
                     </div>
                 </div>
-            </div> 
-        </div>
+    
+               </div>
+         </div>
     </div>
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger">
-            <strong>Lỗi: </strong>@errorMessage
-        </div>
-    }
 </EditForm>
+
 @if (showModal)
 {
     <div class="modal-overlay">
         <div class="modal-content">
             <h4>Chỉnh Sửa Loại Ghế</h4>
-            <select class="form-control" @bind="selectedSeatTypeId">
-                @foreach (var seatType in seatTypes)
-                {
-                    <option value="@seatType.ID">@seatType.SeatTypeName</option>
-                }
-            </select>
-             <div class="color-legend mt-4">
-                <p>
-                    <span class="color-box" style="background-color: red;"></span> Ghế VIP
-                </p>
-                <p>
-                    <span class="color-box" style="background-color: yellow;"></span> Ghế Thường
-                </p>
+            <div class="form-group">
+                <div class="form-group">
+                    <label><strong>loại ghế:</strong></label>
+                    <span>@selectedSeat.SeatTypeName</span>
+                </div>
+                <div class="form-group">    
+                    <label><strong>trạng thái:</strong></label>
+                    <span>@selectedSeat.Status</span>
+                </div>
+                <InputSelect id="seatType" class="form-control" @bind-Value="selectedSeat.SeatTypeID">
+                    @foreach (var seatType in seatTypes)
+                    {
+                        <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                    }
+                </InputSelect>
             </div>
-            <button class="btn btn-primary mt-3" @onclick="SaveSeatType">Lưu</button>
-            <button class="btn btn-secondary mt-3" @onclick="CloseModal">Hủy</button>
+            <button @onclick="SaveSeatChanges" class="btn btn-primary">lưu</button>
+            <button @onclick="CloseModal" class="btn btn-secondary">hủy</button>
         </div>
     </div>
 }
 
 @code {
-        [Parameter] public Guid roomId { get; set; }
+    [Parameter] public Guid roomId { get; set; }
     private RoomUpdateRequest request = new RoomUpdateRequest();
     private List<CinemasDTO> cinemas = new List<CinemasDTO>();
-    private List<SeatType> seatTypes = new List<SeatType>();
-    private List<string> selectedSeats = new List<string>();
-    private string errorMessage = string.Empty;
+    private List<SeatDTO> seats = new List<SeatDTO>();
     private bool showModal = false;
-    private string selectedSeatLabel;
-    private Guid selectedSeatTypeId;
-    private string seatColor = "#641e16";
-    RoomDTO room = new RoomDTO();
-    private Dictionary<string, string> seatTypeMapping = new Dictionary<string, string>();
-    private SeatType MapSeatTypeDTOToEntity(SeatTypeDTO dto)
-    {
-        return new SeatType
-        {
-                ID = dto.ID,
-                SeatTypeName = dto.SeatTypeName
-        };
-    }
-    private List<SeatType> ConvertSeatTypeDTOListToEntityList(List<SeatTypeDTO> dtoList)
-    {
-        return dtoList.Select(MapSeatTypeDTOToEntity).ToList();
-    }
+    private SeatDTO selectedSeat = new SeatDTO();
+    private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
     protected override async Task OnInitializedAsync()
     {
         var rs = await RoomService.GetRoomById(roomId);
         if (rs != null)
         {
             request = new RoomUpdateRequest()
-            {
+                {
                     ID = rs.ID,
                     Name = rs.Name,
                     SeatingCapacity = rs.SeatingCapacity,
@@ -172,112 +177,122 @@
                     RowNumber = rs.RowNumber,
                     Status = rs.Status,
                     CinemasId = rs.CinemasId
-            };
+                };
         }
         cinemas = await RoomService.GetAllCinemas();
-        var seatTypeDTOs = await RoomService.GetAllSeatType();
-        seatTypes = ConvertSeatTypeDTOListToEntityList(seatTypeDTOs);
+        seats = await RoomService.GetSeatsByRoomId(roomId);
+        seatTypes = await seattypeservice.GetAllSeatType();
+        Console.WriteLine($"Số ghế tải được: {seats?.Count ?? 0}");
+        Console.WriteLine($"Room ID: {roomId}");
     }
-
-
-
-
-    private void SelectSeat(int row, int col)
+    private UpdateSeatDTO ConvertToUpdateSeatDTO(SeatDTO seat)
     {
-        string seatLabel = $"{(char)('A' + row)}{col + 1}";
-        if (selectedSeats.Contains(seatLabel))
-        {
-            selectedSeats.Remove(seatLabel);
-        }
-        else
-        {
-            selectedSeats.Add(seatLabel);
-        }
-    }
-
-
-
-
-
-    private void EditSeat(int row, int col)
-    {
-        string seatLabel = $"{(char)('A' + row)}{col + 1}";
-        selectedSeatLabel = seatLabel;
-        if (seatTypeMapping.ContainsKey(seatLabel))
-        {
-            string seatType = seatTypeMapping[seatLabel];
-            var seatTypeEntity = seatTypes.FirstOrDefault(st => st.SeatTypeName == seatType);
-            if (seatTypeEntity != null)
+        return new UpdateSeatDTO
             {
-                selectedSeatTypeId = seatTypeEntity.ID;
-            }
-        }
-        else
-        {
-            selectedSeatTypeId = Guid.Empty; 
-        }
+                ID = seat.ID,
+                SeatNumber = seat.SeatNumber,
+                Row = seat.Row,
+                Column = seat.Column,
+                SeatTypeID = seat.SeatTypeID,
+                Status = seat.Status,
+                SeatTypeName = seat.SeatTypeName
+            };
+    }
+    private void ShowSeatModal(SeatDTO seat)
+    {
+        selectedSeat.SeatNumber = $"{GetRowLabel(int.Parse(seat.Row))}{seat.Column}";
+        selectedSeat = seat;
         showModal = true;
     }
-
-
-
-
-
-
-    private void SaveSeatType()
+    private async Task SaveSeatChanges()
     {
-        if (selectedSeatTypeId == Guid.Parse("54634cf1-6e98-48bf-b97c-f9d065dd3c54"))
+        var seatType = seatTypes.FirstOrDefault(st => st.ID == selectedSeat.SeatTypeID);
+        if (seatType != null)
         {
-            seatTypeMapping[selectedSeatLabel] = "VIP";
+            selectedSeat.SeatTypeName = seatType.SeatTypeName;
+        }
+        var updateSeatRequest = ConvertToUpdateSeatDTO(selectedSeat);
+        var result = await seatservice.UpdateSeate(selectedSeat.ID, updateSeatRequest);
+        if (result.IsSuccessStatusCode)
+        {
+            seats = await RoomService.GetSeatsByRoomId(roomId);
+            CloseModal();
+            Console.WriteLine("Seat updated successfully.");
         }
         else
         {
-            seatTypeMapping[selectedSeatLabel] = "Regular";
+            Console.WriteLine("Failed to update seat.");
         }
-        if (seatTypeMapping[selectedSeatLabel] == "VIP")
-        {
-            seatColor = "yellow"; 
-        }
-        else
-        {
-            seatColor = "red"; 
-        }
-
-        showModal = false;
     }
-
-
-
-
-
-
     private void CloseModal()
     {
         showModal = false;
     }
-
-
-
-
-
-
-
     private async Task UpdateRoom()
-    {     
-            var result = await RoomService.UpdateRoom(request.ID, request);
-
-            if (result.IsSuccessStatusCode)
-            {
-                Navigation.NavigateTo("/listroom");
-            }
-            else
-            {
-            var error = await result.Content.ReadAsStringAsync();
-                Console.WriteLine("Error updating room: " + error);
-            }
+    {
+        var result = await RoomService.UpdateRoom(request.ID, request);
+        var error = await result.Content.ReadAsStringAsync();
+        Console.WriteLine("Error updating room: " + error);
+        Navigation.NavigateTo("/listroom");
+    }
+    private string GetRowLabel(int row)
+    {
+        return ((char)('A' + (row - 1))).ToString();
+    }
+    private string GetSeatColor(Guid seatTypeId)
+    {
+        if (seatTypeId == new Guid("57d58261-1bd9-4f86-9d3c-1ebb6dfed507"))
+        {
+            return "background-color: #f08c1a;";
+        }
+        else if (seatTypeId == new Guid("8fb86c77-213f-4316-8a7a-43fee795514e"))
+        {
+            return "background-color: #fa5d5d;";
+        }
+        else if (seatTypeId == new Guid("c17b2cd9-6186-477b-8eef-8c141aeceb5c"))
+        {
+            return "background-color: purple;";
+        }
+        else
+        {
+            return "";  
+        }
+    }
+    private string GetStatusColor(string seatStatus)
+    {
+        if (seatStatus == "Available")
+        {
+            return "background-color: green;";  
+        }
+        else if (seatStatus == "Selected")
+        {
+            return "background-color: blue;";   
+        }
+        else if (seatStatus == "Maintenance")
+        {
+            return "background-color: gray;";   
+        }
+        else
+        {
+            return ""; 
+        }
     }
     private void Cancel()
     {
         Navigation.NavigateTo("/listroom");
     }
 }
+<style>
+    .seatcolor {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .seat-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+</style>

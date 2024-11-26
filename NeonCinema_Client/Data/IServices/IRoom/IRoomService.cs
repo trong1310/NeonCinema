@@ -13,8 +13,7 @@ namespace NeonCinema_Client.Data.IServices.IRoom
         Task<List<CinemasDTO>> GetAllCinemas();
         Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request);
         Task<RoomDTO> GetRoomById(Guid id);
-        Task<List<SeatTypeDTO>> GetAllSeatType();
-        Task UpdateSeatType(UpdateSeatDTO seatDTO);
-        Task<List<SeatDTO>> GetSeat();
+        Task<List<SeatDTO>> GetSeatsByRoomId(Guid roomId);
+
     }
 }

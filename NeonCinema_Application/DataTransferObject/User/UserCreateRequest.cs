@@ -29,9 +29,9 @@ namespace NeonCinema_Application.DataTransferObject.User
 
         public string Images { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải từ 6 ký tự trở lên.")]
-        public string PassWord { get; set; }
+        //[Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
+        //[StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải từ 6 ký tự trở lên.")]
+        //public string PassWord { get; set; }
 
         [Required(ErrorMessage = "Giới tính không được để trống")]
         public bool? Gender { get; set; }

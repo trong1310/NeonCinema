@@ -27,13 +27,14 @@ namespace NeonCinema_Infrastructure.Implement.Users
         }
         public async Task<HttpResponseMessage> CreateClient(UserCreateRequest request, CancellationToken cancellationToken)
         {
+            var generatedPassword = GenerateRandomPassword();
             try
             {
                 var newUser = new NeonCinema_Domain.Database.Entities.Users
                 {
                     ID = Guid.NewGuid(),
                     FullName = request.FullName,
-                    PassWord = Hash.Encrypt(request.PassWord),
+                    PassWord = Hash.Encrypt(generatedPassword),
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
                     Gender = request.Gender ?? true,
@@ -63,13 +64,14 @@ namespace NeonCinema_Infrastructure.Implement.Users
         }
         public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
         {
+            var generatedPassword = GenerateRandomPassword();
             try
             {
                 var newUser = new NeonCinema_Domain.Database.Entities.Users
                 {
                     ID = Guid.NewGuid(),
                     FullName = request.FullName,
-                    PassWord = Hash.Encrypt(request.PassWord),
+                    PassWord = Hash.Encrypt(generatedPassword),
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
                     Gender = request.Gender ?? true,
@@ -126,7 +128,14 @@ namespace NeonCinema_Infrastructure.Implement.Users
 
 
         //Create Client
+        private string GenerateRandomPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, 10) // Độ dài mật khẩu là 10 ký tự
+                .Select(s => s[random.Next(s.Length)])
+                .ToArray());
+        }
 
-       
     }
 }
