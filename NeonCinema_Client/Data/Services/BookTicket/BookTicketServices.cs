@@ -48,11 +48,23 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 			var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
 			return respones;
 		}
-		public async Task<ScreeningMoviesDto> GetScreeningMovies(Guid MovieId)
+		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId)
 		{
 			try
 			{
-				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/screening/{MovieId}");
+				var results = await _httpClient.GetFromJsonAsync<List<ScreeningMoviesDto>>($"https://localhost:7211/api/BookTicket/screening/{MovieId}");
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("co loi xay ra : " + ex.Message);
+			}
+		}
+		public async Task<ScreeningMoviesDto> ChooseScrening(Guid screningid)
+		{
+			try
+			{
+				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/choose-screning?id={screningid}");
 				return results;
 			}
 			catch (Exception ex)

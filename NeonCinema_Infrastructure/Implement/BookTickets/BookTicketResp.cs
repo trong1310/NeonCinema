@@ -155,7 +155,41 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			}
 		}
 
-		public async Task<ScreeningMoviesDto> GetScreeningMovies(Guid MovieId)
+		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId)
+		{
+			TimeSpan currentTime = DateTime.Now.TimeOfDay;
+			var date = DateTime.Now;
+
+			// Lấy danh sách các lịch chiếu của phim
+			var screenings = await _context!.Screening
+				.Include(x => x.ShowTime)
+				.Include(x => x.Rooms)
+					.ThenInclude(s => s.Seats!)
+						.ThenInclude(x => x.SeatTypes)
+				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date)
+				.OrderBy(x => x.ShowDate.Date)
+				.ThenBy(x => x.ShowTime.StartTime)
+				.ToListAsync();
+
+			if (screenings == null || !screenings.Any())
+				return new List<ScreeningMoviesDto>(); 
+
+			// Ánh xạ từng lịch chiếu thành DTO
+			var screeningDtos = screenings.Select(screening =>
+			{
+				return new ScreeningMoviesDto
+				{
+					Id = screening.ID,
+					RoomName = screening.Rooms.Name,
+					ShowDate = screening.ShowDate,
+					ShowTime = screening.ShowTime.StartTime,
+				};
+			}).ToList();
+
+			return screeningDtos;
+		}
+
+		public async Task<ScreeningMoviesDto> ChooseScreeningMovies(Guid Id)
 		{
 			TimeSpan currentTime = DateTime.Now.TimeOfDay;
 			var date = DateTime.Now;
@@ -164,7 +198,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 							.Include(x => x.Rooms)
 								.ThenInclude(s => s.Seats!)
 									.ThenInclude(x => x.SeatTypes)
-							.Where(x => x.MovieID == MovieId)
+							.Where(x => x.ID == Id)
 							.ToListAsync();
 
 			var upcomingScreening = screenings
