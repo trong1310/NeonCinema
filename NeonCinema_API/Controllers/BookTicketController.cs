@@ -78,22 +78,23 @@ namespace NeonCinema_API.Controllers
                 return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
             }
         }
-		public class SeatUpdateRequest
-		{
-			public Guid SeatId { get; set; }
-			public seatEnum Status { get; set; }
-		}
 
-		[HttpPut("UpdateSeatStatus")]
-		public async Task<IActionResult> UpdateSeatStatus([FromBody] SeatUpdateRequest request)
+		[HttpGet("choose-screning")]
+		public async Task<IActionResult> ChooseScrening([FromQuery] Guid id)
 		{
-			var seat = await _context.Seat.FindAsync(request.SeatId);
-			if (seat == null)
-				return NotFound();
-
-			seat.Status = request.Status;
-			await _context.SaveChangesAsync();
-			return Ok();
+			try
+			{
+				var screeningMovies = await _bookTicketResp.ChooseScreeningMovies(id);
+				if (screeningMovies == null)
+				{
+					return NotFound("không tìm thấy phòng cho lịch");
+				}
+				return Ok(screeningMovies);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+			}
 		}
 
 
