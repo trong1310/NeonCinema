@@ -1,175 +1,231 @@
 ﻿@page "/book-details/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.ActorMovies
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
 @layout LayoutAdmin
+@inject NavigationManager _navi
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
 
 <div class="container-fluid py-5">
-    <div class="row mb-4 p-3 movie-details">
-        <div class="movie-poster col" style=" margin-left:70px">
-            <img src="/images/Client/cam.jpg" alt="Movie Poster" class="img-fluid rounded border">
-        </div>
-        <!-- Description Section -->
-        <div class="movie-description col-9" style=" margin-left:-100px">
-            <h2 style="color: limegreen; font-weight:revert">Linh Miêu: Quỷ Nhập Tràng</h2>
-            @* Mô tả *@
-            <p>
-                "Linh Miêu" dựa trên chất liệu dân gian liên quan đến quỷ nhập tràng.
-                Bi kịch của một gia đình tại Huế vào những năm 1960 với những nút thắt – mở,
-                những tư tưởng bất bình đẳng giới, những lề thói và cả những bất hạnh bán vào từng thành viên gia đình.
-            </p>
+	<div class="row mb-4 p-3 movie-details">
+		<div class="movie-poster col" style=" margin-left:70px">
+			<img src="@GetImageUrl(movieDto.Images)" alt="Movie Poster" class="img-fluid rounded border">
+		</div>
+		<!-- Description Section -->
+		<div class="movie-description col-9" style=" margin-left:-100px">
+			<h2 style="color: limegreen; font-weight:revert">Tên phim: @movieDto.Name</h2>
+			@* Mô tả *@
+			<p>
+				@movieDto.Description
+			</p>
 
-            <p>
-                <strong>Đạo diễn:</strong>  
-                <span style="color: limegreen;">Lưu Thành Luân</span>
-            </p>
-            <p>
-                <strong>Diễn viên:</strong>
-                <span style="color: limegreen;">Hồng Đào, Thiên An, Nguyễn Thúc Thùy Tiên, Văn Anh</span>
-            </p>
-            <p>
-                <strong>Thể loại:</strong>
-                <span style="color: limegreen;">Horror</span>
-                
-            </p>
-            <p>
-                <strong>Khởi chiếu:</strong> 22/11/2024 | <strong>Thời lượng:</strong> 109 phút</p>           
-            <button class="btn btn-outline-success limegreen-button">
-                <span class="material-icons">arrow_back</span> Chọn phim khác
-            </button>
-        </div>
-    </div>
+			<p>
+				<strong>Đạo diễn:</strong>
+				<span style="color: limegreen;">@movieDto.DirectorName</span>
+			</p>
+			<p>
+				<strong>Diễn viên:</strong>
+				<span style="color: limegreen;">
+					@(movieDto.ActorMovies != null && movieDto.ActorMovies.Any()
+												? string.Join(", ", movieDto.ActorMovies.Select(x => x.ActorName))
+												: "Không có diễn viên")
+				</span>
+			</p>
+			<p>
+				<strong>Thể loại:</strong>
+				<span style="color: limegreen;">@movieDto.GenreName</span>
 
-    <div class="row mb-4 p-3 ">
-        <div class="col-md-9 movie-details showtime-buttons" style="width:72%">
-            <h4>Giờ Chiếu</h4>
-            <div class="d-flex flex-wrap gap-3">
-                <button class="btn btn-outline-success showtime-btn">10:00</button>
-                <button class="btn btn-outline-success showtime-btn">12:30</button>
-                <button class="btn btn-outline-success showtime-btn">15:00</button>
-                <button class="btn btn-outline-success showtime-btn">17:30</button>
-                <button class="btn btn-outline-success showtime-btn">20:00</button>
-                <button class="btn btn-outline-success showtime-btn">20:00</button>
-            </div>
-        </div>
-        <div class="row col-md-3 movie-details ml-auto show-date">
-            <h4>Lịch Chiếu</h4>
-            <div>
-                <MudDatePicker 
-                    PickerVariant="PickerVariant.Static" Color="Color.Success" 
-                    Rounded="true" Date="@(DateTime.Today)" 
-                    Class="custom-datepicker" />
-            </div>
-        </div>
-    </div>
+			</p>
+			<p>
+				<strong>Khởi chiếu:</strong>@movieDto.StarTime | <strong>Thời lượng:</strong> @movieDto.Duration
+			</p>
+			<button class="btn btn-outline-success limegreen-button">
+				<span class="material-icons">arrow_back</span> Chọn phim khác
+			</button>
+		</div>
+	</div>
+
+	<div class="row mb-4 p-3 ">
+		<div class="col-md-9 movie-details showtime-buttons" style="width:72%">
+			<h4>Giờ Chiếu</h4>
+			@if (scrreningList != null && scrreningList.Any())
+			{
+				@foreach (var item in scrreningList)
+				{
+					<div class="d-flex flex-wrap gap-3">
+						<button class="btn btn-outline-success showtime-btn" @onclick="() => ChooseSeatNavigate(item.Id)">@item.ShowTime</button>
+
+					</div>
+				}
+			}
+			else
+			{
+				<span>Không có lịch chiếu nào trong ngày hôm nay.</span>
+			}
+		</div>
+		<div class="row col-md-3 movie-details ml-auto show-date">
+			<h4>Lịch Chiếu</h4>
+			<div>
+				<MudDatePicker PickerVariant="PickerVariant.Static" Color="Color.Success"
+							   Rounded="true" Date="@(selectedDate)"
+							   Class="custom-datepicker"
+							   DateChanged="OnDateChanged" />
+			</div>
+		</div>
+	</div>
 </div>
 
-@code{
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	List<ScreeningMoviesDto> scrreningList = new List<ScreeningMoviesDto>();
+	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
+	public DateTime? selectedDate = DateTime.UtcNow;
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		movieDto.ActorMovies = await _movieServices.GetActorsByFilmAsync(movieDto.ID, CancellationToken.None);
+		await LoadShowTimes(DateTime.Now);
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
 
+	private async Task LoadShowTimes(DateTime date)
+	{
+		scrreningList = await _services.GetScreeningMovies(movieDto.ID, date);
+	}
+	private async Task OnDateChanged(DateTime? date)
+	{
+		selectedDate = date;
+		await LoadShowTimes(date.Value);
+	}
+	private async Task ChooseSeatNavigate(Guid id)
+	{
+		_navi.NavigateTo($"/select-seat/{id}");
+	}
 }
 
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Roboto', 'Arial', sans-serif;
-    }
-    .movie-details{
-        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
-        border-radius: 8px; /* Bo góc cho khung */
-        padding: 20px; /* Padding cho khung */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
-        margin-left: 1px;
-        margin-right: 1px;
-        display: flex; /* Align movie poster and description side by side */
-        gap: 20px; /* Space between the movie poster and description */
-        align-items: center;
-    }
+	body {
+		background-color: #f8f9fa;
+		font-family: 'Roboto', 'Arial', sans-serif;
+	}
 
-    
-    .movie-poster img {
-        width: 250px; /* Set the width of the image */
-        height: 350px; /* Set the height of the image */
-        object-fit: cover; /* Ensures the image maintains its aspect ratio */
-    }
-
-    .movie-description {
-        font-size: 1.2rem; /* Increase font size */
-    }
-
-        .movie-description h2 {
-            font-size: 2rem; /* Make the title larger */
-        }
-
-    .limegreen-button {
-        border-color: limegreen; /* Đặt màu viền nút là limegreen */
-        color: limegreen; /* Đặt màu chữ là limegreen */
-        border-radius: 8px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        gap: 8px; /* Khoảng cách giữa icon và chữ */
-        padding: 8px 16px; /* Thêm padding để nút rộng hơn */
-        font-size: 16px;
-        font-weight: 580;
-    }
-
-        .limegreen-button:hover {
-            background-color: limegreen; /* Khi hover, màu nền sẽ là limegreen */
-            color: white; /* Khi hover, màu chữ sẽ là trắng */
-            border-color: limegreen; /* Đảm bảo viền vẫn là limegreen khi hover */
-        }
-
-        .limegreen-button .material-icons {
-            font-size: 18px; /* Đặt kích thước icon */
-        }
+	.movie-details {
+		background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
+		border-radius: 8px; /* Bo góc cho khung */
+		padding: 20px; /* Padding cho khung */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
+		margin-left: 1px;
+		margin-right: 1px;
+		display: flex; /* Align movie poster and description side by side */
+		gap: 20px; /* Space between the movie poster and description */
+		align-items: center;
+	}
 
 
-    .showtime-buttons {
-        display: block;
-        align-items: flex-start;
-        justify-content: center;
-    }
+	.movie-poster img {
+		width: 250px; /* Set the width of the image */
+		height: 350px; /* Set the height of the image */
+		object-fit: cover; /* Ensures the image maintains its aspect ratio */
+	}
 
-    .showtime-btn {
-        border-color: black;
-        color: black;
-        padding: 8px 16px;
-        font-size: 25px;
-        font-weight: 500;
-        border-radius: 12px;
-        width: 18.7%;
-    }
+	.movie-description {
+		font-size: 1.2rem; /* Increase font size */
+	}
 
-        .showtime-btn:hover {
-            background-color: black;
-            color: white;
-        }
+		.movie-description h2 {
+			font-size: 2rem; /* Make the title larger */
+		}
 
-        .showtime-btn:active {
-            background-color: black;
-            color: white;
-        }
+	.limegreen-button {
+		border-color: limegreen; /* Đặt màu viền nút là limegreen */
+		color: limegreen; /* Đặt màu chữ là limegreen */
+		border-radius: 8px;
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		gap: 8px; /* Khoảng cách giữa icon và chữ */
+		padding: 8px 16px; /* Thêm padding để nút rộng hơn */
+		font-size: 16px;
+		font-weight: 580;
+	}
 
-    .showtime-buttons h4 {
-        margin-bottom: 20px; /* Adds spacing below the label */
-    }
+		.limegreen-button:hover {
+			background-color: limegreen; /* Khi hover, màu nền sẽ là limegreen */
+			color: white; /* Khi hover, màu chữ sẽ là trắng */
+			border-color: limegreen; /* Đảm bảo viền vẫn là limegreen khi hover */
+		}
 
-        .show-date{
-            width: 25%; 
-            max-width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Canh trái để không bị lệch */
-            gap: 10px;
-        }
+		.limegreen-button .material-icons {
+			font-size: 18px; /* Đặt kích thước icon */
+		}
 
-        .show-date .mud-picker {
-            width: 100%; /* Đảm bảo picker chiếm hết chiều rộng của cột */
-            max-width: 320px; /* Hoặc đặt giới hạn chiều rộng nếu cần */
-            margin: 0 auto; /* Căn giữa picker bên trong cột */
-        }
-        
-    
-        
+
+	.showtime-buttons {
+		display: block;
+		align-items: flex-start;
+		justify-content: center;
+	}
+
+	.showtime-btn {
+		border-color: black;
+		color: black;
+		padding: 8px 16px;
+		font-size: 25px;
+		font-weight: 500;
+		border-radius: 12px;
+		width: 18.7%;
+	}
+
+		.showtime-btn:hover {
+			background-color: black;
+			color: white;
+		}
+
+		.showtime-btn:active {
+			background-color: black;
+			color: white;
+		}
+
+	.showtime-buttons h4 {
+		margin-bottom: 20px; /* Adds spacing below the label */
+	}
+
+	.show-date {
+		width: 25%;
+		max-width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start; /* Canh trái để không bị lệch */
+		gap: 10px;
+	}
+
+		.show-date .mud-picker {
+			width: 100%; /* Đảm bảo picker chiếm hết chiều rộng của cột */
+			max-width: 320px; /* Hoặc đặt giới hạn chiều rộng nếu cần */
+			margin: 0 auto; /* Căn giữa picker bên trong cột */
+		}
 </style>

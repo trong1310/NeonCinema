@@ -79,8 +79,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -291,17 +291,31 @@
 	{
 		showConfirmModal = true;
 	}
-
+	
 	protected override async Task OnInitializedAsync()
 	{
-		movieDto = await _movieServices.GetMovieById(id);
+		screenings = await _services.ChooseScrening(id);
+
+		seats = screenings.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+		
+		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
 		//	account = await _services.GetAccount(phoneNumber);
-		await LoadSeatsAsync();
+
 		foods = await _services.GetFoodCombo();
+		await RefreshSeatsAsync();
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -321,21 +335,6 @@
 			);
 
 		StateHasChanged(); // Cập nhật giao diện
-	}
-	private async Task LoadSeatsAsync()
-	{
-		screenings = await _services.ChooseScrening(id);
-
-		seats = screenings.Seats;
-
-		groupedSeats = seats
-			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
-			.OrderBy(g => g.Key)
-			.ToDictionary(
-				g => g.Key,
-				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
-						.ToList()
-			);
 	}
 	public async Task OnClickToEditAmount()
 	{
@@ -537,7 +536,7 @@
 				selectedSeatsId.Clear();
 				currentValue = 0;
 				totalPrices = 0;
-				await RefreshSeatsAsync();
+				 RefreshSeatsAsync();
 				paymentStatus = "success";
 			}
 			else

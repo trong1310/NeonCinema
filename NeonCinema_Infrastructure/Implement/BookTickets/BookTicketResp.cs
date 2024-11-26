@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					.Where(s => request.SeatID.Contains(s.ID))
 					.ToList();
 
-				if (seats.Any(s => s.Status != NeonCinema_Domain.Enum.seatEnum.Available))
+				if (seats.Any(s => s.Status == NeonCinema_Domain.Enum.seatEnum.Sold && s.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance))
 				{
 					var unavailableSeats = seats.Where(s => s.Status != NeonCinema_Domain.Enum.seatEnum.Available)
 												.Select(s => s.SeatNumber);
@@ -155,7 +155,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			}
 		}
 
-		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId)
+		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showDate)
 		{
 			TimeSpan currentTime = DateTime.Now.TimeOfDay;
 			var date = DateTime.Now;
@@ -172,8 +172,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				.ToListAsync();
 
 			if (screenings == null || !screenings.Any())
-				return new List<ScreeningMoviesDto>(); 
-
+				return new List<ScreeningMoviesDto>();
+			if (showDate.HasValue)
+			{
+				screenings =  screenings.Where(x => x.ShowDate.Date == showDate.Value.Date && x.ShowDate.Month == showDate.Value.Month && x.ShowDate.Year == showDate.Value.Year).ToList();
+			}
 			// Ánh xạ từng lịch chiếu thành DTO
 			var screeningDtos = screenings.Select(screening =>
 			{
@@ -183,6 +186,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					RoomName = screening.Rooms.Name,
 					ShowDate = screening.ShowDate,
 					ShowTime = screening.ShowTime.StartTime,
+					MoviesID = screening.MovieID,
 				};
 			}).ToList();
 
@@ -228,6 +232,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			}).ToList();
 			var dto = new ScreeningMoviesDto()
 			{
+				MoviesID = upcomingScreening.MovieID,
 				Id = upcomingScreening.ID,
 				RoomName = upcomingScreening.Rooms.Name,
 				ShowDate = upcomingScreening.ShowDate,
