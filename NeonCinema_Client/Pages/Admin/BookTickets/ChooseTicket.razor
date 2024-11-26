@@ -306,7 +306,7 @@
 	private async Task RefreshSeatsAsync()
 	{
 		// Lấy dữ liệu ghế mới từ server
-		var updatedScreening = await _services.GetScreeningMovies(id);
+		var updatedScreening = await _services.ChooseScrening(id);
 
 		// Cập nhật lại danh sách ghế
 		seats = updatedScreening.Seats;
@@ -324,7 +324,7 @@
 	}
 	private async Task LoadSeatsAsync()
 	{
-		screenings = await _services.GetScreeningMovies(id);
+		screenings = await _services.ChooseScrening(id);
 
 		seats = screenings.Seats;
 
