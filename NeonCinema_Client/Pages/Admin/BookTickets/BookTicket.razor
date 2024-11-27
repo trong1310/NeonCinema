@@ -63,9 +63,6 @@
                             </div>
                             <h5 class="card-title">@item.Name</h5>
                             <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-                            @* <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
-                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                            </button> *@
                             <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
@@ -108,7 +105,7 @@
 
     private async Task NagationToDetailBook(Guid id)
     {
-        _navi.NavigateTo($"/book-detail/{id}");
+        _navi.NavigateTo($"/book-details/{id}");
     }
 }
 
