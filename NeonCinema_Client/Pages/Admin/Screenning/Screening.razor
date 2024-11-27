@@ -89,7 +89,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var screening in screenings)
+                @foreach (var screening in screenings) //lỗi json ở đây nè Giáp
                 {
                     <tr class="text-center">
                         <td>@screening.ID</td>
@@ -118,10 +118,23 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        screenings = await ScreeningService.GetAllScreeningsAsync();
+        await LoadScreening();
         movies = await ScreeningService.GetAllMoviesAsync();
         showTime = await ScreeningService.GetAllShowTimesAsync();
         rooms = await ScreeningService.GetAllRoomsAsync();
+    }
+
+    private async Task LoadScreening()
+    {
+        try
+        {
+            screenings = await ScreeningService.GetAllScreeningsAsync();
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+
     }
 
     private void ToggleCreateForm()

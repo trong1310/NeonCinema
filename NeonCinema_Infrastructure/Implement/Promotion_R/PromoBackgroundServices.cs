@@ -32,7 +32,7 @@ namespace NeonCinema_Client.Data.Services.Promotion
 				var now = DateTime.Now;
 
 				// Lấy tất cả mã khuyến mại cần kiểm tra
-				var promotions = await dbContext.Promotions.ToListAsync(stoppingToken);
+				var promotions = await dbContext.Promotions.Where(x => x.Status != PromotionStatus.Expired).ToListAsync(stoppingToken);
 
 				foreach (var promo in promotions)
 				{

@@ -21,8 +21,16 @@ public class ScreeningService : IScreeningService
 
     public async Task<List<ScreeningDTO>> GetAllScreeningsAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<ScreeningDTO>>("https://localhost:7211/api/Screening/get-all-screenings");
-        return response;
+        try
+        {
+			var response = await _httpClient.GetFromJsonAsync<List<ScreeningDTO>>("https://localhost:7211/api/Screening/get-all-screenings");
+			return response;
+		}
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        
     }
 
     public async Task<ScreeningDTO> GetScreeningByIdAsync(Guid id)
