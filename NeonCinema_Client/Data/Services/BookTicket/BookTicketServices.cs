@@ -6,6 +6,9 @@ using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Enum;
+using System.Net.Http.Json;
+using System.Threading;
 
 namespace NeonCinema_Client.Data.Services.BookTicket
 {
@@ -45,11 +48,24 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 			var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
 			return respones;
 		}
-		public async Task<ScreeningMoviesDto> GetScreeningMovies(Guid MovieId)
+		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showdate)
 		{
 			try
 			{
-				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/screening/{MovieId}");
+				string formattedDate = showdate?.ToString("yyyy-MM-dd");
+				var results = await _httpClient.GetFromJsonAsync<List<ScreeningMoviesDto>>($"https://localhost:7211/api/BookTicket/screening?movieId={MovieId}&showDate={formattedDate}");
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("co loi xay ra : " + ex.Message);
+			}
+		}
+		public async Task<ScreeningMoviesDto> ChooseScrening(Guid id)
+		{
+			try
+			{
+				var results = await _httpClient.GetFromJsonAsync<ScreeningMoviesDto>($"https://localhost:7211/api/BookTicket/choose-screning?id={id}");
 				return results;
 			}
 			catch (Exception ex)
@@ -81,6 +97,25 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("co loi xay ra : " + ex.Message);
 			}
 		}
+		public async Task<HttpResponseMessage> UpdateStateSeats(Guid seatId, seatEnum status)
+		{
+			try
+			{
+				var seatUpdateData = new
+				{
+					SeatId = seatId,
+					Status = status
+				};
+
+				var results = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/BookTicket/UpdateSeatStatus", seatUpdateData);
+				return results;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
+
 
 	}
 }

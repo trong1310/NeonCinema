@@ -46,9 +46,11 @@ namespace NeonCinema_Client.Data.Services.Room
             return respones;
         }
 
-        public Task<List<SeatDTO>> GetSeat()
+        public async Task<List<SeatDTO>> GetSeatsByRoomId(Guid roomId)
         {
-            throw new NotImplementedException();
+
+            var response = await _httpClient.GetFromJsonAsync<List<SeatDTO>>($"api/Room/GetSeatsByRoomId/{roomId}");
+            return response;
         }
 
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request)
@@ -57,9 +59,6 @@ namespace NeonCinema_Client.Data.Services.Room
             return response;
         }
 
-        public Task UpdateSeatType(UpdateSeatDTO seatDTO)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

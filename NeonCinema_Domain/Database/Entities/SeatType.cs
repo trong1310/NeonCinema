@@ -14,6 +14,7 @@ namespace NeonCinema_Domain.Database.Entities
         [Required(ErrorMessage = "Seat Type Name không được để trống.")]
         public string SeatTypeName { get; set; }
         public virtual ICollection<Seat>? Seats { get; set; }
+        public virtual ICollection<TicketPrice>? TicketPrice { get; set; }
 
     }
 

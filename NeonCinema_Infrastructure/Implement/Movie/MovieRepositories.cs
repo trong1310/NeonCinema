@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Movie;
@@ -246,7 +247,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .ToListAsync();
 
             if (query == null || !query.Any()) return null;
-
+            var actor = await _context.ActorMovies.Include(x => x.Actor).AsNoTracking().ToListAsync();
             var movieDtos = query.Select(result => new MovieDTO
             {
                 ID = result.ID,
@@ -262,6 +263,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
                 Status = result.Status,
                 Trailer = result.Trailer,
+                ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
+                {
+                    ActorName = act.Actor.Name,
+                }).ToList(),
             }).ToList();
 
             return movieDtos;

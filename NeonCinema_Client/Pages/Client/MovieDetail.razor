@@ -1,48 +1,173 @@
 ﻿@page "/movie-details"
 
-<body>
-    <div class="container-fluid">
-        <div class="row movie-detail-background">
-            <div class="col-md-6">
-                <div class="img-movie-detail">
-                    <img src="/images/Client/cam.jpg" alt="Movie Poster" class="img-fluid rounded shadow">
-                </div>
-            </div>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-            <!-- Thông tin phim bên phải -->
-            <div class="col-md-6">
-                <h2 class="title">CÁM</h2>
-                <p class="description">Dị bản kinh dị đẫm máu lấy cảm hứng từ truyện cổ tích nổi tiếng Tấm Cám, nội dung chính của phim xoay quanh Cám – em gái cùng cha khác mẹ của Tấm.</p>
-                <p>
-                    <strong>Phân loại:</strong>
-                    <span class="badge bg-danger">T18</span>
-                    <span class="text-muted">Phim phổ biến đến người xem từ 18 tuổi trở lên</span>
-                </p>
-                <p>
-                    <strong>Định dạng:</strong>
-                    <span class="badge bg-success">2D</span>
-                </p>
-                <p><strong>Đạo diễn:</strong> <span class="text-info">Trần Hữu Tấn</span></p>
-                <p><strong>Diễn viên:</strong> <span class="text-info">Rima Thanh Vy, Thúy Diễm, NSƯT Ngọc Hiệp</span></p>
-                <p><strong>Khởi chiếu:</strong> <span class="text-info">20/09/2024</span></p>
-                <p><strong>Thể loại:</strong> <span class="text-info">Horror</span></p>
-                <p><strong>Thời lượng:</strong> <span class="text-info">122 phút</span></p>
-                <p><strong>Ngôn ngữ:</strong> <span class="text-info">Phụ đề</span></p>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4 p-3 movie-details">
+        <div class="movie-poster col" style=" margin-left:70px">
+            <img src="/images/Client/cam.jpg" alt="Movie Poster" class="img-fluid rounded border">
+        </div>
+        <!-- Description Section -->
+        <div class="movie-description col-9" style=" margin-left:-100px">
+            <h2 style="color: limegreen; font-weight:revert">Linh Miêu: Quỷ Nhập Tràng</h2>
+            @* Mô tả *@
+            <p>
+                "Linh Miêu" dựa trên chất liệu dân gian liên quan đến quỷ nhập tràng.
+                Bi kịch của một gia đình tại Huế vào những năm 1960 với những nút thắt – mở,
+                những tư tưởng bất bình đẳng giới, những lề thói và cả những bất hạnh bán vào từng thành viên gia đình.
+            </p>
+            <p>
+                <strong>Đạo diễn:</strong>  
+                <span style="color: limegreen;">Lưu Thành Luân</span>
+            </p>
+            <p>
+                <strong>Diễn viên:</strong>
+                <span style="color: limegreen;">Hồng Đào, Thiên An, Nguyễn Thúc Thùy Tiên, Văn Anh</span>
+            </p>
+            <p>
+                <strong>Thể loại:</strong>
+                <span style="color: limegreen;">Horror</span>
+                
+            </p>
+            <p>
+                <strong>Khởi chiếu:</strong> 22/11/2024 | <strong>Thời lượng:</strong> 109 phút</p>           
+            <button class="btn btn-outline-success limegreen-button">
+                <span class="material-icons">arrow_back</span> Chọn phim khác
+            </button>
+        </div>
+    </div>
+
+    <div class="row mb-4 p-3 ">
+        <div class="col-md-9 movie-details showtime-buttons" style="width:72%">
+            <h4>Giờ Chiếu</h4>
+            <div class="d-flex flex-wrap gap-3">
+                <button class="btn btn-outline-success showtime-btn">10:00</button>
+                <button class="btn btn-outline-success showtime-btn">12:30</button>
+                <button class="btn btn-outline-success showtime-btn">15:00</button>
+                <button class="btn btn-outline-success showtime-btn">17:30</button>
+                <button class="btn btn-outline-success showtime-btn">20:00</button>
+                <button class="btn btn-outline-success showtime-btn">20:00</button>
             </div>
         </div>
-
-        <!-- Trailer phim -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <h4 class="trailer-title">Trailer</h4>
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="w-100" height="500" src="https://www.youtube.com/embed/6A0nJ_sJzCk" frameborder="0" allowfullscreen></iframe>
-                </div>
+        <div class="row col-md-3 movie-details ml-auto show-date">
+            <h4>Lịch Chiếu</h4>
+            <div>
+                <MudDatePicker 
+                    PickerVariant="PickerVariant.Static" Color="Color.Success" 
+                    Rounded="true" Date="@(DateTime.Today)" 
+                    Class="custom-datepicker" />
             </div>
         </div>
     </div>
-</body>
+</div>
 
-@code {
+@code{
 
 }
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', 'Arial', sans-serif;
+    }
+    .movie-details{
+        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
+        border-radius: 8px; /* Bo góc cho khung */
+        padding: 20px; /* Padding cho khung */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
+        margin-left: 1px;
+        margin-right: 1px;
+        display: flex; /* Align movie poster and description side by side */
+        gap: 20px; /* Space between the movie poster and description */
+        align-items: center;
+    }
+
+    
+    .movie-poster img {
+        width: 250px; /* Set the width of the image */
+        height: 350px; /* Set the height of the image */
+        object-fit: cover; /* Ensures the image maintains its aspect ratio */
+    }
+
+    .movie-description {
+        font-size: 1.2rem; /* Increase font size */
+    }
+
+        .movie-description h2 {
+            font-size: 2rem; /* Make the title larger */
+        }
+
+    .limegreen-button {
+        border-color: limegreen; /* Đặt màu viền nút là limegreen */
+        color: limegreen; /* Đặt màu chữ là limegreen */
+        border-radius: 8px;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        gap: 8px; /* Khoảng cách giữa icon và chữ */
+        padding: 8px 16px; /* Thêm padding để nút rộng hơn */
+        font-size: 16px;
+        font-weight: 580;
+    }
+
+        .limegreen-button:hover {
+            background-color: limegreen; /* Khi hover, màu nền sẽ là limegreen */
+            color: white; /* Khi hover, màu chữ sẽ là trắng */
+            border-color: limegreen; /* Đảm bảo viền vẫn là limegreen khi hover */
+        }
+
+        .limegreen-button .material-icons {
+            font-size: 18px; /* Đặt kích thước icon */
+        }
+
+
+    .showtime-buttons {
+        display: block;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .showtime-btn {
+        border-color: black;
+        color: black;
+        padding: 8px 16px;
+        font-size: 25px;
+        font-weight: 500;
+        border-radius: 12px;
+        width: 18.7%;
+    }
+
+        .showtime-btn:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .showtime-btn:active {
+            background-color: black;
+            color: white;
+        }
+
+    .showtime-buttons h4 {
+        margin-bottom: 20px; /* Adds spacing below the label */
+    }
+
+        .show-date{
+            width: 25%; 
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Canh trái để không bị lệch */
+            gap: 10px;
+        }
+
+        .show-date .mud-picker {
+            width: 100%; /* Đảm bảo picker chiếm hết chiều rộng của cột */
+            max-width: 320px; /* Hoặc đặt giới hạn chiều rộng nếu cần */
+            margin: 0 auto; /* Căn giữa picker bên trong cột */
+        }
+        
+    
+        
+</style>

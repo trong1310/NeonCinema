@@ -7,157 +7,204 @@
 @inject BookTicketServices _service
 @inject NavigationManager _navi
 
-<MudPaper Height="90%" Width="90%">
-	<MudContainer MaxWidth="MaxWidth.Large">
-		<MudPaper Height="100%" Width="100%" Square="true">
-			<div class="d-flex justify-content-center align-items-center">
-				<h4>Bán vé</h4>
-			</div>
-			<div class="col-md-4 d-flex justify-content-end ml-auto" style="margin:20px;">
-				<input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
-			</div>
+<div class="container-fluid mt-5" style="max-width: 98%;">
+    <div class="row justify-content-center">
+        <h3 class="text-center text-secondary-emphasis">Bán vé</h3>
+    </div>
+    <div class="row justify-content-end mb-5" >
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
+        </div>
+    </div>
 
-			<div class="border">
-				<div style="text-align: center;">
-					<h2 class="mb-4 mt-4 green-title">Phim đang chiếu</h2>
-				</div>
-				<div class="row">
-					@foreach (var  item in moviesNowShowing)
-					{
-						<div class="col-custom">
-							<div class="row">
-								<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
-									<div class="card movie-card d-flex justify-content-lg-start">
-										<div class="card-body">
-											<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
-											<div class="tags mb-2">
-												<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
-												<span class="badge bg-dark">Thời lượng: @item.Duration</span>
-												<span >Đạo diễn: @item.DirectorName</span>
-												<span >Ngày chiếu: @item.StarTime</span>
-												<span >
-													Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
-																			? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
-																			: "Không có diễn viên")
-												</span>
-												<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
-											</div>
-											<h5 class="card-title">@item.Name</h5>
-											<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-											<button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(item.ID)">
-												<i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					}
-				</div>
-			</div>
-			<div class="border">
-				<div style="text-align: center;">
-					<h2 class="mb-4 mt-4 green-title">Phim sắp chiếu</h2>
-				</div>
-				<div class="row">
-					<div class="col-custom">
-						<div class="row">
-							@foreach (var item in moviesComing)
-							{
-								<div class="col-custom">
-									<div class="row">
-										<div class="col-lg-3 col-md-3 col-sm-6 mb-4">
-											<div class="card movie-card d-flex justify-content-lg-start">
-												<div class="card-body">
-													<img src="@GetImageUrl(item.Images)" class="card-img-top" style="height: 37%; width: 100%" loading="lazy">
-													<div class="tags mb-2">
-														<span class="badge bg-danger">Độ tuổi: @item.AgeAllowed</span>
-														<span class="badge bg-dark">Thời lượng: @item.Duration</span>
-														<span>Đạo diễn: @item.DirectorName</span>
-														<span>Ngày chiếu: @item.StarTime</span>
-														<span>
-															Các diễn viên chính: 	@(item.ActorMovies != null && item.ActorMovies.Any()
-																					? string.Join(", ", item.ActorMovies.Select(x => x.ActorName))
-																					: "Không có diễn viên")
-														</span>
-														<span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
-													</div>
-													<h5 class="card-title">@item.Name</h5>
-													<p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							}
-						</div>
-					</div>
-				</div>
-			</div>
-		</MudPaper>
-	</MudContainer>
-</MudPaper>
+    <div class="border p-4 mt-5">
+        <div class="text-center mb-4">
+            <h2 class="green-title">Phim đang chiếu</h2>
+        </div>
+        <div class="row">
+            @foreach (var item in moviesNowShowing)
+            {
+                <div class="col-4 col-md-3 mb-4 col-custom">
+                    <div class="card movie-card">
+                        <img src="/images/Client/cam.jpg" class="card-img-top" alt="@item.Name" loading="lazy">
+                        <div class="card-body">
+                            <div class="tags">
+                                <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                <span class="badge bg-dark">@item.Duration phút</span>
+                                <span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
+                            </div>
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="border p-4 mt-5">
+        <div class="text-center mb-4">
+            <h2 class="green-title">Phim sắp chiếu</h2>
+        </div>
+        <div class="row">
+            @foreach (var item in moviesComing)
+            {
+                <div class="col-4 col-md-3 mb-4 col-custom">
+                    <div class="card movie-card">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
+                        <div class="card-body">
+                            <div class="tags">
+                                <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                <span class="badge bg-dark">@item.Duration phút</span>
+                                <span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
+                            </div>
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
 @code {
-	List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
-	List<MovieDTO> moviesComing = new List<MovieDTO>();
-	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMovies();
+    List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
+    List<MovieDTO> moviesComing = new List<MovieDTO>();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovies();
+    }
 
-	}
-	public async Task LoadMovies()
-	{
-		moviesNowShowing = await _service.MoviesNowShowing();
-		foreach (var movies in moviesNowShowing)
-		{
-			var actors = await _service.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
-			movies.ActorMovies = actors;
-		}
-		moviesComing = await _service.MoviesComing();
-		foreach (var movies in moviesComing)
-		{
-			var actors = await _service.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
-			movies.ActorMovies = actors;
-		}
-	}
-	
-	private string GetImageUrl(string imageUrl)
-	{
-		return $"https://localhost:7211/api/Resources/{imageUrl}";
-	}
-	private async Task NagationToDetailBook(Guid id)
-	{
-		_navi.NavigateTo($"/select-seat/{id}");
-	}
+    public async Task LoadMovies()
+    {
+        moviesNowShowing = await _service.MoviesNowShowing();
+        foreach (var movie in moviesNowShowing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        moviesComing = await _service.MoviesComing();
+        foreach (var movie in moviesComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+    }
+
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
+    }
+
+    private async Task NagationToDetailBook(Guid id)
+    {
+        _navi.NavigateTo($"/book-details/{id}");
+    }
 }
+
 <style>
-	.green-title {
-		color: limegreen; /* Màu chữ xanh lá cây */
-		border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
-		padding: 10px; /* Thêm khoảng cách giữa chữ và viền */
-		border-radius: 8px; /* Bo góc cho đường viền */
-		display: inline-block; /* Để viền chỉ bao quanh chữ */
-		font-weight: bold;
-	}
+    body {
+        background-color: #f8f9fa; /* Màu nền của trang */
+    }
+    .border{
+        border-radius: 10px;
+        background-color: white;
+    }
+    .col-custom {
+        padding: 20px; /* Thêm padding cho các cột */
+        display: flex; /* Use flexbox for centering */
+        justify-content: center;
+    }
 
-	.movie-card {
-		margin: 15px; /* Thêm margin xung quanh card */
-		background-color: white;
-		border-radius: 10px;
-		overflow: hidden;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		transition: transform 0.3s, box-shadow 0.3s; /* Thêm hiệu ứng cho box-shadow */
-		width: calc(100% - 30px); /* Điều chỉnh width để bù cho margin */
-		height: auto; /* Sử dụng auto để có không gian cho nội dung */
-		position: relative;
-		display: flex;
-		flex-direction: column;
-	}
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .card-img-top {
+        object-fit: cover; /* Đảm bảo ảnh trong card không bị méo và phủ kín vùng chứa */
+        height: 200px; /* Chiều cao cố định cho ảnh */
+    }
 
-		.movie-card img {
-			width: 100%;
-			height: auto;
-			object-fit: cover;
-		}
+    .green-title {
+        color: limegreen; /* Màu chữ xanh lá */
+        border: 1px solid limegreen; /* Viền màu xanh lá */
+        padding: 10px; /* Khoảng cách trong */
+        border-radius: 8px; /* Bo góc viền */
+        display: inline-block; /* Đảm bảo tiêu đề nằm trong một khối */
+        font-weight: bold; /* Chữ đậm */
+    }
+
+    .movie-card {
+        background-color: white; /* Màu nền của thẻ card */
+        border-radius: 10px; /* Bo góc thẻ card */
+        overflow: hidden; /* Ẩn phần nội dung bị tràn */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho thẻ card */
+        transition: transform 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển động mượt mà khi hover */
+        width: 90%;
+        height: auto; /* Đảm bảo thẻ card chiếm hết chiều cao */
+        display: flex; /* Sử dụng flexbox cho layout */
+        flex-direction: column; /* Sắp xếp các phần tử con theo chiều dọc */
+    }
+     .movie-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ đổ bóng khi hover */
+    }
+
+        .movie-card img {
+            width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
+            height: 80%; /* Giữ tỷ lệ của ảnh */
+            object-fit: contain; /* Đảm bảo ảnh không bị biến dạng */
+        }
+
+    .card-body {
+        display: flex; /* Sử dụng flexbox cho layout */
+        flex-direction: column; /* Các phần tử con sẽ xếp theo chiều dọc */
+        justify-content: flex-start; /* Đảm bảo các phần tử không có khoảng cách giữa chúng */
+        margin: 0; /* Xóa bỏ margin ngoài */
+        padding: 0;
+        height: auto;
+        padding-left: 15px; /* Thêm khoảng cách lề trái */
+        padding-right: 15px;
+    }
+
+    .card-title {
+        white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+        overflow: hidden; /* Ẩn phần văn bản bị tràn */
+        text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+        width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+        display: block; /* Hiển thị tiêu đề dưới dạng khối */
+        margin-bottom: 10px; /* Xóa margin dưới */
+        color: limegreen;
+    }
+
+    .card-text {
+        margin-bottom: 10px; /* Xóa margin dưới */
+    }
+    .tags{
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+        .tags .badge {
+            font-size: 14px; /* Cỡ chữ của các nhãn */
+            padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+            border-radius: 7px; /* Bo góc cho nhãn */
+            margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+        }
+
+            .tags .badge:last-child {
+                margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+            }
+
+   .buy-ticket{
+       margin-bottom: 10px;
+   }
+   
 </style>
+

@@ -18,15 +18,17 @@
 @inject BookTicketServices _services
 @inject IDialogService DialogService
 @inject IJSRuntime JS
+@inject ISnackbar Snackbar
 
 
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <div class="row m-2">
 	<div class="col-md-4" style="width: 25% ; height:80%">
 		<div class="card">
 			<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" style="height: 33%; width: 100%" alt="Movie Poster">
 			<div class="card-body text-center">
 				<p><strong>Phim: </strong>@movieDto.Name</p>
-				<p><strong>Suất chiếu:</strong> @screenings.ShowDate.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
+				<p><strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
 				<p><strong>Phòng:</strong> @screenings.RoomName</p>
 			</div>
 		</div>
@@ -76,9 +78,9 @@
 					<div class="seat-row">
 						@foreach (var seat in row.Value)
 						{
-							<div class="seat-box @GetSeatCssClass(seat) ms-2"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							<div class="seat-box @GetSeatCssClass(seat)"
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -131,44 +133,43 @@
 					</div>
 				</div>
 				<div class="payment-method-container">
-					<div class="payment-method-container">
-						<div class="card" style="width: 18rem;">
-							<div class="card-body">
-								<h5 class="card-title">Phương thức thanh toán</h5>
-								<hr class="dashed">
-								<p>
-									<strong>Đồ ăn nhanh: </strong>
-									@foreach (var selectedCombo in selectedCombos)
-									{
-										<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
+					<div class="card" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title">Phương thức thanh toán</h5>
+							<hr class="dashed">
+							<p>
+								<strong>Đồ ăn nhanh: </strong>
+								@foreach (var selectedCombo in selectedCombos)
+								{
+									<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
 
-										<br />
-									}
-								</p>
-								<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-								<span style="cursor: pointer;" id="amount-display">@totalPrices</span>
-								<div class="concession-item">
-									<div class="form-check">
-										<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('ẩn')" id="cashRadio" checked>
-										<label class="form-check-label" for="flexRadioDefault1">
-											<i class="fa-solid fa-money-bill"></i> Tiền mặt
-										</label>
-									</div>
-									<div class="form-check">
-										<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('hiện')" id="bankTransferRadio">
-										<label class="form-check-label" for="flexRadioDefault2">
-											<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
-										</label>
-									</div>
+									<br />
+								}
+							</p>
+							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
+							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("c")</span>
+							<!-- Đáp tổng tiền vào đây -->
+							@* <input type="text" id="totalPrice" value="@totalPrices.ToString("c")"> *@
+							<div class="concession-item">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('ẩn')" id="cashRadio" checked>
+									<label class="form-check-label" for="flexRadioDefault1">
+										<i class="fa-solid fa-money-bill"></i> Tiền mặt
+									</label>
 								</div>
-								<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
-
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('hiện')" id="bankTransferRadio">
+									<label class="form-check-label" for="flexRadioDefault2">
+										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+									</label>
+								</div>
 							</div>
+							<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
+
 						</div>
 					</div>
 				</div>
 			</div>
-
 			<div class="button-container">
 				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
 				<button class="btn btn-primary" style="width: 25%" @onclick="ShowConfirmModal">Thanh toán</button>
@@ -239,20 +240,34 @@
 	</div>
 </div>
 <script>
+	window.onload = function() {
+	// Gọi hàm hiển thị QR tự động khi trang tải xong
+	hienThiQR('ẩn');
+	};
+
 	function hienThiQR(hienThi) {
 	const qrCode = document.getElementById("qrcode");
 
 	if (hienThi === 'hiện') {
-	qrCode.style.display = 'block';
+	const totalPrice = document.getElementById("totalPrice").value;
+	const accountName = "NGUYEN VAN TRONG";
+	qrcode.src = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+	qrCode.style.display = 'block'; // Hiển thị mã QR
+	}
+	else {
+	qrCode.style.display = 'none'; // Ẩn mã QR
+	}
+	}
+	function hienThiQR(hienThi) {
+	const qrCode = document.getElementById("qrcode");
+	qrCode.style.display = hienThi === 'hiện' ? 'block' : 'none';
+	if (hienThi === 'hiện') {
 	DotNet.invokeMethodAsync('NeonCinema_Client', 'OnClickToEditAmount')
-	.then(() => {
-	console.log('Cập nhật giá tiền thành công');
-	})
-	.catch(error => console.error('Lỗi khi gọi OnClickToEditAmount:', error));
-	} else {
-	qrCode.style.display = 'none';
+	.then(() => console.log('Cập nhật giá tiền thành công'))
+	.catch(error => console.warn('Lỗi khi gọi OnClickToEditAmount:', error));
 	}
 	}
+
 </script>
 @code {
 	[Parameter]
@@ -271,30 +286,55 @@
 	private decimal totalPrices = 0;
 	private bool showConfirmModal = false;
 	public string? phoneNumber;
+	public string error = "";
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
 	}
-
+	
 	protected override async Task OnInitializedAsync()
 	{
-		movieDto = await _movieServices.GetMovieById(id);
+		screenings = await _services.ChooseScrening(id);
+
+		seats = screenings.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+		
+		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
 		//	account = await _services.GetAccount(phoneNumber);
-		screenings = await _services.GetScreeningMovies(id);
-		seats = screenings.Seats;
-		groupedSeats = seats
-					.GroupBy(seat => seat.SeatNumber.Substring(0, 1)) // Nhóm theo ký tự đầu
-					.OrderBy(g => g.Key) // Sắp xếp hàng từ A trở đi
-					.ToDictionary(
-						g => g.Key,
-						g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1))) // Sắp xếp theo số ghế trong từng hàng
-						.ToList()
-					);
+
 		foods = await _services.GetFoodCombo();
+		await RefreshSeatsAsync();
+	}
+	private async Task RefreshSeatsAsync()
+	{
+		// Lấy dữ liệu ghế mới từ server
+		var updatedScreening = await _services.ChooseScrening(id);
+
+		// Cập nhật lại danh sách ghế
+		seats = updatedScreening.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
 	}
 	public async Task OnClickToEditAmount()
 	{
@@ -308,11 +348,12 @@
 	#region vé
 	private string GetSeatCssClass(SeatDto seat)
 	{
-		if (selectedSeats.Contains(seat.SeatNumber))
+		return seat.Status switch
 		{
-			return "selected";
-		}
-		return "available";
+			NeonCinema_Domain.Enum.seatEnum.Sold => "sold",            // Ghế đã bán
+			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
+			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
+		};
 		OnClickToEditAmount();
 	}
 	private void NextTab()
@@ -320,8 +361,9 @@
 		if (_selectedIndex < 1)
 		{
 			_selectedIndex++;
+			OnClickToEditAmount();
 		}
-		OnClickToEditAmount();
+
 	}
 
 	private void PreviousTab()
@@ -329,29 +371,48 @@
 		if (_selectedIndex > 0)
 		{
 			_selectedIndex--;
+			OnClickToEditAmount();
 		}
 	}
 	private List<string> selectedSeats = new List<string>();
 	private string selectedSeatNumbers = "";
 	private List<Guid> selectedSeatsId = new List<Guid>(); // Danh sách lưu trữ ID ghế được chọn
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
+		});
+	}
 
 	private async void SelectSeat(SeatDto seat)
 	{
 		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
 		{
-			await JS.InvokeVoidAsync("alert", "Không thể chọn quá 10 ghế!");
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
 			return;
 		}
 
+		// Kiểm tra nếu số lượng ghế chọn vượt quá giới hạn
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
 		if (!selectedSeats.Contains(seat.SeatNumber))
 		{
 			char currentRow = seat.SeatNumber[0];
 			int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+
 			foreach (var selectedSeat in selectedSeats)
 			{
 				char selectedRow = selectedSeat[0];
 				int selectedCol = int.Parse(selectedSeat.Substring(1));
 
+				// Kiểm tra ghế giữa trong cùng một hàng
 				if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
 				{
 					int middleCol = (currentCol + selectedCol) / 2;
@@ -359,20 +420,20 @@
 
 					if (!selectedSeats.Contains(middleSeat))
 					{
-						await JS.InvokeVoidAsync("alert", "Không được để trống ghế giữa!");
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
 						return;
 					}
 				}
 
+				// Kiểm tra ghế giữa trong cùng một cột
 				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
 				{
-					// Tìm ghế ở giữa theo hàng
 					char middleRow = (char)((currentRow + selectedRow) / 2);
 					string middleSeat = $"{middleRow}{currentCol}";
 
 					if (!selectedSeats.Contains(middleSeat))
 					{
-						await JS.InvokeVoidAsync("alert", "Không được để trống ghế giữa!");
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
 						return;
 					}
 				}
@@ -467,28 +528,31 @@
 
 			if (createBill.IsSuccessStatusCode)
 			{
+				// Reset giao diện
 				selectedCombos.Clear();
+				selectedSeatNumbers = " ";
 				selectedComboId.Clear();
+				selectedSeats.Clear();
+				selectedSeatsId.Clear();
 				currentValue = 0;
 				totalPrices = 0;
-
+				 RefreshSeatsAsync();
 				paymentStatus = "success";
-				Console.WriteLine("Thành công");
 			}
 			else
 			{
 				paymentStatus = "failure";
-				Console.WriteLine("Thất bại");
 			}
 		}
 		catch (Exception ex)
 		{
 			paymentStatus = "failure";
-			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message} : {ex.StackTrace}");
 		}
 
 		StateHasChanged();
 	}
+
 	private string GetPaymentMessage(string status)
 	{
 		return status switch
@@ -733,6 +797,44 @@
 
 	.text-center {
 		margin-bottom: 10px;
+	}
+
+	.available {
+		background-color: #ffc107; /* Màu ghế thường */
+		cursor: pointer;
+		border-radius: 4px;
+		color: #fff;
+		font-weight: bold;
+	}
+
+	.disabled {
+		pointer-events: none; /* Vô hiệu hóa nhấp chuột */
+		opacity: 0.5; /* Làm mờ */
+	}
+
+	.selected {
+		background-color: #007bff; /* Màu ghế đang chọn */
+		color: #fff;
+	}
+
+	.bg-dark {
+		background-color: #343a40; /* Màu ghế đã bán */
+		color: #fff;
+	}
+
+	.bg-secondary {
+		background-color: #6c757d; /* Màu ghế bảo trì */
+		color: #fff;
+	}
+
+	.bg-danger {
+		background-color: #dc3545; /* Màu ghế VIP */
+		color: #fff;
+	}
+
+	.bg-success {
+		background-color: #28a745; /* Màu ghế đôi */
+		color: #fff;
 	}
 
 </style>

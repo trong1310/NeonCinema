@@ -63,5 +63,32 @@ namespace NeonCinema_API.Controllers
             return StatusCode((int)response.StatusCode, "Failed to update room");
         }
 
+
+        [HttpGet("GetSeatsByRoomId/{roomId}")]
+        public async Task<IActionResult> GetSeatsByRoomId(Guid roomId, CancellationToken cancellationToken)
+        {
+            if (roomId == Guid.Empty)
+            {
+                return BadRequest("Invalid room ID");
+            }
+
+            try
+            {
+                
+                var seats = await _roomRepository.GetSeatsByRoomId(roomId, cancellationToken);
+
+                if (seats == null || seats.Count == 0)
+                {
+                    return NotFound("No seats found for this room.");
+                }
+
+                return Ok(seats);  
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }
