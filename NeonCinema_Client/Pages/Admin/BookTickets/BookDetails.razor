@@ -19,11 +19,11 @@
 
 <div class="container-fluid py-5">
 	<div class="row mb-4 p-3 movie-details">
-		<div class="movie-poster col" style=" margin-left:70px">
+		<div class="movie-poster col-12 col-md-4 col-lg-3" style=" margin-left:70px">
 			<img src="@GetImageUrl(movieDto.Images)" alt="Movie Poster" class="img-fluid rounded border">
 		</div>
 		<!-- Description Section -->
-		<div class="movie-description col-9" style=" margin-left:-100px">
+		<div class="movie-description col-12 col-md-8 col-lg-9" style=" margin-left:-100px">
 			<h2 style="color: limegreen; font-weight:revert">Tên phim: @movieDto.Name</h2>
 			@* Mô tả *@
 			<p>
@@ -228,4 +228,15 @@
 			max-width: 320px; /* Hoặc đặt giới hạn chiều rộng nếu cần */
 			margin: 0 auto; /* Căn giữa picker bên trong cột */
 		}
+	media (max-width: 768px) {
+		.movie-details {
+			flex-direction: column; /* Chuyển từ ngang sang dọc */
+			align-items: center;   /* Canh giữa nội dung */
+		}
+
+		.movie-description {
+			margin-left: 0; /* Xóa margin không cần thiết */
+		}
+	}
+
 </style>
