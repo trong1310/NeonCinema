@@ -38,6 +38,7 @@ namespace NeonCinema_Application.DataTransferObject.User
 
         [Required(ErrorMessage = "Địa chỉ không được để trống")]
         public string Adderss { get; set; }
+        public string? PassWord  { get; set; }
     }
 
 }
