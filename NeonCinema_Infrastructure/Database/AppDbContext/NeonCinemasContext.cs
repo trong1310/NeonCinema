@@ -69,11 +69,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
-
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           // optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
         }
 
@@ -526,7 +524,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 						Column = col.ToString(),
 						Row = row.ToString(),
 						SeatNumber = $"{col}{row}",
-						Status = seatEnum.Selected,  // Bạn có thể thay đổi trạng thái ghế
+						Status = seatEnum.Available,  // Bạn có thể thay đổi trạng thái ghế
 						SeatTypeID = seatTypeData[0].ID,  // Loại ghế "Ghế thường"
 						RoomID = roomData[0].ID  // Phòng 1
 					});
@@ -544,7 +542,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 						Column = col.ToString(),
 						Row = row.ToString(),
 						SeatNumber = $"{col}{row}",
-						Status = seatEnum.Selected,  // Bạn có thể thay đổi trạng thái ghế
+						Status = seatEnum.Available,  // Bạn có thể thay đổi trạng thái ghế
 						SeatTypeID = seatTypeData[0].ID,  // Loại ghế "Ghế thường"
 						RoomID = roomData[1].ID  // Phòng 2
 					});
@@ -836,7 +834,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ID = Guid.NewGuid(),
 					Status = EntityStatus.Active,
 					ShowTimeID = showTimeData[0].ID,
-					ShowDate = DateTime.Now.AddDays(2), // Two days from now
+					ShowDate = DateTime.Now.AddDays(10), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
 					CreatedTime = DateTime.Now,
@@ -846,13 +844,69 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				{
 					ID = Guid.NewGuid(),
 					Status = EntityStatus.Active,
-					ShowTimeID = showTimeData[0].ID,
+					ShowTimeID = showTimeData[1].ID,
+					ShowDate = DateTime.Now.AddDays(9), // Two days from now
+					MovieID = movieData[0].ID,
+					RoomID = roomData[0].ID,
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showReleaseData[0].ID,
+				},
+				new Screening
+				{
+					ID = Guid.NewGuid(),
+					Status = EntityStatus.Active,
+					ShowTimeID = showTimeData[2].ID,
+					ShowDate = DateTime.Now.AddDays(8), // Two days from now
+					MovieID = movieData[0].ID,
+					RoomID = roomData[0].ID,
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showReleaseData[0].ID,
+				},
+				new Screening
+				{
+					ID = Guid.NewGuid(),
+					Status = EntityStatus.Active,
+					ShowTimeID = showTimeData[3].ID,
+					ShowDate = DateTime.Now.AddDays(7), // Two days from now
+					MovieID = movieData[0].ID,
+					RoomID = roomData[0].ID,
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showReleaseData[0].ID,
+				},
+				new Screening
+				{
+					ID = Guid.NewGuid(),
+					Status = EntityStatus.Active,
+					ShowTimeID = showTimeData[4].ID,
+					ShowDate = DateTime.Now.AddDays(6), // Two days from now
+					MovieID = movieData[0].ID,
+					RoomID = roomData[0].ID,
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showReleaseData[0].ID,
+				},
+				new Screening
+				{
+					ID = Guid.NewGuid(),
+					Status = EntityStatus.Active,
+					ShowTimeID = showTimeData[5].ID,
+					ShowDate = DateTime.Now.AddDays(5), // Two days from now
+					MovieID = movieData[0].ID,
+					RoomID = roomData[0].ID,
+					CreatedTime = DateTime.Now,
+					Show_ReleaseID = showReleaseData[0].ID,
+				},
+				new Screening
+				{
+					ID = Guid.NewGuid(),
+					Status = EntityStatus.Active,
+					ShowTimeID = showTimeData[6].ID,
 					ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
 					CreatedTime = DateTime.Now,
 					Show_ReleaseID = showReleaseData[0].ID,
 				}
+
 			};
 			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
 			var paymentMethodData = new List<PaymentMethod>

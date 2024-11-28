@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
+using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -93,7 +94,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					ID = Guid.NewGuid(),
 					BillCode = Uliti.GenerateBillCode(),
 					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
-					CreatedTime = DateTime.Now
+					CreatedTime = DateTime.Now,
+					UserID = request.AccountID?? null,
 				};
 				await _context.BillDetails.AddAsync(bill, cancellationToken);
 
@@ -138,7 +140,33 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				await _context.SaveChangesAsync();
 				await transaction.CommitAsync();
+				double convertPoint =(double) bill.TotalPrice * 6.8 / 100;
 
+				var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
+				accountBook.MinPoint += (double)convertPoint;
+				if (accountBook.MinPoint >= 0 && accountBook.MinPoint <= 100)
+				{
+					accountBook.Rank = "Thành viên";
+				}
+				if (accountBook.MinPoint >= 101 && accountBook.MinPoint <= 500)
+				{
+					accountBook.Rank = "Bạc";
+				}
+				if (accountBook.MinPoint >= 501 && accountBook.MinPoint <= 1000)
+				{
+					accountBook.Rank = "vàng";
+				}
+				if (accountBook.MinPoint >= 1001 && accountBook.MinPoint <= 1500)
+				{
+					accountBook.Rank = "Bạch kim";
+				}
+				if (accountBook.MinPoint >= 1501)
+				{
+					accountBook.Rank = "Kim cương";
+				}
+				accountBook.ModifiedTime = DateTime.UtcNow;
+				_context.RankMembers.Update(accountBook);
+				await _context.SaveChangesAsync();
 				return new HttpResponseMessage(HttpStatusCode.OK)
 				{
 					Content = new StringContent("Đặt vé thành công.")
@@ -175,7 +203,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				return new List<ScreeningMoviesDto>();
 			if (showDate.HasValue)
 			{
-				screenings =  screenings.Where(x => x.ShowDate.Date == showDate.Value.Date && x.ShowDate.Month == showDate.Value.Month && x.ShowDate.Year == showDate.Value.Year).ToList();
+				screenings = screenings.Where(x => x.ShowDate.Date == showDate.Value.Date && x.ShowDate.Month == showDate.Value.Month && x.ShowDate.Year == showDate.Value.Year).ToList();
 			}
 			// Ánh xạ từng lịch chiếu thành DTO
 			var screeningDtos = screenings.Select(screening =>
@@ -241,26 +269,24 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			};
 			return dto;
 		}
-		public async Task<UserDTO> GetAccountByPhone(string phone, CancellationToken cancellationToken)
+		public async Task<RankMemberResp> GetAccountByPhone(string phone, CancellationToken cancellationToken)
 		{
 			try
 			{
 
-				var obj = await _context.Users.Where(x => x.PhoneNumber == phone).FirstOrDefaultAsync();
-				return new UserDTO()
+				var obj = await _context.RankMembers.Include(x => x.Users).Where(x => x.Users.PhoneNumber == phone).FirstOrDefaultAsync();
+				if (obj == null)
 				{
-					ID = obj.ID,
-					PhoneNumber = obj.PhoneNumber,
-					Adderss = obj.Adderss,
-					DateOrBriht = obj.DateOrBriht,
-					Email = obj.Email,
-					FullName = obj.FullName,
-					Gender = obj.Gender,
-					Images = obj.Images,
-					PassWord = obj.PassWord,
-					RoleID = obj.RoleID,
-					Status = obj.Status,
+					return null;
+				}
+				return new RankMemberResp()
+				{
+					Id = obj.ID,
+					AccountId = obj.UserID,
+					Point = obj.MinPoint,
+					Rank = obj.Rank,
 				};
+
 			}
 			catch (Exception ex)
 			{
