@@ -23,8 +23,8 @@ public class ScreeningService : IScreeningService
     {
         try
         {
-			var response = await _httpClient.GetFromJsonAsync<List<ScreeningDTO>>("https://localhost:7211/api/Screening/get-all-screenings");
-			return response;
+			var response = await _httpClient.GetFromJsonAsync<PaginationResponse<ScreeningDTO>>("https://localhost:7211/api/Screening/get-all-screenings");
+			return response.Data.ToList();
 		}
         catch (Exception ex)
         {
@@ -42,10 +42,14 @@ public class ScreeningService : IScreeningService
         return JsonSerializer.Deserialize<ScreeningDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    public async Task CreateScreeningAsync(ScreeningCreateRequest request)
+    public async Task<bool> CreateScreeningAsync(ScreeningCreateRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync("api/Screening/create-screening", request);
-        response.EnsureSuccessStatusCode();
+        if(response.IsSuccessStatusCode)
+        {
+            return true;
+        }
+        else return false;
     }
 
     public async Task UpdateScreeningAsync(ScreeningUpdateRequest request)
@@ -73,7 +77,7 @@ public class ScreeningService : IScreeningService
 
     public async Task<List<RoomDTO>> GetAllRoomsAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("https://localhost:7211/api/Room/getall");
+        var response = await _httpClient.GetFromJsonAsync<List<RoomDTO>>("https://localhost:7211/api/Room/all");
         return response;
     }
 
