@@ -58,6 +58,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 					StarDate = (DateTime)newUser.CreatedTime,
 					Status = EntityStatus.Active,
 
+
 				};
 				await _context.RankMembers.AddAsync(rankMember);
 				await _context.SaveChangesAsync();
