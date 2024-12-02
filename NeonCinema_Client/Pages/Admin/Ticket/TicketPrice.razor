@@ -3,16 +3,12 @@
 @using NeonCinema_Client.Data.IServices.TicketPriceSetting
 @inject ITicketPriceSettingService TicketPriceSettingService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-<div class="alert alert-success" role="alert" style="display:@(string.IsNullOrEmpty(successMessage) ? "none" : "block")">
-    @successMessage
-</div>
-
-<div class="alert alert-danger" role="alert" style="display:@(string.IsNullOrEmpty(errorMessage) ? "none" : "block")">
-    @errorMessage
-</div>
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <EditForm Model="ticketPriceSetting" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <div class="card-header text-center mb-1">
@@ -150,7 +146,14 @@
     [Parameter] public int Id { get; set; }
     private string successMessage;
     private string errorMessage;
-
+    private void ShowSnackbar(string message, Severity severity)
+    {
+        Snackbar.Add(message, severity, options =>
+        {
+            options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+            options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
+        });
+    }
     protected override async Task OnInitializedAsync()
     {
         // Load the existing ticket price setting based on the Id parameter
@@ -164,7 +167,7 @@
         if (response.IsSuccessStatusCode)
         {
             // Cập nhật thành công, làm mới dữ liệu và hiển thị thông báo thành công
-            successMessage = "Cập nhật thành công!";
+            ShowSnackbar("Cập nhật thành công!", Severity.Success);
             ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(ticketPriceSetting.ID);
             StateHasChanged(); // Refresh the component
         }
@@ -172,7 +175,7 @@
         {
             // Xử lý lỗi nếu có và hiển thị thông báo lỗi
             errorMessage = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Cập nhật không thành công: {errorMessage}");
+            ShowSnackbar($"Cập nhật không thành công: {errorMessage}", Severity.Warning);
         }
     }
 
