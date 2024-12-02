@@ -1027,10 +1027,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				},
 				 new BillCombo
 				{
-					 BillID = billData[0].ID,
+					 BillID = billData[1].ID,
 					 FoodComboID = foodComboData[1].ID,
 				}
 			};
+			modelBuilder.Entity<BillCombo>().HasData(billCombo);
 			// Seed data cho bảng BillTicket
 			var billTicketData = new List<BillTicket>
 	{
