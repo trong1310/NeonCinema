@@ -147,19 +147,20 @@
 								}
 							</p>
 							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("c")</span>
+							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("F")</span>
+
 							<!-- Đáp tổng tiền vào đây -->
 							@* <input type="text" id="totalPrice" value="@totalPrices.ToString("c")"> *@
 							<div class="concession-item">
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('ẩn')" id="cashRadio" checked>
-									<label class="form-check-label" for="flexRadioDefault1">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="cashRadio" checked>
+									<label class="form-check-label" for="cashRadio">
 										<i class="fa-solid fa-money-bill"></i> Tiền mặt
 									</label>
 								</div>
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="flexRadioDefault" onclick="hienThiQR('hiện')" id="bankTransferRadio">
-									<label class="form-check-label" for="flexRadioDefault2">
+									<input class="form-check-input" type="radio" name="flexRadioDefault" id="bankTransferRadio">
+									<label class="form-check-label" for="bankTransferRadio">
 										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 									</label>
 								</div>
@@ -240,33 +241,57 @@
 	</div>
 </div>
 <script>
-	window.onload = function() {
-	// Gọi hàm hiển thị QR tự động khi trang tải xong
+	window.onload = function () {
+	// Ẩn QR code mặc định khi tải trang
 	hienThiQR('ẩn');
 	};
 
 	function hienThiQR(hienThi) {
 	const qrCode = document.getElementById("qrcode");
+	const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+
+	if (!qrCode) {
+	console.warn("QR Code element not found.");
+	return;
+	}
 
 	if (hienThi === 'hiện') {
-	const totalPrice = document.getElementById("totalPrice").value;
+	// Kiểm tra phần tử tổng tiền
+	if (!amountDisplay) {
+	console.error("Amount display element not found.");
+	qrCode.style.display = 'none';
+	return;
+	}
+
+	// Lấy tổng tiền
+	const totalPrice = parseFloat(amountDisplay.innerText.replace(/[^\d.-]/g, ''));
+	if (isNaN(totalPrice) || totalPrice <= 0) {
+	console.error("Invalid amount for QR code.");
+	qrCode.style.display = 'none';
+	return;
+	}
+
+	// Tạo URL QR code
 	const accountName = "NGUYEN VAN TRONG";
-	qrcode.src = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
-	qrCode.style.display = 'block'; // Hiển thị mã QR
-	}
-	else {
-	qrCode.style.display = 'none'; // Ẩn mã QR
-	}
-	}
-	function hienThiQR(hienThi) {
-	const qrCode = document.getElementById("qrcode");
-	qrCode.style.display = hienThi === 'hiện' ? 'block' : 'none';
-	if (hienThi === 'hiện') {
-	DotNet.invokeMethodAsync('NeonCinema_Client', 'OnClickToEditAmount')
-	.then(() => console.log('Cập nhật giá tiền thành công'))
-	.catch(error => console.warn('Lỗi khi gọi OnClickToEditAmount:', error));
+	const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+
+	qrCode.src = qrUrl;
+	qrCode.style.display = 'block'; // Hiển thị QR code
+	} else {
+	qrCode.style.display = 'none'; // Ẩn QR code
 	}
 	}
+
+	// Thêm sự kiện thay đổi vào radio buttons
+	document.addEventListener('change', function (event) {
+	if (event.target.name === 'flexRadioDefault') {
+	if (event.target.id === 'bankTransferRadio' && event.target.checked) {
+	hienThiQR('hiện');
+	} else if (event.target.id === 'cashRadio' && event.target.checked) {
+	hienThiQR('ẩn');
+	}
+	}
+	});
 
 </script>
 @code {
@@ -291,7 +316,7 @@
 	{
 		showConfirmModal = true;
 	}
-	
+
 	protected override async Task OnInitializedAsync()
 	{
 		screenings = await _services.ChooseScrening(id);
@@ -306,7 +331,7 @@
 				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
 						.ToList()
 			);
-		
+
 		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
@@ -338,8 +363,8 @@
 	}
 	public async Task OnClickToEditAmount()
 	{
-		StateHasChanged();
 		await JS.InvokeVoidAsync("thaydoitongtien", totalPrices);
+		StateHasChanged();
 	}
 	private string GetImageUrl(string imageUrl)
 	{
@@ -354,16 +379,22 @@
 			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
 			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
 		};
-		OnClickToEditAmount();
+		
 	}
-	private void NextTab()
+	private async Task UpdateQRCode()
+	{
+		// Không cố định gọi "hienThiQR('hiện')"
+		await JS.InvokeVoidAsync("hienThiQR"); // JavaScript sẽ kiểm tra trạng thái radio và cập nhật QR code
+		StateHasChanged(); // Làm mới giao diện Razor
+	}
+	private async void NextTab()
 	{
 		if (_selectedIndex < 1)
 		{
 			_selectedIndex++;
-			OnClickToEditAmount();
+			await InvokeAsync(StateHasChanged); // Đảm bảo giao diện được cập nhật trước
+			await UpdateQRCode(); // Gọi hàm cập nhật QR code
 		}
-
 	}
 
 	private void PreviousTab()
@@ -458,43 +489,44 @@
 
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
 		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
-		OnClickToEditAmount();
+		 OnClickToEditAmount();
+		StateHasChanged();
 	}
 	#endregion
 	#region combo
 	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
 	private List<Guid> selectedComboId = new List<Guid>();
 	private int currentValue = 0;
-	private void Increase(FoodComboDTO combo)
+	private async void Increase(FoodComboDTO combo)
 	{
 		if (selectedCombos.ContainsKey(combo))
 		{
 			selectedCombos[combo]++;
-			currentValue++;
 		}
 		else
 		{
 			selectedCombos[combo] = 1;
-			currentValue++;
 		}
 
 		totalPrices += combo.Amount;
-		OnClickToEditAmount();
+		await OnClickToEditAmount(); 
+		StateHasChanged(); // Làm mới giao diện
 	}
-
-	private void Decrease(FoodComboDTO combo)
+	private async void Decrease(FoodComboDTO combo)
 	{
 		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
 		{
 			selectedCombos[combo]--;
-			currentValue--;
 			totalPrices -= combo.Amount;
+
 			if (selectedCombos[combo] == 0)
 			{
 				selectedCombos.Remove(combo);
 			}
 		}
-		OnClickToEditAmount(); // Cập nhật giao diện
+
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
 	}
 
 	private int GetComboQuantity(FoodComboDTO combo)
@@ -536,7 +568,7 @@
 				selectedSeatsId.Clear();
 				currentValue = 0;
 				totalPrices = 0;
-				 RefreshSeatsAsync();
+				RefreshSeatsAsync();
 				paymentStatus = "success";
 			}
 			else
