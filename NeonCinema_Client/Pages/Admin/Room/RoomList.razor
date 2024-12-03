@@ -2,25 +2,25 @@
 @using NeonCinema_Application.DataTransferObject.Cinemas
 @using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Domain.Enum
 @inject IRoomService RoomService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<h2 class="d-flex justify-content-center align-content-center m-auto mt-5">Danh sách phòng chiếu</h2>
 <div class="container-fluid mt-5">
-
-    <h3 class="text-center text-secondary-emphasis">Danh sách phòng chiếu</h3>
     <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-top: 10px; margin-left:1px; " @onclick="AddRoom">
-        <i class="bi bi-plus-circle"></i> Thêm phòng
+        <i class="bi bi-plus-circle"></i> Thêm phòng chiếu
     </button>
     @if (rooms == null)
     {
-        <p class="text-center">đang tải danh sách phòng chiếu...</p>
+        <p class="text-center">Đang tải danh sách phòng chiếu...</p>
     }
     else if (rooms.Count == 0)
     {
-        <p class="text-center">không có phòng chiếu nào.</p>
+        <p class="text-center">Không có phòng chiếu nào.</p>
     }
     else
     {
@@ -34,36 +34,43 @@
             <table class="table table-hover room-table">
                 <thead class="">
                     <tr>
-                        <th>tên phòng</th>
-                        <th>sức chứa</th>
-                        <th>tên rạp</th>
-                        <th>số hàng</th>
-                        <th>số cột</th>
-                        <th>trạng thái</th>
-                        <th>thao tác</th>
+                        <th>STT</th>
+                        <th>Tên phòng</th>
+                        <th>Sức chứa</th>
+                        <th>Tên rạp</th>
+                        <th>Số hàng</th>
+                        <th>Số cột</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var room in rooms)
+                    @if (rooms != null)
                     {
-                        var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
-                        <tr>
-                            <td>@room.Name</td>
-                            <td>@(room.RowNumber * room.ColumnNumber)</td>
-                            <td>@cinema?.Name</td>
-                            <td>@room.RowNumber</td>
-                            <td>@room.ColumnNumber</td>
-                            <td>@room.Status.ToString()</td>
-                            <td>
-                                <button class="btn btn-info btn-sm" @onclick="() => ViewRoomDetails(room.ID)" title="Xem chi tiết">
-                                    <i class="bi bi-eye"></i> xem
-                                </button>
-                                <button class="btn btn-outline-primary btn-sm" style="border: none" @onclick="() => EditRoom(room.ID)" title="Chỉnh sửa">
-                                    <i class="fas fa-edit"></i>
-                        
-                                </button>
-                            </td>
-                        </tr>
+                        int index = 1; // Khởi tạo bên ngoài vòng lặp
+                        foreach (var room in rooms)
+                        {
+                            var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
+                            <tr>
+                                <td>@index</td> <!-- Hiển thị số thứ tự -->
+                                <td>@room.Name</td>
+                                <td>@(room.RowNumber * room.ColumnNumber)</td>
+                                <td>@cinema?.Name</td>
+                                <td>@room.RowNumber</td>
+                                <td>@room.ColumnNumber</td>
+                                <td>
+                                    <span class="badge @(room.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge">
+                                        @(room.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm" style="border: none" @onclick="() => EditRoom(room.ID)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            index++; // Tăng giá trị sau mỗi lần lặp
+                        }
                     }
                 </tbody>
             </table>

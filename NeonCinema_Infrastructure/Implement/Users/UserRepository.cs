@@ -25,7 +25,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 			_context = context;
 			_map = map;
 		}
-		public async Task<HttpResponseMessage> CreateClient(UserCreateRequest request, CancellationToken cancellationToken)
+		public async Task<CreateClientResponse> CreateClient(UserCreateRequest request, CancellationToken cancellationToken)
 		{
 			var generatedPassword = GenerateRandomPassword();
 			try
@@ -62,68 +62,87 @@ namespace NeonCinema_Infrastructure.Implement.Users
 				};
 				await _context.RankMembers.AddAsync(rankMember);
 				await _context.SaveChangesAsync();
-				return new HttpResponseMessage(HttpStatusCode.OK)
-				{
-					Content = new StringContent("Tạo người dùng thành công!")
-				};
-			}
+
+                return new CreateClientResponse
+                {
+                    HttpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Tạo người dùng thành công!")
+                    },
+                    GeneratedPassword = generatedPassword
+                };
+            }
 			catch (Exception ex)
 			{
-				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-				{
-					Content = new StringContent("có lỗi xảy ra" + ex.Message)
-				};
-			}
+                return new CreateClientResponse
+                {
+                    HttpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+                    },
+                    GeneratedPassword = null
+                };
+            }
 		}
-		public async Task<HttpResponseMessage> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
-		{
-			var generatedPassword = GenerateRandomPassword();
-			try
-			{
-				var newUser = new NeonCinema_Domain.Database.Entities.Users
-				{
-					ID = Guid.NewGuid(),
-					FullName = request.FullName,
-					PassWord = request.PassWord == null ? Hash.Encrypt(generatedPassword) : Hash.Encrypt(request.PassWord),
-					PhoneNumber = request.PhoneNumber,
-					Email = request.Email,
-					Gender = request.Gender ?? true,
-					Images = request.Images, // Lưu tên hình ảnh
-					DateOrBriht = request.DateOrBriht,
-					Adderss = request.Adderss,
-					Status = NeonCinema_Domain.Enum.EntityStatus.Active,
-					RoleID = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D"),
-				};
+        public async Task<CreateClientResponse> CreateUser(UserCreateRequest request, CancellationToken cancellationToken)
+        {
+            var generatedPassword = GenerateRandomPassword();
+            try
+            {
+                var newUser = new NeonCinema_Domain.Database.Entities.Users
+                {
+                    ID = Guid.NewGuid(),
+                    FullName = request.FullName,
+                    PassWord = request.PassWord == null ? Hash.Encrypt(generatedPassword) : Hash.Encrypt(request.PassWord),
+                    PhoneNumber = request.PhoneNumber,
+                    Email = request.Email,
+                    Gender = request.Gender ?? true,
+                    Images = request.Images, // Lưu tên hình ảnh
+                    DateOrBriht = request.DateOrBriht,
+                    Adderss = request.Adderss,
+                    CreatedTime = DateTime.UtcNow,
+                    Status = NeonCinema_Domain.Enum.EntityStatus.Active,
+                    RoleID = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D"),
+                };
 
 
-				_context.Users.Add(newUser);
-				await _context.SaveChangesAsync(cancellationToken);
-				await _context.SaveChangesAsync(cancellationToken);
-				var rankMember = new RankMember
-				{
-					ID = Guid.NewGuid(),
-					Rank = "Thành viên",
-					MinPoint = 0,
-					UserID = newUser.ID,
-					StarDate = (DateTime)newUser.CreatedTime,
-					Status = EntityStatus.Active,
+                await _context.Users.AddAsync(newUser);
+                await _context.SaveChangesAsync(cancellationToken);
+                var rankMember = new RankMember
+                {
+                    ID = Guid.NewGuid(),
+                    Rank = "Member",
+                    MinPoint = 0,
+                    UserID = newUser.ID,
+                    StarDate = (DateTime)newUser.CreatedTime,
+                    Status = EntityStatus.Active,
 
-				};
-				await _context.RankMembers.AddAsync(rankMember);
-				await _context.SaveChangesAsync();
-				return new HttpResponseMessage(HttpStatusCode.OK)
-				{
-					Content = new StringContent("Tạo người dùng thành công!")
-				};
-			}
-			catch (Exception ex)
-			{
-				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-				{
-					Content = new StringContent("có lỗi xảy ra" + ex.Message)
-				};
-			}
-		}
+
+                };
+                await _context.RankMembers.AddAsync(rankMember);
+                await _context.SaveChangesAsync();
+
+                return new CreateClientResponse
+                {
+                    HttpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("Tạo người dùng thành công!")
+                    },
+                    GeneratedPassword = generatedPassword
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CreateClientResponse
+                {
+                    HttpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+                    },
+                    GeneratedPassword = null
+                };
+            }
+        }
 
 		public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
 		{

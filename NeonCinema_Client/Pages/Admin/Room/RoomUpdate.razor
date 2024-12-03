@@ -16,7 +16,7 @@
 <script src="js/Customer/MovieList.js"></script>
 <link rel="stylesheet" href="/css/Room/detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<h3 style="text-align: center; margin-top: 30px"><strong>Chỉnh Sửa Phòng Chiếu</strong></h3>
+<h3 style="text-align: center; margin-top: 30px"><strong>Chỉnh sửa phòng chiếu</strong></h3>
 <EditForm Model="request" OnValidSubmit="UpdateRoom">
     <DataAnnotationsValidator />
    
@@ -27,22 +27,22 @@
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="roomName"><strong>tên phòng</strong></label>
+                        <label for="roomName"><strong>Tên phòng</strong></label>
                         <InputText id="roomName" class="form-control" @bind-Value="request.Name" />
                         <ValidationMessage For="@(() => request.Name)" />
                     </div>
                     <div class="form-group">
-                        <label for="rowNumber"><strong>số hàng</strong></label>
+                        <label for="rowNumber"><strong>Số hàng</strong></label>
                         <InputNumber id="rowNumber" type="number" class="form-control" @bind-Value="request.RowNumber" />
                         <ValidationMessage For="@(() => request.RowNumber)" />
                     </div>
                     <div class="form-group">
-                        <label for="columnNumber"><strong>số cột</strong></label>
+                        <label for="columnNumber"><strong>Số cột</strong></label>
                         <InputNumber id="columnNumber" type="number" class="form-control" @bind-Value="request.ColumnNumber" />
                         <ValidationMessage For="@(() => request.ColumnNumber)" />
                     </div>
                     <div class="form-group">
-                        <label for="cinemasId"><strong>chọn rạp</strong></label>
+                        <label for="cinemasId"><strong>Chọn rạp</strong></label>
                         <InputSelect id="cinemasId" class="form-control" @bind-Value="request.CinemasId">
                             @foreach (var cinema in cinemas)
                             {
@@ -51,28 +51,28 @@
                         </InputSelect>
                     </div>
                     <div class="form-group">
-                        <label for="status"><strong>trạng thái</strong></label>
+                        <label for="status"><strong>Trạng thái</strong></label>
                         <InputSelect id="status" class="form-control" @bind-Value="request.Status">
-                            <option value="@(EntityStatus.Active)">hoạt động</option>
-                            <option value="@(EntityStatus.Inactive)">không hoạt động</option>
+                            <option value="@(EntityStatus.Active)">Hoạt động</option>
+                            <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
                         </InputSelect>
                         
                     </div>
-                    <button type="submit" class=" btn btn-primary">cập nhật</button>
+                    <button type="submit" class=" btn btn-primary">Cập nhật</button>
                     <button @onclick="Cancel" class="btn btn-primary">hủy</button>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="seat-header">
                     <div class="seat-section">
-                        <div style="height: 10px; font-size: 15px" class="screen text-center mb-3">màn hình</div>
+                        <div style="height: 10px; font-size: 15px" class="screen text-center mb-3">Màn hình</div>
                         @if (seats == null)
                         {
-                            <p>dang tải danh sách ghế...</p>
+                            <p>Đang tải danh sách ghế...</p>
                         }
                         else if (seats.Count == 0)
                         {
-                            <p>không có ghế nào được thêm vào phòng này.</p>
+                            <p>Không có ghế nào được thêm vào phòng này.</p>
                         }
                         else
                         {
@@ -107,15 +107,15 @@
                         }
                        <div class="seatcolor">
                             <div class="seat-legend">
-                                <p><span style="background-color: #f08c1a; color: white; padding: 5px;"></span> - ghế đôi</p>
-                                <p><span style="background-color: #fa5d5d; color: white; padding: 5px;"></span> - ghế thường</p>
-                                <p><span style="background-color: purple; color: white; padding: 5px;"></span> - ghế VIP</p>
+                                <p><span style="background-color: #f08c1a; color: white; padding: 5px;"></span> - Ghế đôi</p>
+                                <p><span style="background-color: #fa5d5d; color: white; padding: 5px;"></span> - Ghế thường</p>
+                                <p><span style="background-color: purple; color: white; padding: 5px;"></span> - Ghế VIP</p>
                             </div>
 
                             <div class="seat-legend">
-                                <p><span style="background-color: green; color: white; padding: 5px;"></span> - ghế còn trống</p>
-                                <p><span style="background-color: blue; color: white; padding: 5px;"></span> - ghế đã chọn</p>
-                                <p><span style="background-color: gray; color: white; padding: 5px;"></span> - ghế đang bảo trì</p>
+                                <p><span style="background-color: green; color: white; padding: 5px;"></span> - Ghế còn trống</p>
+                                <p><span style="background-color: blue; color: white; padding: 5px;"></span> - Ghế đã chọn</p>
+                                <p><span style="background-color: gray; color: white; padding: 5px;"></span> - Ghế đang bảo trì</p>
                             </div>
                        </div>
 
@@ -132,14 +132,14 @@
 {
     <div class="modal-overlay">
         <div class="modal-content">
-            <h4>Chỉnh Sửa Loại Ghế</h4>
+            <h4>Chỉnh sửa loại ghế</h4>
             <div class="form-group">
                 <div class="form-group">
-                    <label><strong>loại ghế:</strong></label>
+                    <label><strong>Loại ghế:</strong></label>
                     <span>@selectedSeat.SeatTypeName</span>
                 </div>
                 <div class="form-group">    
-                    <label><strong>trạng thái:</strong></label>
+                    <label><strong>Trạng thái:</strong></label>
                     <span>@selectedSeat.Status</span>
                 </div>
                 <InputSelect id="seatType" class="form-control" @bind-Value="selectedSeat.SeatTypeID">
@@ -150,7 +150,7 @@
                 </InputSelect>
             </div>
             <button @onclick="SaveSeatChanges" class="btn btn-primary">lưu</button>
-            <button @onclick="CloseModal" class="btn btn-secondary">hủy</button>
+            <button @onclick="CloseModal" class="btn btn-secondary">Hủy</button>
         </div>
     </div>
 }

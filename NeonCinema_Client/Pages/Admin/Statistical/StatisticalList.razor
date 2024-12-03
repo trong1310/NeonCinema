@@ -8,8 +8,8 @@
 <script src="js/chart.js"></script>
 
 <PageTitle>Thống Kê Doanh Thu</PageTitle>
-
-<div class="container">
+<h2 class="d-flex justify-content-center align-content-center m-auto mt-5">Thống kê</h2>
+<div class="container-fluid mt-5">
     <!-- Tổng quan -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Bộ lọc -->
-    <div class="row mb-4">
+    <div class="row mb-4 filter">
         <div class="col-md-3">
             <label for="startDate">Ngày bắt đầu</label>
             <input type="date" id="startDate" class="form-control" @bind="startDate" />
@@ -74,14 +74,14 @@
     </div>
 
     <!-- Biểu đồ doanh thu -->
-    <div class="row">
+    <div class="row chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu</h5>
             <canvas id="revenueChart"></canvas>
         </div>
     </div>
     <!-- Biểu đồ doanh thu theo phim -->
-    <div class="row mt-4">
+    <div class="row mt-5 chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu theo phim</h5>
             <canvas id="movieChart"></canvas>
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Biểu đồ doanh thu theo combo -->
-    <div class="row mt-4">
+    <div class="row mt-5 chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu theo combo</h5>
             <canvas id="comboChart"></canvas>
@@ -152,16 +152,30 @@
     }
 }
 <style>
-    .container {
+    body {
+        background-color: #f8f9fa;
+    }
+    .container-fluid {
         margin-top: 20px;
     }
 
     .card {
         border: 1px solid #ddd;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
     }
 
+    .filter {
+        border: 1px solid #ddd; /* Đường viền */
+        border-radius: 10px; /* Bo góc */
+        padding: 20px; /* Khoảng cách bên trong */
+        background-color: white; /* Màu nền nhạt */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+        margin-left: 1px;
+        margin-right: 1px;
+    }
     .card-body h5 {
+        font-weight: revert;
         font-size: 1.2rem;
         margin-bottom: 10px;
     }
@@ -170,6 +184,17 @@
         font-size: 1.5rem;
         font-weight: bold;
         color: #007bff;
+    }
+
+    .chart-section {
+        border: 1px solid #ddd; /* Đường viền */
+        border-radius: 10px; /* Bo góc */
+        padding: 20px; /* Khoảng cách bên trong */
+        background-color: white; /* Màu nền nhạt */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+        margin-bottom: 20px; /* Khoảng cách giữa các biểu đồ */
+        margin-left: 1px;
+        margin-right: 1px;
     }
 
     canvas {
