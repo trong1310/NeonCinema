@@ -1,11 +1,15 @@
-﻿using NeonCinema_Application.DataTransferObject.StaticStatis;
+﻿
 using NeonCinema_Application.DataTransferObject.Statistics;
 
 namespace NeonCinema_Client.Data.IServices.Statistics
 {
     public interface IStatisticsService
     {
-        Task<StatisticsDTO> GetAllStatistics(DateTime startDate, DateTime endDate);
-        Task<ChartDataResponse> GetChartDataAsync(DateTime startDate, DateTime endDate, string timeFilter, string theater);
-    }
+		Task<RevenueStatisticsDTO> GetRevenueStatisticsAsync(DateTime startDate, DateTime endDate);
+		Task<List<ComboStatisticsDTO>> GetComboStatisticsAsync(DateTime startDate, DateTime endDate);
+		Task<List<MovieStatisticsDTO>> GetMovieStatisticsAsync(DateTime startDate, DateTime endDate);
+
+	}
+
 }
+

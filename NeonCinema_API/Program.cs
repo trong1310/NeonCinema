@@ -36,7 +36,7 @@ using NeonCinema_Infrastructure.Implement.Room;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
-using NeonCinema_Infrastructure.Implement.Statisticss;
+using NeonCinema_Infrastructure.Implement.Statistics;
 using NeonCinema_Infrastructure.Implement.TicketPriceSetting;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
