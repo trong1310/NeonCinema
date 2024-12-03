@@ -839,8 +839,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(2), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -850,8 +849,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				}
 			};
 			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
