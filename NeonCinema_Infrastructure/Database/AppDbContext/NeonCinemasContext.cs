@@ -30,8 +30,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		{
 		}
 
-		#region DbSet
-		public DbSet<Bill> BillDetails { get; set; }
+        #region DbSet
+        public DbSet<Bill> BillDetails { get; set; }
 		public DbSet<Cinemas> Cinema { get; set; }
 		public DbSet<Users> Users { get; set; }
 		public DbSet<Director> Directors { get; set; }

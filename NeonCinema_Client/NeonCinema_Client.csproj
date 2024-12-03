@@ -114,6 +114,8 @@
 
   <ItemGroup>
 
+    <None Include="Pages\Client\User\ClientForgotPassword.razor" />
+
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
     <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />

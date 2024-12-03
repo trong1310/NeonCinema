@@ -56,8 +56,25 @@
                     <p> Xin cám ơn 😊</p>
                 </div>
             </div>";
-           
+        }
 
+        public static string ForgotPassword(string fullName, string password)
+        {
+            return $@"
+            <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                <div style='background-color: #f8f9fa; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                    <h2 style='color: #ff5733; text-align: center;'>Chào mừng đến với NeonCinema! 🌟</h2>
+                    <p>Xin chào <strong>{fullName}</strong>,</p>
+                    <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                    <p>Dưới đây là mật khẩu mới của bạn:</p>
+                    <ul>
+                                    <li><strong>Mật khẩu:</strong> {password}</li>
+                    </ul>            
+                    <p style='font-style: italic;'>Trân trọng,</p>
+                    <p><strong>Đội ngũ NeonCinema</strong></p>
+                    <p> Xin cám ơn 😊</p>
+                </div>
+            </div>";
         }
     }
 }
