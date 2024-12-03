@@ -30,8 +30,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		{
 		}
 
-		#region DbSet
-		public DbSet<Bill> BillDetails { get; set; }
+        #region DbSet
+        public DbSet<Bill> BillDetails { get; set; }
 		public DbSet<Cinemas> Cinema { get; set; }
 		public DbSet<Users> Users { get; set; }
 		public DbSet<Director> Directors { get; set; }
@@ -71,9 +71,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
 		}
@@ -840,8 +840,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(10), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -851,8 +850,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(9), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -862,8 +860,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(8), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -873,8 +870,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(7), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -884,8 +880,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(6), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -895,8 +890,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(5), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -906,8 +900,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				}
 
 			};
