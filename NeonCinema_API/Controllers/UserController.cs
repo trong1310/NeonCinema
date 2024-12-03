@@ -1,8 +1,10 @@
 ﻿    using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NeonCinema_API.SendMail;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Users;
+using System.Net;
 
 namespace NeonCinema_API.Controllers
 {
@@ -11,9 +13,11 @@ namespace NeonCinema_API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository us)
+        private readonly ISendMailService _emailService;
+        public UserController(IUserRepository us, ISendMailService emailService)
         {
             _userRepository = us;
+            _emailService = emailService;
         }
 
 
@@ -21,6 +25,17 @@ namespace NeonCinema_API.Controllers
         public async Task<IActionResult> CreateClient([FromBody] UserCreateRequest request, CancellationToken cancellationToken)
         {
             var result = await _userRepository.CreateClient(request, cancellationToken);
+            if (result.HttpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                var password = string.IsNullOrEmpty(request.PassWord)
+                      ? result.GeneratedPassword
+                      : request.PassWord;
+                // Nội dung email
+                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateClient(request.FullName, request.Email, password);
+
+                // Gửi email
+                await _emailService.SendEmailAsync(request.Email, "Tạo tài khoản thành công", emailContent);
+            }
             return Ok(result);
         }
 
@@ -29,6 +44,17 @@ namespace NeonCinema_API.Controllers
         public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest request, CancellationToken cancellationToken)
         {
             var result = await _userRepository.CreateUser(request, cancellationToken);
+            if (result.HttpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                var password = string.IsNullOrEmpty(request.PassWord)
+                      ? result.GeneratedPassword
+                      : request.PassWord;
+                // Nội dung email
+                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateStaff(request.FullName, request.Email, password);
+
+                // Gửi email
+                await _emailService.SendEmailAsync(request.Email, "Tạo tài khoản thành công", emailContent);
+            }
             return Ok(result);
         }
 
