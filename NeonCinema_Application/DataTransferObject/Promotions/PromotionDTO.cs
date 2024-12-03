@@ -17,9 +17,11 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
-		[Range(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
-		public double DiscountPercentage { get; set; } // giảm theo %
-		public double DiscountAmount { get; set; } // giảm theo gia
+		[ConditionalRange(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
+		public double? DiscountPercentage { get; set; } // giảm theo %
+
+		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
+		public double? DiscountAmount { get; set; } // giảm theo gia
 
 		[Required(ErrorMessage = "Start date is required.")]
 		[DataType(DataType.Date)]
@@ -59,4 +61,6 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 			return ValidationResult.Success;
 		}
 	}
+
+
 }

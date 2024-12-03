@@ -31,6 +31,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         public async Task<HttpResponseMessage> CreateScreening(ScreeningCreateRequest screeningRequest, CancellationToken cancellationToken)
         {
             var screening = _mapper.Map<Screening>(screeningRequest);
+            screening.ID = Guid.NewGuid();
             await _context.Screening.AddAsync(screening, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return new HttpResponseMessage(System.Net.HttpStatusCode.Created);

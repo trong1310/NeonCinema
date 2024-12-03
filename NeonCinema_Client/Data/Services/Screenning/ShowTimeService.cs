@@ -29,10 +29,17 @@ namespace NeonCinema_Client.Data.Services.Screenning
             return await response.Content.ReadFromJsonAsync<ShowTimeDTO>(cancellationToken: cancellationToken);
         }
 
-        public async Task CreateShowTime(ShowTimeCreateRequest request, CancellationToken cancellationToken)
+        public async Task<bool> CreateShowTime(ShowTimeCreateRequest request, CancellationToken cancellationToken)
         {
             var response = await _httpClient.PostAsJsonAsync("api/ShowTime/create-showtime", request, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task UpdateShowTime(Guid id, ShowTimeUpdateRequest request, CancellationToken cancellationToken)

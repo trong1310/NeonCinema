@@ -24,32 +24,32 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label for="Search">Tìm kiếm</label>
-					<input type="text" class="form-control" style="width: 500px;" @bind="searchName" placeholder="Search by name" @oninput="FilterRecords" />
+					<InputText class="form-control" style="width: 500px;" @bind-Value="inputSearchPromotion" placeholder="Search by name" @oninput="OnInputSearchProChanged" />
 				</div>
 				<div class="form-check">
 					<div class="row mt-3">
 						<InputRadioGroup @bind-Value="selectedStatus">
-							<div class="col-1">
-								<input class="form-check-input" type="radio" name="exampleRadios" value="null" checked />
-								<label class="form-check-label" for="exampleRadio4">
+							<div class="col">
+								<InputRadio class="form-check-input" Value="0" @oninput="OnInputStatusChanged"/>
+								<label class="form-check-label">
 									Tất cả
 								</label>
 							</div>
-							<div class="col-1">
-								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.InActive">
-								<label class="form-check-label" for="exampleRadio1">
+							<div class="col-2">
+								<InputRadio class="form-check-input" Value="1" @oninput="OnInputStatusChanged" />
+								<label class="form-check-label">
 									Không hoạt động
 								</label>
 							</div>
-							<div class="col-1">
-								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Active">
-								<label class="form-check-label" for="exampleRadio2">
+							<div class="col-2">
+								<InputRadio class="form-check-input" Value="2" @oninput="OnInputStatusChanged" />
+								<label class="form-check-label">
 									Hoạt động
 								</label>
 							</div>
-							<div class="col-1">
-								<input class="form-check-input" type="radio" name="exampleRadios" value="PromotionStatus.Expired">
-								<label class="form-check-label" for="exampleRadio3">
+							<div class="col-2">
+								<InputRadio class="form-check-input" Value="3" @oninput="OnInputStatusChanged" />
+								<label class="form-check-label">
 									Hết hạn
 								</label>
 							</div>
@@ -59,11 +59,12 @@
 			</div>
 			<div class="col-3">
 				<label for="StartDate">Ngày bắt đầu</label>
-				<input type="datetime-local" class="form-control" @bind="startDate" @oninput="FilterRecords" />
+				<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="startDate" @oninput="OnInputStartDateChanged"/>
+
 			</div>
 			<div class="col-3">
 				<label for="EndDate">Ngày kết thúc</label>
-				<input type="datetime-local" class="form-control" @bind="endDate" @oninput="FilterRecords" />
+				<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="endDate" @oninput="OnInputEndDateChanged" />
 			</div>
 		</div>
 		<div class="row mt-5">
@@ -110,10 +111,6 @@
 															<label for="" class="form-label">Mã khuyến mại</label>
 															<InputText @bind-Value="codegen" class="form-control" readonly />
 														</div>
-														<div class="mb-3">
-															<label for="" class="form-label">Mô tả</label>
-															<InputText @bind-Value="input.Description" class="form-control" />
-														</div>
 
 														@if (discountAmount == true)
 														{
@@ -142,6 +139,10 @@
 															<input type="datetime-local" @bind="input.EndDate" class="form-control" />
 															<ValidationMessage For="@(() => input.EndDate)" />
 														</div>
+														<div class="mb-3">
+															<label for="" class="form-label">Mô tả</label>
+															<InputText @bind-Value="input.Description" class="form-control" />
+														</div>
 														<div class="mb-4">
 															<InputRadioGroup @bind-Value="IsPercentage">
 																<label class="form-label">Theo % </label>
@@ -159,7 +160,7 @@
 													<h6>Danh sách khách hàng</h6>
 												</div>
 												<div class="row">
-													<InputText @bind-Value="inputSearchUser" @oninput="OnInputChanged" class="form-control" Placeholder="Tìm kiếm theo tên" />
+													<InputText @bind-Value="inputSearchUser" @oninput="OnInputSearchUserChanged" class="form-control" Placeholder="Tìm kiếm theo tên" />
 												</div>
 												<div class="row p-1 rounded border mt-2 " style="height:300px; overflow-y: auto;">
 													<table class="table">
@@ -354,16 +355,22 @@
 												<InputText @bind-Value="inputUpdate.Name" class="form-control" />
 												<ValidationMessage For="@(() => input.Name)" />
 											</div>
-											<div class="mb-3">
-												<label for="" class="form-label">Mã khuyến mại</label>
-												<InputText @bind-Value="inputUpdate.Code" class="form-control" />
-												<ValidationMessage For="@(() => inputUpdate.Code)" />
-											</div>
-											<div class="mb-3">
-												<label for="" class="form-label">Phần trăm giảm giá</label>
-												<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
-												<ValidationMessage For="@(() => inputUpdate.DiscountAmount)" />
-											</div>
+											@if (discountAmount == true)
+											{
+												<div class="mb-3">
+													<label for="" class="form-label">Số tiền giảm</label>
+													<InputNumber @bind-Value="inputUpdate.DiscountAmount" class="form-control" />
+													<ValidationMessage For="@(() => input.DiscountAmount)" />
+												</div>
+											}
+											else if (discountPercentage == true)
+											{
+												<div class="mb-3">
+													<label for="" class="form-label">Phần trăm giảm giá</label>
+													<InputNumber @bind-Value="inputUpdate.DiscountPercentage" class="form-control" />
+													<ValidationMessage For="@(() => input.DiscountPercentage)" />
+												</div>
+											}
 											<div class="mb-3">
 												<label for="" class="form-label">Ngày bắt đầu</label>
 												<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
@@ -380,9 +387,9 @@
 											</div>
 											<div class="mb-4">
 												<InputRadioGroup @bind-Value="IsPercentage">
-													<label class="form-label">Theo tiền </label>
-													<InputRadio Value="true" class="form-check-input"></InputRadio>
 													<label class="form-label">Theo % </label>
+													<InputRadio Value="true" class="form-check-input"></InputRadio>
+													<label class="form-label">Theo tiền </label>
 													<InputRadio Value="false" class="form-check-input"></InputRadio>
 												</InputRadioGroup>
 											</div>
@@ -447,14 +454,14 @@
 										</div>
 										<div class="row">
 											<div align="center">
-												@if (messageString == "Thêm thành công")
+												@if (messageString == "Success")
 												{
 													<div style="width:200px; height:200px">
 														<LottieAnimation Path="/json/Ok_Animation.json" Loop="false" />
 													</div>
 												}
 
-												@if (messageString == "Thêm thất bại")
+												@if (messageString == "Faild")
 												{
 													<div style="width:200px; height:200px">
 														<LottieAnimation Path="/json/Cancel_Animation.json" Loop="false" />
@@ -496,48 +503,48 @@
 					</tr>
 				</thead>
 				<tbody>
-					@* @if (filteredPromotions.Any())
-					{ *@
-					@foreach (var item in _lstpro.Select((value, index) => new { value, index }))
+					@if (filteredPromotions.Any())
 					{
-						<tr>
-							<td>@(item.index + 1)</td>
-							<td>@item.value.Name</td>
-							<td>@item.value.Code</td>
-							@if (item.value.DiscountPercentage == 0)
-							{
-								<td>X</td>
-							}
-							else
-							{
-								<td>@item.value.DiscountPercentage%</td>
-							}
-							@if (item.value.DiscountAmount == 0)
-							{
-								<td>X</td>
-							}
-							else
-							{
-								<td>@item.value.DiscountAmount<text>đ</text></td>
-							}
-							<td>@item.value.StartDate.ToShortDateString()</td>
-							<td>@item.value.EndDate.ToShortDateString()</td>
-							<td>@item.value.Description</td>
-							<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
-							<td>
-								<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
-								<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
-								<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-							</td>
-						</tr>
+						foreach (var item in _lstpro.Select((value, index) => new { value, index }))
+						{
+							<tr>
+								<td>@(item.index + 1)</td>
+								<td>@item.value.Name</td>
+								<td>@item.value.Code</td>
+								@if (item.value.DiscountPercentage == null)
+								{
+									<td>Không có</td>
+								}
+								else
+								{
+									<td><mark class="p-1">@item.value.DiscountPercentage%</mark></td>
+								}
+								@if (item.value.DiscountAmount == null)
+								{
+									<td>Không có</td>
+								}
+								else
+								{
+									<td><mark class="p-1">@item.value.DiscountAmount<text><u>đ</u></text></mark></td>
+								}
+								<td>@item.value.StartDate.ToShortDateString()</td>
+								<td>@item.value.EndDate.ToShortDateString()</td>
+								<td>@item.value.Description</td>
+								<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
+								<td>
+									<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
+									<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
+									<button @onclick="async () => await OpenModal3(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+								</td>
+							</tr>
+						}
 					}
-					@* }
 					else
 					{
-					<tr>
-					<td colspan="8" class="text-center">Không có bản ghi nào phù hợp.</td>
-					</tr>
-					} *@
+						<tr>
+							<td colspan="8" class="text-center">Không có bản ghi nào phù hợp.</td>
+						</tr>
+					}
 				</tbody>
 			</table>
 		</div>
@@ -567,8 +574,6 @@
 	int stt = 1;
 	//
 	private string inputSearchUser = ""; //tim kiem theo ten user
-	private PromotionStatus? selectedStatus = null; // Mặc định trạng thái "Tất cả"
-	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private List<PromotionDTO> _lstpro = new List<PromotionDTO>();
 	private List<MailPromotionRequest> _lstMail = new List<MailPromotionRequest>();
 	private List<CustomerViewModel_Promotion> _lstuser = new List<CustomerViewModel_Promotion>();
@@ -591,10 +596,12 @@
 			if (!discountPercentage)
 			{
 				input.DiscountPercentage = null;
+				inputUpdate.DiscountPercentage = null;
 			}
 			else
 			{
 				input.DiscountAmount = null;
+				inputUpdate.DiscountAmount = null;
 			}
 
 			discountPercentage = value;
@@ -604,7 +611,8 @@
 	}
 
 	//filter
-	private string searchName;
+	private int? selectedStatus = 0; // Mặc định trạng thái "Tất cả"
+	private string inputSearchPromotion = ""; //tim kiem theo ten pro
 	private DateTime? startDate;
 	private DateTime? endDate;
 	private List<PromotionDTO> filteredPromotions = new List<PromotionDTO>();
@@ -636,7 +644,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await LoadPromotion();
-		/* filteredPromotions = _lstpro; */ // Bắt đầu với tất cả khuyến mãi
+		await FilterRecords();
 		await LoadUser();
 
 		await ConnectToSignalRHub();
@@ -701,7 +709,7 @@
 			}).ToList();
 	}
 
-	private async Task OnInputChanged(ChangeEventArgs e)
+	private async Task OnInputSearchUserChanged(ChangeEventArgs e)
 	{
 		inputSearchUser = e.Value.ToString(); // Cập nhật giá trị tìm kiếm
 		await LoadUser();
@@ -762,7 +770,7 @@
 
 	private async Task OpenModalConfirm2()
 	{
-		isModalVisibleConfirm = 2;
+		isModalVisibleConfirm = 3;
 	}
 
 
@@ -794,16 +802,21 @@
 						MailPromotionRequest mailitem = new MailPromotionRequest
 							{
 								FullName = item.FullName,
-								NamePromotion = "Chưa update",
+								NamePromotion = input.Name,
 								ToEmail = item.Email,
-								Code = input.Code
+								Code = input.Code,
+								StartDate = input.StartDate,
+								EndDate = input.EndDate,
+								DiscountPercentage = input.DiscountPercentage,
+								DiscountAmount = input.DiscountAmount
+								
 							};
 						_lstMail.Add(mailitem);
 					}
 
 					if (lstPU.Count == 0)
 					{
-						messageString = "Thêm thất bại";
+						messageString = "Faild";
 						return;
 					}
 
@@ -811,7 +824,7 @@
 					{
 						await _prosv.SendMailWithTemplateAsync(_lstMail);
 						scope.Complete();
-						messageString = "Thêm thành công";
+						messageString = "Success";
 
 
 						//Reset input và list
@@ -820,13 +833,13 @@
 					}
 					else
 					{
-						messageString = "Thêm thất bại";
+						messageString = "Faild";
 						return;
 					}
 				}
 				else
 				{
-					messageString = "Thêm thất bại";
+					messageString = "Faild";
 					return;
 				}
 			}
@@ -875,18 +888,30 @@
 	//Update
 	public async Task UpdatePromotion()
 	{
-		var check = await _prosv.UpdatePromotionAsync(inputUpdate);
-
-		if (check)
+		try
 		{
-			messageString = "Sửa thành công";
-			await LoadPromotion();
+			var check = await _prosv.UpdatePromotionAsync(inputUpdate);
 
+			if (check)
+			{
+				messageString = "Success";
+				await LoadPromotion();
+
+			}
+			else
+			{
+				messageString = "Faild";
+			}
 		}
-		else
+		catch(Exception ex)
 		{
-			messageString = "Sửa thất bại";
+			messageString = "Faild";
 		}
+		finally
+		{
+			//Mở modal thông báo
+			isModalVisibleConfirm = 2;
+		}	
 	}
 
 	//Select
@@ -911,45 +936,55 @@
 		return _lstuser.Where(u => u.IsSelected).ToList();
 	}
 
-	private void FilterRecords()
+	//Code lọc nè
+
+	private async Task OnInputSearchProChanged(ChangeEventArgs e)
 	{
-		// // Kiểm tra nếu _lstpro là null
-		// if (_lstpro == null) return;
+		inputSearchPromotion = e.Value.ToString();
 
-		// // Mặc định là hiển thị tất cả nếu không có điều kiện nào
-		// filteredPromotions = _lstpro;
+		await FilterRecords();
+	}
 
-		// // Kiểm tra các điều kiện tìm kiếm
-		// if (!string.IsNullOrWhiteSpace(searchName))
-		// {
-		// 	filteredPromotions = filteredPromotions
-		// 		.Where(p => p.Description.Contains(searchName, StringComparison.OrdinalIgnoreCase))
-		// 		.ToList();
-		// }
+	private async Task OnInputStartDateChanged(ChangeEventArgs e)
+	{
+		startDate = DateTime.Parse(e.Value.ToString());
 
-		// if (startDate.HasValue && endDate.HasValue)
-		// {
-		// 	// Lọc theo ngày bắt đầu và ngày kết thúc
-		// 	filteredPromotions = filteredPromotions
-		// 		.Where(p => p.StartDate >= startDate.Value && p.EndDate <= endDate.Value)
-		// 		.ToList();
-		// }
-		// else if (startDate.HasValue)
-		// {
-		// 	// Lọc chỉ theo ngày bắt đầu
-		// 	filteredPromotions = filteredPromotions
-		// 		.Where(p => p.StartDate >= startDate.Value)
-		// 		.ToList();
-		// }
-		// else if (endDate.HasValue)
-		// {
-		// 	// Lọc chỉ theo ngày kết thúc
-		// 	filteredPromotions = filteredPromotions
-		// 		.Where(p => p.EndDate <= endDate.Value)
-		// 		.ToList();
-		// }
+		await FilterRecords();
+	}
 
-		// Nếu không có tiêu chí nào được nhập, filteredPromotions sẽ là _lstpro, do đó danh sách sẽ được hiển thị đầy đủ.
+	private async Task OnInputEndDateChanged(ChangeEventArgs e)
+	{
+		endDate = DateTime.Parse(e.Value.ToString());
+
+		await FilterRecords();
+	}
+
+	private async Task OnInputStatusChanged(ChangeEventArgs e)
+	{
+		if(Convert.ToInt32(e.Value.ToString()) == 0)
+		{
+			selectedStatus = 0;
+		}
+		else
+		{
+			selectedStatus = Convert.ToInt32(e.Value.ToString());
+		}
+		
+
+		await FilterRecords();
+	}
+
+	private async Task FilterRecords()
+	{
+		filteredPromotions = _lstpro.Where(promo =>
+			(string.IsNullOrWhiteSpace(inputSearchPromotion) || promo.Name.Contains(inputSearchPromotion, StringComparison.OrdinalIgnoreCase)) &&
+			(selectedStatus == 0 || promo.Status == (PromotionStatus)selectedStatus.Value) &&
+			(!startDate.HasValue || promo.StartDate >= startDate.Value) &&
+			(!endDate.HasValue || promo.EndDate <= endDate.Value)
+		).ToList();
+
+		// Đảm bảo UI được cập nhật
+		await InvokeAsync(StateHasChanged);
 	}
 
 }
