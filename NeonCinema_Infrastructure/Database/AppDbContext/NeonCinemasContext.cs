@@ -839,8 +839,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(10), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -850,8 +849,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(9), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -861,8 +859,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(8), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -872,8 +869,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(7), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
@@ -883,8 +879,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ShowDate = DateTime.Now.AddDays(6), // Two days from now
 					MovieID = movieData[0].ID,
 					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Show_ReleaseID = showReleaseData[0].ID,
+					CreatedTime = DateTime.Now
 				},
 				new Screening
 				{
