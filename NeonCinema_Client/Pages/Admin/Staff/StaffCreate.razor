@@ -5,11 +5,14 @@
 @layout LayoutAdmin
 @using System.Text.Json
 @using NeonCinema_Domain.Enum
+@using NeonCinema_Infrastructure.Database.AppDbContext
 @inject IUserServices UserService
 @inject NavigationManager _navigation
 @inject HttpClient _http
+@inject ISnackbar Snackbar
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <div class="container-fluid mt-5">
@@ -39,6 +42,11 @@
                             <label for="phone" class="font-weight-bold">Số điện thoại</label>
                             <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber">
                             <ValidationMessage For="@(() => request.PhoneNumber)" />
+                            @if (!IsShowPhoneNotification)
+                            {
+                                <span class="text-danger" style="font-size: 1rem">@errorPhoneMessage</span>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -49,6 +57,10 @@
                             <label for="email" class="font-weight-bold">Email</label>
                             <input type="email" class="form-control" id="email" @bind-value="request.Email">
                             <ValidationMessage For="@(() => request.Email)" />
+                            @if (!IsShowEmailNotification)
+                            {
+                                <span class="text-danger" style="font-size: 1rem">@errorEmailMessage</span>
+                            }
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -56,6 +68,10 @@
                             <label for="dob" class="font-weight-bold">Ngày sinh</label>
                             <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht">
                             <ValidationMessage For="@(() => request.DateOrBriht)" />
+                                @if (!IsShowYearNotification)
+                            {
+                                <span class="text-danger" style="font-size: 1rem">@errorYearMessage</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -93,7 +109,6 @@
                             </div>
                             <ValidationMessage For="@(() => request.Gender)" />
                         </div>
-                        <ValidationMessage For="@(() => request.Gender)" />
                     </div>
                     
                 </div>
@@ -115,12 +130,27 @@
 </EditForm>
 
 @code {
+    private NeonCinemasContext _context = new NeonCinemasContext();
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
     private bool showPassword = false;
 
-    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+    private string errorEmailMessage;
+    private string errorPhoneMessage;
+    private string errorYearMessage;
+    private bool IsShowPhoneNotification = true;
+    private bool IsShowEmailNotification = true;
+    private bool IsShowYearNotification = true;
 
+    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+    private void ShowSnackbar(string message, Severity severity)
+    {
+        Snackbar.Add(message, severity, options =>
+        {
+            options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+            options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
+        });
+    }
     private async Task HandleSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
@@ -153,6 +183,12 @@
     {
         try
         {
+            IsShowEmailNotification = true;
+            IsShowPhoneNotification = true;
+            IsShowYearNotification = true;
+            errorEmailMessage = string.Empty;
+            errorPhoneMessage = string.Empty;
+            errorYearMessage = string.Empty;
             if (selectedFile == null)
             {
                 return;
@@ -180,16 +216,43 @@
                 Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
                 return;
             }
+            var emailExists = _context.Users.Any(x => x.Email == request.Email);
+            if (emailExists)
+            {
+                errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+                IsShowEmailNotification = false;
+                return;
+            }
+            if (request.DateOrBriht == null ||
+                request.DateOrBriht.Year < 1900 ||
+                request.DateOrBriht > DateTime.Now.AddYears(-18) ||
+                request.DateOrBriht <= DateTime.Now.AddYears(-50))
+            {
+                errorYearMessage = "Nhân viên phải từ 18 đến 50 tuổi.";
+                IsShowYearNotification = false;
+                return;
+            }
+            // Kiểm tra số điện thoại đã tồn tại
+            var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
+            if (phoneExists)
+            {
+                errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+                IsShowPhoneNotification = false;
+                return;
+            }
+
 
             var userResponse = await UserService.CreateUser(request);
             if (userResponse.IsSuccessStatusCode)
             {
+                ShowSnackbar("Thêm nhân viên thành công.", Severity.Success);
+                await Task.Delay(3000);
                 _navigation.NavigateTo("/staff");
             }
             else
             {
                 var errorContent = await userResponse.Content.ReadAsStringAsync();
-                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+                ShowSnackbar($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}", Severity.Warning);
             }
         }
         catch (Exception ex)
