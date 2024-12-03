@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeonCinema_Application.DataTransferObject.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +9,13 @@ namespace NeonCinema_Application.Interface.Statistics
 {
     public interface IStatisticsRepository
     {
-        // Phương thức lấy doanh thu trong ngày
-        Task<decimal> GetDailyRevenueAsync(DateTime date);
+		Task<decimal> GetTotalRevenueAsync(DateTime startDate, DateTime endDate);
+		Task<int> GetTotalTicketsAsync(DateTime startDate, DateTime endDate);
+		Task<int> GetNewCustomersAsync(DateTime startDate, DateTime endDate);
+		Task<List<DailyRevenueDTO>> GetDailyRevenueAsync(DateTime startDate, DateTime endDate);
+		Task<List<ComboStatisticsDTO>> GetComboStatisticsAsync(DateTime startDate, DateTime endDate);
+		Task<List<MovieStatisticsDTO>> GetMovieStatisticsAsync(DateTime startDate, DateTime endDate);
 
-        // Phương thức lấy tổng số khách hàng mới trong một ngày
-        Task<int> GetNewCustomersCountAsync(DateTime date);
 
-        // Phương thức lấy tổng số vé bán ra
-        Task<int> GetTotalTicketsSoldAsync(DateTime startDate, DateTime endDate);
-
-        // Phương thức lấy tổng doanh thu
-        Task<decimal> GetTotalRevenueAsync(DateTime startDate, DateTime endDate);
-    }
+	}
 }
