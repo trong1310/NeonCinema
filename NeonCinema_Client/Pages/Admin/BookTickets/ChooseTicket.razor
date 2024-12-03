@@ -1,6 +1,7 @@
 ﻿@page "/select-seat/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.BookTicket
 @using NeonCinema_Application.DataTransferObject.BookTicket.Request
+@using NeonCinema_Application.DataTransferObject.BookTicket.Resp
 @using NeonCinema_Application.DataTransferObject.Countrys
 @using NeonCinema_Application.DataTransferObject.Directors
 @using NeonCinema_Application.DataTransferObject.FoodCombos
@@ -124,7 +125,7 @@
 													<span class="plus" @onclick="() => Increase(combo)">+</span>
 												</div>
 											</div>
-											<span class="price">@combo.Amount.ToString("c")</span>
+											<span class="price">@combo.Amount.ToString("N0")</span>
 										</div>
 									</div>
 								</div>
@@ -147,7 +148,7 @@
 								}
 							</p>
 							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("F")</span>
+							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("N0")</span>
 
 							<!-- Đáp tổng tiền vào đây -->
 							@* <input type="text" id="totalPrice" value="@totalPrices.ToString("c")"> *@
@@ -166,6 +167,27 @@
 								</div>
 							</div>
 							<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
+							<div class="form-group">
+								<label for="search">Tìm kiếm khách hàng:</label>
+								<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
+								<button @onclick="SearchCustomer" class="btn btn-primary mt-2">Tìm kiếm</button>
+							</div>
+
+							@if (!string.IsNullOrEmpty(Rank.AccountName))
+							{
+								<div class="mt-3">
+									<h5>Thông tin khách hàng</h5>
+									<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
+									<p><strong>Số điểm:</strong> @Rank.Point</p>
+								</div>
+							}
+							else if (ShowCreateButton)
+							{
+								<div class="mt-3">
+									<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+									<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
+								</div>
+							}
 
 						</div>
 					</div>
@@ -186,7 +208,7 @@
 								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
-								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("c")</strong>?</p>
+								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -295,6 +317,7 @@
 
 </script>
 @code {
+	#region
 	[Parameter]
 	public Guid id { get; set; }
 	private MovieDTO movieDto = new MovieDTO();
@@ -331,7 +354,6 @@
 				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
 						.ToList()
 			);
-
 		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
@@ -379,7 +401,7 @@
 			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
 			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
 		};
-		
+
 	}
 	private async Task UpdateQRCode()
 	{
@@ -489,7 +511,7 @@
 
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
 		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
-		 OnClickToEditAmount();
+		OnClickToEditAmount();
 		StateHasChanged();
 	}
 	#endregion
@@ -542,11 +564,13 @@
 
 	private async void ProcessPayment()
 	{
+		var account = _context.Users.Where(x => x.PhoneNumber == phoneNumber).FirstOrDefault();
 		request = new CreateBookTicketRequest()
 			{
 				ScreeningID = screenings.Id,
 				SeatID = selectedSeatsId,
 				MovieId = movieDto.ID,
+				AccountID = account.ID,
 				BillCombos = selectedCombos.Select(combo => new BillComboReuqest
 				{
 					FoodComboId = combo.Key.ID,
@@ -568,6 +592,8 @@
 				selectedSeatsId.Clear();
 				currentValue = 0;
 				totalPrices = 0;
+				Rank.AccountName = "";
+				Rank.Point = 0;
 				RefreshSeatsAsync();
 				paymentStatus = "success";
 			}
@@ -611,8 +637,74 @@
 		paymentStatus = string.Empty;
 		StateHasChanged();
 	}
+	#endregion
+	private bool ShowCreateButton { get; set; }
+
+	private RankMemberResp Rank = new RankMemberResp();
+
+	private async Task SearchCustomer()
+	{
+		try
+		{
+			var result = await _services.SeachAccount(phoneNumber); 
+			if (result != null)
+			{
+				Rank = result; 
+				ShowCreateButton = false; 
+			}
+			else
+			{
+				ShowCreateButton = true; 
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi tìm kiếm: {ex.Message}");
+			ShowCreateButton = true;
+		}
+	}
+
+	private async Task CreateCustomer()
+	{
+		Console.WriteLine("Tạo tài khoản cho khách hàng mới...");
+	}
 }
 <style>
+	.form-group {
+		margin-bottom: 15px;
+	}
+
+	input.form-control {
+		width: 100%;
+		padding: 10px;
+		font-size: 16px;
+		margin-top: 5px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+	}
+
+	button.btn {
+		padding: 10px 15px;
+		font-size: 16px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	button.btn-primary {
+		background-color: #007bff;
+		color: white;
+	}
+
+	button.btn-success {
+		background-color: #28a745;
+		color: white;
+	}
+
+	button:hover {
+		opacity: 0.9;
+	}
+
 	.modal {
 		display: none;
 		position: fixed;

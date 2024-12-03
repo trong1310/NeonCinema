@@ -70,10 +70,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
 		}
@@ -103,7 +102,40 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             {
                 entity.HasKey(e => e.ID);
             });
-        }
+			modelBuilder.Entity<Bill>()
+		.Property(b => b.TotalPrice)
+		.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<Ticket>()
+				.Property(t => t.Price)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<TicketPrice>()
+				.Property(tp => tp.Price)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<TicketPriceSetting>(entity =>
+			{
+				entity.Property(tps => tps.PriceAfter17hWeekDay)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceAfter17hWeekeend)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceBefore17hWeekDay)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceBefore17hWeekeend)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.Surcharge3D)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.Surcharge4D)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeCouple)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeIMAX)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeVIP)
+					  .HasColumnType("decimal(18,2)");
+			});
+		}
 		private void SeedData(ModelBuilder modelBuilder)
 		{
 			var roleData = new List<Roles>
@@ -935,8 +967,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			// 23. TicketSeat
 			var ticketPriceData = new List<TicketPrice>
 	{
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50, Status = EntityStatus.Active,  },
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60, Status = EntityStatus.Active  }
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active,  },
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
 	};
 			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
 			// 22. Ticket
@@ -948,8 +980,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<Ticket>().HasData(ticketData);
 			var foodComboData = new List<FoodCombo>
 	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 100000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 150000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
 	};
 			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
