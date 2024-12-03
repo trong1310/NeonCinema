@@ -12,6 +12,7 @@ using NeonCinema_Client.Data.IServices.User;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
+using NeonCinema_Application.DataTransferObject.User.Request;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -89,6 +90,17 @@ namespace NeonCinema_Client.Services.User
 
             }
         }
-
+        public async Task<HttpResponseMessage> ForgotPass(Forgotpass request)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/User/Forgot-Password", request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi gửi yêu cầu quên mật khẩu: {ex.Message}");
+            }
+        }
     }
 }

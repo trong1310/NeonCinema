@@ -172,9 +172,6 @@ namespace NeonCinema_API.Controllers
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Khách hàng").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.Users?.FullName.ToLower() ?? "không xác định"}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Dịch vụ").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Mua vé xem phim").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Phim").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph(billTicket.Tickets.Movies?.Name ?? "Không xác định").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 

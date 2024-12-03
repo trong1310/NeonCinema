@@ -71,6 +71,8 @@
 
     <Folder Include="wwwroot\json\" />
 
+    <Folder Include="wwwroot\NewFolder\" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -112,6 +114,8 @@
   </ItemGroup>
 
   <ItemGroup>
+
+    <None Include="Pages\Client\User\ClientForgotPassword.razor" />
 
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />

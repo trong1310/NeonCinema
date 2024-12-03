@@ -10,7 +10,7 @@ namespace NeonCinema_Client.Data.IServices.Screenning
     {
         Task<List<ScreeningDTO>> GetAllScreeningsAsync();
         Task<ScreeningDTO> GetScreeningByIdAsync(Guid id);
-        Task CreateScreeningAsync(ScreeningCreateRequest request);
+        Task<bool> CreateScreeningAsync(ScreeningCreateRequest request);
         Task UpdateScreeningAsync(ScreeningUpdateRequest request);
         Task DeleteScreeningAsync(Guid id);
         Task<List<ShowTimeDTO>> GetAllShowTimesAsync();

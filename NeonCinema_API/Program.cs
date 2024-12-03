@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NeonCinema_API.SendMail;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
 
@@ -36,7 +37,7 @@ using NeonCinema_Infrastructure.Implement.Room;
 using NeonCinema_Infrastructure.Implement.Screenings;
 using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.ShiftChange;
-using NeonCinema_Infrastructure.Implement.Statisticss;
+using NeonCinema_Infrastructure.Implement.Statistics;
 using NeonCinema_Infrastructure.Implement.TicketPriceSetting;
 using NeonCinema_Infrastructure.Implement.Users;
 using NeonCinema_Infrastructure.Implement.WorkShift;
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
 builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
+builder.Services.AddScoped<ISendMailService, SendMailService>();
 
 
 
