@@ -564,19 +564,38 @@
 
 	private async void ProcessPayment()
 	{
-		var account = _context.Users.Where(x => x.PhoneNumber == phoneNumber).FirstOrDefault();
-		request = new CreateBookTicketRequest()
-			{
-				ScreeningID = screenings.Id,
-				SeatID = selectedSeatsId,
-				MovieId = movieDto.ID,
-				AccountID = account.ID,
-				BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+		if (!string.IsNullOrEmpty(phoneNumber))
+		{
+			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+			request = new CreateBookTicketRequest()
 				{
-					FoodComboId = combo.Key.ID,
-					Quantity = combo.Value,
-				}).ToList(),
-			};
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = account?.ID, // Nếu không tìm thấy tài khoản, AccountID sẽ là null
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+		else
+		{
+			// Nếu không nhập số điện thoại
+			request = new CreateBookTicketRequest()
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = null, // Không có AccountID
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
 
 		try
 		{
