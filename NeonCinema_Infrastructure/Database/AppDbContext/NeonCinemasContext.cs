@@ -70,9 +70,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
 		}
@@ -949,15 +949,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new TicketPriceSetting
 	{
 		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
-		PriceBefore17hWeekDay = 50,
-		PriceAfter17hWeekDay = 60,
-		PriceBefore17hWeekeend = 60,
-		PriceAfter17hWeekeend = 70,
-		Surcharge3D = 30,
-		Surcharge4D = 40,
-		SurchargeIMAX = 50,
-		SurchargeVIP = 30,
-		SurchargeCouple = 50
+		PriceBefore17hWeekDay = 50000,
+		PriceAfter17hWeekDay = 60000,
+		PriceBefore17hWeekeend = 60000,
+		PriceAfter17hWeekeend = 70000,
+		Surcharge3D = 30000,
+		Surcharge4D = 40000,
+		SurchargeIMAX = 50000,
+		SurchargeVIP = 30000,
+		SurchargeCouple = 50000
 	},
 	
 	};
