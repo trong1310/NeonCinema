@@ -2,6 +2,7 @@
 using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
+using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
@@ -116,6 +117,17 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 			}
 		}
 
-
+		public async Task<RankMemberResp> SeachAccount(string? phoneNumber)
+		{
+			try
+			{
+				var respones = await _httpClient.GetFromJsonAsync<RankMemberResp>($"https://localhost:7211/api/BookTicket/account/{phoneNumber}");
+				return respones;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
 	}
 }

@@ -16,7 +16,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public Guid TicketPriceSettingID { get; set; }
 		public Guid SeatTypeID { get; set; }
         public Guid ScreeningID { get; set; }
-		[Precision(18, 3)]
 		public decimal Price { get; set; }
         public EntityStatus Status { get; set; }
 		public virtual ShowTime? ShowTimes { get; set; }

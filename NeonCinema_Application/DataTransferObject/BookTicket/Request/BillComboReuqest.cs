@@ -8,7 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Request
 {
 	public class BillComboReuqest
 	{
-		public Guid FoodComboId { get; set; }
-		public int Quantity { get; set; }
+		public Guid? FoodComboId { get; set; }
+		public int? Quantity { get; set; }
 	}
 }

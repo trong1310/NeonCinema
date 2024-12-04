@@ -76,6 +76,16 @@
 									<ValidationMessage For="@(() => request.AgeAllowed)" />
 								</div>
 							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Actor" class="font-weight-bold">Diễn viên</label>
+									<div class="position-relative">
+										<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên"
+											   value="@selectedActorsText" readonly />
+										<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
@@ -162,8 +172,10 @@
 	List<CountryDTO> countries = new List<CountryDTO>();
 	List<DirectorDTO> directors = new List<DirectorDTO>();
 	PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
+	private ViewActorRequest requestActor = new ViewActorRequest();
 	protected override async Task OnInitializedAsync()
 	{
+		actors = await _movieServices.GetActor(requestActor);
 		request.StarTime = DateTime.UtcNow;
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
@@ -249,6 +261,39 @@
 	private async Task NavigateToList()
 	{
 		_navigation.NavigateTo("/list-movie-admin");
+	}
+	private List<Guid> selectedActors = new List<Guid>();
+	private string selectedActorsText = string.Empty;
+	private bool isActorModalOpen = false;
+
+	private void ToggleActorSelection(Guid actorId, bool isSelected)
+	{
+		if (isSelected)
+		{
+			if (!selectedActors.Contains(actorId))
+				selectedActors.Add(actorId);
+		}
+		else
+		{
+			selectedActors.Remove(actorId);
+		}
+		selectedActorsText = string.Join(", ", actors.Data
+		.Where(a => selectedActors.Contains(a.ID))
+		.Select(a => a.FullName));
+	}
+	private void OpenActorDialog()
+	{
+		isActorModalOpen = true; // Mở modal
+	}
+
+	private void CloseActorDialog()
+	{
+		isActorModalOpen = false; // Đóng modal
+	}
+	private void SelectActors()
+	{
+
+		CloseActorDialog();
 	}
 }
 
