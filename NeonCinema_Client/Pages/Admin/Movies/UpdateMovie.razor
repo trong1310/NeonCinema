@@ -157,54 +157,114 @@
 	</div>
 	@if (isActorModalOpen)
 	{
-		<div class="modal show" tabindex="-1" role="dialog" style="display:block;">
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" @onclick="CloseActorDialog">
-							<i class="material-icons">close</i>
+						<h5 class="modal-title">Chọn diễn viên</h5>
+						<button type="button" class="close" @onclick="CloseActorDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
 						</button>
 					</div>
-
-					<div class="modal-body">
-						<h5 class="modal-title">Chọn diễn viên</h5>
-						@foreach (var item in actors.Data)
-						{
-							<div class="form-check d-flex align-items-center mb-4">
-								<input class="form-check-input" type="checkbox" value="@item.ID"
-									   @onchange="(e) => ToggleActorSelection(item.ID, (bool)e.Value)" />
-								<label class="form-check-label ms-2" for="actor1">@item.FullName</label>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="row mb-3">
+							<div class="col-4 d-flex align-items-center justify-content-center">
+								<input class="form-check-input me-2" type="checkbox" id="actor1" />
+								<label class="form-check-label" for="actor1">Diễn viên 1</label>
 							</div>
-						}
-
-						<hr />
-						<h5 class="modal-title">Thêm diễn viên mới</h5>
-						<div class="row">
-							<div class="col-md-8">
-								<div class="form-group">
-									<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
-									<input type="text" class="form-control" id="actorName" />
-								</div>
-								<div class="form-group">
-									<label for="status" class="font-weight-bold">Trạng Thái</label>
-									<select class="form-control" id="status">
-										<option value="Active">Hoạt Động</option>
-										<option value="Inactive">Không Hoạt Động</option>
-									</select>
-								</div>
+							<div class="col-4 d-flex align-items-center justify-content-center">
+								<input class="form-check-input me-2" type="checkbox" id="actor2" />
+								<label class="form-check-label" for="actor2">Diễn viên 2</label>
 							</div>
-							<div class="text-center">
-								<button type="button" class="btn btn-success btn-lg">Thêm</button>
+							<div class="col-4 d-flex align-items-center justify-content-center">
+								<input class="form-check-input me-2" type="checkbox" id="actor3" />
+								<label class="form-check-label" for="actor3">Diễn viên 3</label>
 							</div>
 						</div>
 					</div>
+					<hr />
+					<div class="modal-header" style="margin-top: -15px">
+						<h5 class="modal-title">Thêm diễn viên</h5>
+					</div>
+					<div class="modal-body add-actor d-flex justify-content-center">
+						<div class="row mb-3 justify-content-center align-items-center">
+							<div class="col-5 d-flex flex-column justify-content-center align-items-center">
+								<div class="form-group  text-center">
+									<label class="font-weight-bold mb-2">Tên Diễn Viên</label>
+									<input type="text" class="form-control" placeholder="Nhập tên diễn viên" />
+								</div>
+							</div>
+							<div class="col-4 d-flex flex-column justify-content-center align-items-center">
+								<div class="form-group  text-center">
+									<label class="font-weight-bold mb-2">Trạng Thái</label>
+									<select class="form-control custom-select">
+										<option value="" disabled selected>Chọn trạng thái</option>
+										<option value="Active">Hoạt động</option>
+										<option value="Inactive">Không hoạt động</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-3 d-flex justify-content-center align-items-center">
+								<button class="btn btn-primary">Thêm</button>
+							</div>
+						</div>
+					</div>
+
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
-						<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
+						<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn diễn viên</button>
 					</div>
 				</div>
 			</div>
 		</div>
+		@* <div class="modal show" tabindex="-1" role="dialog" style="display:block; margin-top: 50px;">
+	<div class="modal-dialog" role="document">
+	<div class="modal-content">
+	<div class="modal-header">
+	<button type="button" class="close" @onclick="CloseActorDialog">
+	<i class="material-icons">close</i>
+	</button>
+	</div>
+
+	<div class="modal-body">
+	<h5 class="modal-title">Chọn diễn viên</h5>
+	<div class="form-check d-flex align-items-center mb-4">
+	<input class="form-check-input" type="checkbox"/>
+	<label class="form-check-label ms-2" for="actor1">Diễn viên 1</label>
+	<input class="form-check-input" type="checkbox"/>
+	<label class="form-check-label ms-2" for="actor1">Diễn viên 2</label>
+	<input class="form-check-input" type="checkbox" />
+	<label class="form-check-label ms-2" for="actor1">Diễn viên 3</label>
+	</div>
+
+	<hr />
+	<h5 class="modal-title">Thêm diễn viên mới</h5>
+	<div class="row">
+	<div class="col-md-8">
+	<div class="form-group">
+	<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
+	<input type="text" class="form-control" id="actorName" />
+	</div>
+	<div class="form-group">
+	<label for="status" class="font-weight-bold">Trạng Thái</label>
+	<select class="form-control" id="status">
+	<option value="Active">Hoạt Động</option>
+	<option value="Inactive">Không Hoạt Động</option>
+	</select>
+	</div>
+	</div>
+	<div class="text-center">
+	<button type="button" class="btn btn-success btn-lg">Thêm</button>
+	</div>
+	</div>
+	</div>
+	<div class="modal-footer">
+	<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
+	<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
+	</div>
+	</div>
+	</div>
+	</div> *@
 	}
 
 </div>
@@ -467,9 +527,6 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.form-check {
-		margin-right: 15px; /* Adjust spacing between radio buttons */
-	}
 
 	img {
 		margin-top: 20px;
@@ -502,6 +559,16 @@
 			background-color: #8f8f8f; /* Màu nền khi hover */
 		}
 
+	.add-icon {
+		position: absolute;
+		right: 30px; /* Khoảng cách từ icon đến bên phải */
+		top: 50%; /* Đặt icon giữa theo chiều dọc */
+		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
+		cursor: pointer;
+		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
+		font-size: 24px; /* Kích thước của icon */
+	}
+
 	.btn-success {
 		background-color: #007bff;
 		border: none;
@@ -519,6 +586,40 @@
 		padding: 10px 20px;
 		border-radius: 5px;
 		font-size: 16px;
+	}
+
+	.add-actor {
+		display: flex;
+		justify-content: center;
+	}
+
+		.add-actor .row {
+			display: flex;
+			align-items: center; /* Căn giữa các cột theo chiều dọc */
+			justify-content: center; /* Tạo khoảng cách đều giữa các cột */
+			margin-left: 5px;
+		}
+
+		.add-actor .form-group {
+			margin-bottom: 0; /* Loại bỏ khoảng cách không cần thiết */
+			text-align: center;
+		}
+
+		.add-actor label {
+			display: block;
+			text-align: left; /* Đảm bảo label được canh trái */
+		}
+
+		.add-actor button {
+			margin-top: 1.9rem; /* Đẩy nút xuống để căn ngang với input và select */
+		}
+
+	.custom-select {
+		min-width: 150px; /* Đặt chiều rộng tối thiểu */
+	}
+
+	.modal-body .add-actor {
+		max-width: 100%; /* Đảm bảo input và select không vượt quá giới hạn cột */
 	}
 
 </style>
