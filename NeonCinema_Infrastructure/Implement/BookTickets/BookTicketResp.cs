@@ -146,23 +146,19 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
 					accountBook.MinPoint += (double)convertPoint;
-					if (accountBook.MinPoint >= 0 && accountBook.MinPoint <= 500)
+					if (accountBook.MinPoint >= 0 && accountBook.MinPoint <= 60000)
 					{
 						accountBook.Rank = "Thành viên";
 					}
-					if (accountBook.MinPoint >= 101 && accountBook.MinPoint <= 1000)
+					else if (accountBook.MinPoint > 60000 && accountBook.MinPoint <= 150000)
 					{
 						accountBook.Rank = "Bạc";
 					}
-					if (accountBook.MinPoint >= 501 && accountBook.MinPoint <= 1500)
+					else if (accountBook.MinPoint > 150000 && accountBook.MinPoint <= 300000)
 					{
 						accountBook.Rank = "vàng";
 					}
-					if (accountBook.MinPoint >= 1001 && accountBook.MinPoint <= 2000)
-					{
-						accountBook.Rank = "Bạch kim";
-					}
-					if (accountBook.MinPoint >= 2001)
+					else if (accountBook.MinPoint > 300000)
 					{
 						accountBook.Rank = "Kim cương";
 					}
