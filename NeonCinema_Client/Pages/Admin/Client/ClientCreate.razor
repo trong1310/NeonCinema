@@ -21,7 +21,7 @@
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
                 <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
-                <label class="custom-file-upload">
+                <label  class="custom-file-upload">
                     <span style="margin-left:-5px">
                         <i class="material-icons">cloud_upload</i>
                     </span>
@@ -33,19 +33,19 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="name" class="font-weight-bold">Họ và tên</label>
+                            <label class="form-label">Họ và tên</label>
                             <input type="text" class="form-control" id="name" @bind-value="request.FullName" />
-                            <ValidationMessage For="@(() => request.FullName)" />
+                            <ValidationMessage For="@(() => request.FullName)" style="margin-top: 2px" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="phone" class="font-weight-bold">Số điện thoại</label>
+                            <label class="form-label">Số điện thoại</label>
                             <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber">
-                            <ValidationMessage For="@(() => request.PhoneNumber)" />
+                            <ValidationMessage For="@(() => request.PhoneNumber)" style="margin-top: 2px" />
                             @if (!IsShowPhoneNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorPhoneMessage</span>
+                                <span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
                             }
                         </div>
                     </div>
@@ -54,23 +54,23 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="email" class="font-weight-bold">Email</label>
+                            <label class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" @bind-value="request.Email">
-                            <ValidationMessage For="@(() => request.Email)" />
+                            <ValidationMessage For="@(() => request.Email)" style="margin-top: 2px" />
                             @if (!IsShowEmailNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorEmailMessage</span>
+                                <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
                             }
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dob" class="font-weight-bold">Ngày sinh</label>
+                            <label class="form-label">Ngày sinh</label>
                             <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht">
-                            <ValidationMessage For="@(() => request.DateOrBriht)" />
+                            <ValidationMessage For="@(() => request.DateOrBriht)" style="margin-top: 2px" />
                             @if (!IsShowYearNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorYearMessage</span>
+                                <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
                             }
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Giới tính</label> <br />
+                            <label class="form-label">Giới tính</label> <br />
                             <div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
@@ -107,7 +107,7 @@
                                     <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                                 </div>
                             </div>
-                            <ValidationMessage For="@(() => request.Gender)" />
+                            <ValidationMessage For="@(() => request.Gender)" style="margin-top: 2px" />
                         </div>
 
                     </div>
@@ -136,9 +136,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="Description" class="font-weight-bold">Địa chỉ</label>
+                    <label class="form-label">Địa chỉ</label>
                     <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss"></textarea>
-                    <ValidationMessage For="@(() => request.Adderss)" />
+                    <ValidationMessage For="@(() => request.Adderss)" style="margin-top: 2px" />
                 </div>
 
                 <div class="text-center">
@@ -209,33 +209,39 @@
             errorEmailMessage = string.Empty;
             errorPhoneMessage = string.Empty;
             errorYearMessage = string.Empty;
+
+            // Nếu không có file được chọn, sử dụng ảnh mặc định
             if (selectedFile == null)
             {
-                return;
-            }
-
-            var content = new MultipartFormDataContent();
-            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
-
-            content.Add(fileContent, "file", selectedFile.Name);
-            var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var jsonDoc = JsonDocument.Parse(jsonResponse);
-                var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-                var fileName = Path.GetFileName(fileUrl);
-                request.Images = fileName;
-
-                Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+                request.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
             }
             else
             {
-                Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-                return;
+                // Xử lý upload ảnh khi có file được chọn
+                var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+                content.Add(fileContent, "file", selectedFile.Name);
+                var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var jsonDoc = JsonDocument.Parse(jsonResponse);
+                    var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+                    var fileName = Path.GetFileName(fileUrl);
+                    request.Images = fileName;
+
+                    Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+                }
+                else
+                {
+                    Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+                    return;
+                }
             }
+
             var emailExists = _context.Users.Any(x => x.Email == request.Email);
             if (emailExists)
             {
@@ -252,6 +258,7 @@
                 IsShowYearNotification = false;
                 return;
             }
+
             // Kiểm tra số điện thoại đã tồn tại
             var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
             if (phoneExists)
@@ -260,11 +267,12 @@
                 IsShowPhoneNotification = false;
                 return;
             }
+
             var userResponse = await UserService.CreateClient(request);
             if (userResponse.IsSuccessStatusCode)
             {
                 ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
-                await Task.Delay(3000);
+                await Task.Delay(1000);
                 _navigation.NavigateTo("/client");
             }
             else
@@ -279,6 +287,7 @@
             Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
         }
     }
+
     private async Task NavigateToStaff()
     {
         // _navigation.NavigateTo("/staff"); 

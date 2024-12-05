@@ -8,6 +8,7 @@
 @using NeonCinema_Application.DataTransferObject.Genre
 @using NeonCinema_Application.DataTransferObject.Language
 @using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.User
 @using NeonCinema_Infrastructure.Database.AppDbContext
 @using System.Collections.Generic
 @using NeonCinema_Application.DataTransferObject.User
@@ -15,14 +16,19 @@
 @using NeonCinema_Client.Data.Services.BookTicket
 @using NeonCinema_Client.Models.Enums
 @using NeonCinema_Domain.Database.Entities
+@using System.Text.Json
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
+@inject IUserServices UserService
+@inject NavigationManager _navigation
+@inject HttpClient _http
 
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
+
 <div class="row m-2">
 	<div class="col-md-4" style="width: 25% ; height:80%">
 		<div class="card">
@@ -260,8 +266,67 @@
 				</div>
 			</div>
 		}
-
 	</div>
+	@if (showCreateAccountModal)
+	{
+		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<EditForm Model="requestUser" OnValidSubmit="HandleSubmit">
+							<DataAnnotationsValidator />
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="createAccountLabel">Tạo Tài Khoản</h5>
+							<button type="button" class="close" @onclick="CloseCreateAccountModal" aria-label="Close">
+								<span class="material-icons" aria-hidden="true">close</span>
+							</button>
+						</div>
+						<div class="modal-body">
+								<div class="row">
+									<div class="mb-3 col-md-6">
+										<label for="fullName" class="form-label">Họ và tên</label>
+									<input type="text" class="form-control" placeholder="Nhập họ và tên" @bind-value=requestUser.FullName>
+										<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
+									</div>
+									<div class="mb-3 col-md-6">
+										<label for="phone" class="form-label">Số điện thoại</label>
+									<input type="text" class="form-control" placeholder="Nhập số điện thoại" @bind-value=requestUser.PhoneNumber>
+										<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
+										@if (!IsShowPhoneNotification)
+										{
+											<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
+										}
+									</div>
+								</div>
+								<div class="row">
+									<div class="mb-3 col-md-6">
+										<label for="email" class="form-label">Email</label>
+									<input type="email" class="form-control" placeholder="Nhập email" @bind-value=requestUser.Email>
+										<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
+										@if (!IsShowEmailNotification)
+										{
+											<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+										}
+									</div>
+									<div class="mb-3 col-md-6">
+										<label for="date" class="form-label">Ngày sinh</label>
+									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
+										@if (!IsShowYearNotification)
+										{
+											<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+										}
+									</div>
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseCreateAccountModal">Hủy</button>
+							<button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+						</div>
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+
 </div>
 <script>
 	window.onload = function () {
@@ -698,10 +763,150 @@
 		}
 	}
 
+
+
+	#region Tạo tài khoản
+
+	private UserCreateRequest requestUser = new UserCreateRequest();
+	private IBrowserFile selectedFile;
+	private bool showPassword = false;
+	private string errorEmailMessage;
+	private string errorPhoneMessage;
+	private string errorYearMessage;
+	private bool IsShowPhoneNotification = true;
+	private bool IsShowEmailNotification = true;
+	private bool IsShowYearNotification = true;
+	private bool showCreateAccountModal = false;
+
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			IsShowEmailNotification = true;
+			IsShowPhoneNotification = true;
+			IsShowYearNotification = true;
+			errorEmailMessage = string.Empty;
+			errorPhoneMessage = string.Empty;
+			errorYearMessage = string.Empty;
+
+			// Nếu không có file được chọn, sử dụng ảnh mặc định
+			if (selectedFile == null)
+			{
+				requestUser.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+			}
+			else
+			{
+				// Xử lý upload ảnh khi có file được chọn
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					var fileName = Path.GetFileName(fileUrl);
+					requestUser.Images = fileName;
+
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
+			}
+
+			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+			if (emailExists)
+			{
+				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				IsShowEmailNotification = false;
+				return;
+			}
+			if (requestUser.DateOrBriht == null ||
+				requestUser.DateOrBriht.Year < 1900 ||
+				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
+				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
+			{
+				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+				IsShowYearNotification = false;
+				return;
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại
+			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+			if (phoneExists)
+			{
+				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+				IsShowPhoneNotification = false;
+				return;
+			}
+
+			var userResponse = await UserService.CreateClient(requestUser);
+			if (userResponse.IsSuccessStatusCode)
+			{
+				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+				await Task.Delay(300);
+				CloseCreateAccountModal();
+			}
+			else
+			{
+				var errorContent = await userResponse.Content.ReadAsStringAsync();
+				Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+
 	private async Task CreateCustomer()
 	{
-		Console.WriteLine("Tạo tài khoản cho khách hàng mới...");
+		showCreateAccountModal = true;
 	}
+	private void CloseCreateAccountModal()
+	{
+		showCreateAccountModal = false;
+	}
+	
+	#endregion
 }
 <style>
 	.form-group {
