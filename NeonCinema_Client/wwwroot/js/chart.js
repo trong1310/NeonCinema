@@ -1,5 +1,9 @@
-﻿let chartInstance = null;
+﻿// Khởi tạo biến biểu đồ toàn cục
+let revenueChartInstance = null;
+let movieChartInstance = null;
+let comboChartInstance = null;
 
+// Hàm vẽ biểu đồ doanh thu tổng theo ngày
 function renderRevenueChart(revenueData) {
     if (!revenueData || revenueData.length === 0) {
         console.error("Không có dữ liệu doanh thu.");
@@ -8,40 +12,54 @@ function renderRevenueChart(revenueData) {
 
     const ctx = document.getElementById('revenueChart').getContext('2d');
 
-    // Hủy biểu đồ cũ nếu tồn tại
-    if (chartInstance) {
-        chartInstance.destroy();
+    if (revenueChartInstance) {
+        revenueChartInstance.destroy();
     }
 
     const labels = revenueData.map(item => new Date(item.date).toLocaleDateString('vi-VN'));
     const data = revenueData.map(item => item.revenue);
 
-    chartInstance = new Chart(ctx, {
+    revenueChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
                 label: 'Doanh thu (VNĐ)',
                 data: data,
-                borderColor: 'blue',
-                fill: false,
-                tension: 0.1
+                borderColor: 'rgba(0, 123, 255, 1)',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                pointRadius: 3
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
             scales: {
                 x: { title: { display: true, text: 'Ngày' } },
-                y: { title: { display: true, text: 'Doanh thu (VNĐ)' } }
+                y: { title: { display: true, text: 'Doanh thu (VNĐ)' }, beginAtZero: true }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutBounce'
             }
         }
     });
 }
-let movieChartInstance = null;
-let comboChartInstance = null;
 
-// Biểu đồ phim
+// Hàm vẽ biểu đồ doanh thu theo phim
 function renderMovieChart(movieData) {
+    if (!movieData || movieData.length === 0) {
+        console.error("Không có dữ liệu phim.");
+        return;
+    }
+
     const ctx = document.getElementById('movieChart').getContext('2d');
 
     if (movieChartInstance) {
@@ -65,18 +83,32 @@ function renderMovieChart(movieData) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.5,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
             scales: {
                 x: { title: { display: true, text: 'Tên phim' } },
-                y: { title: { display: true, text: 'Doanh thu (VNĐ)' } }
+                y: { title: { display: true, text: 'Doanh thu (VNĐ)' }, beginAtZero: true }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuad'
             }
         }
     });
 }
 
-// Biểu đồ combo
 function renderComboChart(comboData) {
+    if (!comboData || comboData.length === 0) {
+        console.error("Không có dữ liệu combo.");
+        return;
+    }
+
     const ctx = document.getElementById('comboChart').getContext('2d');
 
+    // Hủy biểu đồ cũ nếu tồn tại
     if (comboChartInstance) {
         comboChartInstance.destroy();
     }
@@ -91,12 +123,22 @@ function renderComboChart(comboData) {
             datasets: [{
                 label: 'Số lượng bán',
                 data: data,
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-                hoverOffset: 4
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+                hoverOffset: 8
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: true, // Giữ nguyên tỷ lệ khung hình
+            aspectRatio: 1.5, // Điều chỉnh tỷ lệ phù hợp để biểu đồ không quá lớn
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutElastic'
+            }
         }
     });
 }
+
