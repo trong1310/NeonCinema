@@ -70,8 +70,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
@@ -103,7 +102,40 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             {
                 entity.HasKey(e => e.ID);
             });
-        }
+			modelBuilder.Entity<Bill>()
+		.Property(b => b.TotalPrice)
+		.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<Ticket>()
+				.Property(t => t.Price)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<TicketPrice>()
+				.Property(tp => tp.Price)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<TicketPriceSetting>(entity =>
+			{
+				entity.Property(tps => tps.PriceAfter17hWeekDay)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceAfter17hWeekeend)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceBefore17hWeekDay)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.PriceBefore17hWeekeend)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.Surcharge3D)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.Surcharge4D)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeCouple)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeIMAX)
+					  .HasColumnType("decimal(18,2)");
+				entity.Property(tps => tps.SurchargeVIP)
+					  .HasColumnType("decimal(18,2)");
+			});
+		}
 		private void SeedData(ModelBuilder modelBuilder)
 		{
 			var roleData = new List<Roles>
@@ -652,7 +684,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Hành trình cảm động về tình cha con giữa Sài Gòn.",
 		StarTime = DateTime.Parse("2024-08-15"),
 		Trailer = "https://www.youtube.com/watch?v=bogia2-trailer",
-		Images = "bogia2.png",
+		Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
 		AgeAllowed = 16,
 		Status = MovieStatus.Active,
 		GenreID = genreData[0].ID,
@@ -669,7 +701,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Những mâu thuẫn căng thẳng giữa các băng nhóm trong thế giới ngầm.",
 		StarTime = DateTime.Parse("2024-09-10"),
 		Trailer = "https://www.youtube.com/watch?v=chimuoiba-trailer",
-		Images = "chimuoiba.png",
+		Images = "161cd6ca-380d-4627-8071-2d5af03a1cf2.png",
 		AgeAllowed = 18,
 		Status = MovieStatus.Active,
 		GenreID = genreData[1].ID,
@@ -686,7 +718,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Cuộc sống đầy biến động của một gia đình truyền thống Việt.",
 		StarTime = DateTime.Parse("2024-07-25"),
 		Trailer = "https://www.youtube.com/watch?v=nhabanu-trailer",
-		Images = "nhabanu.png",
+		Images = "100f852c-f5b4-43f0-8560-84ab0b42b9b9.png",
 		AgeAllowed = 13,
 		Status = MovieStatus.Active,
 		GenreID = genreData[2].ID,
@@ -703,7 +735,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Cuộc sống sang chảnh và những bí mật động trời của giới thượng lưu.",
 		StarTime = DateTime.Parse("2024-06-20"),
 		Trailer = "https://www.youtube.com/watch?v=gaigialamchieu-trailer",
-		Images = "gaigialamchieu.png",
+		Images = "11d330e9-7ab3-49d6-bb78-0ab3acabf6cf.png",
 		AgeAllowed = 15,
 		Status = MovieStatus.Active,
 		GenreID = genreData[3].ID,
@@ -720,7 +752,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Bữa tiệc đầy những bí mật được phơi bày qua trò chơi mạo hiểm.",
 		StarTime = DateTime.Parse("2024-09-01"),
 		Trailer = "https://www.youtube.com/watch?v=tiectrangmau-trailer",
-		Images = "tiectrangmau.png",
+		Images = "2d2a89fa-61c6-4662-a2de-ab4b337c88d7.png",
 		AgeAllowed = 18,
 		Status = MovieStatus.Active,
 		GenreID = genreData[4].ID,
@@ -756,7 +788,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Câu chuyện tình yêu đầy lãng mạn và cảm động của Trịnh Công Sơn.",
 		StarTime = DateTime.Parse("2024-11-30"),
 		Trailer = "https://www.youtube.com/watch?v=emvatrinh-trailer",
-		Images = "emvatrinh.png",
+		Images = "5b626704-f3d1-482f-b77c-903284966efa.png",
 		AgeAllowed = 13,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[1].ID,
@@ -773,7 +805,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Tiếp tục câu chuyện tình yêu day dứt giữa Ngạn và Hà Lan.",
 		StarTime = DateTime.Parse("2024-12-01"),
 		Trailer = "https://www.youtube.com/watch?v=matbiec-trailer",
-		Images = "matbiec.png",
+		Images = "7502d22a-c967-400c-bc8c-3062d00c7fcc.png",
 		AgeAllowed = 12,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[2].ID,
@@ -790,7 +822,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Phiên bản Việt của Người Nhện với những pha hành động gay cấn.",
 		StarTime = DateTime.Parse("2024-12-20"),
 		Trailer = "https://www.youtube.com/watch?v=nguoinhenvietnam-trailer",
-		Images = "nguoinhenvietnam.png",
+		Images = "96cc9263-2adb-46f1-a015-fe0a18c4b781.png",
 		AgeAllowed = 15,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[3].ID,
@@ -807,7 +839,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Những câu chuyện tình yêu lãng mạn tại Sài Gòn mưa rơi.",
 		StarTime = DateTime.Parse("2024-11-25"),
 		Trailer = "https://www.youtube.com/watch?v=saigonmuaroi-trailer",
-		Images = "saigontrongmuaroi.png",
+		Images = "96cc9263-2adb-46f1-a015-fe0a18c4b781.png",
 		AgeAllowed = 13,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[4].ID,
@@ -917,15 +949,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new TicketPriceSetting
 	{
 		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
-		PriceBefore17hWeekDay = 50,
-		PriceAfter17hWeekDay = 60,
-		PriceBefore17hWeekeend = 60,
-		PriceAfter17hWeekeend = 70,
-		Surcharge3D = 30,
-		Surcharge4D = 40,
-		SurchargeIMAX = 50,
-		SurchargeVIP = 30,
-		SurchargeCouple = 50
+		PriceBefore17hWeekDay = 50000,
+		PriceAfter17hWeekDay = 60000,
+		PriceBefore17hWeekeend = 60000,
+		PriceAfter17hWeekeend = 70000,
+		Surcharge3D = 30000,
+		Surcharge4D = 40000,
+		SurchargeIMAX = 50000,
+		SurchargeVIP = 30000,
+		SurchargeCouple = 50000
 	},
 	
 	};
@@ -935,21 +967,24 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			// 23. TicketSeat
 			var ticketPriceData = new List<TicketPrice>
 	{
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50, Status = EntityStatus.Active,  },
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60, Status = EntityStatus.Active  }
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active,  },
+		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
 	};
 			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
 			// 22. Ticket
 			var ticketData = new List<Ticket>
 			{
 				new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = seatData [0].ID, Price = 100000 , Status = ticketEnum.paid},
-		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = seatData [1].ID, Price = 2100000 , Status = ticketEnum.paid }
+		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = seatData [1].ID, Price = 2100000 , Status = ticketEnum.paid },
+		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[2].ID, MovieID = movieData[2].ID,SeatID = seatData [2].ID, Price = 3100000 , Status = ticketEnum.paid }
 	};
 			modelBuilder.Entity<Ticket>().HasData(ticketData);
 			var foodComboData = new List<FoodCombo>
 	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 20000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 220000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 100000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif",CreatedTime = DateTime.Now },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 150000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-1) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 120000,Content="Combo 3",Description ="1 bắp bơ + 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-2) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 4, TotalPrice = 200000,Content="Combo 4",Description ="2 bắp bơ 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-3) }
 	};
 			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
@@ -989,7 +1024,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 150000,
 		BillCode = "BILL003",
 		Status = ticketEnum.cancel,
-		CreatedTime = DateTime.Now.AddMinutes(-30)
+		CreatedTime = DateTime.Now.AddDays(-1)
 	},
 	new Bill
 	{
@@ -998,7 +1033,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 200000,
 		BillCode = "BILL004",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-45)
+		CreatedTime = DateTime.Now.AddDays(-2)
 	},
 	new Bill
 	{
@@ -1007,7 +1042,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 250000,
 		BillCode = "BILL005",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-60)
+		CreatedTime = DateTime.Now.AddDays(-3)
 	},
 	new Bill
 	{
@@ -1016,7 +1051,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 600000,
 		BillCode = "BILL006",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-90)
+		CreatedTime = DateTime.Now.AddDays(-4)
 	},
 	new Bill
 	{
@@ -1025,7 +1060,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 680000,
 		BillCode = "BILL0122",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now
+		CreatedTime = DateTime.Now.AddDays(-4)
 	},
 	new Bill
 	{
@@ -1034,7 +1069,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 800000,
 		BillCode = "BILL007",
 		Status = ticketEnum.waiting_for_payment,
-		CreatedTime = DateTime.Now.AddMinutes(-120)
+		CreatedTime = DateTime.Now.AddDays(-5)
 	},
 	new Bill
 	{
@@ -1043,7 +1078,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 450000,
 		BillCode = "BILL008",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-150)
+		CreatedTime = DateTime.Now.AddDays(-10)
 	},
 	new Bill
 	{
@@ -1052,7 +1087,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 350000,
 		BillCode = "BILL009",
 		Status = ticketEnum.checkin,
-		CreatedTime = DateTime.Now.AddMinutes(-180)
+		CreatedTime = DateTime.Now.AddDays(-8)
 	},
 	new Bill
 	{
@@ -1061,7 +1096,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 700000,
 		BillCode = "BILL010",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-200)
+		CreatedTime = DateTime.Now.AddDays(-6)
 	}
 };
 			modelBuilder.Entity<Bill>().HasData(billData);
@@ -1072,13 +1107,35 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				{
 
 					 BillID = billData[0].ID,
+					 Quantity = 1,
 					 FoodComboID = foodComboData[0].ID,
+					 CreatedTime = DateTime.Now.AddDays(-2)
 				},
 				 new BillCombo
 				{
 					 BillID = billData[1].ID,
+					 Quantity = 2,
 					 FoodComboID = foodComboData[1].ID,
+					 CreatedTime = DateTime.Now,
+
+				},
+				 new BillCombo
+				{
+					 BillID = billData[2].ID,
+					 FoodComboID = foodComboData[2].ID,
+					 Quantity = 3,
+					 CreatedTime = DateTime.Now.AddDays(-1),
+
+				},
+				 new BillCombo
+				{
+					 BillID = billData[3].ID,
+					 FoodComboID = foodComboData[3].ID,
+					 Quantity = 4,
+					 CreatedTime = DateTime.Now.AddDays(-2),
+
 				}
+
 			};
 			modelBuilder.Entity<BillCombo>().HasData(billCombo);
 			// Seed data cho bảng BillTicket
@@ -1087,12 +1144,32 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new BillTicket
 		{
 			BillId = billData[0].ID,
-			TicketId = ticketData[0].ID
+			TicketId = ticketData[0].ID,
+			CreatedTime = DateTime.Now.AddDays(-1)
 		},
 		new BillTicket
 		{
 			BillId = billData[1].ID,
-			TicketId = ticketData[1].ID
+			TicketId = ticketData[1].ID,
+			CreatedTime = DateTime.Now.AddDays(-1)
+		},
+		new BillTicket
+		{
+			BillId = billData[2].ID,
+			TicketId = ticketData[2].ID,
+			CreatedTime = DateTime.Now.AddDays(-2)
+		},
+		new BillTicket
+		{
+			BillId = billData[3].ID,
+			TicketId = ticketData[1].ID,
+			CreatedTime = DateTime.Now.AddDays(-2)
+		},
+		new BillTicket
+		{
+			BillId = billData[4].ID,
+			TicketId = ticketData[0].ID,
+			CreatedTime = DateTime.Now
 		}
 	};
 			modelBuilder.Entity<BillTicket>().HasData(billTicketData);

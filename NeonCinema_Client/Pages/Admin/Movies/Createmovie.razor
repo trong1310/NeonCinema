@@ -17,138 +17,211 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 @* <AuthorizeView Roles="Admin">
 	<Authorized > *@
-		<EditForm Model="request" OnValidSubmit="HandleSubmit" Context="editFormContext">
-			<DataAnnotationsValidator />
-			<div class="container-fluid mt-5">
-				<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
+<EditForm Model="request" OnValidSubmit="HandleSubmit" Context="editFormContext">
+	<DataAnnotationsValidator />
+	<div class="container-fluid mt-5">
+		<h2 class="text-center mb-4 font-weight-bold">Thêm phim mới</h2>
+		<div class="row">
+			<div class="col-md-3 text-center mb-4 mt-5">
+				<img src="@profileImage" alt="Profile" class="img-fluid profile-pic"> <br />
+				<label class="custom-file-upload">
+					<span>
+						<i class="material-icons">cloud_upload</i>
+					</span>
+					<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+					<span>Chọn ảnh</span>
+				</label>
+			</div>
+			<div class="col-md-9" style="margin-top:10px;">
 				<div class="row">
-					<div class="col-md-3 text-center mb-4 mt-5">
-						<img src="@profileImage" alt="Profile" class="img-fluid profile-pic"> <br />
-						<label class="custom-file-upload">
-							<span>
-								<i class="material-icons">cloud_upload</i>
-							</span>
-							<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
-							<span>Chọn ảnh</span>
-						</label>
-					</div>
-					<div class="col-md-9" style="margin-top:10px;">
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="name" class="font-weight-bold">Tên Phim</label>
-									<input type="text" class="form-control" id="name" @bind-value="request.Name" />
-									<ValidationMessage For="@(() => request.Name)" />
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Duration" class="font-weight-bold">Thời Lượng</label>
-									<input type="number" class="form-control" id="Duration" @bind-value="request.Duration" />
-									<ValidationMessage For="@(() => request.Duration)" />
-								</div>
-							</div>
-						</div>
-
-						<!-- Thông tin phim -->
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Trailer" class="font-weight-bold">Trailer</label>
-									<input type="url" class="form-control" id="Trailer" @bind-value="request.Trailer" />
-									<ValidationMessage For="@(() => request.Trailer)" />
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
-									<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
-									<ValidationMessage For="@(() => request.StarTime)" />
-								</div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
-									<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
-									<ValidationMessage For="@(() => request.AgeAllowed)" />
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Genre" class="font-weight-bold">Thể loại</label>
-									<select @onchange="(e) => request.GenreID = Guid.Parse(e.Value.ToString())" class="form-control">
-										<option value="" disabled selected>Chọn thể loại</option>
-										@foreach (var genre in genres)
-										{
-											<option value="@genre.ID">@genre.GenreName</option>
-										}
-									</select>
-									<ValidationMessage For="@(() => request.GenreID)" />
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
-									<select @onchange="(e) => request.LenguageID = Guid.Parse(e.Value.ToString())" class="form-control">
-										<option value="" disabled selected>Chọn ngôn ngữ</option>
-										@foreach (var language in languages)
-										{
-											<option value="@language.ID">@language.LanguageName</option>
-										}
-									</select>
-									<ValidationMessage For="@(() => request.LenguageID)" />
-								</div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Country" class="font-weight-bold">Quốc gia</label>
-									<select @onchange="(e) => request.CountryID = Guid.Parse(e.Value.ToString())" class="form-control">
-										<option value="" disabled selected>Chọn quốc gia</option>
-										@foreach (var country in countries)
-										{
-											<option value="@country.ID">@country.CountryName</option>
-										}
-									</select>
-									<ValidationMessage For="@(() => request.CountryID)" />
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="Director" class="font-weight-bold">Đạo diễn</label>
-									<select @onchange="(e) => request.DirectorID = Guid.Parse(e.Value.ToString())" class="form-control">
-										<option value="" disabled selected>Chọn đạo diễn</option>
-										@foreach (var director in directors)
-										{
-											<option value="@director.ID">@director.FullName</option>
-										}
-									</select>
-									<ValidationMessage For="@(() => request.DirectorID)" />
-								</div>
-							</div>
-						</div>
-
+					<div class="col-md-6">
 						<div class="form-group">
-							<label for="Description" class="font-weight-bold">Mô tả</label>
-							<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
-							<ValidationMessage For="@(() => request.Description)" />
+							<label for="name" class="font-weight-bold">Tên Phim</label>
+							<input type="text" class="form-control" id="name" @bind-value="request.Name" />
+							<ValidationMessage For="@(() => request.Name)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Duration" class="font-weight-bold">Thời Lượng</label>
+							<input type="number" class="form-control" id="Duration" @bind-value="request.Duration" />
+							<ValidationMessage For="@(() => request.Duration)" />
+						</div>
+					</div>
+				</div>
+
+				<!-- Thông tin phim -->
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Trailer" class="font-weight-bold">Trailer</label>
+							<input type="url" class="form-control" id="Trailer" @bind-value="request.Trailer" />
+							<ValidationMessage For="@(() => request.Trailer)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
+							<input type="date" class="form-control" id="StarTime" @bind-value="request.StarTime" />
+							<ValidationMessage For="@(() => request.StarTime)" />
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
+							<input type="number" class="form-control" id="AgeAllowed" @bind-value="request.AgeAllowed" />
+							<ValidationMessage For="@(() => request.AgeAllowed)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Actor" class="font-weight-bold">Diễn viên</label>
+							<div class="position-relative">
+								<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên"
+									   value="@selectedActorsText" readonly />
+								<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Genre" class="font-weight-bold">Thể loại</label>
+							<select @onchange="(e) => request.GenreID = Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn thể loại</option>
+								@foreach (var genre in genres)
+								{
+									<option value="@genre.ID">@genre.GenreName</option>
+								}
+							</select>
+							<ValidationMessage For="@(() => request.GenreID)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
+							<select @onchange="(e) => request.LenguageID = Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn ngôn ngữ</option>
+								@foreach (var language in languages)
+								{
+									<option value="@language.ID">@language.LanguageName</option>
+								}
+							</select>
+							<ValidationMessage For="@(() => request.LenguageID)" />
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Country" class="font-weight-bold">Quốc gia</label>
+							<select @onchange="(e) => request.CountryID = Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn quốc gia</option>
+								@foreach (var country in countries)
+								{
+									<option value="@country.ID">@country.CountryName</option>
+								}
+							</select>
+							<ValidationMessage For="@(() => request.CountryID)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Director" class="font-weight-bold">Đạo diễn</label>
+							<select @onchange="(e) => request.DirectorID = Guid.Parse(e.Value.ToString())" class="form-control">
+								<option value="" disabled selected>Chọn đạo diễn</option>
+								@foreach (var director in directors)
+								{
+									<option value="@director.ID">@director.FullName</option>
+								}
+							</select>
+							<ValidationMessage For="@(() => request.DirectorID)" />
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="Description" class="font-weight-bold">Mô tả</label>
+					<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
+					<ValidationMessage For="@(() => request.Description)" />
+				</div>
+
+				<div class="text-center">
+					<button type="submit" class="btn btn-success btn-lg">Thêm</button>
+					<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
+				</div>
+			</div>
+		</div>
+		@if (isActorModalOpen)
+		{
+			<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Chọn diễn viên</h5>
+							<button type="button" class="close" @onclick="CloseActorDialog" aria-label="Close">
+								<span class="material-icons" aria-hidden="true">close</span>
+							</button>
+						</div>
+						<div class="modal-body" style="margin-bottom: -20px">
+							<div class="row mb-3">
+								<div class="col-4 d-flex align-items-center justify-content-center">
+									<input class="form-check-input me-2" type="checkbox" id="actor1" />
+									<label class="form-check-label" for="actor1">Diễn viên 1</label>
+								</div>
+								<div class="col-4 d-flex align-items-center justify-content-center">
+									<input class="form-check-input me-2" type="checkbox" id="actor2" />
+									<label class="form-check-label" for="actor2">Diễn viên 2</label>
+								</div>
+								<div class="col-4 d-flex align-items-center justify-content-center">
+									<input class="form-check-input me-2" type="checkbox" id="actor3" />
+									<label class="form-check-label" for="actor3">Diễn viên 3</label>
+								</div>
+							</div>
+						</div>
+						<hr />
+						<div class="modal-header" style="margin-top: -15px">
+							<h5 class="modal-title">Thêm diễn viên</h5>
+						</div>
+						<div class="modal-body add-actor d-flex justify-content-center">
+							<div class="row mb-3 justify-content-center align-items-center">
+								<div class="col-5 d-flex flex-column justify-content-center align-items-center">
+									<div class="form-group  text-center">
+										<label class="font-weight-bold mb-2">Tên Diễn Viên</label>
+										<input type="text" class="form-control" placeholder="Nhập tên diễn viên" />
+									</div>
+								</div>
+								<div class="col-4 d-flex flex-column justify-content-center align-items-center">
+									<div class="form-group  text-center">
+										<label class="font-weight-bold mb-2">Trạng Thái</label>
+										<select class="form-control custom-select">
+											<option value="" disabled selected>Chọn trạng thái</option>
+											<option value="Active">Hoạt động</option>
+											<option value="Inactive">Không hoạt động</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-3 d-flex justify-content-center align-items-center">
+									<button class="btn btn-primary">Thêm</button>
+								</div>
+							</div>
 						</div>
 
-						<div class="text-center">
-							<button type="submit" class="btn btn-success btn-lg">Thêm</button>
-							<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
+							<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn diễn viên</button>
 						</div>
 					</div>
 				</div>
 			</div>
-		</EditForm>
+		}
+	</div>
+</EditForm>
 @code {
 	private CreateMovieRequest request = new CreateMovieRequest();
 	private CreateActorMoviesRequest requestmovies = new CreateActorMoviesRequest();
@@ -162,8 +235,10 @@
 	List<CountryDTO> countries = new List<CountryDTO>();
 	List<DirectorDTO> directors = new List<DirectorDTO>();
 	PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
+	private ViewActorRequest requestActor = new ViewActorRequest();
 	protected override async Task OnInitializedAsync()
 	{
+		actors = await _movieServices.GetActor(requestActor);
 		request.StarTime = DateTime.UtcNow;
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
@@ -225,7 +300,7 @@
 			}
 
 
-			var flimsResponse = await _movieServices.Create(request,CancellationToken.None);
+			var flimsResponse = await _movieServices.Create(request, CancellationToken.None);
 			if (flimsResponse.IsSuccessStatusCode)
 			{
 				Console.WriteLine(request.GenreID);
@@ -249,6 +324,39 @@
 	private async Task NavigateToList()
 	{
 		_navigation.NavigateTo("/list-movie-admin");
+	}
+	private List<Guid> selectedActors = new List<Guid>();
+	private string selectedActorsText = string.Empty;
+	private bool isActorModalOpen = false;
+
+	private void ToggleActorSelection(Guid actorId, bool isSelected)
+	{
+		if (isSelected)
+		{
+			if (!selectedActors.Contains(actorId))
+				selectedActors.Add(actorId);
+		}
+		else
+		{
+			selectedActors.Remove(actorId);
+		}
+		selectedActorsText = string.Join(", ", actors.Data
+		.Where(a => selectedActors.Contains(a.ID))
+		.Select(a => a.FullName));
+	}
+	private void OpenActorDialog()
+	{
+		isActorModalOpen = true; // Mở modal
+	}
+
+	private void CloseActorDialog()
+	{
+		isActorModalOpen = false; // Đóng modal
+	}
+	private void SelectActors()
+	{
+
+		CloseActorDialog();
 	}
 }
 
@@ -275,7 +383,7 @@
 		height: 200px;
 		object-fit: cover;
 		border: 3px solid #eaeaea;
-		margin-left: -15px;
+		margin-left: -15px; /* Shift image slightly left */
 		height: 350px;
 		width: 250px;
 	}
@@ -289,7 +397,7 @@
 		border-radius: 5px;
 		border: 1px solid #ccc;
 		padding: 10px;
-		margin-left: -20px;
+		margin-left: -20px; /* Shift input fields slightly left */
 	}
 
 	.form-control:focus {
@@ -324,9 +432,6 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.form-check {
-		margin-right: 15px; /* Adjust spacing between radio buttons */
-	}
 
 	img {
 		margin-top: 20px;
@@ -359,6 +464,16 @@
 			background-color: #8f8f8f; /* Màu nền khi hover */
 		}
 
+	.add-icon {
+		position: absolute;
+		right: 30px; /* Khoảng cách từ icon đến bên phải */
+		top: 50%; /* Đặt icon giữa theo chiều dọc */
+		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
+		cursor: pointer;
+		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
+		font-size: 24px; /* Kích thước của icon */
+	}
+
 	.btn-success {
 		background-color: #007bff;
 		border: none;
@@ -378,91 +493,38 @@
 		font-size: 16px;
 	}
 
-	.modal {
+	.add-actor {
 		display: flex;
-		align-items: center;
 		justify-content: center;
-		position: fixed;
-		top: 0;
-		left: 0;
-		background-color: rgba(0, 0, 0, 0.5); /* Để tạo nền mờ */
-		z-index: 1050; /* Đảm bảo modal ở trên các phần tử khác */
 	}
 
-	.modal-dialog {
-		max-width: 1500px; /* Tăng chiều rộng tối đa của dialog */
-		max-height: 80vh;
-		width: 50%; /* Đảm bảo modal chiếm toàn bộ chiều rộng */
-		margin: auto; /* Để căn giữa modal */
-		overflow-y: auto;
-	}
-
-	.modal-content {
-		padding: 20px; /* Thêm khoảng cách bên trong để nội dung không bị chèn vào các cạnh */
-	}
-
-
-	.no-hover {
-		border: none; /* Bỏ viền */
-		background-color: transparent; /* Bỏ nền */
-		outline: none; /* Bỏ viền ngoài */
-		cursor: pointer; /* Con trỏ vẫn là tay khi hover */
-	}
-
-		.no-hover:hover {
-			background-color: transparent;
-			color: inherit;
-			outline: none;
+		.add-actor .row {
+			display: flex;
+			align-items: center; /* Căn giữa các cột theo chiều dọc */
+			justify-content: center; /* Tạo khoảng cách đều giữa các cột */
+			margin-left: 5px;
 		}
 
-		.no-hover:focus {
-			outline: none;
-			box-shadow: none;
+		.add-actor .form-group {
+			margin-bottom: 0; /* Loại bỏ khoảng cách không cần thiết */
+			text-align: center;
 		}
 
-	.position-relative {
-		position: relative;
-	}
-
-	.add-icon {
-		position: absolute;
-		right: 30px; /* Khoảng cách từ icon đến bên phải */
-		top: 50%; /* Đặt icon giữa theo chiều dọc */
-		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
-		cursor: pointer;
-		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
-		font-size: 24px; /* Kích thước của icon */
-	}
-
-	.profile-pic-modal {
-		width: 200px;
-		height: 200px;
-		object-fit: cover;
-		border: 3px solid #eaeaea;
-	}
-
-	.file-upload-modal {
-		display: flex;
-		align-items: center; /* Căn giữa theo chiều dọc */
-		justify-content: center; /* Căn giữa theo chiều ngang */
-		margin-top: 10px;
-		padding: 10px 20px;
-		cursor: pointer;
-		border-radius: 10px;
-		background-color: #a9a9a9; /* Màu nền của nút */
-		color: white; /* Màu chữ */
-		border: none; /* Bỏ viền */
-		text-align: center;
-		width: 150px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-		.file-upload-modal span {
-			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		.add-actor label {
+			display: block;
+			text-align: left; /* Đảm bảo label được canh trái */
 		}
 
-		.file-upload-modal:hover {
-			background-color: #8f8f8f; /* Màu nền khi hover */
+		.add-actor button {
+			margin-top: 1.9rem; /* Đẩy nút xuống để căn ngang với input và select */
 		}
+
+	.custom-select {
+		min-width: 150px; /* Đặt chiều rộng tối thiểu */
+	}
+
+	.modal-body .add-actor {
+		max-width: 100%; /* Đảm bảo input và select không vượt quá giới hạn cột */
+	}
+
 </style>

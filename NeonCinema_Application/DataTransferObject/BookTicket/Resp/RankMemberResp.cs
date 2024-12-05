@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Resp
 	{
 		public Guid Id { get; set; }
 		public Guid AccountId { get; set; }
+		public string AccountName { get; set; }
 		public string Rank {  get; set; }
 		public double Point {  get; set; }
 
