@@ -13,6 +13,11 @@ using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
 using NeonCinema_Application.DataTransferObject.User.Request;
+using NeonCinema_API.Controllers;
+using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Infrastructure.Database.AppDbContext;
+using static NeonCinema_Client.Pages.Client.User.Profile;
+using Microsoft.EntityFrameworkCore;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -21,11 +26,13 @@ namespace NeonCinema_Client.Services.User
     {
         private readonly HttpClient _httpClient;
         private readonly LoginModel _loginModel;
-        public UserServices()
+        private readonly NeonCinemasContext _context;
+        public UserServices(NeonCinemasContext context)
         {
             _loginModel = new LoginModel();
             var handler = CreateHttpClientHandler();
             _httpClient = new HttpClient();
+            _context = context;
         }
 
         private static HttpClientHandler CreateHttpClientHandler()
@@ -102,5 +109,50 @@ namespace NeonCinema_Client.Services.User
                 throw new Exception($"Lỗi khi gửi yêu cầu quên mật khẩu: {ex.Message}");
             }
         }
+
+        public async Task<HttpResponseMessage> ChangerPass(ClientChangerPass request)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/User/Changer-Password", request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Lỗi đổi mật khẩu: {ex.Message}");
+            }
+        }
+
+        public async Task<HttpResponseMessage> CheckPass(CheckPass request)
+        {
+            try
+            {
+                var reponse = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/Check-Current-Password", request);
+                return reponse;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"mật khẩu không đúng:{ex.Message}");
+            }
+        }
+
+        public async Task<List<Bill>> ClientCheckTicket(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var token = "your_bearer_token"; 
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var reponse = await _httpClient.GetFromJsonAsync<List<Bill>>("https://localhost:7211/api/User/user-check-tickets", cancellationToken);
+                return reponse;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Bạn chưa đặt vé nào:{ex.Message}");
+            }
+        }
+
+       
     }
 }
