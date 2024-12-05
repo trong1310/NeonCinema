@@ -234,6 +234,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+							<button type="button" class="btn btn-primary" @onclick="ExportFile">In hóa đơn</button>
 						</div>
 					</div>
 				</div>
@@ -284,15 +285,12 @@
 	qrCode.style.display = 'none';
 	return;
 	}
-
-	// Lấy tổng tiền
-	const totalPrice = parseFloat(amountDisplay.innerText.replace(/[^\d.-]/g, ''));
+	const totalPrice = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
 	if (isNaN(totalPrice) || totalPrice <= 0) {
 	console.error("Invalid amount for QR code.");
 	qrCode.style.display = 'none';
 	return;
 	}
-
 	// Tạo URL QR code
 	const accountName = "NGUYEN VAN TRONG";
 	const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
@@ -531,7 +529,7 @@
 		}
 
 		totalPrices += combo.Amount;
-		await OnClickToEditAmount(); 
+		await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
 	private async void Decrease(FoodComboDTO combo)
@@ -561,40 +559,63 @@
 	CreateBookTicketRequest request = new CreateBookTicketRequest();
 	NeonCinemasContext _context = new NeonCinemasContext();
 	private string paymentStatus = string.Empty; // Trạng thái thanh toán
-
-	private async void ProcessPayment()
+	private BillResp? billResp;
+	private void ResetUI()
 	{
-		var account = _context.Users.Where(x => x.PhoneNumber == phoneNumber).FirstOrDefault();
-		request = new CreateBookTicketRequest()
-			{
-				ScreeningID = screenings.Id,
-				SeatID = selectedSeatsId,
-				MovieId = movieDto.ID,
-				AccountID = account.ID,
-				BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+		selectedCombos.Clear();
+		selectedSeatNumbers = string.Empty;
+		selectedComboId.Clear();
+		selectedSeats.Clear();
+		selectedSeatsId.Clear();
+		currentValue = 0;
+		totalPrices = 0;
+		phoneNumber = string.Empty;
+		Rank.AccountName = string.Empty;
+		Rank.Point = 0;
+		RefreshSeatsAsync();
+	}
+
+	private async Task ProcessPayment()
+	{
+		if (!string.IsNullOrEmpty(phoneNumber))
+		{
+			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+			request = new CreateBookTicketRequest
 				{
-					FoodComboId = combo.Key.ID,
-					Quantity = combo.Value,
-				}).ToList(),
-			};
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = account?.ID,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+		else
+		{
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = null,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
 
 		try
 		{
-			var createBill = await _services.BookTicket(request, CancellationToken.None);
+			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
 
-			if (createBill.IsSuccessStatusCode)
+			if (billResp != null)
 			{
-				// Reset giao diện
-				selectedCombos.Clear();
-				selectedSeatNumbers = " ";
-				selectedComboId.Clear();
-				selectedSeats.Clear();
-				selectedSeatsId.Clear();
-				currentValue = 0;
-				totalPrices = 0;
-				Rank.AccountName = "";
-				Rank.Point = 0;
-				RefreshSeatsAsync();
+				ResetUI();
 				paymentStatus = "success";
 			}
 			else
@@ -605,12 +626,26 @@
 		catch (Exception ex)
 		{
 			paymentStatus = "failure";
-			Console.WriteLine($"Có lỗi xảy ra: {ex.Message} : {ex.StackTrace}");
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
 		}
 
 		StateHasChanged();
 	}
-
+	public Guid BillTicketId { get; set; }
+	public async Task ExportFile()
+	{
+		try
+		{
+			BillTicketId = (Guid)billResp.Id;
+			var export = await _services.ExportFile(BillTicketId);
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
+			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+		}
+	}
 	private string GetPaymentMessage(string status)
 	{
 		return status switch
@@ -641,20 +676,19 @@
 	private bool ShowCreateButton { get; set; }
 
 	private RankMemberResp Rank = new RankMemberResp();
-
 	private async Task SearchCustomer()
 	{
 		try
 		{
-			var result = await _services.SeachAccount(phoneNumber); 
+			var result = await _services.SeachAccount(phoneNumber);
 			if (result != null)
 			{
-				Rank = result; 
-				ShowCreateButton = false; 
+				Rank = result;
+				ShowCreateButton = false;
 			}
 			else
 			{
-				ShowCreateButton = true; 
+				ShowCreateButton = true;
 			}
 		}
 		catch (Exception ex)
