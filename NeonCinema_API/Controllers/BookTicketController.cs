@@ -30,16 +30,16 @@ namespace NeonCinema_API.Controllers
         [HttpPost("book-ticket")]
         public async Task<IActionResult> BookTicket([FromBody] CreateBookTicketRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
+			try
+			{
+				var billResp = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
+				return Ok(billResp); 
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+			}
+		}
 
         // Lấy thông tin lịch chiếu cho phim
         [HttpGet("screening")]
@@ -60,26 +60,26 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        //// Lấy thông tin tài khoản người dùng theo số điện thoại
-        //[HttpGet("account/{phone}")]
-        //public async Task<IActionResult> GetAccountByPhone(string phone, CancellationToken cancellationToken)
-        //{
-        //    try
-        //    {
-        //        var user = await _bookTicketResp.GetAccountByPhone(phone, cancellationToken);
-        //        if (user == null)
-        //        {
-        //            return NotFound("Không tìm thấy tài khoản với số điện thoại này");
-        //        }
-        //        return Ok(user);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
-        //    }
-        //}
+        // Lấy thông tin tài khoản người dùng theo số điện thoại
+        [HttpGet("account/{phone}")]
+        public async Task<IActionResult> GetAccountByPhone(string? phone, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _bookTicketResp.GetAccountByPhone(phone, cancellationToken);
+                if (user == null)
+                {
+                    return NotFound("Không tìm thấy tài khoản với số điện thoại này");
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
 
-		[HttpGet("choose-screning")]
+        [HttpGet("choose-screning")]
 		public async Task<IActionResult> ChooseScrening([FromQuery] Guid id)
 		{
 			try

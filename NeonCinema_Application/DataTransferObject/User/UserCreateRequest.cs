@@ -27,17 +27,16 @@ namespace NeonCinema_Application.DataTransferObject.User
         [Required(ErrorMessage = "Vui lòng nhập ngày sinh.")]
         public DateTime DateOrBriht { get; set; }
 
-        public string Images { get; set; }
+        public string? Images { get; set; }
 
         //[Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
         //[StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải từ 6 ký tự trở lên.")]
         //public string PassWord { get; set; }
 
-        [Required(ErrorMessage = "Giới tính không được để trống")]
         public bool? Gender { get; set; }
 
-        [Required(ErrorMessage = "Địa chỉ không được để trống")]
-        public string Adderss { get; set; }
+
+        public string? Adderss { get; set; }
         public string? PassWord  { get; set; }
     }
 

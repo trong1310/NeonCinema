@@ -2,10 +2,12 @@
 using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
+using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
 using NeonCinema_Application.DataTransferObject.FoodCombos;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using System.Net.Http.Json;
 using System.Threading;
@@ -85,17 +87,17 @@ namespace NeonCinema_Client.Data.Services.BookTicket
                 throw new Exception("co loi xay ra : " + ex.Message);
             }
 		}
-		public Task<HttpResponseMessage> BookTicket(CreateBookTicketRequest request, CancellationToken cancellationToken)
+		public async Task<BillResp?> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
-			try
+			var response = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/BookTicket/book-ticket", request, cancellationToken);
+
+			if (response.IsSuccessStatusCode)
 			{
-				var results = _httpClient.PostAsJsonAsync($"https://localhost:7211/api/BookTicket/book-ticket",request,cancellationToken);
-				return results;
+				return await response.Content.ReadFromJsonAsync<BillResp>();
 			}
-			catch (Exception ex)
-			{
-				throw new Exception("co loi xay ra : " + ex.Message);
-			}
+
+			var error = await response.Content.ReadAsStringAsync();
+			throw new Exception($"Lỗi từ server: {error}");
 		}
 		public async Task<HttpResponseMessage> UpdateStateSeats(Guid seatId, seatEnum status)
 		{
@@ -116,6 +118,36 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 			}
 		}
 
-
+		public async Task<RankMemberResp> SeachAccount(string? phoneNumber)
+		{
+			try
+			{
+				var respones = await _httpClient.GetFromJsonAsync<RankMemberResp>($"https://localhost:7211/api/BookTicket/account/{phoneNumber}");
+				return respones;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
+		public async Task<byte[]> ExportFile(Guid BillId)
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync($"https://localhost:7211/api/Resources/generate-invoice-pdf/{BillId}");
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadAsByteArrayAsync();
+				}
+				else
+				{
+					throw new Exception("Không thể tải hóa đơn từ server.");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
 	}
 }

@@ -9,6 +9,7 @@ namespace NeonCinema_Application.DataTransferObject.User
     public class CreateClientResponse
     {
         public HttpResponseMessage HttpResponse { get; set; }
+        
         public string GeneratedPassword { get; set; }
     }
 }

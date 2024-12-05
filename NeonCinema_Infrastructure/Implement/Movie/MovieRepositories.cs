@@ -46,10 +46,17 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
-                    
+ 
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
+                var actorMovies = request.ActorMovies.Select(x => new NeonCinema_Domain.Database.Entities.ActorMovies
+                {
+                    MovieID = movies.ID,
+                    ActorID = x,
+                }).ToList();
+                await _context.ActorMovies.AddRangeAsync(actorMovies);
+                await _context.SaveChangesAsync();
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
 				{
 					Content = new StringContent("Thêm thành công")

@@ -23,10 +23,10 @@
         <div class="col-md-3">
             <label for="priceFilter">Giá vé</label>
             <div class="input-container">
-                <input type="number" class="form-control" placeholder="Nhập giá vé" @bind="priceFilter" @oninput="OnPriceFilterChanged" />
+                <input type="number" class="form-control" placeholder="Nhập giá vé" value="@priceFilter?.ToString("N0")" @oninput="OnPriceFilterChanged" />
                 <span class="currency-unit">VND</span>
             </div>
-            
+
         </div>
 
         <!-- Lọc theo Loại ghế -->
@@ -44,7 +44,7 @@
         <!-- Lọc theo Giờ chiếu -->
         <div class="col-md-3">
             <label>Giờ chiếu</label>
-            <select class="form-control" @onchange="OnShowTimeChanged" >
+            <select class="form-control" @onchange="OnShowTimeChanged">
                 <option value="">Tất cả</option>
                 @foreach (var showTime in showTimes.OrderBy(st => st.StartTime))
                 {
@@ -85,7 +85,7 @@
                     var seatTypeName = seatTypes.FirstOrDefault(st => st.ID == ticketPrice.SeatTypeID)?.SeatTypeName;
                     <tr>
                         <td class="text-center align-middle">@(@filteredPrices.IndexOf(ticketPrice) + 1)</td>
-                        <td class="text-center align-middle">@ticketPrice.Price VND</td>
+                        <td class="text-center align-middle">@ticketPrice.Price.ToString("N0") VND</td>
                         <td class="text-center align-middle">@startTime</td>
                         <td class="text-center align-middle">@seatTypeName</td>
                         <td class="text-center align-middle">@ticketPrice.ShowDate.ToString("dd/MM/yyyy")</td>
@@ -124,7 +124,7 @@
                             <label for="price">Giá vé:</label>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind="newTicketPrice.Price" />
+                                       @bind="FormattedPrice" />
                                 <span class="currency-unit">VND</span>
                             </div>
                         </div>
@@ -184,7 +184,7 @@
                             <label for="price">Giá Vé:</label>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind="newTicketPrice.Price" />
+                                       @bind="FormattedPrice" />
                                 <span class="currency-unit">VND</span>
                             </div>
                         </div>
@@ -212,6 +212,7 @@
     private Guid? seatTypeFilter;
     private Guid? showTimeFilter;
     private DateTime? dateFilter;
+
     private void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Add(message, severity, options =>
@@ -241,16 +242,30 @@
             filteredPrices = filteredPrices.Where(tp => tp.ShowDate.Date == dateFilter.Value.Date).ToList();
         }
     }
+    private string FormattedPrice
+    {
+        get => newTicketPrice.Price.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                newTicketPrice.Price = parsedValue;
+            }
+        }
+    }
     private void OnPriceFilterChanged(ChangeEventArgs e)
     {
         // Attempt to parse the input string to decimal
-        if (decimal.TryParse(e.Value?.ToString(), out var parsedPrice))
+        var input = e.Value?.ToString()?.Replace(",", "").Trim();
+
+        // Kiểm tra và chuyển đổi giá trị nhập vào
+        if (decimal.TryParse(input, out var parsedValue))
         {
-            priceFilter = parsedPrice;
+            priceFilter = parsedValue; // Lưu giá trị không định dạng
         }
         else
         {
-            priceFilter = null;
+            priceFilter = null; // Đặt về null nếu không hợp lệ
         }
 
         ApplyFilters();
@@ -264,7 +279,7 @@
         }
         else
         {
-            seatTypeFilter = null; 
+            seatTypeFilter = null;
         }
 
         ApplyFilters();
@@ -334,13 +349,13 @@
     private void CloseAddModal()
     {
         isAddModalOpen = false;
-      
+
     }
 
     private void CloseEditModal()
     {
         isEditModalOpen = false;
-      
+
     }
 
     private async Task HandleAddTicketPrice()
@@ -373,7 +388,7 @@
                 ticketPrices = await TicketPriceService.GetTicketPricesAsync();
                 filteredPrices = ticketPrices.ToList();
                 ShowSnackbar($"{success}", Severity.Success);
-           
+
             }
             else
             {
@@ -411,7 +426,7 @@
                 // Lấy thông tin lỗi từ phản hồi
                 var errorMessage = await response.Content.ReadAsStringAsync();
                 ShowSnackbar($"Lỗi: {errorMessage}", Severity.Warning);
-              
+
             }
         }
         catch (Exception ex)
@@ -427,6 +442,7 @@
         background-color: #f8f9fa;
         font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
     }
+
     .container-fluid {
         font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
     }
@@ -437,6 +453,7 @@
         overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
     }
+
     .custom-modal {
         margin-top: 50px;
     }
