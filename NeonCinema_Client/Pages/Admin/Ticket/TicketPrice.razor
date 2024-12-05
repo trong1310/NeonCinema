@@ -31,7 +31,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.PriceBefore17hWeekDay" />
+                                       @bind="FormattedSurchargePriceBeforeWeekday" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.PriceBefore17hWeekDay)" />
@@ -39,9 +39,9 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.PriceAfter17hWeekDay" />
+                                       @bind="FormattedSurchargePriceAfterWeekday" />
                                 <span class="currency-unit">VND</span>
-                            </div>                            
+                            </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.PriceAfter17hWeekDay)" />
                         </td>
 
@@ -51,7 +51,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.PriceBefore17hWeekeend" />
+                                       @bind="FormattedSurchargePriceBeforeWeekeend" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.PriceBefore17hWeekeend)" />
@@ -59,7 +59,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.PriceAfter17hWeekeend" />
+                                       @bind="FormattedSurchargePriceAfterWeekeend" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.PriceAfter17hWeekeend)" />
@@ -80,7 +80,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.Surcharge3D" />
+                                       @bind="FormattedSurcharge3D" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.Surcharge3D)" />
@@ -91,7 +91,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.Surcharge4D" />
+                                       @bind="FormattedSurcharge4D" />
                                 <span class="currency-unit">VND</span>
                             </div>
                         </td>
@@ -102,7 +102,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.SurchargeIMAX" />
+                                       @bind="FormattedSurchargeIMAX" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.SurchargeIMAX)" />
@@ -113,7 +113,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.SurchargeVIP" />
+                                       @bind="FormattedSurchargeVip" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.SurchargeVIP)" />
@@ -124,7 +124,7 @@
                         <td>
                             <div class="input-container">
                                 <input type="text" class="form-control"
-                                       @bind-value="ticketPriceSetting.SurchargeCouple" />
+                                       @bind="FormattedSurchargeCouple" />
                                 <span class="currency-unit">VND</span>
                             </div>
                             <ValidationMessage For="@(() => ticketPriceSetting.SurchargeCouple)" />
@@ -146,6 +146,106 @@
     [Parameter] public int Id { get; set; }
     private string successMessage;
     private string errorMessage;
+
+    private string FormattedSurchargePriceBeforeWeekday
+    {
+        get => ticketPriceSetting.PriceBefore17hWeekDay.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.PriceBefore17hWeekDay = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargePriceAfterWeekday
+    {
+        get => ticketPriceSetting.PriceAfter17hWeekDay.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.PriceAfter17hWeekDay = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargePriceBeforeWeekeend
+    {
+        get => ticketPriceSetting.PriceBefore17hWeekeend.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.PriceBefore17hWeekeend = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargePriceAfterWeekeend
+    {
+        get => ticketPriceSetting.PriceAfter17hWeekeend.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.PriceAfter17hWeekeend = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurcharge3D
+    {
+        get => ticketPriceSetting.Surcharge3D.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.Surcharge3D = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurcharge4D
+    {
+        get => ticketPriceSetting.Surcharge4D.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.Surcharge4D = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargeIMAX
+    {
+        get => ticketPriceSetting.SurchargeIMAX.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.SurchargeIMAX = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargeCouple
+    {
+        get => ticketPriceSetting.SurchargeCouple.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.SurchargeCouple = parsedValue;
+            }
+        }
+    }
+    private string FormattedSurchargeVip
+    {
+        get => ticketPriceSetting.SurchargeVIP.ToString("N0");
+        set
+        {
+            if (decimal.TryParse(value.Replace(",", ""), out var parsedValue))
+            {
+                ticketPriceSetting.SurchargeVIP = parsedValue;
+            }
+        }
+    }
     private void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Add(message, severity, options =>
@@ -185,6 +285,7 @@
         background-color: #f8f9fa;
         font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
     }
+
     .form-control {
         width: 100%;
     }

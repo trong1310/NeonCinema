@@ -30,16 +30,16 @@ namespace NeonCinema_API.Controllers
         [HttpPost("book-ticket")]
         public async Task<IActionResult> BookTicket([FromBody] CreateBookTicketRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
+			try
+			{
+				var billResp = await _bookTicketResp.BookTicketCounter(request, cancellationToken);
+				return Ok(billResp); 
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+			}
+		}
 
         // Lấy thông tin lịch chiếu cho phim
         [HttpGet("screening")]

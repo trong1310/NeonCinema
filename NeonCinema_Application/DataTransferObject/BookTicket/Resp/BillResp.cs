@@ -8,6 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Resp
 {
 	public class BillResp
 	{
+		public Guid? Id { get; set; }
 		public string? BillCode { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public string? CustomerName { get; set; }

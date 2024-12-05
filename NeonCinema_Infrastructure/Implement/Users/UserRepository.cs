@@ -40,7 +40,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 					Gender = request.Gender ?? true,
 					Images = request.Images, // Lưu tên hình ảnh
 					DateOrBriht = request.DateOrBriht,
-					Adderss = request.Adderss,
+					Adderss = request.Adderss == null ? "" : request.Adderss,
 					CreatedTime = DateTime.UtcNow,
 					Status = NeonCinema_Domain.Enum.EntityStatus.Active,
 					RoleID = Guid.Parse("BA820C64-1A81-4C44-80EA-47038C930C3B"),

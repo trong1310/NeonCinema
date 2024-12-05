@@ -72,7 +72,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
 		}
@@ -949,15 +949,15 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new TicketPriceSetting
 	{
 		ID = Guid.Parse("4bab0da1-d912-4a87-8e21-cb7a665657d3"),
-		PriceBefore17hWeekDay = 50,
-		PriceAfter17hWeekDay = 60,
-		PriceBefore17hWeekeend = 60,
-		PriceAfter17hWeekeend = 70,
-		Surcharge3D = 30,
-		Surcharge4D = 40,
-		SurchargeIMAX = 50,
-		SurchargeVIP = 30,
-		SurchargeCouple = 50
+		PriceBefore17hWeekDay = 50000,
+		PriceAfter17hWeekDay = 60000,
+		PriceBefore17hWeekeend = 60000,
+		PriceAfter17hWeekeend = 70000,
+		Surcharge3D = 30000,
+		Surcharge4D = 40000,
+		SurchargeIMAX = 50000,
+		SurchargeVIP = 30000,
+		SurchargeCouple = 50000
 	},
 	
 	};
@@ -975,13 +975,16 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			var ticketData = new List<Ticket>
 			{
 				new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[0].ID, MovieID = movieData[0].ID,SeatID = seatData [0].ID, Price = 100000 , Status = ticketEnum.paid},
-		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = seatData [1].ID, Price = 2100000 , Status = ticketEnum.paid }
+		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[1].ID, MovieID = movieData[1].ID,SeatID = seatData [1].ID, Price = 2100000 , Status = ticketEnum.paid },
+		new Ticket { ID = Guid.NewGuid(),  ScreningID = screeningData[2].ID, MovieID = movieData[2].ID,SeatID = seatData [2].ID, Price = 3100000 , Status = ticketEnum.paid }
 	};
 			modelBuilder.Entity<Ticket>().HasData(ticketData);
 			var foodComboData = new List<FoodCombo>
 	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 100000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif" },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 150000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" }
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 100000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif",CreatedTime = DateTime.Now },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 150000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-1) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 120000,Content="Combo 3",Description ="1 bắp bơ + 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-2) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 4, TotalPrice = 200000,Content="Combo 4",Description ="2 bắp bơ 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-3) }
 	};
 			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
@@ -1021,7 +1024,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 150000,
 		BillCode = "BILL003",
 		Status = ticketEnum.cancel,
-		CreatedTime = DateTime.Now.AddMinutes(-30)
+		CreatedTime = DateTime.Now.AddDays(-1)
 	},
 	new Bill
 	{
@@ -1030,7 +1033,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 200000,
 		BillCode = "BILL004",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-45)
+		CreatedTime = DateTime.Now.AddDays(-2)
 	},
 	new Bill
 	{
@@ -1039,7 +1042,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 250000,
 		BillCode = "BILL005",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-60)
+		CreatedTime = DateTime.Now.AddDays(-3)
 	},
 	new Bill
 	{
@@ -1048,7 +1051,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 600000,
 		BillCode = "BILL006",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-90)
+		CreatedTime = DateTime.Now.AddDays(-4)
 	},
 	new Bill
 	{
@@ -1057,7 +1060,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 680000,
 		BillCode = "BILL0122",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now
+		CreatedTime = DateTime.Now.AddDays(-4)
 	},
 	new Bill
 	{
@@ -1066,7 +1069,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 800000,
 		BillCode = "BILL007",
 		Status = ticketEnum.waiting_for_payment,
-		CreatedTime = DateTime.Now.AddMinutes(-120)
+		CreatedTime = DateTime.Now.AddDays(-5)
 	},
 	new Bill
 	{
@@ -1075,7 +1078,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 450000,
 		BillCode = "BILL008",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-150)
+		CreatedTime = DateTime.Now.AddDays(-10)
 	},
 	new Bill
 	{
@@ -1084,7 +1087,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 350000,
 		BillCode = "BILL009",
 		Status = ticketEnum.checkin,
-		CreatedTime = DateTime.Now.AddMinutes(-180)
+		CreatedTime = DateTime.Now.AddDays(-8)
 	},
 	new Bill
 	{
@@ -1093,7 +1096,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		TotalPrice = 700000,
 		BillCode = "BILL010",
 		Status = ticketEnum.paid,
-		CreatedTime = DateTime.Now.AddMinutes(-200)
+		CreatedTime = DateTime.Now.AddDays(-6)
 	}
 };
 			modelBuilder.Entity<Bill>().HasData(billData);
@@ -1104,13 +1107,35 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				{
 
 					 BillID = billData[0].ID,
+					 Quantity = 1,
 					 FoodComboID = foodComboData[0].ID,
+					 CreatedTime = DateTime.Now.AddDays(-2)
 				},
 				 new BillCombo
 				{
 					 BillID = billData[1].ID,
+					 Quantity = 2,
 					 FoodComboID = foodComboData[1].ID,
+					 CreatedTime = DateTime.Now,
+
+				},
+				 new BillCombo
+				{
+					 BillID = billData[2].ID,
+					 FoodComboID = foodComboData[2].ID,
+					 Quantity = 3,
+					 CreatedTime = DateTime.Now.AddDays(-1),
+
+				},
+				 new BillCombo
+				{
+					 BillID = billData[3].ID,
+					 FoodComboID = foodComboData[3].ID,
+					 Quantity = 4,
+					 CreatedTime = DateTime.Now.AddDays(-2),
+
 				}
+
 			};
 			modelBuilder.Entity<BillCombo>().HasData(billCombo);
 			// Seed data cho bảng BillTicket
@@ -1119,12 +1144,32 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		new BillTicket
 		{
 			BillId = billData[0].ID,
-			TicketId = ticketData[0].ID
+			TicketId = ticketData[0].ID,
+			CreatedTime = DateTime.Now.AddDays(-1)
 		},
 		new BillTicket
 		{
 			BillId = billData[1].ID,
-			TicketId = ticketData[1].ID
+			TicketId = ticketData[1].ID,
+			CreatedTime = DateTime.Now.AddDays(-1)
+		},
+		new BillTicket
+		{
+			BillId = billData[2].ID,
+			TicketId = ticketData[2].ID,
+			CreatedTime = DateTime.Now.AddDays(-2)
+		},
+		new BillTicket
+		{
+			BillId = billData[3].ID,
+			TicketId = ticketData[1].ID,
+			CreatedTime = DateTime.Now.AddDays(-2)
+		},
+		new BillTicket
+		{
+			BillId = billData[4].ID,
+			TicketId = ticketData[0].ID,
+			CreatedTime = DateTime.Now
 		}
 	};
 			modelBuilder.Entity<BillTicket>().HasData(billTicketData);
