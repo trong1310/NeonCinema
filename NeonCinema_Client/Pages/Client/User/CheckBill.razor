@@ -1,0 +1,97 @@
+﻿@page "/customer-checkbill"
+@using Blazored.LocalStorage
+@using NeonCinema_Client.Data.IServices.User
+@using Blazored.LocalStorage
+@using System.Text
+@using System.Text.Json
+@inject ILocalStorageService _localstorage
+@inject HttpClient _http
+@inject IUserServices _userServices
+
+@inject ILocalStorageService _localstorage
+@using NeonCinema_Domain.Database.Entities
+<h3>Danh sách vé của bạn</h3>
+
+@if (isLoading)
+{
+    <p>Đang tải danh sách vé...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-danger">@errorMessage</p>
+}
+else if (bills != null && bills.Any())
+{
+    <ul>
+        @foreach (var bill in bills)
+        {
+            <li>
+                <strong>Bill Code:</strong> @bill.BillCode <br />
+                <strong>Total Price:</strong> @bill.TotalPrice <br />
+                <ul>
+                    @foreach (var ticket in bill.BillTickets)
+                    {
+                        <li>
+                            @* <strong>Phim:</strong> @ticket.TotalPrice <br />
+                            <strong>Ghế:</strong> @ticket.SeatNumber <br />
+                            <strong>Thời gian chiếu:</strong> @ticket.ScreeningTime *@
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Không có vé nào được tìm thấy.</p>
+}
+
+
+@code {
+    private bool isLoading = true;
+    private string? errorMessage;
+    private List<Bill> bills;
+    private Ticket tk;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var token = await _localstorage.GetItemAsync<string>("authToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                errorMessage = "Người dùng chưa đăng nhập.";
+                return;
+            }
+
+            
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/user-check-tickets");
+            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+           
+            var response = await _http.SendAsync(requestMessage);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                bills = JsonSerializer.Deserialize<List<Bill>>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<Bill>();
+            }
+            else
+            {
+                errorMessage = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+       
+    
+
+}

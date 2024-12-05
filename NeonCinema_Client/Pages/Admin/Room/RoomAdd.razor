@@ -8,6 +8,7 @@
 
 <EditForm Model="request" OnValidSubmit="AddRoom">
     <DataAnnotationsValidator />
+    
     <div class="add-room-container">
         <h3 class="title">Thêm phòng chiếu</h3>
 
@@ -15,37 +16,34 @@
             <div class="form-group">
                 <label for="roomName">Tên phòng</label>
                 <input id="roomName" class="form-control" @bind="request.Name" />
-                <ValidationMessage For="@(() => request.Name)" />
+                
             </div>
 
             <div class="form-group">
                 <label for="rowNumber">Số hàng</label>
                 <input id="rowNumber" type="number" class="form-control" @bind="request.RowNumber" />
-                <ValidationMessage For="@(() => request.RowNumber)" />
+                
             </div>
 
             <div class="form-group">
                 <label for="columnNumber">Số cột</label>
                 <input id="columnNumber" type="number" class="form-control" @bind="request.ColumnNumber" />
-                <ValidationMessage For="@(() => request.ColumnNumber)" />
+                
             </div>
 
             <div class="form-group">
-                <label for="cinemasId">Chọn rạp</label>
-                <select id="cinemasId" class="form-control" @bind="request.CinemasId">
-                    @foreach (var cinema in cinemas)
+                <label for="cinema">Chọn rạp</label>
+                <select id="cinema" class="form-control" @bind="request.CinemasId" >
+                    <option value="@Guid.Empty">-Chọn rạp-</option>
+                    @foreach (var cinema in cinemas )
                     {
                         <option value="@cinema.ID">@cinema.Name</option>
                     }
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label for="status">Trạng thái</label>
-                <select id="status" class="form-control" @bind="request.Status">
-                    <option value="@(EntityStatus.Active)">hoạt động</option>
-                    <option value="@(EntityStatus.Inactive)">không hoạt động</option>
-                </select>
+                <ValidationSummary />
+                <ValidationMessage For="@(() => request.CinemasId)" />
+               
+                
             </div>
         </div>
 
@@ -65,7 +63,13 @@
 @code {
     
     private List<CinemasDTO> cinemas = new List<CinemasDTO>();
-    private RoomCreateRequest request = new RoomCreateRequest();
+    private string errorMessage;
+
+    private RoomCreateRequest request = new RoomCreateRequest
+        {
+            Status = EntityStatus.Active ,
+                CinemasId = Guid.Empty
+        };
     private List<string> selectedSeats = new List<string>();
     
     private void SelectSeat(int row, int col)
@@ -90,15 +94,38 @@
     
     private async Task AddRoom()
     {
-       
+        if (request.CinemasId == Guid.Empty)
+        {
+            errorMessage = "Vui lòng chọn rạp.";
+            StateHasChanged(); 
+            return;
+        }
+        var normalizedName = NormalizeName(request.Name);
+        if (await IsRoomNameDuplicate(normalizedName))
+        {
+            errorMessage = "Tên phòng đã tồn tại hoặc không hợp lệ.";
+            StateHasChanged();
+            return;
+        }
+        errorMessage = null;
             await RoomService.CreateRoom(request);
             Navigation.NavigateTo("/listroom");
-       
     }
 
     private void Cancel()
     {
         Navigation.NavigateTo("/listroom");
+    }
+    private string NormalizeName(string name)
+    {
+        return string.Join(" ", name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).Trim();
+    }
+
+    private async Task<bool> IsRoomNameDuplicate(string name)
+    {
+        var normalizedName = NormalizeName(name);
+        var existingRooms = await RoomService.GetAllRooms();
+        return existingRooms.Any(r => NormalizeName(r.Name) == normalizedName);
     }
 
    
