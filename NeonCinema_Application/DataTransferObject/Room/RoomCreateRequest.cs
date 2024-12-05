@@ -10,15 +10,13 @@ namespace NeonCinema_Application.DataTransferObject.Room
 {
     public class RoomCreateRequest
     {
-
-       
+        
         public Guid ID { get; set; }
 
         [Required(ErrorMessage = "tên phòng không được để trống.")]
         [RegularExpression(@"^[a-zA-Z0-9\s]*$", ErrorMessage = "tên phòng không được chứa ký tự đặc biệt.")]
+        
         public string Name { get; set; }
-
-      
         public int SeatingCapacity { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
@@ -32,7 +30,27 @@ namespace NeonCinema_Application.DataTransferObject.Room
         [Range(2, int.MaxValue, ErrorMessage = "số cột phải lớn hơn 1")]
         public int ColumnNumber { get; set; }
 
-        [Required(ErrorMessage = "Cinema ID is required.")]
+        [Required(ErrorMessage = "Vui lòng chọn rạp.")]
+        [NotEmptyGuid(ErrorMessage = "Vui lòng chọn rạp hợp lệ.")]
         public Guid CinemasId { get; set; }
     }
+    public class NotEmptyGuidAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (value is Guid guid && guid == Guid.Empty)
+            {
+                return new ValidationResult(ErrorMessage ?? "Giá trị không hợp lệ.");
+            }
+
+            return ValidationResult.Success;
+        }
+        private static string NormalizeName(string name)
+        {
+            return string.Join(" ", name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+        }
+    }
+
+
+
 }

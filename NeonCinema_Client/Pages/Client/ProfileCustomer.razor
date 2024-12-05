@@ -1,13 +1,33 @@
 ﻿@page "/customer-profile"
+@using NeonCinema_API.Controllers
 @using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Application.DataTransferObject.User.Request
 @using NeonCinema_Application.DataTransferObject.Utilities
+@using NeonCinema_Client.Data.IServices.User
 @using NeonCinema_Client.Pages.Client
 @using System.Security.Claims
+@using System.Net.Http;
+@using System.Net.Http.Headers;
 @using System.IdentityModel.Tokens.Jwt
+@inject IUserServices UserServices
 @layout LayoutClient
 @inject AuthenticationStateProvider _providee
 @inject HttpClient _http
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
 
 <div class="profile-container">
     <div class="row">
@@ -28,6 +48,7 @@
                             <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
                                 <input type="text" id="FullName" class="form-control" @bind="name" />
+                               
                             </div>
                             <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
@@ -53,16 +74,24 @@
                                 @if (show)
                                 {
                                     <div class="mt-3">
+                                        <label for="check" class="form-label">Mật khẩu hiện tại</label>
+                                        <input type="password" id="check" class="form-control" @bind="currenpass" />
+                                        
+                                    </div>
+                                    <div class="mt-3">
                                         <label for="NewPassword" class="form-label">Nhập mật khẩu mới</label>
-                                        <input type="password" id="NewPassword" class="form-control" />
+                                        <input type="@(showPassword ? "text" : "password")" id="NewPassword" class="form-control" @bind="newPassword" />
                                     </div>
                                     <div class="mt-3">
                                         <label for="ConfirmPassword" class="form-label">Nhập lại mật khẩu</label>
-                                        <input type="password" id="ConfirmPassword" class="form-control" />
+                                        <input type="@(showPassword ? "text" : "password")" id="ConfirmPassword" class="form-control" @bind="confirmPassword" />
                                     </div>
                                     <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" id="ShowPassword" />
+                                        <input class="form-check-input" type="checkbox" id="ShowPassword" @bind="showPassword"/>
                                         <label class="form-check-label" for="ShowPassword">Hiện mật khẩu</label>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button class="btn btn-primary" @onclick="ChangePassword">Đổi mật khẩu</button>
                                     </div>
                                 }
                             </div>
@@ -136,17 +165,96 @@
 </table>
 
 @code {
+    private ClientChangerPass check = new ClientChangerPass();
+    private string currenpass;
     private bool show = false;
+    private string newPassword = string.Empty;
+    private string confirmPassword = string.Empty;
+    private bool showPassword = false;
+    private string? successMessage;
+    private string? errorMessage;
+    private string? currentUserId;
     private void GetForm()
     {
         show = !show;
     }
 
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+    private async Task ChangePassword()
+    {
+
+
+
+        if (string.IsNullOrEmpty(check.ToString()) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
+        {
+            ShowErrorMessage("Vui lòng điền đầy đủ các trường mật khẩu.");
+            return;
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            ShowErrorMessage("Mật khẩu mới và mật khẩu xác nhận không khớp.");
+            return;
+        }
+        try
+        {
+            check = new ClientChangerPass
+                {
+                    Currenpassword = currenpass,
+                    Newpassword = newPassword,
+                    
+                };
+
+           
+            var checkpass = await UserServices.ChangerPass(check);
+            if (!checkpass.IsSuccessStatusCode)
+            {
+                var cr = currenpass;
+                var content = await checkpass.Content.ReadAsStringAsync();
+                Console.WriteLine($"Lỗi API: {content}");
+                Console.WriteLine($"Mật khẩu hiện tại:   {cr}");
+                ShowErrorMessage($"Mật khẩu hiện tại không đúng:  {content}");
+                return;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage($"Có lỗi xảy ra khi đổi mật khẩu: {ex.Message}");
+        }
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        errorMessage = message; 
+        successMessage = null;   
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message; 
+        errorMessage = null;      
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     private string? name = "";
     private string? email = "";
     private string? phone = "";
     private string? address = "";
-    private DateTime? age; 
+    private DateTime? age;
     private string? gender;
     private string? images;
     private bool IsMaleChecked => gender == "Nam";
@@ -159,15 +267,24 @@
         phone = await _localStorage.GetItemAsync<string>("mobilephone");
         address = await _localStorage.GetItemAsync<string>("address");
         images = await _localStorage.GetItemAsync<string>("images");
+        var token = await _localStorage.GetItemAsync<string>("authToken");
         var birthDateString = await _localStorage.GetItemAsync<string>("dateofbirth");
         if (DateTime.TryParse(birthDateString, out var parsedDate))
         {
             age = parsedDate;
         }
+        if (!string.IsNullOrEmpty(token))
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            currentUserId = jwt.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        }
         gender = await _localStorage.GetItemAsync<string>("gender");
+       
     }
     private string GetImageUrl(string imageUrl)
     {
         return $"https://localhost:7211/Resources/{imageUrl}";
     }
+
 }
