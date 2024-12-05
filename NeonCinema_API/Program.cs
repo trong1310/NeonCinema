@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NeonCinema_API.Controllers.Service;
 using NeonCinema_API.SendMail;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
@@ -68,7 +69,9 @@ builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
 builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 builder.Services.AddScoped<ISendMailService, SendMailService>();
-
+builder.Services.AddScoped<UserProfile>();
+builder.Services.AddScoped<UpdateUserProfileRequest>();
+builder.Services.AddScoped<IUserServices, UserService>();
 
 
 builder.Services.Configure<FormOptions>(options =>

@@ -21,10 +21,10 @@ namespace NeonCinema_Domain.Enum
     }
     public enum seatEnum
     {
-		Available,   // Ghế còn trống
-		Sold,        // Ghế đã bán
-		Selected,    // Ghế đã chọn
-		Maintenance  // Ghế bảo trì
+		Available  ,  // Ghế còn trống
+		Sold    ,   // Ghế đã bán
+		Selected ,    // Ghế đã chọn
+		Maintenance   // Ghế bảo trì
 	}
     public enum ticketEnum
     {
