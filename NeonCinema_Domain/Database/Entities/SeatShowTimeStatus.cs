@@ -19,6 +19,6 @@ namespace NeonCinema_Domain.Database.Entities
 		public seatEnum seatEnum { get; set; }
 		public virtual Screening? Screening { get; set; }
 		public virtual Room? Room { get; set; }
-		public Seat? Seat {  get; set; } 
+		public Seat? Seat {  get; set; }
 	}
 }

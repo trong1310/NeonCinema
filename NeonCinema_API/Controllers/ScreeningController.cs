@@ -83,5 +83,25 @@ namespace NeonCinema_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("create-sss")]
+        public async Task<IActionResult> Create(SeatShowTimeStatusDTO input, CancellationToken ctoken)
+        {
+            try
+            {
+                var response = await _screeningRepository.CreateSSS(input, ctoken);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(response.Content);
+                }
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
     }
 }
