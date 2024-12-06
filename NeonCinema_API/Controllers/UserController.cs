@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_API.Controllers.Service;
 using NeonCinema_API.SendMail;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.DataTransferObject.User.Request;
@@ -21,11 +22,13 @@ namespace NeonCinema_API.Controllers
         private readonly IUserRepository _userRepository;
         private readonly ISendMailService _emailService;
         private readonly NeonCinemasContext _context;
-        public UserController(IUserRepository us, ISendMailService emailService, NeonCinemasContext context)
+        private readonly IUserServices _userService;
+        public UserController(IUserRepository us, ISendMailService emailService, NeonCinemasContext context, IUserServices userService)
         {
             _userRepository = us;
             _emailService = emailService;
             _context = context;
+            _userService = userService;
         }
 
         [HttpPost("create-client")]
@@ -107,38 +110,33 @@ namespace NeonCinema_API.Controllers
                 }
                 var userId = Guid.Parse(userIdClaim);
                 var bills = await _context.BillDetails
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Screenings)
-                                .ThenInclude(s => s.ShowTime)
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Movies)
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Seat)
-                    .Where(b => b.UserID == userId)
-                    .ToListAsync(cancellationToken);
+            .Include(b => b.BillTickets)
+                .ThenInclude(bt => bt.Tickets)
+                    .ThenInclude(t => t.Screenings)
+                        .ThenInclude(s => s.ShowTime)
+            .Include(b => b.BillTickets)
+                .ThenInclude(bt => bt.Tickets)
+                    .ThenInclude(t => t.Movies)
+            .Include(b => b.BillTickets)
+                .ThenInclude(bt => bt.Tickets)
+                    .ThenInclude(t => t.Seat)
+            .Where(b => b.UserID == userId)
+            .ToListAsync(cancellationToken);
                 if (bills == null || bills.Count == 0)
                 {
                     return NotFound("Người dùng chưa đặt vé nào.");
                 }
                 var result = bills.Select(bill => new
                 {
-                    BillID = bill.ID,
-                    TotalPrice = bill.TotalPrice,
                     BillCode = bill.BillCode,
+                    TotalPrice = bill.TotalPrice,
                     Tickets = bill.BillTickets.Select(bt => new
                     {
-                        TicketID = bt.Tickets.ID,
-                        MovieName = bt.Tickets.Movies?.Name ?? "Không có thông tin phim",
-                        SeatNumber = bt.Tickets.Seat?.SeatNumber ?? "Không có thông tin ghế",
-                        ScreeningTime = bt.Tickets.Screenings?.ShowTime != null
-                            ? bt.Tickets.Screenings.ShowTime.StartTime.ToString(@"hh\:mm")
-                            : "Không có thông tin thời gian chiếu",
-                        Price = bt.Tickets.Price,
-                        TicketStatus = bt.Tickets.Status.ToString()
+                        MovieName = bt.Tickets?.Movies?.Name ?? "Không có thông tin phim",
+                        SeatNumber = bt.Tickets?.Seat?.SeatNumber ?? "Không có thông tin ghế",
+                        ScreeningTime = bt.Tickets?.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu"
                     })
+
                 });
                 return Ok(result);
             }
@@ -149,7 +147,7 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpGet("admin-check-bills")]
-        public async Task<IActionResult> AdminCheckBills([FromBody] AdminCheckBillClient request, CancellationToken cancellationToken)
+        public async Task<IActionResult> AdminCheckBills(AdminCheckBillClient request, CancellationToken cancellationToken)
         {
             try
             {
@@ -273,13 +271,17 @@ namespace NeonCinema_API.Controllers
                 {
                     return NotFound("Người dùng không tồn tại.");
                 }
-                if (request.password != Hash.Decrypt(account.PassWord))
+                if (request.Currenpassword != Hash.Decrypt(account.PassWord))
                 {
                     return BadRequest("mật khẩu hiện tại không chính xác");
                 }
                 if (string.IsNullOrWhiteSpace(request.Newpassword))
                 {
                     return BadRequest("Mật khẩu mới không được để trống.");
+                }
+                if(request.Newpassword != request.Confirmpasss)
+                {
+                    return BadRequest("Mật khẩu mới và mật khẩu xác nhận không khớp");
                 }
                 if (request.Newpassword == Hash.Decrypt(account.PassWord))
                 {
@@ -296,5 +298,112 @@ namespace NeonCinema_API.Controllers
                 return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
             }
         }
+
+
+
+        [Authorize]
+        [HttpPost("Check-Current-Password")]
+        public async Task<ActionResult> CheckCurrentPassword([FromBody] CheckPass request)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                if (!user.Identity.IsAuthenticated)
+                {
+                    return Unauthorized("Người dùng chưa đăng nhập.");
+                }
+                var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return BadRequest("Không thể xác định người dùng.");
+                }
+                var userId = Guid.Parse(userIdClaim);
+                var account = await _context.Users.FindAsync(userId);
+                
+                if (account == null)
+                {
+                    return NotFound("Người dùng không tồn tại.");
+                }
+                if (request.password != Hash.Decrypt(account.PassWord))
+                {
+                    return BadRequest("Mật khẩu hiện tại không chính xác.");
+                }
+                
+                return Ok("Mật khẩu đúng.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("getfrofile")]
+        public async Task<ActionResult> GetFrofile()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Không tìm thấy người dùng.");
+            }
+            if (!Guid.TryParse(userIdString, out Guid userId))
+            {
+                return BadRequest("ID người dùng không hợp lệ.");
+            }
+            var userProfile = await _userService.GetUserProfileAsync(userId);
+            if (userProfile == null)
+            {
+                return NotFound("Không tìm thấy thông tin người dùng.");
+            }
+
+            return Ok(userProfile);
+        }
+
+
+        [Authorize]
+        [HttpPut("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Dữ liệu không hợp lệ.");
+            }
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return Unauthorized("Người dùng chưa đăng nhập.");
+                }
+                var userId = Guid.Parse(userIdClaim);
+                var updatedUser = await _userService.UpdateProfileAsync(userId, request);
+                return Ok(new
+                {
+                    Message = "Cập nhật hồ sơ thành công.",
+                    Data = updatedUser
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new
+                {
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = "Đã xảy ra lỗi trong quá trình cập nhật.",
+                    Error = ex.Message
+                });
+            }
+        }
     }
+    public class CheckPass
+    {
+        public string password { get; set; }
+    }
+
+
 }
