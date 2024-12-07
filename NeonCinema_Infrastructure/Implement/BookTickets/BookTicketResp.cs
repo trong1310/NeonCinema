@@ -61,7 +61,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					await _context.SaveChangesAsync();
 				}
 
-				// Calculate ticket price
+				// tinhs gia ve
 				var seatTypes = seats.ToDictionary(s => s.ID, s => s.SeatTypeID);
 				var ticketPrices = await _context.TicketPrice
 					.Where(tp => seatTypes.Values.Contains(tp.SeatTypeID))
