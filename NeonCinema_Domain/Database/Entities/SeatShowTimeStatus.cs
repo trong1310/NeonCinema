@@ -13,11 +13,11 @@ namespace NeonCinema_Domain.Database.Entities
 	{
 		[Key]
 		public Guid ID { get; set; }
-		public Guid ScrenningID { get; set; }
+		public Guid ShowtimeId { get; set; }
 		public Guid RoomID { get; set; }
 		public Guid SeatID { get; set; }
 		public seatEnum seatEnum { get; set; }
-		public virtual Screening? Screening { get; set; }
+		public virtual ShowTime? ShowTime { get; set; }
 		public virtual Room? Room { get; set; }
 		public Seat? Seat {  get; set; } 
 	}
