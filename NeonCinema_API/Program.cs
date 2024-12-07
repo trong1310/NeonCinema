@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NeonCinema_API.Controllers.Service;
 using NeonCinema_API.SendMail;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
@@ -13,6 +14,7 @@ using NeonCinema_Application.Interface;
 using NeonCinema_Application.Interface.Cinemas;
 using NeonCinema_Application.Interface.Countrys;
 using NeonCinema_Application.Interface.Directors;
+using NeonCinema_Application.Interface.IBookingHistory;
 using NeonCinema_Application.Interface.Point;
 using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Application.Interface.Roles;
@@ -26,6 +28,8 @@ using NeonCinema_Application.Interface.Users;
 using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Implement;
+using NeonCinema_Infrastructure.Implement.BookingHistory;
+
 //using NeonCinema_Infrastructure.Implement.Acotr;
 using NeonCinema_Infrastructure.Implement.Cinemas;
 using NeonCinema_Infrastructure.Implement.Countrys;
@@ -65,10 +69,13 @@ builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<IDirectorRepositories, DirectorRepositories>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepository>();
 builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 builder.Services.AddScoped<ISendMailService, SendMailService>();
-
+builder.Services.AddScoped<UserProfile>();
+builder.Services.AddScoped<UpdateUserProfileRequest>();
+builder.Services.AddScoped<IUserServices, UserService>();
 
 
 builder.Services.Configure<FormOptions>(options =>

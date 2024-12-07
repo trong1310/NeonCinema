@@ -1,0 +1,368 @@
+﻿@page "/customer-profilee"
+@using NeonCinema_API.Controllers.Service
+@using NeonCinema_Application.DataTransferObject.User.Request
+@using NeonCinema_Client.Pages.Client
+@using Blazored.LocalStorage
+@using System.Text
+@using System.Text.Json
+@inject ILocalStorageService _localstorage
+@inject HttpClient _http
+@inject NavigationManager _navi
+<h3>Profile</h3>
+@if (user == null)
+{
+    <div class="text-center">
+        <p>Đang tải dữ liệu...</p>
+    </div>
+}
+
+else
+{
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg rounded-lg">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            @if (user.Images != null)
+                            {
+                                <img src="@user.Images" alt="Hình ảnh cá nhân" class="img-fluid rounded-circle profile-img" />
+                            }
+                            else
+                            {
+                                <img src="/images/Customer/user-icon.png" alt="Hình ảnh cá nhân" class="img-fluid rounded-circle profile-img" />
+                            }
+
+                        </div>
+
+                        <div class="mb-3">
+                            <h5><strong>Thông Tin Cá Nhân</strong></h5>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Họ tên:</strong></div>
+                                <div class="col-8">
+                                    <input type="text" class="form-control" @bind="user.FullName" placeholder="Nhập họ tên" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Email:</strong></div>
+                                <div class="col-8">
+                                    <input type="email" class="form-control" @bind="user.Email" placeholder="Nhập email" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Số điện thoại:</strong></div>
+                                <div class="col-8">
+                                    <input type="text" class="form-control" @bind="user.PhoneNumber" placeholder="Nhập số điện thoại" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Giới tính:</strong></div>
+                                <div class="col-8">
+                                    <select class="form-control" @bind="user.Gender">
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Nam">Nam</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Ngày sinh:</strong></div>
+                                <div class="col-8">
+                                    <input type="datetime" class="form-control" @bind="user.DateOfBirth" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4"><strong>Địa chỉ:</strong></div>
+                                <div class="col-8">
+                                    <input type="text" class="form-control" @bind="user.Address" placeholder="Nhập địa chỉ" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-warning" @onclick="OnChangePasswordClick">Đổi mật khẩu</button>
+                        </div>
+                        @if (showPasswordModal)
+                        {
+                            <div class="modal fade show" style="display: block; margin-top: 100px" tabindex="-1" role="dialog" aria-hidden="false">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Đổi mật khẩu</h5>
+                                            <button type="button" class="close" @onclick="OnClosePasswordModal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        
+
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="currentPassword">Mật khẩu hiện tại</label>
+                                                <input type="password" class="form-control" @bind="currentPassword" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="newPassword">Mật khẩu mới</label>
+                                                <input type="password" class="form-control" @bind="newPassword" id="newPassword" placeholder="Nhập mật khẩu mới" />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                                                <input type="password" class="form-control" @bind="confirmPassword" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+                                            </div>
+                                        </div>
+                                        @if (successMessage != null)
+                                        {
+                                            <div class="alert alert-success" role="alert">
+                                                @successMessage
+                                            </div>
+                                        }
+
+                                        @if (errorMessage != null)
+                                        {
+                                            <div class="alert alert-danger" role="alert">
+                                                @errorMessage
+                                            </div>
+                                        }
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" @onclick="OnClosePasswordModal">Đóng</button>
+                                            <button type="button" class="btn btn-primary" @onclick="OnSubmitChangePassword">Xác nhận</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (successMessages != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @successMessages
+                            </div>
+                        }
+
+                        @if (errorMessages != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessages
+                            </div>
+                        }
+                        <div class="text-center mt-3">
+                    <button class="btn btn-primary" @onclick="OnSaveProfile">Lưu thay đổi</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private UserProfile user;
+    private ClientChangerPass check = new ClientChangerPass();
+    private bool showPasswordModal = false;
+    private string currentPassword;
+    private string newPassword;
+    private string confirmPassword;
+    private string errorMessage;
+    private string? successMessage;
+    private string? successMessages;
+    private string errorMessages;
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            _navi.NavigateTo("/login");
+            return;
+        }
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/getfrofile");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _http.SendAsync(requestMessage);
+
+        if (response.IsSuccessStatusCode)
+        {
+            user = await response.Content.ReadFromJsonAsync<UserProfile>();
+        }
+        else
+        {
+            _navi.NavigateTo("/login");
+        }
+    }
+    private void OnChangePasswordClick()
+    {
+        showPasswordModal = true;
+    }
+
+    private void OnClosePasswordModal()
+    {
+        showPasswordModal = false;
+    }
+    private async Task OnSubmitChangePassword()
+    {
+        if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
+        {
+            ShowErrorMessage("Vui lòng điền đầy đủ các trường mật khẩu.");
+            return;
+        }
+        if (newPassword != confirmPassword)
+        {
+            ShowErrorMessage("Mật khẩu mới và mật khẩu xác nhận không khớp.");
+            return;
+        }
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            _navi.NavigateTo("/login");
+            return;
+        }
+        var checkPasswordRequest = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7211/api/User/Check-Current-Password");
+        checkPasswordRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        checkPasswordRequest.Content = new StringContent(JsonSerializer.Serialize(new { password = currentPassword }), Encoding.UTF8, "application/json");
+
+        var checkPasswordResponse = await _http.SendAsync(checkPasswordRequest);
+        if (!checkPasswordResponse.IsSuccessStatusCode)
+        {
+            var errorResponse = await checkPasswordResponse.Content.ReadAsStringAsync();
+            ShowErrorMessage($"Lỗi Mật khẩu hiện tại không đúng: {errorResponse}");
+            return;
+        }
+
+
+        var check = new ClientChangerPass { Currenpassword = currentPassword, Newpassword = newPassword, Confirmpasss = confirmPassword};
+        var requestMessage = new HttpRequestMessage(HttpMethod.Put, "https://localhost:7211/api/User/Changer-Password");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(check), Encoding.UTF8, "application/json");
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            ShowSuccessMessage("Đổi mật khẩu thành công.");
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Lỗi HTTP: {response.StatusCode}");  
+            Console.WriteLine($"Thông báo lỗi từ server: {errorResponse}");  
+            ShowErrorMessage($"Đổi mật khẩu thất bại: {errorResponse}");
+            return;
+        }
+    }
+
+
+
+
+
+
+    private async Task OnSaveProfile()
+    {
+        
+        if (string.IsNullOrEmpty(user.FullName) ||
+            string.IsNullOrEmpty(user.Email) ||
+            string.IsNullOrEmpty(user.PhoneNumber) ||
+            string.IsNullOrEmpty(user.Address))
+        {
+            ShowErrorMessageUpdate( "Vui lòng điền đầy đủ thông tin.");
+            return;
+        }
+        // if (!System.Text.RegularExpressions.Regex.IsMatch(user.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        // {
+        //     ShowErrorMessageUpdate(   "Email không đúng định dạng.");
+        //     return;
+        // }
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            _navi.NavigateTo("/login");
+            return;
+        }
+        var requestMessage = new HttpRequestMessage(HttpMethod.Put, "https://localhost:7211/api/User/UpdateProfile");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            ShowMessageUpdate("Cập nhật thông tin cá nhân thành công.");
+            
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            ShowErrorMessageUpdate( $"Cập nhật thông tin thất bại: {errorResponse}");
+            return;
+        }
+    }
+    private void ShowErrorMessage(string message)
+    {
+        errorMessage = message;
+        successMessage = null;
+    }
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        errorMessage = null;
+    }
+    private void ShowErrorMessageUpdate(string message)
+    {
+        errorMessage = message;
+        successMessage = null;
+    }
+    private void ShowMessageUpdate(string message)
+    {
+        errorMessages = message;
+        successMessages = null;
+    }
+}
+<style>
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .profile-img {
+        max-width: 150px;
+        max-height: 150px;
+        border: 4px solid #ddd;
+        margin-bottom: 1rem;
+    }
+
+    .row {
+        margin-bottom: 1rem;
+    }
+
+    .btn-warning {
+        background-color: #f39c12;
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+            color: white;
+        }
+
+    .container {
+        margin-top: 3rem;
+    }
+
+    h3 {
+        font-size: 2rem;
+        color: #333;
+    }
+
+    h5 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .row .col-4 {
+        font-weight: bold;
+    }
+</style>

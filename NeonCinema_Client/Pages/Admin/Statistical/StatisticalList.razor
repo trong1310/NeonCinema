@@ -77,14 +77,46 @@
     <div class="row chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu</h5>
-            <canvas id="revenueChart"></canvas>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
         </div>
     </div>
+
     <!-- Biểu đồ doanh thu theo phim -->
     <div class="row mt-5 chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu theo phim</h5>
-            <canvas id="movieChart"></canvas>
+            <div class="chart-container">
+                <canvas id="movieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê doanh thu theo phim bằng bảng -->
+    <div class="row mt-5 chart-section">
+        <div class="col-md-12">
+            <h5>Doanh thu theo phim</h5>
+            <input type="text" @oninput="OnSearchInputChanged" placeholder="Nhập tên phim" class="form-control mb-3 search-input" />
+            <table class="table table-hover movie-table">
+                <thead>
+                    <tr>
+                        <th>Phim</th>
+                        <th>Vé bán ra</th>
+                        <th>Tổng tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in FilteredMovies)
+                    {
+                        <tr>
+                            <td>@movie.MovieName</td>
+                            <td>@movie.TicketsSold</td>
+                            <td>@movie.Revenue.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -92,22 +124,24 @@
     <div class="row mt-5 chart-section">
         <div class="col-md-12">
             <h5>Biểu đồ doanh thu theo combo</h5>
-            <canvas id="comboChart"></canvas>
+            <div class="chart-container">
+                <canvas id="comboChart"></canvas>
+            </div>
         </div>
     </div>
 
 </div>
 
-
-  
 @code {
     private DateTime startDate = new DateTime(2024, 11, 1);
     private DateTime endDate = new DateTime(2024, 12, 30);
     private RevenueStatisticsDTO statistics;
     private List<MovieStatisticsDTO> movieStatistics = new();
+    private List<MovieStatisticsDTO> allMovieStatistics = new();
     private List<ComboStatisticsDTO> comboStatistics = new();
-    private string filterTime = "Year"; // Mặc định lọc theo năm
+    private string filterTime = "Year";
     private decimal currentDayRevenue = 0;
+    private string searchMovie = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,7 +169,8 @@
         }
 
         statistics = await StatisticsService.GetRevenueStatisticsAsync(startDate, endDate);
-        movieStatistics = await StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
+        allMovieStatistics = await StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
+        movieStatistics = allMovieStatistics;
         comboStatistics = await StatisticsService.GetComboStatisticsAsync(startDate, endDate);
 
         if (statistics != null)
@@ -143,18 +178,30 @@
             currentDayRevenue = statistics.RevenueChart
                 .FirstOrDefault(x => x.Date.Date == DateTime.Now.Date)?.Revenue ?? 0;
 
-
+            // Hiển thị các biểu đồ
             await JSRuntime.InvokeVoidAsync("renderRevenueChart", statistics.RevenueChart);
-          
         }
+
         await JSRuntime.InvokeVoidAsync("renderMovieChart", movieStatistics);
         await JSRuntime.InvokeVoidAsync("renderComboChart", comboStatistics);
     }
+
+    private void OnSearchInputChanged(ChangeEventArgs e)
+    {
+        searchMovie = e.Value?.ToString() ?? string.Empty;
+        movieStatistics = allMovieStatistics
+            .Where(m => string.IsNullOrEmpty(searchMovie) || m.MovieName.Contains(searchMovie, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private IEnumerable<MovieStatisticsDTO> FilteredMovies => movieStatistics;
 }
+
 <style>
     body {
         background-color: #f8f9fa;
     }
+
     .container-fluid {
         margin-top: 20px;
     }
@@ -166,14 +213,15 @@
     }
 
     .filter {
-        border: 1px solid #ddd; /* Đường viền */
-        border-radius: 10px; /* Bo góc */
-        padding: 20px; /* Khoảng cách bên trong */
-        background-color: white; /* Màu nền nhạt */
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
         margin-left: 1px;
         margin-right: 1px;
     }
+
     .card-body h5 {
         font-weight: revert;
         font-size: 1.2rem;
@@ -187,27 +235,36 @@
     }
 
     .chart-section {
-        border: 1px solid #ddd; /* Đường viền */
-        border-radius: 10px; /* Bo góc */
-        padding: 20px; /* Khoảng cách bên trong */
-        background-color: white; /* Màu nền nhạt */
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
-        margin-bottom: 20px; /* Khoảng cách giữa các biểu đồ */
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
         margin-left: 1px;
         margin-right: 1px;
     }
 
-    canvas {
-        width: 100%;
+    .chart-container {
+        position: relative;
         height: 400px;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
     }
 
-  
+    .movie-table {
+        margin-top: 15px;
+    }
+
+    .search-input {
+        max-width: 300px;
+        margin-bottom: 15px;
+    }
+
     #comboChart {
-        max-width: 600px; /* Chiều rộng tối đa */
-        max-height: 400px; /* Chiều cao tối đa */
-        margin: 10px auto; /* Canh giữa và thêm khoảng cách */
-        display: block;
+        width: 100%; /* Đảm bảo biểu đồ dùng toàn bộ chiều rộng của container */
+        height: auto; /* Điều chỉnh chiều cao tự động để giữ nguyên tỷ lệ */
+        max-height: 400px; /* Giới hạn chiều cao tối đa */
     }
-
 </style>

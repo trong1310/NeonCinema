@@ -1,0 +1,103 @@
+﻿@* @page "/booking-history" *@
+@* @using NeonCinema_Client.Data.IServices.BookHistory *@
+@* @using NeonCinema_Client.Data.IServices.Statistics *@
+@* @inject IHistoryService HistoryService *@
+
+@* <h3 class="text-center">Lịch sử giao dịch</h3> *@
+
+@* <div class="container mt-4"> *@
+@*     <div class="row"> *@
+@*         @foreach (var booking in bookingHistory) *@
+@*         { *@
+@*             <div class="col-md-6 mb-4"> *@
+@*                 <div class="card shadow-sm"> *@
+@*                     <div class="row no-gutters"> *@
+@*                         <div class="col-md-4"> *@
+@*                             <img src="@booking.MoviePoster" class="card-img" alt="@booking.MovieName"> *@
+@*                         </div> *@
+@*                         <div class="col-md-8"> *@
+@*                             <div class="card-body"> *@
+@*                                 <h5 class="card-title">@booking.MovieName</h5> *@
+@*                                 <p class="card-text"> *@
+@*                                     Mã vé: @booking.TicketID.ToString() (Trạng thái: @booking.Status)<br /> *@
+@*                                     @booking.ShowDate.ToString("dd/MM/yyyy")<br /> *@
+@*                                     Từ @booking.StartTime *@
+@*                                 </p> *@
+@*                                 <p class="card-text"><strong>Giá: </strong>@booking.Price.ToString("C0")</p> *@
+@*                                 <button class="btn btn-warning" @onclick ="() => ShowDetail(booking)">Chi tiết</button> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             </div> *@
+@*         } *@
+@*     </div> *@
+@* </div> *@
+
+@* <!-- Modal Chi Tiết --> *@
+@* @if (selectedBooking != null) *@
+@* { *@
+@*     <div class="modal show fade" tabindex="-1" style="display: block;" aria-hidden="true"> *@
+@*         <div class="modal-dialog modal-lg"> *@
+@*             <div class="modal-content"> *@
+@*                 <div class="modal-header"> *@
+@*                     <h5 class="modal-title">Chi Tiết Vé</h5> *@
+@*                     <button type="button" class="btn-close" @onclick ="CloseDetail"></button> *@
+@*                 </div> *@
+@*                 <div class="modal-body"> *@
+@*                     <div class="text-center"> *@
+@*                         <img src="@selectedBooking.MoviePoster" alt="@selectedBooking.MovieName" class="img-fluid mb-3" style="max-width: 300px;" /> *@
+@*                         <h5>@selectedBooking.MovieName</h5> *@
+@*                     </div> *@
+@*                     <table class="table"> *@
+@*                         <tr> *@
+@*                             <th>Tên phim</th> *@
+@*                             <td>@selectedBooking.MovieName</td> *@
+@*                         </tr> *@
+@*                         <tr> *@
+@*                             <th>Suất chiếu</th> *@
+@*                             <td>Rạp @selectedBooking.Theater - Phòng @selectedBooking.Room <br /> Ghế: @selectedBooking.SeatNumber <br /> @selectedBooking.ShowDate.ToString("dd/MM/yyyy") từ @selectedBooking.StartTime</td> *@
+@*                         </tr> *@
+@*                         <tr> *@
+@*                             <th>Giá vé</th> *@
+@*                             <td>@selectedBooking.Price.ToString("C0")</td> *@
+@*                         </tr> *@
+@*                         <tr> *@
+@*                             <th>Trạng thái</th> *@
+@*                             <td>@selectedBooking.Status</td> *@
+@*                         </tr> *@
+@*                     </table> *@
+@*                 </div> *@
+@*                 <div class="modal-footer"> *@
+@*                     <button class="btn btn-primary">In hóa đơn</button> *@
+@*                     <button class="btn btn-secondary" @onclick ="CloseDetail">Đóng</button> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@*     <div class="modal-backdrop fade show"></div> *@
+@* } *@
+
+@* @code { *@
+@*     private List<BookingHistoryDTO> *@
+@*     bookingHistory = new(); *@
+@*     private BookingHistoryDTO selectedBooking; *@
+
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*     // Giả sử có thể lấy userId từ authentication context *@
+@*     Guid userId = Guid.Parse("YOUR_USER_ID_HERE"); *@
+@*     bookingHistory = await HistoryService.GetBookingHistoryAsync(userId); *@
+@*     } *@
+
+@*     private void ShowDetail(BookingHistoryDTO booking) *@
+@*     { *@
+@*     selectedBooking = booking; *@
+@*     } *@
+
+@*     private void CloseDetail() *@
+@*     { *@
+@*     selectedBooking = null; *@
+@*     } *@
+@*     } *@
+
