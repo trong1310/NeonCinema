@@ -16,6 +16,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public Guid ShowtimeId { get; set; }
 		public Guid RoomID { get; set; }
 		public Guid SeatID { get; set; }
+		public DateTime ShowDate { get; set; }
 		public seatEnum seatEnum { get; set; }
 		public virtual ShowTime? ShowTime { get; set; }
 		public virtual Room? Room { get; set; }

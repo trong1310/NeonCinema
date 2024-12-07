@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Com.CloudRail.SI.ServiceCode.Commands;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
@@ -39,14 +40,16 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
 					}
 				// Check seat availability
-				var seats = screening.Rooms.Seats
-					.Where(s => request.SeatID.Contains(s.ID))
-					.ToList();
+				var seatsState = await _context.SeatShowTimeStatuss.Include(x=>x.Seat).ThenInclude(x=>x.SeatTypes)
+					.Where(x => x.ShowtimeId == screening.ShowTimeID)
+					.Where(x=>x.RoomID == screening.RoomID).ToArrayAsync();
 
-				if (seats.Any(s => s.Status == NeonCinema_Domain.Enum.seatEnum.Sold && s.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance))
+
+
+				if (seatsState.Any(s => s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Sold && s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Maintenance))
 				{
-					var unavailableSeats = seats.Where(s => s.Status != NeonCinema_Domain.Enum.seatEnum.Available)
-												.Select(s => s.SeatNumber);
+					var unavailableSeats = seatsState.Where(s => s.seatEnum != NeonCinema_Domain.Enum.seatEnum.Available)
+												.Select(s => s.Seat.SeatNumber);
 					if (unavailableSeats.Any())
 					{
 						throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
@@ -54,15 +57,15 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				}
 
 				// Update seat status to Sold
-				foreach (var seat in seats)
+				foreach (var seat in seatsState)
 				{
-					seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
+					seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Sold;
 					_context.UpdateRange(seat);
 					await _context.SaveChangesAsync();
 				}
 
-				// Calculate ticket price
-				var seatTypes = seats.ToDictionary(s => s.ID, s => s.SeatTypeID);
+				// tinhs gia ve
+				var seatTypes = seatsState.ToDictionary(s => s.ID, s => s.Seat.SeatTypes.ID);
 				var ticketPrices = await _context.TicketPrice
 					.Where(tp => seatTypes.Values.Contains(tp.SeatTypeID))
 					.ToListAsync(cancellationToken);
@@ -78,7 +81,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						ScreningID = (Guid)request.ScreeningID,
 						SeatID = seatId,
 						CreatedTime = DateTime.Now,
-						MovieID =(Guid) request.MovieId,
+						MovieID = (Guid)request.MovieId,
 						Price = ticketPrice.Price
 					};
 				}).ToList();
@@ -120,9 +123,9 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						return new BillCombo
 						{
 							BillID = bill.ID,
-							FoodComboID =(Guid) bc.FoodComboId,
+							FoodComboID = (Guid)bc.FoodComboId,
 							CreatedTime = DateTime.Now,
-							Quantity =(int) bc.Quantity
+							Quantity = (int)bc.Quantity
 						};
 					}).ToList();
 
@@ -138,28 +141,12 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				await _context.SaveChangesAsync();
 				await transaction.CommitAsync();
-				double convertPoint =(double) bill.TotalPrice * 6.8 / 100;
+				double convertPoint = (double)bill.TotalPrice * 6.8 / 100;
 
-				if(request.AccountID != null)
+				if (request.AccountID != null)
 				{
 					var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
 					accountBook.MinPoint += (double)convertPoint;
-					if (accountBook.MinPoint >= 0 && accountBook.MinPoint <= 60000)
-					{
-						accountBook.Rank = "Thành viên";
-					}
-					else if (accountBook.MinPoint > 60000 && accountBook.MinPoint <= 150000)
-					{
-						accountBook.Rank = "Bạc";
-					}
-					else if (accountBook.MinPoint > 150000 && accountBook.MinPoint <= 300000)
-					{
-						accountBook.Rank = "vàng";
-					}
-					else if (accountBook.MinPoint > 300000)
-					{
-						accountBook.Rank = "Kim cương";
-					}
 					accountBook.ModifiedTime = DateTime.UtcNow;
 					_context.RankMembers.Update(accountBook);
 					await _context.SaveChangesAsync();
@@ -293,7 +280,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					return null;
 				}
-				return  obj == null ? null : new RankMemberResp()
+				return obj == null ? null : new RankMemberResp()
 				{
 					Id = obj.ID,
 					AccountName = obj.Users.FullName,
