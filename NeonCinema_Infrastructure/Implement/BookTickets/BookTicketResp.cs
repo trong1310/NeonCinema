@@ -181,7 +181,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						SeatNumber = tk.Tickets?.Seat?.SeatNumber ?? "N/A",
 					}).ToList() ?? new List<BillTicketResp>(),
 					CreatedAt = billresp.CreatedTime ?? DateTime.MinValue,
-					CustomerName = billresp.Users?.FullName ?? "Khách hàng không xác định",
+					CustomerName = billresp.Users?.FullName ?? "Khác lẻ",
 					TotalPrice = billresp.TotalPrice,
 				};
 
