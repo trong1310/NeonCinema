@@ -8,7 +8,8 @@ namespace NeonCinema_Application.DataTransferObject.User.Request
 {
     public class ClientChangerPass
     {
-        public string password {  get; set; }
+        public string Currenpassword {  get; set; }
         public string Newpassword { get; set; }
+       public string Confirmpasss { get; set; }
     }
 }

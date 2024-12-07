@@ -43,7 +43,8 @@
 
             </div>
             <div class="links">
-                <a href="#">Quên Mật Khẩu?</a>
+                <a href="#" @onclick="OnForgotPasswordClick">Quên Mật Khẩu?</a>
+
                 <a href="#">Đăng ký</a>
             </div>
         </EditForm>
@@ -70,50 +71,21 @@
 
         try
         {
+
             var login = await _http.PostAsJsonAsync("https://localhost:7211/api/Login/Login", loginModel);
+
             if (login.IsSuccessStatusCode)
             {
-                try
+                var response = await login.Content.ReadFromJsonAsync<LoginResponse>();
+
+                if (response != null && !string.IsNullOrEmpty(response.Token))
                 {
-                    var content = await login.Content.ReadAsStringAsync();
-                    var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
-                    var claim = token.Claims;
-                    var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-                    var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                    var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value;
-                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
-                    var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value;
-                    var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value;
-                    var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value;
-                    var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-                    var images = claim.FirstOrDefault(c => c.Type == "profile_image_url")?.Value;
-                    await _localstorage.SetItemAsync("userId", nameidentifier?.Trim());
-                    await _localstorage.SetItemAsync("mobilephone", mobilephone?.Trim());
-                    await _localstorage.SetItemAsync("email", email?.Trim());
-                    await _localstorage.SetItemAsync("address", address?.Trim());
-                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth?.Trim());
-                    await _localstorage.SetItemAsync("gender", gender?.Trim());
-                    await _localstorage.SetItemAsync("name", name?.Trim());
-                    await _localstorage.SetItemAsync("role", role?.Trim());
-
-                    if (role.Equals("Admin"))
-                    {
-                        _navi.NavigateTo("/admin-dashboard");
-
-                    }
-                    if (role.Equals("Client"))
-                    {
-                        _navi.NavigateTo("/client-dashboard");
-                    }
-                    if (role.Equals("Staff"))
-                    {
-                        _navi.NavigateTo("/staff-dashboard");
-                    }
-
+                    await _localstorage.SetItemAsync("authToken", response.Token);
+                    _navi.NavigateTo("/customer-profilee");
                 }
-                catch (Exception ex)
+                else
                 {
-                    errorMessage = $"Lỗi khi xử lý JSON: {ex.Message}";
+                    errorMessage = "Token không hợp lệ";
                 }
             }
             else
@@ -127,10 +99,17 @@
         }
         isProcessing = false;
     }
-
+    private void OnForgotPasswordClick()
+    {
+        _navi.NavigateTo("/forgot-password");
+    }
+    public class LoginResponse
+    {
+        public string Token { get; set; }
+    }
     public class LoginModel
     {
-        public string EmailorPhone { get; set; }
-        public string Password { get; set; }
+        public string EmailorPhone { get; set; }  
+        public string Password { get; set; }      
     }
 }

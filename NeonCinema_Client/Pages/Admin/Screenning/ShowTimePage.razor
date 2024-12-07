@@ -10,9 +10,9 @@
 
 <h3 class="text-center text-secondary-emphasis">Quản lý giờ chiếu</h3>
 
-<button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="ShowCreateModal">
+@* <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="ShowCreateModal">
     <i class="fas fa-plus"></i> Thêm giờ chiếu
-</button>
+</button> *@
 
 <table class="table table table-hover showtimes-table">
     <thead>
@@ -20,7 +20,7 @@
             <th class="text-center">Giờ bắt đầu</th>
             <th class="text-center">Giờ kết thúc</th>
             <th class="text-center">Trạng thái</th>
-            <th class="text-center">Thao tác</th>
+            @* <th class="text-center">Thao tác</th> *@
         </tr>
     </thead>
     <tbody>
@@ -35,7 +35,7 @@
                     </span>
                 </td>
 
-                <td class="text-center align-middle">
+                @* <td class="text-center align-middle">
                     <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick="() => ShowEditModal(showTime.ID)">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -43,7 +43,7 @@
                         <i class="fas fa-trash"></i>
                     </button>
 
-                </td>
+                </td> *@
             </tr>
         }
     </tbody>
