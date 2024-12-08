@@ -11,8 +11,8 @@ namespace NeonCinema_Application.DataTransferObject.Actors
     {
         public Guid ID { get; set; }    
         public string FullName { get; set; }
-        
 
-        public EntityStatus Status { get; set; }
+		public bool IsChecked { get; set; }
+		public EntityStatus Status { get; set; }
     }
 }

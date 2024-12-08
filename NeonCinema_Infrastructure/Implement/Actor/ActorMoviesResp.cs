@@ -63,6 +63,55 @@ namespace NeonCinema_Infrastructure.Implement.ActorMovies
 
 			return actorMovies;
 		}
+		public async Task<bool> UpdateMovieActorsAsync(Guid movieId, List<Guid> actorIds)
+		{
+			try
+			{
+				// Tìm phim
+				var movie = await _context.Movies
+					.Include(m => m.ActorMovies)
+					.FirstOrDefaultAsync(m => m.ID == movieId);
 
+				if (movie == null)
+				{
+					return false;
+				}
+
+				// Lấy danh sách ID diễn viên hiện tại
+				var currentActorIds = movie.ActorMovies.Select(am => am.ActorID).ToList();
+
+				// Xác định các diễn viên cần xóa
+				var actorIdsToRemove = currentActorIds.Except(actorIds).ToList();
+
+				// Xác định các diễn viên cần thêm mới
+				var actorIdsToAdd = actorIds.Except(currentActorIds).ToList();
+
+				// Xóa các liên kết diễn viên không còn được chọn
+				var actorMoviesToRemove = movie.ActorMovies
+					.Where(am => actorIdsToRemove.Contains(am.ActorID))
+					.ToList();
+
+				_context.ActorMovies.RemoveRange(actorMoviesToRemove);
+
+				// Thêm các liên kết mới
+				foreach (var actorId in actorIds)
+				{
+					movie.ActorMovies.Add(new NeonCinema_Domain.Database.Entities.ActorMovies
+					{
+						MovieID = movieId,
+						ActorID = actorId
+					});
+				}
+
+				// Lưu thay đổi
+				await _context.SaveChangesAsync();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Lỗi khi cập nhật diễn viên: {ex.Message}");
+				return false;
+			}
+		}
 	}
 }
