@@ -55,6 +55,8 @@ using NeonCinema_Client.Data.Services.SeatType;
 
 using NeonCinema_Client.Data.Services.TicketPriceSetting;
 using NeonCinema_Client.Data.IServices.TicketPriceSetting;
+using NeonCinema_Client.Data.IServices.BookHistory;
+using NeonCinema_Client.Data.Services.BookHistory;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -104,6 +106,7 @@ builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
+builder.Services.AddScoped<IHistoryService,HistoryService>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
 //builder.Services.AddHostedService<PromoBackgroundServices>();
 builder.Services.AddSignalR();

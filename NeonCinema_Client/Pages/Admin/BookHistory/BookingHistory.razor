@@ -1,0 +1,266 @@
+﻿@page "/admin/booking-history"
+@using NeonCinema_Application.DataTransferObject.BookingHistory
+@using NeonCinema_Client.Data.IServices.BookHistory
+@inject IHistoryService HistoryService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="/js/ticket.js"></script>
+
+<h3 class="text-center">Lịch Sử Đặt Vé</h3>
+<div class="container mt-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-4">
+            <!-- Tìm kiếm theo tên người dùng -->
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" @bind-value="searchUserName" @bind-value:event="oninput" placeholder="Tìm kiếm theo tên người dùng" class="form-control shadow-sm" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Bộ lọc theo ngày -->
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                <input type="date" @bind="filterDate" class="form-control shadow-sm" placeholder="Lọc theo ngày tạo" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Bộ lọc theo mã bill -->
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                <input type="text" @bind-value="filterBillCode" @bind-value:event="oninput" placeholder="Lọc theo mã hóa đơn" class="form-control shadow-sm" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (!FilteredBills.Any())
+        {
+            <div class="col-12 text-center">
+                <p class="text-muted">Không tìm thấy thông tin khách hàng. Hiển thị khách hàng ảo!</p>
+            </div>
+        }
+        @foreach (var bill in FilteredBills)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card shadow border-0 rounded-lg">
+                    <div class="row g-0">
+                        <div class="col-md-4 d-flex justify-content-center align-items-center">
+                            <!-- QR Code -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=@GenerateQRCodeData(bill)"
+                                 class="qr-code"
+                                 alt="QR Code">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <!-- Thông tin hóa đơn -->
+                                <h5 class="card-title font-weight-bold">Mã Hóa Đơn: @bill.BillCode</h5>
+                                <p class="card-text">
+                                    Người dùng: <span class="text-primary">@(!string.IsNullOrEmpty(bill.UserName) ? bill.UserName : "Khách hàng ảo")</span><br />
+                                    Ngày hóa đơn: <span>@bill.BillDate.ToString("dd/MM/yyyy")</span><br />
+                                    Tổng tiền: <span class="text-success font-weight-bold">@bill.TotalPrice.ToString("C0")</span>
+                                </p>
+                                <!-- Nút chi tiết -->
+                                <button class="btn btn-warning btn-icon" @onclick="(() => ShowDetail(bill))">
+                                    <i class="fa-solid fa-ticket"></i>Chi tiết
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Chi Tiết -->
+@if (selectedBill != null)
+{
+    <div class="modal show fade" tabindex="-1" style="display: block;" aria-hidden="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi Tiết Hóa Đơn</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDetail"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ticket-card-container" id="ticketContent">
+                        <div class="ticket-card">
+                            <h4>Thông Tin Vé</h4>
+                            @if (selectedBill.Tickets != null && selectedBill.Tickets.Count > 0)
+                            {
+                                @foreach (var ticket in selectedBill.Tickets)
+                                {
+                                    <div class="ticket-header mb-2 p-2 border rounded">
+                                        <div class="ticket-movie-info">
+                                            <h5>@ticket.MovieName</h5>
+                                            <p>Ghế: @ticket.SeatNumber - Phòng: @ticket.Room</p>
+                                            <p>Ngày chiếu: @ticket.ShowDate.ToString("dd/MM/yyyy")</p>
+                                            <p>Suất chiếu: @ticket.StartTime.ToString("hh\\:mm")</p>
+                                            <p>Giá vé: @ticket.Price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</p>
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                            else
+                            {
+                                <p>Không có thông tin vé.</p>
+                            }
+
+                            <h4 class="mt-4">Thông Tin Combo</h4>
+                            @if (selectedBill.Combos != null && selectedBill.Combos.Count > 0)
+                            {
+                                <ul class="list-group">
+                                    @foreach (var combo in selectedBill.Combos)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            @combo.ComboName - Số lượng: @combo.Quantity
+                                            <span>Giá: @combo.Price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>Không có thông tin combo.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="DownloadTicket">Tải vé</button>
+                    <button class="btn btn-secondary" @onclick="CloseDetail">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<BillHistoryDTO> billHistory = new();
+    private BillHistoryDTO? selectedBill = null;
+    private string searchUserName = "";
+    private string filterBillCode = "";
+    private DateTime? filterDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        billHistory = await HistoryService.GetAllBillHistoryAsync();
+    }
+
+    private void ShowDetail(BillHistoryDTO bill)
+    {
+        selectedBill = bill;
+    }
+
+    private void CloseDetail()
+    {
+        selectedBill = null;
+    }
+
+    private async Task DownloadTicket()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("htmlToImageOrPDF", "ticketContent");
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine("Lỗi khi tải vé: " + ex.Message);
+        }
+    }
+
+    private string GenerateQRCodeData(BillHistoryDTO bill)
+    {
+        return $"Mã Hóa Đơn: {bill.BillCode}, Người Dùng: {bill.UserName}, Tổng Tiền: {bill.TotalPrice:C0}, Ngày: {bill.BillDate:dd/MM/yyyy}";
+    }
+
+    private IEnumerable<BillHistoryDTO> FilteredBills =>
+        billHistory.Where(b =>
+            (string.IsNullOrEmpty(searchUserName) || b.UserName?.Contains(searchUserName, StringComparison.OrdinalIgnoreCase) == true) &&
+            (string.IsNullOrEmpty(filterBillCode) || b.BillCode?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true) &&
+            (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
+        );
+}
+
+<style>
+    .modal-dialog {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto; /* Chiều cao của toàn bộ cửa sổ */
+        margin: auto; /* Loại bỏ margin mặc định */
+    }
+
+    .modal-content {
+        border-radius: 10px; /* Bo góc modal */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Hiệu ứng đổ bóng */
+        padding: 20px;
+    }
+
+    .modal-header {
+        position: relative;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        background-color: #fff;
+        z-index: 1051;
+    }
+
+    .modal-body {
+        max-height: 70vh; /* Giới hạn chiều cao nội dung */
+        overflow-y: auto; /* Thêm cuộn dọc nếu nội dung quá dài */
+        padding: 15px;
+    }
+
+    .ticket-card-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .ticket-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .ticket-header {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .ticket-movie-info {
+        font-size: 14px;
+        line-height: 1.4;
+        color: #333;
+    }
+
+    .ticket-header h5 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .btn-close {
+        background: transparent;
+        border: none;
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+</style>
+
