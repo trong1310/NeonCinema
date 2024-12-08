@@ -10,9 +10,10 @@ namespace NeonCinema_Application.DataTransferObject.Screening
 	public class SeatShowTimeStatusDTO
 	{
 		public Guid ID { get; set; }
-		public Guid ScrenningID { get; set; }
+		public Guid ShowtimeId { get; set; }
 		public Guid RoomID { get; set; }
 		public Guid SeatID { get; set; }
+		public DateTime ShowDate { get; set; }
 		public seatEnum seatEnum { get; set; }
 	}
 }

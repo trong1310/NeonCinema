@@ -110,7 +110,8 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 		{
             try
             {
-                await _context.SeatShowTimeStatuses.AddAsync(_mapper.Map<SeatShowTimeStatus>(input));
+                _context.SeatShowTimeStatuss.Add(_mapper.Map<SeatShowTimeStatus>(input));
+                await _context.SaveChangesAsync();
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             }
