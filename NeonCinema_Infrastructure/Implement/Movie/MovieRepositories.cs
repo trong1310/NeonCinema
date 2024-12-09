@@ -71,9 +71,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				};
 			}
 		}
-
-
-
         public async Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken)
         {
             try
@@ -107,7 +104,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 };
             }
         }
-
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
@@ -129,7 +125,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID
-                            orderby b.StarTime
+                            orderby b.CreatedTime
 
                             select new MovieDTO
                             {
@@ -157,8 +153,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 PageSize = result.PageSize
             };
         }
-
-
         public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
         {
             var movie = await _context.Movies
@@ -195,50 +189,83 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             return movieDTO;
         }
+		public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+				if (obj == null || obj.Deleted == true)
+				{
+					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Không tìm thấy phim")
+					};
+				}
 
-        public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if (obj.Deleted == true && obj == null)
-                {
+				// Cập nhật thông tin cơ bản của phim
+				obj.Duration = request.Duration;
+				obj.Name = request.Name;
+				obj.Status = request.Status;
+				obj.AgeAllowed = request.AgeAllowed;
+				obj.CountryID = request.CountryID;
+				obj.Description = request.Description;
+				obj.DirectorID = request.DirectorID;
+				obj.Trailer = request.Trailer;
+				obj.GenreID = request.GenreID;
+				obj.LenguageID = request.LenguageID;
+				obj.StarTime = request.StarTime;
+				obj.ModifiedTime = DateTime.UtcNow;
+				obj.Images = request.Images;
 
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy phim")
-                    };
-                }
-                obj.Duration = request.Duration;
-                obj.Name = request.Name;
-                obj.Status = request.Status;
-                obj.AgeAllowed = request.AgeAllowed;
-                obj.CountryID = request.CountryID;
-                obj.Description = request.Description;
-                obj.DirectorID = request.DirectorID;
-                obj.Trailer = request.Trailer;
-                obj.GenreID = request.GenreID;
-                obj.LenguageID = request.LenguageID;
-                obj.StarTime = request.StarTime;
-                obj.ModifiedTime = DateTime.UtcNow;
-                obj.Images = request.Images;
-                _context.Movies.Update(obj);
-                await _context.SaveChangesAsync(cancellationToken);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Sửa thành công")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
-                };
-            }
-        }
+				// Cập nhật danh sách diễn viên
+				var existingActors = await _context.ActorMovies
+					.Where(am => am.MovieID == obj.ID)
+					.ToListAsync(cancellationToken);
 
-        public async Task<List<MovieDTO>> GetFilmsNowShowing()
+				// Lấy danh sách ActorID mới từ request
+				var newActorIDs = request.ActorMovies;
+
+				// Tìm các diễn viên cần xóa
+				var actorsToRemove = existingActors
+					.Where(am => !newActorIDs.Contains(am.ActorID))
+					.ToList();
+
+				// Tìm các diễn viên cần thêm mới
+				var actorsToAdd = newActorIDs
+					.Where(actorID => !existingActors.Any(am => am.ActorID == actorID))
+					.Select(actorID => new NeonCinema_Domain.Database.Entities.ActorMovies
+					{
+						MovieID = obj.ID,
+						ActorID = actorID
+					}).ToList();
+
+				// Xóa diễn viên cũ
+				_context.ActorMovies.RemoveRange(actorsToRemove);
+
+				// Thêm diễn viên mới
+				await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
+
+				// Cập nhật thông tin phim
+				_context.Movies.Update(obj);
+
+				// Lưu thay đổi
+				await _context.SaveChangesAsync(cancellationToken);
+
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Sửa thành công")
+				};
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+				};
+			}
+		}
+
+		public async Task<List<MovieDTO>> GetFilmsNowShowing()
         {
             var query = await _context.Movies
                 .Include(x => x.Genre)
@@ -278,7 +305,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             return movieDtos;
         }
-
 		public async Task<List<MovieDTO>> GetFilmsComing()
 		{
 			var query = await _context.Movies

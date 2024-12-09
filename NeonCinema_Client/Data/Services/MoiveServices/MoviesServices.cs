@@ -108,14 +108,5 @@ namespace NeonCinema_Client.Services.MoivesService
             var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
             return respones;
 		}
-		public async Task<bool> UpdateMovieActors(Guid movieId, List<Guid> actorIds)
-		{
-			var response = await _httpClient.PostAsJsonAsync(
-				$"api/movies/update-movie-actors/{movieId}", actorIds);
-
-			return response.IsSuccessStatusCode;
-		}
 	}
-
-
 }
