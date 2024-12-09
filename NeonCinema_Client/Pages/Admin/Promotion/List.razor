@@ -124,6 +124,7 @@ else
 																	<InputNumber @bind-Value="input.DiscountAmount" class="form-control" />
 																	<ValidationMessage For="@(() => input.DiscountAmount)" />
 																</div>
+
 															}
 															else if (discountPercentage == true)
 															{
@@ -131,6 +132,10 @@ else
 																	<label for="" class="form-label">Phần trăm giảm giá</label>
 																	<InputNumber @bind-Value="input.DiscountPercentage" class="form-control" />
 																	<ValidationMessage For="@(() => input.DiscountPercentage)" />
+																</div>
+																<div class="mb-3">
+																	<label for="" class="form-label">Số tiền giảm tối đa</label>
+																	<InputNumber @bind-Value="input.AmountMax" class="form-control" />
 																</div>
 															}
 
@@ -389,6 +394,10 @@ else
 														<InputNumber @bind-Value="inputUpdate.DiscountPercentage" class="form-control" />
 														<ValidationMessage For="@(() => input.DiscountPercentage)" />
 													</div>
+													<div class="mb-3">
+														<label for="" class="form-label">Số tiền giảm tối đa</label>
+														<InputNumber @bind-Value="inputUpdate.AmountMax" class="form-control" />
+													</div>
 												}
 												<div class="mb-3">
 													<label for="" class="form-label">Ngày bắt đầu</label>
@@ -553,8 +562,8 @@ else
 									{
 										<td><mark class="p-1">@item.value.DiscountAmount<text><u>đ</u></text></mark></td>
 									}
-									<td>@item.value.StartDate.ToShortDateString()</td>
-									<td>@item.value.EndDate.ToShortDateString()</td>
+									<td>@item.value.StartDate</td>
+									<td>@item.value.EndDate</td>
 									<td>@item.value.Description</td>
 									<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
 									<td>
@@ -810,7 +819,7 @@ else
 	//Add
 	public async Task AddPromotion()
 	{
-		IsLoading = true;
+		IsLoadingAct = true;
 		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
 			try

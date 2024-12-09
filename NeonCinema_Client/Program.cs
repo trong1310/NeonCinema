@@ -108,7 +108,7 @@ builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
 builder.Services.AddScoped<IHistoryService,HistoryService>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
-//builder.Services.AddHostedService<PromoBackgroundServices>();
+builder.Services.AddHostedService<AppBackgroundServices>();
 builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication("Bearer")

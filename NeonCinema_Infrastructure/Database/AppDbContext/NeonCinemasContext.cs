@@ -870,7 +870,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[0].ID,
 					ShowDate = DateTime.Now.AddDays(10), // Two days from now
 					MovieID = movieData[0].ID,
@@ -880,7 +880,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[1].ID,
 					ShowDate = DateTime.Now.AddDays(9), // Two days from now
 					MovieID = movieData[0].ID,
@@ -890,7 +890,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[2].ID,
 					ShowDate = DateTime.Now.AddDays(8), // Two days from now
 					MovieID = movieData[0].ID,
@@ -900,7 +900,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[3].ID,
 					ShowDate = DateTime.Now.AddDays(7), // Two days from now
 					MovieID = movieData[0].ID,
@@ -910,7 +910,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[4].ID,
 					ShowDate = DateTime.Now.AddDays(6), // Two days from now
 					MovieID = movieData[0].ID,
@@ -920,7 +920,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[5].ID,
 					ShowDate = DateTime.Now.AddDays(5), // Two days from now
 					MovieID = movieData[0].ID,
@@ -930,7 +930,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[6].ID,
 					ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,
