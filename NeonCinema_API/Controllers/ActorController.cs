@@ -47,22 +47,5 @@ namespace NeonCinema_API.Controllers
             var obj = await _reps.CreateActor(request, cancellationToken);
             return Ok(obj);
         }
-		[HttpPost("update-movie-actors/{movieId}")]
-		public async Task<IActionResult> UpdateMovieActors(Guid movieId, [FromBody] List<Guid> actorIds)
-		{
-			if (actorIds == null || !actorIds.Any())
-			{
-				return BadRequest("Danh sách diễn viên không hợp lệ.");
-			}
-
-			var result = await _actormovies.UpdateMovieActorsAsync(movieId, actorIds);
-
-			if (result)
-			{
-				return Ok(new { Message = "Cập nhật danh sách diễn viên thành công." });
-			}
-
-			return BadRequest("Cập nhật danh sách diễn viên thất bại.");
-		}
 	}
 }
