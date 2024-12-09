@@ -14,6 +14,7 @@ namespace NeonCinema_Application.DataTransferObject.BookingHistory
 		public decimal TotalPrice { get; set; }
 		public DateTime BillDate { get; set; }
 		public string Status { get; set; }
+		
 		public List<BookingHistoryDTO> Tickets { get; set; }
 		public List<ComboDTO> Combos { get; set; }
 	}
