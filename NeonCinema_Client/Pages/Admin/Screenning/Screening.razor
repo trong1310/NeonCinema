@@ -8,6 +8,7 @@
 @using NeonCinema_Client.Data.IServices.IRoom
 @using NeonCinema_Client.Data.IServices.Screenning
 @using System.Transactions
+@using NeonCinema_Domain.Enum
 @inject IScreeningService _scrSv
 @inject IShowTimeService _stSv
 @inject IRoomService _roSv
@@ -101,7 +102,7 @@ else
 								<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
 								<td>@item.value.ShowTime?.ToString()</td>
 								<td>@item.value.RoomName</td>
-								<td>@item.value.Status</td>
+								<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
 								<td>
 									<button @onclick="() => EditScreening(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
 									<button @onclick="() => DeleteScreening(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
@@ -181,14 +182,6 @@ else
 								<div class="mb-3">
 									<label for="" class="form-label">Giờ kết thúc</label>
 									<input type="time" @bind="endTime" class="form-control" readonly/>
-								</div>
-
-								<div class="mb-3">
-									<label for="" class="form-label">Trạng thái</label>
-									<InputSelect @bind-Value="newScreening.Status" class="form-control">
-										<option value="Active">Active</option>
-										<option value="Inactive">Inactive</option>
-									</InputSelect>
 								</div>
 
 								<button type="submit" class="btn btn-primary">Tạo lịch</button>
@@ -362,6 +355,7 @@ else
 					//thêm các trường còn thiếu screening
 					newScreening.ShowDate = date;
 					newScreening.ShowTimeID = showtime.ID;
+					newScreening.Status = ScreeningStatus.InActive;
 					//
 
 
@@ -450,6 +444,17 @@ else
 
 			endTime = starttime + x + thoigianbu;
 		}		
+	}
+
+	//Màu trạng thái
+	private string GetStatusClass(ScreeningStatus status)
+	{
+		return status switch
+		{
+			ScreeningStatus.Showing => "bg-primary", 
+			ScreeningStatus.InActive => "bg-warning", 
+			ScreeningStatus.Ended => "bg-danger"    
+		};
 	}
 
 
