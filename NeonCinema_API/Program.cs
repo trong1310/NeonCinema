@@ -71,7 +71,8 @@ builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 builder.Services.AddScoped<ISendMailService, SendMailService>();
 builder.Services.AddScoped<UserProfile>();
 builder.Services.AddScoped<UpdateUserProfileRequest>();
-builder.Services.AddScoped<IUserServices, UserService>();
+builder.Services.AddScoped<IUserServicesss, UserService>();
+//builder.Services.AddScoped<UserService>();
 
 
 builder.Services.Configure<FormOptions>(options =>

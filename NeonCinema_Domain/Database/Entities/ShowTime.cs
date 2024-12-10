@@ -11,7 +11,7 @@ namespace NeonCinema_Domain.Database.Entities
     public class ShowTime
     {
         public Guid ID { get; set; }
-        public TimeSpan StartTime { get; set; }  // Lưu trữ thời gian trong ngày
+        public TimeSpan StartTime { get; set; }  
         public TimeSpan EndTime { get; set; }
         public EntityStatus Status { get; set; }
         public virtual ICollection<Screening>? Screening { get; set; }

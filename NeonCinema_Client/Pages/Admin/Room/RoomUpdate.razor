@@ -107,9 +107,9 @@
                         }
                        <div class="seatcolor">
                             <div class="seat-legend">
-                                <p><span style="background-color: #7ce998; color: white; padding: 5px;"></span> - Ghế đôi</p>
-                                <p><span style="background-color: #fa5d5d; color: white; padding: 5px;"></span> - Ghế thường</p>
-                                <p><span style="background-color: #b67ce9; color: white; padding: 5px;"></span> - Ghế VIP</p>
+                                <p><span style="background-color: #69d685; color: white; padding: 5px;"></span> - Ghế đôi</p>
+                                <p><span style="background-color: #ee4646; color: white; padding: 5px;"></span> - Ghế thường</p>
+                                <p><span style="background-color: #a064d6; color: white; padding: 5px;"></span> - Ghế VIP</p>
                             </div>
 
                             <div class="seat-legend">
@@ -189,15 +189,15 @@
     private UpdateSeatDTO ConvertToUpdateSeatDTO(SeatDTO seat)
     {
         return new UpdateSeatDTO
-            {
-                ID = seat.ID,
-                SeatNumber = seat.SeatNumber,
-                Row = seat.Row,
-                Column = seat.Column,
-                SeatTypeID = seat.SeatTypeID,
-                Status = seat.Status,
-                SeatTypeName = seat.SeatTypeName
-            };
+        {
+             ID = seat.ID,
+             SeatNumber = seat.SeatNumber,
+             Row = seat.Row,
+             Column = seat.Column,
+             SeatTypeID = seat.SeatTypeID,
+             Status = seat.Status,
+             SeatTypeName = seat.SeatTypeName
+        };
     }
     private void ShowSeatModal(SeatDTO seat)
     {
@@ -255,17 +255,17 @@
             return "background-color: gray;"; // Màu cho ghế bảo trì
         }
         
-        if (seat.SeatTypeID == new Guid("8d5e84c6-65c8-4b9c-9052-414605050597"))
+        if (seat.SeatTypeID == new Guid("9c0904c3-48e4-44d5-ba2a-2835c04343ee"))
         {
-            return "background-color: #7ce998;";
+            return "background-color: #69d685;";
         }
         else if (seat.SeatTypeID == new Guid("8fb86c77-213f-4316-8a7a-43fee795514e"))
         {
-            return "background-color: #fa5d5d;";
+            return "background-color: #ee4646;";
         }
-        else if (seat.SeatTypeID == new Guid("e39446e3-a77d-4707-8aa9-5b9a29b398de"))
+        else if (seat.SeatTypeID == new Guid("3721396d-d534-4823-87c2-79b06999ef1d"))
         {
-            return "background-color: #b67ce9;";
+            return "background-color: #a064d6;";
         }
         else
         {

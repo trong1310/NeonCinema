@@ -50,17 +50,18 @@
                         <td >@seat.SeatTypeName</td>
                         <td>@R?.Name</td>
                         <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       role="switch"
-                                       id="flexSwitchCheckDefault_@(seat.ID)"
-                                       checked="@(seat.Status == seatEnum.Selected)"
-                                       @onchange="(e) => ToggleRoomStatus(seat, e)" />
-                                <label class="form-check-label" for="flexSwitchCheckDefault_@(seat.ID)">
-                                    @(seat.Status == seatEnum.Selected ? "còn trống" : "đã đặt")
+                            <div class="form-check">
+                                <label class="form-check-label" for="status_@(seat.ID)">
+                                    @(seat.Status == seatEnum.Available
+                                        ? "Ghế còn trống"
+                                        : seat.Status == seatEnum.Sold
+                                        ? "Ghế đã bán"
+                                        : seat.Status == seatEnum.Selected
+                                        ? "Ghế đã chọn"
+                                        : "Ghế bảo trì")
                                 </label>
                             </div>
+
                         </td>
                         <td>
                             <button style="border-color: 1px black" class="" @onclick="@(() => NavigateToUpdateSeat(seat.ID))">
