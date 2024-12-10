@@ -86,7 +86,7 @@
 							<option value="" disabled selected>Chọn thể loại</option>
 							@foreach (var genre in genres)
 							{
-								<option value="@genre.ID">@genre.GenreName</option>
+								<option value="@genre.GenreName">@genre.GenreName</option>
 							}
 						</select>
 					</div>
@@ -98,7 +98,7 @@
 							<option value="" disabled selected>Chọn ngôn ngữ</option>
 							@foreach (var language in languages)
 							{
-								<option value="@language.ID">@language.LanguageName</option>
+								<option value="@language.LanguageName">@language.LanguageName</option>
 							}
 						</select>
 					</div>
@@ -113,7 +113,7 @@
 							<option value="" disabled selected>Chọn quốc gia</option>
 							@foreach (var country in countries)
 							{
-								<option value="@country.ID">@country.CountryName</option>
+								<option value="@country.CountryName">@country.CountryName</option>
 							}
 						</select>
 					</div>
@@ -125,7 +125,7 @@
 							<option value="" disabled selected>Chọn đạo diễn</option>
 							@foreach (var director in directors)
 							{
-								<option value="@director.ID">@director.FullName</option>
+								<option value="@director.FullName">@director.FullName</option>
 							}
 						</select>
 					</div>
@@ -167,20 +167,17 @@
 						</button>
 					</div>
 					<div class="modal-body" style="margin-bottom: -20px">
-						<div class="row mb-3">
-							<div class="col-4 d-flex align-items-center justify-content-center">
-								<input class="form-check-input me-2" type="checkbox" id="actor1" />
-								<label class="form-check-label" for="actor1">Diễn viên 1</label>
+							<div class="row mb-3">
+								@foreach (var actor in actors.Data)
+								{
+									<div class="col-4 d-flex align-items-center justify-content-center">
+										<input class="form-check-input me-2"
+											   type="checkbox" id="@actor.ID"
+											   @onchange="e => ToggleActorSelection(actor.ID, bool.Parse(e.Value.ToString()))" />
+										<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
+									</div>
+								}
 							</div>
-							<div class="col-4 d-flex align-items-center justify-content-center">
-								<input class="form-check-input me-2" type="checkbox" id="actor2" />
-								<label class="form-check-label" for="actor2">Diễn viên 2</label>
-							</div>
-							<div class="col-4 d-flex align-items-center justify-content-center">
-								<input class="form-check-input me-2" type="checkbox" id="actor3" />
-								<label class="form-check-label" for="actor3">Diễn viên 3</label>
-							</div>
-						</div>
 					</div>
 					<hr />
 					<div class="modal-header" style="margin-top: -15px">
@@ -217,54 +214,6 @@
 				</div>
 			</div>
 		</div>
-		@* <div class="modal show" tabindex="-1" role="dialog" style="display:block; margin-top: 50px;">
-	<div class="modal-dialog" role="document">
-	<div class="modal-content">
-	<div class="modal-header">
-	<button type="button" class="close" @onclick="CloseActorDialog">
-	<i class="material-icons">close</i>
-	</button>
-	</div>
-
-	<div class="modal-body">
-	<h5 class="modal-title">Chọn diễn viên</h5>
-	<div class="form-check d-flex align-items-center mb-4">
-	<input class="form-check-input" type="checkbox"/>
-	<label class="form-check-label ms-2" for="actor1">Diễn viên 1</label>
-	<input class="form-check-input" type="checkbox"/>
-	<label class="form-check-label ms-2" for="actor1">Diễn viên 2</label>
-	<input class="form-check-input" type="checkbox" />
-	<label class="form-check-label ms-2" for="actor1">Diễn viên 3</label>
-	</div>
-
-	<hr />
-	<h5 class="modal-title">Thêm diễn viên mới</h5>
-	<div class="row">
-	<div class="col-md-8">
-	<div class="form-group">
-	<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
-	<input type="text" class="form-control" id="actorName" />
-	</div>
-	<div class="form-group">
-	<label for="status" class="font-weight-bold">Trạng Thái</label>
-	<select class="form-control" id="status">
-	<option value="Active">Hoạt Động</option>
-	<option value="Inactive">Không Hoạt Động</option>
-	</select>
-	</div>
-	</div>
-	<div class="text-center">
-	<button type="button" class="btn btn-success btn-lg">Thêm</button>
-	</div>
-	</div>
-	</div>
-	<div class="modal-footer">
-	<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
-	<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
-	</div>
-	</div>
-	</div>
-	</div> *@
 	}
 
 </div>

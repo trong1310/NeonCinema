@@ -81,4 +81,14 @@ public class ScreeningService : IScreeningService
         return response;
     }
 
+	public async Task<bool> CreateSSS(SeatShowTimeStatusDTO input)
+	{
+        var response = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Screening/create-sss", input);
+
+        if(response.IsSuccessStatusCode)
+        {
+            return true;
+        }
+        else return false;
+	}
 }

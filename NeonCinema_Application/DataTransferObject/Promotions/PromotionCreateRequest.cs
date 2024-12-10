@@ -10,7 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionCreateRequest
     {
 		public Guid ID { get; set; }  // Khóa chính
-		[RegularExpression(@"^[a-zA-Z0-9/]*$", ErrorMessage = "Chỉ được chứa chữ cái, số và dấu /")]
+		[RegularExpression(@"^[\p{L}0-9 /]*$", ErrorMessage = "Chỉ được chứa chữ cái, số, khoảng trắng, và dấu /")]
 		public string Name { get; set; }  // Tên khuyến mãi
 		public string Code { get; set; }  
         public string Description { get; set; } = "Không có"; // Mô tả khuyến mãi
@@ -19,7 +19,8 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
-		public double? DiscountAmount { get; set; } 
+		public double? DiscountAmount { get; set; }
+		public double? AmountMax { get; set; }
 
 		[Required(ErrorMessage = "Start date is required.")]
 		[DataType(DataType.Date)]

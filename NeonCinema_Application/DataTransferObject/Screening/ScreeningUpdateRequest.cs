@@ -24,6 +24,6 @@ namespace NeonCinema_Application.DataTransferObject.Screening
         [Required]
         public Guid RoomID { get; set; }
 
-        public EntityStatus Status { get; set; }
+        public ScreeningStatus Status { get; set; }
     }
 }
