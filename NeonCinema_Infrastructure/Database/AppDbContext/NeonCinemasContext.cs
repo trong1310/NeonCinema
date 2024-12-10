@@ -64,16 +64,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<PromotionUsers> PromotionUsers { get; set; }
 		public DbSet<TicketPriceSetting> TicketPriceSettings { get; set; }
+		public DbSet<SeatShowTimeStatus> SeatShowTimeStatuss { get; set; }
 		#endregion
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-            //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+           // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
 
 		}
@@ -868,7 +871,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[0].ID,
 					ShowDate = DateTime.Now.AddDays(10), // Two days from now
 					MovieID = movieData[0].ID,
@@ -878,7 +881,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[1].ID,
 					ShowDate = DateTime.Now.AddDays(9), // Two days from now
 					MovieID = movieData[0].ID,
@@ -888,7 +891,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[2].ID,
 					ShowDate = DateTime.Now.AddDays(8), // Two days from now
 					MovieID = movieData[0].ID,
@@ -898,7 +901,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[3].ID,
 					ShowDate = DateTime.Now.AddDays(7), // Two days from now
 					MovieID = movieData[0].ID,
@@ -908,7 +911,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[4].ID,
 					ShowDate = DateTime.Now.AddDays(6), // Two days from now
 					MovieID = movieData[0].ID,
@@ -918,7 +921,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[5].ID,
 					ShowDate = DateTime.Now.AddDays(5), // Two days from now
 					MovieID = movieData[0].ID,
@@ -928,7 +931,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 				new Screening
 				{
 					ID = Guid.NewGuid(),
-					Status = EntityStatus.Active,
+					Status = ScreeningStatus.InActive,
 					ShowTimeID = showTimeData[6].ID,
 					ShowDate = DateTime.Now.AddDays(4), // Two days from now
 					MovieID = movieData[0].ID,

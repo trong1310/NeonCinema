@@ -47,5 +47,5 @@ namespace NeonCinema_API.Controllers
             var obj = await _reps.CreateActor(request, cancellationToken);
             return Ok(obj);
         }
-    }
+	}
 }

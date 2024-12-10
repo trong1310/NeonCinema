@@ -63,6 +63,5 @@ namespace NeonCinema_Infrastructure.Implement.ActorMovies
 
 			return actorMovies;
 		}
-
 	}
 }

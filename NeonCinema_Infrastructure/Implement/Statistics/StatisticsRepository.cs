@@ -79,7 +79,8 @@ namespace NeonCinema_Infrastructure.Implement.Statistics
 				{
 					MovieID = g.Key,
 					MovieName = g.FirstOrDefault().Tickets.Movies.Name,
-					Revenue = g.Sum(bt => bt.Tickets.Price)
+					Revenue = g.Sum(bt => bt.Tickets.Price),
+					 TicketsSold = g.Count()
 				})
 				.ToListAsync();
 		}

@@ -8,6 +8,7 @@ namespace NeonCinema_Application.DataTransferObject.ActorMovies
 {
 	public class ActorMoviesDto
 	{
+		public Guid ActorID { get; set; }
 		public string ActorName { get; set; }
 	}
 }

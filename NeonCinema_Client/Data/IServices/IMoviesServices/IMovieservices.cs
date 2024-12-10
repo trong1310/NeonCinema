@@ -24,6 +24,6 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
         public Task<MovieDTO> GetMovieById(Guid id);
         public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request);
 		public Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request);
-        public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken);
+		public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken);
 	}
 }

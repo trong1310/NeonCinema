@@ -34,5 +34,12 @@ namespace NeonCinema_Domain.Enum
         cancel = 3,
     }
 
+    public enum ScreeningStatus
+    {
+        InActive = 0,
+        Showing = 1,
+        Ended = 2
+    }
+
 }
 
