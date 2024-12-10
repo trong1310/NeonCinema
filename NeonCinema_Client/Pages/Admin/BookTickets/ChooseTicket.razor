@@ -25,6 +25,7 @@
 @inject IUserServices UserService
 @inject NavigationManager _navigation
 @inject HttpClient _http
+@layout LayoutAdmin
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
@@ -76,19 +77,17 @@
 					</div>
 				</div>
 			</div>
-			<div class="screen-area my-3">
-				<div class="screen text-center">Màn hình</div>
-			</div>
-			<div class="seat-selection">
+			<div class="seat-selection-container">
+				<div class="screen">Màn hình</div>
 				@foreach (var row in groupedSeats)
 				{
 					<div class="seat-row">
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-							id="@seat.ID"
-							@onclick="() => SelectSeat(seat)">
-								@seat.SeatNumber
+								 id="@seat.ID"
+								 @onclick="() => SelectSeat(seat)">
+								<span class="seat-label">@seat.SeatNumber</span>
 							</div>
 						}
 					</div>
