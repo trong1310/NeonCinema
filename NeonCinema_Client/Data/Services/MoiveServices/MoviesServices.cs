@@ -109,6 +109,4 @@ namespace NeonCinema_Client.Services.MoivesService
             return respones;
 		}
 	}
-
-
 }

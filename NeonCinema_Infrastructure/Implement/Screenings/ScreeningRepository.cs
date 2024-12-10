@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.Ticket;
@@ -104,5 +105,23 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             var screening = await _context.Screening.FindAsync(id, cancellationToken);
             return _mapper.Map<ScreeningDTO>(screening);
         }
-    }
+
+		public async Task<HttpResponseMessage> CreateSSS(SeatShowTimeStatusDTO input, CancellationToken ctoken)
+		{
+            try
+            {
+                _context.SeatShowTimeStatuss.Add(_mapper.Map<SeatShowTimeStatus>(input));
+                await _context.SaveChangesAsync();
+
+                return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+            }
+		}
+	}
 }

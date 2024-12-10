@@ -18,6 +18,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
             CreateMap<ScreeningUpdateRequest, Screening>();
             CreateMap<Screening, ScreeningDTO>()
      .ForMember(dest => dest.ShowTime, opt => opt.MapFrom(src => src.ShowTime.StartTime));
+            CreateMap<SeatShowTimeStatusDTO, SeatShowTimeStatus>().ReverseMap();
 
         }
 

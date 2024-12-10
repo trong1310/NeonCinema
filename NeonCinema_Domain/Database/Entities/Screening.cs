@@ -14,7 +14,7 @@ namespace NeonCinema_Domain.Database.Entities
 		[Key] 
 		
         public Guid ID { get; set; }
-        public EntityStatus Status { get; set; }
+        public ScreeningStatus Status { get; set; }
         public Guid ShowTimeID { get; set; }
         public DateTime ShowDate { get; set; }
         public Guid  MovieID { get; set; }

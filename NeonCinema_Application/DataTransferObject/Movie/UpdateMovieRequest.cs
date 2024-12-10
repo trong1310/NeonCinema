@@ -35,6 +35,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		[Required(ErrorMessage = "Đạo diễn không được để trống")]
 		public Guid DirectorID { get; set; }
 		public MovieStatus Status { get; set; }
+		public List<Guid>? ActorMovies { get; set; }
 	}
 	public class FutureDateAttributes : ValidationAttribute
 	{

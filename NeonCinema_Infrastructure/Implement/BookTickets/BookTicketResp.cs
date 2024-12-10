@@ -1,12 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Com.CloudRail.SI.ServiceCode.Commands;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
+using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention.Utili;
 using System.Net;
+using System.Threading;
 
 namespace NeonCinema_Infrastructure.Implement.BookTickets
 {
@@ -17,194 +21,9 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 		{
 			_context = context;
 		}
-		public async Task<BillResp> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
-		{
-			using var transaction = await _context.Database.BeginTransactionAsync();
-			try
-			{
-				// Validate input
-				if (request.SeatID == null || !request.SeatID.Any())
-				{
-					throw new ArgumentException("Danh sách ghế không hợp lệ.");
-				}
+		 <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
+ <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
 
-				var screening = await _context.Screening
-					.Include(x => x.Rooms)
-						.ThenInclude(r => r.Seats)
-					.FirstOrDefaultAsync(x => x.ID == request.ScreeningID, cancellationToken);
-
-				if (screening == null)
-					if (screening == null)
-					{
-						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
-					}
-				// Check seat availability
-				var seats = screening.Rooms.Seats
-					.Where(s => request.SeatID.Contains(s.ID))
-					.ToList();
-
-				if (seats.Any(s => s.Status == NeonCinema_Domain.Enum.seatEnum.Sold && s.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance))
-				{
-					var unavailableSeats = seats.Where(s => s.Status != NeonCinema_Domain.Enum.seatEnum.Available)
-												.Select(s => s.SeatNumber);
-					if (unavailableSeats.Any())
-					{
-						throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
-					}
-				}
-
-				// Update seat status to Sold
-				foreach (var seat in seats)
-				{
-					seat.Status = NeonCinema_Domain.Enum.seatEnum.Sold;
-					_context.UpdateRange(seat);
-					await _context.SaveChangesAsync();
-				}
-
-				// Calculate ticket price
-				var seatTypes = seats.ToDictionary(s => s.ID, s => s.SeatTypeID);
-				var ticketPrices = await _context.TicketPrice
-					.Where(tp => seatTypes.Values.Contains(tp.SeatTypeID))
-					.ToListAsync(cancellationToken);
-
-				var tickets = request.SeatID.Select(seatId =>
-				{
-					var seatTypeId = seatTypes[seatId];
-					var ticketPrice = ticketPrices.First(tp => tp.SeatTypeID == seatTypeId);
-
-					return new Ticket
-					{
-						ID = Guid.NewGuid(),
-						ScreningID = (Guid)request.ScreeningID,
-						SeatID = seatId,
-						CreatedTime = DateTime.Now,
-						MovieID =(Guid) request.MovieId,
-						Price = ticketPrice.Price
-					};
-				}).ToList();
-
-				await _context.Tickets.AddRangeAsync(tickets, cancellationToken);
-				await _context.SaveChangesAsync();
-
-				// Create bill
-				var bill = new Bill
-				{
-					ID = Guid.NewGuid(),
-					BillCode = Uliti.GenerateBillCode(),
-					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
-					CreatedTime = DateTime.Now,
-					UserID = request.AccountID ?? null,
-				};
-				await _context.BillDetails.AddAsync(bill, cancellationToken);
-
-				// Add bill tickets
-				var billTickets = tickets.Select(ticket => new BillTicket
-				{
-					BillId = bill.ID,
-					TicketId = ticket.ID,
-					CreatedTime = ticket.CreatedTime
-				}).ToList();
-
-				await _context.BillTickets.AddRangeAsync(billTickets, cancellationToken);
-
-				// Add bill combos
-				if (request.BillCombos != null && request.BillCombos.Any())
-				{
-					var foodComboPrices = await _context.FoodCombos
-						.Where(fc => request.BillCombos.Select(bc => bc.FoodComboId).Contains(fc.ID))
-						.ToListAsync(cancellationToken);
-
-					var billCombos = request.BillCombos.Select(bc =>
-					{
-						var comboPrice = foodComboPrices.First(fc => fc.ID == bc.FoodComboId).TotalPrice;
-						return new BillCombo
-						{
-							BillID = bill.ID,
-							FoodComboID =(Guid) bc.FoodComboId,
-							CreatedTime = DateTime.Now,
-							Quantity =(int) bc.Quantity
-						};
-					}).ToList();
-
-					await _context.BillCombos.AddRangeAsync(billCombos, cancellationToken);
-
-					bill.TotalPrice = tickets.Sum(t => t.Price) +
-									  billCombos.Sum(bc => foodComboPrices.First(fc => fc.ID == bc.FoodComboID).TotalPrice * bc.Quantity);
-				}
-				else
-				{
-					bill.TotalPrice = tickets.Sum(t => t.Price);
-				}
-
-				await _context.SaveChangesAsync();
-				await transaction.CommitAsync();
-				double convertPoint =(double) bill.TotalPrice * 6.8 / 100;
-
-				if(request.AccountID != null)
-				{
-					var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
-					accountBook.MinPoint += (double)convertPoint;
-					if (accountBook.MinPoint >= 0 && accountBook.MinPoint <= 60000)
-					{
-						accountBook.Rank = "Thành viên";
-					}
-					else if (accountBook.MinPoint > 60000 && accountBook.MinPoint <= 150000)
-					{
-						accountBook.Rank = "Bạc";
-					}
-					else if (accountBook.MinPoint > 150000 && accountBook.MinPoint <= 300000)
-					{
-						accountBook.Rank = "vàng";
-					}
-					else if (accountBook.MinPoint > 300000)
-					{
-						accountBook.Rank = "Kim cương";
-					}
-					accountBook.ModifiedTime = DateTime.UtcNow;
-					_context.RankMembers.Update(accountBook);
-					await _context.SaveChangesAsync();
-				}
-				var billresp = await _context.BillDetails
-						.Include(b => b.BillCombos)
-							.ThenInclude(bc => bc.FoodCombo)
-						.Include(b => b.Users)
-						.Include(b => b.BillTickets)
-							.ThenInclude(bt => bt.Tickets)
-								.ThenInclude(t => t.Seat)
-						.Where(b => b.ID == bill.ID)
-						.FirstOrDefaultAsync();
-
-				if (billresp == null)
-				{
-					throw new Exception("Không tìm thấy hóa đơn trong cơ sở dữ liệu.");
-				}
-
-				return new BillResp
-				{
-					Id = billresp.ID,
-					BillCode = billresp.BillCode,
-					BillCombo = billresp.BillCombos?.Select(cb => new BillComboResp
-					{
-						ComboName = cb.FoodCombo?.Content ?? "N/A",
-						Quantity = cb.Quantity,
-					}).ToList() ?? new List<BillComboResp>(),
-					BillTickets = billresp.BillTickets?.Select(tk => new BillTicketResp
-					{
-						BillTicketID = tk.BillId,
-						SeatNumber = tk.Tickets?.Seat?.SeatNumber ?? "N/A",
-					}).ToList() ?? new List<BillTicketResp>(),
-					CreatedAt = billresp.CreatedTime ?? DateTime.MinValue,
-					CustomerName = billresp.Users?.FullName ?? "Khách hàng không xác định",
-					TotalPrice = billresp.TotalPrice,
-				};
-
-			}
-			catch (Exception ex)
-			{
-				await transaction.RollbackAsync();
-				throw new Exception($"{ex.Message} : {ex.StackTrace}");
-			}
-		}
 
 		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showDate)
 		{
@@ -217,7 +36,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				.Include(x => x.Rooms)
 					.ThenInclude(s => s.Seats!)
 						.ThenInclude(x => x.SeatTypes)
-				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date)
+				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date).Where(x => x.ShowTime.StartTime >= currentTime)
 				.OrderBy(x => x.ShowDate.Date)
 				.ThenBy(x => x.ShowTime.StartTime)
 				.ToListAsync();
@@ -246,8 +65,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 		public async Task<ScreeningMoviesDto> ChooseScreeningMovies(Guid Id)
 		{
-			TimeSpan currentTime = DateTime.Now.TimeOfDay;
-			var date = DateTime.Now;
 			var screenings = await _context!.Screening
 							.Include(x => x.ShowTime)
 							.Include(x => x.Rooms)
@@ -255,20 +72,26 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 									.ThenInclude(x => x.SeatTypes)
 							.Where(x => x.ID == Id)
 							.FirstOrDefaultAsync();
-			var seats = screenings.Rooms!.Seats!.Select(x =>
+			var seatShowTime = await _context.SeatShowTimeStatuss
+				.Include(x => x.ShowTime)
+				.Include(x => x.Room)
+				.Include(x => x.Seat).Where(x => x.ShowtimeId == screenings.ShowTimeID)
+				.Where(x => x.RoomID == screenings.RoomID)
+				.Where(x => x.ShowDate == screenings.ShowDate).ToListAsync();
+			var seats = seatShowTime.Select(x =>
 			{
 				// Lấy giá dựa trên SeatTypeID thay vì SeatID
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatTypeID == x.SeatTypeID) // Sửa: Lấy giá theo SeatTypeID
+					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID) // Sửa: Lấy giá theo SeatTypeID
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
 
 				return new SeatDto
 				{
-					ID = x.ID,
-					SeatNumber = x.SeatNumber,
-					SeatType = x.SeatTypes.SeatTypeName,
-					Status = x.Status,
+					ID = x.Seat.ID,
+					SeatNumber = x.Seat.SeatNumber,
+					SeatType = x.Seat.SeatTypes.SeatTypeName,
+					Status = x.seatEnum,
 					Price = ticketPrice // Gán giá lấy được từ bảng TicketPrice
 				};
 			}).ToList();
@@ -293,7 +116,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					return null;
 				}
-				return  obj == null ? null : new RankMemberResp()
+				return obj == null ? null : new RankMemberResp()
 				{
 					Id = obj.ID,
 					AccountName = obj.Users.FullName,

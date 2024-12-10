@@ -22,6 +22,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; } // giảm theo gia
+		public double? AmountMax { get; set; }
 
 		[Required(ErrorMessage = "Start date is required.")]
 		[DataType(DataType.Date)]

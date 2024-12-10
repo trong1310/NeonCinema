@@ -213,8 +213,8 @@ namespace NeonCinema_API.Controllers
 
 				// Khởi tạo mã ưu đãi (hoặc thông tin ưu đãi)
 
-				var email = _config["EmailSettings:Email"]; //email from
-				var appPass = _config["EmailSettings:AppPassword"]; //app password
+				var email = _config["EmailSetting:Username"]; //email from
+				var appPass = _config["EmailSetting:Password"]; //app password
 
 				foreach (var item in lstMail)
 				{
