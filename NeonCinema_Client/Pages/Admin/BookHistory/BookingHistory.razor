@@ -1,4 +1,4 @@
-﻿@page "/admin/booking-history"
+﻿@page "/booking-history"
 @using NeonCinema_Application.DataTransferObject.BookingHistory
 @using NeonCinema_Client.Data.IServices.BookHistory
 @inject IHistoryService HistoryService
@@ -10,8 +10,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="/js/ticket.js"></script>
 
-<h3 class="text-center">Lịch Sử Đặt Vé</h3>
-<div class="container mt-4">
+<h3 class="text-center text-secondary-emphasis mt-5">Lịch Sử Đặt Vé</h3>
+<div class="container-fluid mt-4">
     <div class="row align-items-center mb-4">
         <div class="col-md-4">
             <!-- Tìm kiếm theo tên người dùng -->
@@ -64,8 +64,8 @@
                                     Tổng tiền: <span class="text-success font-weight-bold">@bill.TotalPrice.ToString("C0")</span>
                                 </p>
                                 <!-- Nút chi tiết -->
-                                <button class="btn btn-warning btn-icon" @onclick="(() => ShowDetail(bill))">
-                                    <i class="fa-solid fa-ticket"></i>Chi tiết
+                                <button class="btn btn-detail" @onclick="(() => ShowDetail(bill))">
+                                    <i class="fas fa-info-circle"></i> Chi tiết
                                 </button>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
 <!-- Modal Chi Tiết -->
 @if (selectedBill != null)
 {
-    <div class="modal show fade" tabindex="-1" style="display: block;" aria-hidden="false">
+    <div class="modal show fade" tabindex="-1" style="display: block; margin-top: 100px;" aria-hidden="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -189,6 +189,40 @@
 }
 
 <style>
+    .btn-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffc107; /* Màu nền chính */
+        color: #333; /* Màu chữ */
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
+
+        .btn-detail i {
+            margin-right: 8px; /* Khoảng cách giữa biểu tượng và chữ */
+            font-size: 18px;
+        }
+
+        .btn-detail:hover {
+            background-color: #e0a800; /* Màu nền khi hover */
+            color: white; /* Màu chữ khi hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px); /* Hiệu ứng di chuyển lên */
+        }
+
+        .btn-detail:active {
+            background-color: #d39e00; /* Màu nền khi nhấn */
+            transform: translateY(0); /* Reset hiệu ứng */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
     .modal-dialog {
         display: flex;
         justify-content: center;

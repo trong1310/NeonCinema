@@ -1,8 +1,11 @@
 @page "/login"
+@using NeonCinema_Application.DataTransferObject.User.Request
 @using NeonCinema_Client.Pages.Client
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
+@using NeonCinema_Client.Data.IServices.User
+@inject IUserServices UserServices
 @inject Blazored.LocalStorage.ILocalStorageService _localstorage
 <body>
     <div class="background-video">
@@ -43,12 +46,55 @@
 
             </div>
             <div class="links">
-                <a href="#" @onclick="OnForgotPasswordClick">Quên Mật Khẩu?</a>
+                <div class="links">
+                    <button type="button" class="btn btn-link" @onclick="OpenForgotPasswordDialog">Quên Mật Khẩu?</button>
+                    <button type="button" class="btn btn-link">Đăng ký</button>
+                </div>
 
-                <a href="#">Đăng ký</a>
             </div>
         </EditForm>
     </div>
+    @if (showForgotPasswordDialog)
+    {
+        <div class="modal show" tabindex="-1" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+            <div class="modal-dialog">
+                <EditForm Model="@forgotPassRequest" OnValidSubmit="@SubmitForgotPassword" class="needs-validation">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="alert alert-danger" />
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Quên mật khẩu</h5>
+                            <button type="button" class="btn-close" aria-label="Close" @onclick="CloseForgotPasswordDialog"></button>
+                        </div>
+                    
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label" style="color: black;">Email khôi phục</label>
+                                    <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
+                                    placeholder="Nhập email của bạn..." style="color:black; background-color: white">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" @onclick="CloseForgotPasswordDialog">Hủy</button>
+                                <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isLoading ? "inline-block" : "none");"></span>
+                                    Gửi yêu cầu
+                                </button>                              
+                            </div>
+                        @if (!string.IsNullOrEmpty(responseMessage))
+                        {
+                            <div class="alert mt-3 alert-@(isSuccess ? "success" : "danger")" style="margin-left: 3px; margin-right: 3px;">
+                                @responseMessage
+                            </div>
+                        }
+                    </div>
+                    
+                </EditForm>
+                
+            </div>
+        </div>
+    }
+
 </body>
 
 
@@ -99,10 +145,7 @@
         }
         isProcessing = false;
     }
-    private void OnForgotPasswordClick()
-    {
-        _navi.NavigateTo("/forgot-password");
-    }
+
     public class LoginResponse
     {
         public string Token { get; set; }
@@ -112,4 +155,86 @@
         public string EmailorPhone { get; set; }  
         public string Password { get; set; }      
     }
+
+
+    //forgot password
+    private bool showForgotPasswordDialog;
+    private Forgotpass forgotPassRequest = new Forgotpass();
+    private string responseMessage;
+    private bool isLoading = false;
+    private bool isSuccess = false;
+    private void OpenForgotPasswordDialog()
+    {
+        showForgotPasswordDialog = true;
+
+    }
+
+    private void CloseForgotPasswordDialog()
+    {
+        showForgotPasswordDialog = false;
+        responseMessage = string.Empty;
+    }
+    private async Task SubmitForgotPassword()
+    {
+        isLoading = true;
+        responseMessage = string.Empty;
+        try
+        {
+            var response = await UserServices.ForgotPass(forgotPassRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                isSuccess = true;
+                responseMessage = "Mật khẩu mới đã được gửi tới email của bạn. Vui lòng kiểm tra!";
+            }
+            else
+            {
+                isSuccess = false;
+                responseMessage = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            responseMessage = $"Lỗi: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }
+
+    <style>
+        button.btn-link {
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+            button.btn-link:hover {
+                border: none;
+                color: #0056b3;
+            }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 1050;
+            overflow: hidden;
+            outline: 0;
+        }
+
+            .modal.show {
+                display: block;
+            }
+
+    </style>
