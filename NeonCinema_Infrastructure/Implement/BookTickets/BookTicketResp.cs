@@ -45,8 +45,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				// Check seat availability
 				var seatsState = await _context.SeatShowTimeStatuss.Include(x => x.Seat).ThenInclude(x => x.SeatTypes)
 					.Where(x => x.ShowtimeId == screening.ShowTimeID)
-
-					.Where(x => x.RoomID == screening.RoomID).ToArrayAsync();
+				.Where(x => x.RoomID == screening.RoomID).ToArrayAsync();
 
 				if (seatsState.Any(s => s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Sold && s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Maintenance))
 				{
@@ -68,13 +67,10 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				// tinhs gia ve
 				var seatTypes = screening.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);
-				var startTime = screening.ShowTime.StartTime;
+				var startTime = screening.ShowTime.StartTime ;
 				var showDate = screening.ShowDate;
 				var ticketPriceSetting = await _context.TicketPriceSettings
 				.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-
-
-
 				var tickets = request.SeatID.Select(seatId =>
 				{
 					decimal basePrice = 0;
