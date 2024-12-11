@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.BookTicket;
 using NeonCinema_Application.DataTransferObject.BookTicket.Request;
 using NeonCinema_Application.DataTransferObject.BookTicket.Resp;
+using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -32,6 +33,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				var screening = await _context.Screening
 					.Include(x => x.Rooms)
 						.ThenInclude(r => r.Seats)
+							.ThenInclude(s => s.SeatTypes)
+					.Include(x => x.ShowTime)
 					.FirstOrDefaultAsync(x => x.ID == request.ScreeningID, cancellationToken);
 
 				if (screening == null)
@@ -40,11 +43,9 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
 					}
 				// Check seat availability
-				var seatsState = await _context.SeatShowTimeStatuss.Include(x=>x.Seat).ThenInclude(x=>x.SeatTypes)
+				var seatsState = await _context.SeatShowTimeStatuss.Include(x => x.Seat).ThenInclude(x => x.SeatTypes)
 					.Where(x => x.ShowtimeId == screening.ShowTimeID)
-					.Where(x=>x.RoomID == screening.RoomID).ToArrayAsync();
-
-
+				.Where(x => x.RoomID == screening.RoomID).ToArrayAsync();
 
 				if (seatsState.Any(s => s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Sold && s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Maintenance))
 				{
@@ -65,15 +66,44 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				}
 
 				// tinhs gia ve
-				var seatTypes = seatsState.ToDictionary(s => s.ID, s => s.Seat.SeatTypes.ID);
-				var ticketPrices = await _context.TicketPrice
-					.Where(tp => seatTypes.Values.Contains(tp.SeatTypeID))
-					.ToListAsync(cancellationToken);
-
+				var seatTypes = screening.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);
+				var startTime = screening.ShowTime.StartTime ;
+				var showDate = screening.ShowDate;
+				var ticketPriceSetting = await _context.TicketPriceSettings
+				.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 				var tickets = request.SeatID.Select(seatId =>
 				{
-					var seatTypeId = seatTypes[seatId];
-					var ticketPrice = ticketPrices.First(tp => tp.SeatTypeID == seatTypeId);
+					decimal basePrice = 0;
+
+					// Xác định giá cơ bản theo ngày trong tuần và giờ chiếu
+					if (showDate.DayOfWeek == DayOfWeek.Monday ||
+						showDate.DayOfWeek == DayOfWeek.Tuesday ||
+						showDate.DayOfWeek == DayOfWeek.Wednesday ||
+						showDate.DayOfWeek == DayOfWeek.Thursday)
+					{
+						basePrice = startTime < new TimeSpan(17, 0, 0)
+							? ticketPriceSetting.PriceBefore17hWeekDay
+							: ticketPriceSetting.PriceAfter17hWeekDay;
+					}
+					else if (showDate.DayOfWeek == DayOfWeek.Friday ||
+							 showDate.DayOfWeek == DayOfWeek.Saturday ||
+							 showDate.DayOfWeek == DayOfWeek.Sunday)
+					{
+						basePrice = startTime < new TimeSpan(17, 0, 0)
+							? ticketPriceSetting.PriceBefore17hWeekeend
+							: ticketPriceSetting.PriceAfter17hWeekeend;
+					}
+
+					// Thêm phụ phí cho loại ghế
+					string seatTypeName = seatTypes[seatId];
+					if (seatTypeName == "Ghế Vip")
+					{
+						basePrice += ticketPriceSetting.SurchargeVIP;
+					}
+					else if (seatTypeName == "Ghế đôi")
+					{
+						basePrice += ticketPriceSetting.SurchargeCouple;
+					}
 
 					return new Ticket
 					{
@@ -82,7 +112,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						SeatID = seatId,
 						CreatedTime = DateTime.Now,
 						MovieID = (Guid)request.MovieId,
-						Price = ticketPrice.Price
+						Price = basePrice
 					};
 				}).ToList();
 
@@ -192,6 +222,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				throw new Exception($"{ex.Message} : {ex.StackTrace}");
 			}
 		}
+
+
 
 		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showDate)
 		{

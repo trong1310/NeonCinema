@@ -6,7 +6,7 @@
 
         public SendMailService(IConfiguration configuration)
         {
-            _emailSettings = configuration.GetSection("EmailSettings").Get<EmailSettings>();
+            _emailSettings = configuration.GetSection("EmailSetting").Get<EmailSettings>();
             if (_emailSettings == null)
             {
                 throw new Exception("Cấu hình EmailSettings không được tìm thấy hoặc không đúng.");
