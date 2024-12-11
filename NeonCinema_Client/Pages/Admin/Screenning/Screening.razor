@@ -196,7 +196,25 @@ else
 										<h6>Danh sách lịch chiếu phòng ... ngày ...</h6>
 									</div>
 									<div class="row p-1 rounded border mt-2 " style="height:300px; overflow-y: auto;">
-										table
+										<table class="table">
+											<thead style="position: sticky; top: 0; background-color: white;">
+												<tr>
+													<th>#</th>
+													<th>Thời gian bắt đầu</th>
+													<th>Thời gian kết thúc</th>
+												</tr>
+											</thead>
+											<tbody>
+												@* @foreach (var item in _lstuser)
+												{
+													<tr>
+														<td>@item.FullName</td>
+														<td>@item.PhoneNumber</td>
+														<td>@item.Email</td>
+													</tr>
+												} *@
+											</tbody>
+										</table>
 									</div>
 								</div>
 							</div>
