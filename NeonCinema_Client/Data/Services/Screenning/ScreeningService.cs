@@ -91,4 +91,30 @@ public class ScreeningService : IScreeningService
         }
         else return false;
 	}
+
+    //validate nè
+	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate)
+	{
+        //lấy danh sách lịch chiếu đã lọc
+        List<ScreeningSupportValidate> lstScr = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>("https://localhost:7211/api/Screening/get-scr-by-room-and-showdate");
+
+        //lấy danh sách id showtime từ danh sách lịch chiếu trên
+        var lstIdShowtime = new List<Guid>();
+
+        foreach (var item in lstScr)
+        {
+            lstIdShowtime.Add(item.ShowTimeID);
+        }
+
+        var lstShowTime = await GetAllShowTimesAsync();
+
+
+        //lọc danh sách showtime theo danh sách ID và trả về
+        return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList();
+ 	}
+
+	public Task<bool> ValidateShowTimeInRoom(Guid roomId)
+	{
+		throw new NotImplementedException();
+	}
 }

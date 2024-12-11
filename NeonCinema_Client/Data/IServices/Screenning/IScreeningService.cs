@@ -17,6 +17,9 @@ namespace NeonCinema_Client.Data.IServices.Screenning
         Task<PaginationResponse<MovieDTO>> GetAllMoviesAsync();
         Task<List<RoomDTO>> GetAllRoomsAsync();
         Task<bool> CreateSSS(SeatShowTimeStatusDTO input);
+        Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate);
+        Task<bool> ValidateShowTimeInRoom(Guid roomId);
+
 
     }
 }

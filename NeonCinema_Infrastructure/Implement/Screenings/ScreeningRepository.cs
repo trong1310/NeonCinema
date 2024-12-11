@@ -59,6 +59,13 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
             return new HttpResponseMessage(System.Net.HttpStatusCode.NoContent);
         }
 
+        public async Task<List<ScreeningSupportValidate>> GetScrByRoomAndShowDate(Guid roomId, DateTime showDate)
+        {
+            var lstScr = await _context.Screening.Where(x => x.RoomID == roomId && x.ShowDate == showDate).ToListAsync();
+
+            return lstScr.Select(x => _mapper.Map<ScreeningSupportValidate>(x)).ToList();
+        }
+
         public async Task<PaginationResponse<ScreeningDTO>> GetAllScreening(ViewScreningRequest request, CancellationToken cancellationToken)
         {
             //    var screenings = await _context.Screening
