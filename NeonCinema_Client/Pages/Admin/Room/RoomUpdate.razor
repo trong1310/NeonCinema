@@ -206,7 +206,7 @@
     private bool IsEditModalVisible { get; set; }
     private string SelectedRowId { get; set; }
     private bool showRowModal = false;
-    private int selectedRow = 0; 
+    private int selectedRow ; 
     private Guid selectedRowSeatTypeId; 
     private int selectedSeatTypeId;
     private List<SeatDTO> selectedSeats = new List<SeatDTO>();
@@ -263,9 +263,6 @@
             Console.WriteLine($"Error loading seats: {ex.Message}");
         }
     }
-
-
-
 
 
 
@@ -392,15 +389,15 @@
     {
         if (seat.Status.ToString() == "Selected")
         {
-            return "background-color: blue;"; // Màu cho ghế đã chọn
+            return "background-color: blue;"; 
         }
         if (seat.Status.ToString() == "Sold")
         {
-            return "background-color: ac1a8d;"; // Màu cho ghế đã bán
+            return "background-color: ac1a8d;"; 
         }
         if (seat.Status.ToString() == "Maintenance  ")
         {
-            return "background-color: gray;"; // Màu cho ghế bảo trì
+            return "background-color: gray;"; 
         }
         
         if (seat.SeatTypeID == new Guid("e26953d7-cb03-4ca4-af47-96ddcaa15117"))
