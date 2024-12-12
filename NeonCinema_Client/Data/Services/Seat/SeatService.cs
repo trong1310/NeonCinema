@@ -8,6 +8,7 @@ using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Seat;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement.Seats;
 using System.Text.Json;
 
@@ -20,12 +21,12 @@ namespace NeonCinema_Client.Data.Services.Seat
 {
     public class SeatService : ISeatService
     {
-
+        private readonly NeonCinemasContext _context;
         private readonly HttpClient _httpClient;
-        public SeatService(HttpClient httpclient)
+        public SeatService(HttpClient httpclient, NeonCinemasContext context)
         {
             _httpClient = httpclient;
-
+            _context = context;
         }
 
         public async Task<HttpResponseMessage> CreateSeat(CreateSeatDTO request)
@@ -87,7 +88,9 @@ namespace NeonCinema_Client.Data.Services.Seat
         {
             var respones = await _httpClient.GetFromJsonAsync<SeatDTO>($"https://localhost:7211/api/Seat/GetById?id={id}");
             return respones;
-        }
+        } 
+
+       
 
         public async Task<HttpResponseMessage> UpdateSeate(Guid id, UpdateSeatDTO request)
         {
@@ -102,6 +105,6 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-
+        
     }
 }

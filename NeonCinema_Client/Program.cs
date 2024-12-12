@@ -57,6 +57,7 @@ using NeonCinema_Client.Data.Services.TicketPriceSetting;
 using NeonCinema_Client.Data.IServices.TicketPriceSetting;
 using NeonCinema_Client.Data.IServices.BookHistory;
 using NeonCinema_Client.Data.Services.BookHistory;
+using NeonCinema_API.Controllers.Service;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);

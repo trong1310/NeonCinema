@@ -79,6 +79,7 @@
                             @for (int row = 1; row <= request.RowNumber; row++)
                             {
                                  <tr>
+                                    
                                     @for (int col = 1; col <= request.ColumnNumber; col++)
                                     {
                                         var seat = seats.FirstOrDefault(s => s.Row == row.ToString() && s.Column == col.ToString());
@@ -164,6 +165,10 @@
     private bool showModal = false;
     private SeatDTO selectedSeat = new SeatDTO();
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
+    
+
+    
+   
     protected override async Task OnInitializedAsync()
     {
         var rs = await RoomService.GetRoomById(roomId);
@@ -255,7 +260,7 @@
             return "background-color: gray;"; // Màu cho ghế bảo trì
         }
         
-        if (seat.SeatTypeID == new Guid("9c0904c3-48e4-44d5-ba2a-2835c04343ee"))
+        if (seat.SeatTypeID == new Guid("e26953d7-cb03-4ca4-af47-96ddcaa15117"))
         {
             return "background-color: #69d685;";
         }
@@ -263,7 +268,7 @@
         {
             return "background-color: #ee4646;";
         }
-        else if (seat.SeatTypeID == new Guid("3721396d-d534-4823-87c2-79b06999ef1d"))
+        else if (seat.SeatTypeID == new Guid("eed8d6ac-0087-4785-b3c5-5da5c34ef233"))
         {
             return "background-color: #a064d6;";
         }
