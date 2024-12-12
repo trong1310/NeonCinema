@@ -1,4 +1,4 @@
-﻿@page "/customer-checkbill"
+﻿@* @page "/customer-checkbill"
 @using Blazored.LocalStorage
 @using NeonCinema_Client.Data.IServices.User
 @using Blazored.LocalStorage
@@ -22,37 +22,43 @@ else if (!string.IsNullOrEmpty(errorMessage))
 }
 else if (bills != null && bills.Any())
 {
-    <ul>
-        @foreach (var bill in bills)
-        {
-            <li>
-                <strong>Bill Code:</strong> @bill.BillCode <br />
-                <strong>Total Price:</strong> @bill.TotalPrice <br />
-                <ul>
-                    @foreach (var ticket in bill.BillTickets)
-                    {
-                        <li>
-                            @* <strong>Phim:</strong> @ticket.TotalPrice <br />
-                            <strong>Ghế:</strong> @ticket.SeatNumber <br />
-                            <strong>Thời gian chiếu:</strong> @ticket.ScreeningTime *@
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-    </ul>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Bill Code</th>
+                <th>Total Price</th>
+                <th>Movie Name</th>
+                <th>Seat Number</th>
+                <th>Screening Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bill in bills)
+            {
+                @foreach (var ticket in bill.BillTickets)
+                {
+                    <tr>
+                        <td>@bill.BillCode</td>
+                        <td>@bill.TotalPrice</td>
+                        <td>@(ticket.Tickets?.Movies?.Name ?? "Không có thông tin phim")</td>
+                        <td>@(ticket.Tickets?.Seat?.SeatNumber ?? "Không có thông tin ghế")</td>
+                        <td>@(ticket.Tickets?.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 }
 else
 {
     <p>Không có vé nào được tìm thấy.</p>
 }
 
-
 @code {
     private bool isLoading = true;
     private string? errorMessage;
     private List<Bill> bills;
-    private Ticket tk;
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -63,11 +69,8 @@ else
                 errorMessage = "Người dùng chưa đăng nhập.";
                 return;
             }
-
-            
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/user-check-tickets");
             requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-           
             var response = await _http.SendAsync(requestMessage);
             if (response.IsSuccessStatusCode)
             {
@@ -95,3 +98,4 @@ else
     
 
 }
+ *@

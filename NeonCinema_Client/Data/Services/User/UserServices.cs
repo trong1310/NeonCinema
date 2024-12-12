@@ -18,6 +18,7 @@ using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using static NeonCinema_Client.Pages.Client.User.Profile;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_Domain.Enum;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -153,6 +154,6 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-       
+        
     }
 }
