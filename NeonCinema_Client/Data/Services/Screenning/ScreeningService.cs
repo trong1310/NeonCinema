@@ -96,7 +96,7 @@ public class ScreeningService : IScreeningService
 	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate)
 	{
         //lấy danh sách lịch chiếu đã lọc
-        List<ScreeningSupportValidate> lstScr = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>("https://localhost:7211/api/Screening/get-scr-by-room-and-showdate");
+        List<ScreeningSupportValidate> lstScr = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>($"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
 
         //lấy danh sách id showtime từ danh sách lịch chiếu trên
         var lstIdShowtime = new List<Guid>();
@@ -109,8 +109,9 @@ public class ScreeningService : IScreeningService
         var lstShowTime = await GetAllShowTimesAsync();
 
 
+
         //lọc danh sách showtime theo danh sách ID và trả về
-        return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList();
+        return lstShowTime.Where(x => lstIdShowtime.Equals(x.ID)).ToList(); // cần sửa đoạn này
  	}
 
 	public Task<bool> ValidateShowTimeInRoom(Guid roomId)

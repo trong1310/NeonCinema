@@ -61,9 +61,17 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 
         public async Task<List<ScreeningSupportValidate>> GetScrByRoomAndShowDate(Guid roomId, DateTime showDate)
         {
-            var lstScr = await _context.Screening.Where(x => x.RoomID == roomId && x.ShowDate == showDate).ToListAsync();
+            try
+            {
+                var lstScr = await _context.Screening.Where(x => x.RoomID == roomId && x.ShowDate == showDate).ToListAsync();
 
-            return lstScr.Select(x => _mapper.Map<ScreeningSupportValidate>(x)).ToList();
+                return lstScr.Select(x => _mapper.Map<ScreeningSupportValidate>(x)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
 
         public async Task<PaginationResponse<ScreeningDTO>> GetAllScreening(ViewScreningRequest request, CancellationToken cancellationToken)

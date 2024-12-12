@@ -109,7 +109,7 @@ namespace NeonCinema_API.Controllers
         {
             try
             {
-                return Ok(_screeningRepository.GetScrByRoomAndShowDate(roomId, showDate));
+                return Ok(await _screeningRepository.GetScrByRoomAndShowDate(roomId, showDate));
             }
             catch(Exception ex)
             {

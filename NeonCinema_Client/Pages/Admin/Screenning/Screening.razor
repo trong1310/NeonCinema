@@ -24,54 +24,6 @@ else
 		<div class="col-12 p-5">
 			<h6 style="display: inline;">Danh sách lịch chiếu</h6>
 			<hr>
-			@* <div class="row boxfilter p-2">
-		<div class="col-6">
-		<div class="form-group">
-		<label for="Search">Tìm kiếm</label>
-		<InputText class="form-control" style="width: 500px;" @bind-Value="inputSearchPromotion" placeholder="Search by name" @oninput="OnInputSearchProChanged" />
-		</div>
-		<div class="form-check">
-		<div class="row mt-3">
-		<InputRadioGroup @bind-Value="selectedStatus">
-		<div class="col">
-		<InputRadio class="form-check-input" Value="0" @oninput="OnInputStatusChanged" />
-		<label class="form-check-label">
-		Tất cả
-		</label>
-		</div>
-		<div class="col-2">
-		<InputRadio class="form-check-input" Value="1" @oninput="OnInputStatusChanged" />
-		<label class="form-check-label">
-		Không hoạt động
-		</label>
-		</div>
-		<div class="col-2">
-		<InputRadio class="form-check-input" Value="2" @oninput="OnInputStatusChanged" />
-		<label class="form-check-label">
-		Hoạt động
-		</label>
-		</div>
-		<div class="col-2">
-		<InputRadio class="form-check-input" Value="3" @oninput="OnInputStatusChanged" />
-		<label class="form-check-label">
-		Hết hạn
-		</label>
-		</div>
-		</InputRadioGroup>
-		</div>
-		</div>
-		</div>
-		<div class="col-3">
-		<label for="StartDate">Ngày bắt đầu</label>
-		<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="startDate" @oninput="OnInputStartDateChanged" />
-
-		</div>
-		<div class="col-3">
-		<label for="EndDate">Ngày kết thúc</label>
-		<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="endDate" @oninput="OnInputEndDateChanged" />
-		</div>
-		</div> *@
-
 			<div class="row mt-5">
 				<div class="col-11"></div>
 				<div class="col-1">
@@ -163,7 +115,7 @@ else
 
 											<div class="mb-3">
 												<label for="" class="form-label">Phòng chiếu</label>
-												<InputSelect @bind-Value="newScreening.RoomID" class="form-control">
+												<InputSelect @bind-Value="newScreening.RoomID" @oninput="OnInputChangedRoom" class="form-control">
 													<option value="" disabled selected>Chọn phòng</option>
 													@foreach (var rooms in rooms)
 													{
@@ -174,7 +126,7 @@ else
 
 											<div class="mb-3">
 												<label for="" class="form-label">Ngày chiếu</label>
-												<InputDate @bind-Value="date" class="form-control"></InputDate>
+												<InputDate @bind-Value="date" @oninput="OnInputChangedDate" class="form-control"></InputDate>
 											</div>
 
 											<div class="mb-3">
@@ -193,7 +145,7 @@ else
 								</div>
 								<div class="col-6 offset-1">
 									<div class="row">
-										<h6>Danh sách lịch chiếu phòng ... ngày ...</h6>
+										<h6>Danh sách lịch chiếu <b>@roomName</b> ngày <b>@date.ToShortDateString()</b></h6>
 									</div>
 									<div class="row p-1 rounded border mt-2 " style="height:300px; overflow-y: auto;">
 										<table class="table">
@@ -205,14 +157,14 @@ else
 												</tr>
 											</thead>
 											<tbody>
-												@* @foreach (var item in _lstuser)
+												@foreach (var item in _lstSTFil.Select((value, index) => new { value, index }))
 												{
 													<tr>
-														<td>@item.FullName</td>
-														<td>@item.PhoneNumber</td>
-														<td>@item.Email</td>
+														<td>@(item.index + 1)</td>
+														<td>@item.value.StartTime</td>
+														<td>@item.value.EndTime</td>
 													</tr>
-												} *@
+												}
 											</tbody>
 										</table>
 									</div>
@@ -323,13 +275,18 @@ else
 	private List<ScreeningDTO> screenings = new List<ScreeningDTO>();
 	private ScreeningCreateRequest newScreening = new ScreeningCreateRequest();
 	private ShowTimeCreateRequest newShowTime = new ShowTimeCreateRequest();
-	private List<ShowTimeDTO> showTime = new List<ShowTimeDTO>();
+	private List<ShowTimeDTO> _lstSTFil = new List<ShowTimeDTO>();
 	private PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
 	private List<RoomDTO> rooms = new List<RoomDTO>();
 
+
+	//input của Scr
+	private Guid roomId;
 	private DateTime date = DateTime.Now;
 	private DateTime startTime;
 	private DateTime endTime;
+	//
+	private string roomName = "";
 
 	private int? duration = null;
 
@@ -338,7 +295,6 @@ else
 	{
 		await LoadScreening();
 		movies = await _scrSv.GetAllMoviesAsync();
-		showTime = await _scrSv.GetAllShowTimesAsync();
 		rooms = await _scrSv.GetAllRoomsAsync();
 	}
 
@@ -355,6 +311,11 @@ else
 			throw new Exception(ex.Message);
 		}
 
+	}
+
+	private async Task LoadShowTimeFil()
+	{
+		_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
 	private void ToggleCreateForm()
@@ -386,7 +347,7 @@ else
 					var showtime = lstSt.FirstOrDefault(x => x.StartTime == newShowTime.StartTime && x.EndTime == newShowTime.EndTime);
 
 					//thêm các trường còn thiếu screening
-					newScreening.ShowDate = date;
+					newScreening.ShowDate = DateTime.Parse(date.ToShortDateString());
 					newScreening.ShowTimeID = showtime.ID;
 					newScreening.Status = ScreeningStatus.InActive;
 					//
@@ -476,7 +437,28 @@ else
 			TimeSpan thoigianbu = TimeSpan.FromMinutes(15);
 
 			endTime = starttime + x + thoigianbu;
-		}		
+		}
+		
+	}
+
+	private async Task OnInputChangedRoom(ChangeEventArgs e)
+	{
+		roomId = Guid.Parse(e.Value.ToString());
+
+		foreach (var item in rooms)
+		{
+			if(item.ID == roomId)
+			{
+				roomName = item.Name;
+			}
+		}
+		LoadShowTimeFil();
+	}
+
+	private async Task OnInputChangedDate(ChangeEventArgs e)
+	{
+		date = DateTime.Parse(e.Value.ToString());
+		LoadShowTimeFil();
 	}
 
 	//Màu trạng thái
