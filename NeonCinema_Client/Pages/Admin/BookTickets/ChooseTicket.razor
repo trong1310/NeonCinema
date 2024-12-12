@@ -947,7 +947,7 @@
 	private void RestartTransaction()
 	{
 		// Thiết lập thời gian kết thúc là 5 phút
-		endTime = DateTime.Now.AddMinutes(1);
+		endTime = DateTime.Now.AddMinutes(10);
 		isTimeout = false;
 
 		// Khởi động lại timer
