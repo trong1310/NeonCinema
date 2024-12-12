@@ -1,19 +1,19 @@
 ﻿/* Reset margin và padding của html và body để tránh vấn đề không mong muốn */
-html, body {
+/*html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow-x: hidden; /* Để tránh thanh cuộn ngang không cần thiết */
-}
+    overflow-x: hidden;*/ /* Để tránh thanh cuộn ngang không cần thiết */
+/*}*/
 
 /* Các kiểu dáng cho Navbar */
-.navbar {
+/*.navbar {
     background-color: #1b1b1b;
     padding: 15px 50px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 100; /* Đảm bảo Navbar nằm trên các phần tử khác */
-    justify-content: space-between;
+    z-index: 100;*/ /* Đảm bảo Navbar nằm trên các phần tử khác */
+    /*justify-content: space-between;
 }
 
 .navbar-brand img {
@@ -113,10 +113,10 @@ html, body {
 
         .user-info a:hover {
             color: green;
-        }
+        }*/
 
 /* Main */
-main {
+/*main {
     margin: 0;
     background-color: #000;
     width: 100%;
@@ -125,21 +125,21 @@ main {
 
 
 .profile-container {
-    background-color: black; /* Màu nền đen */
-    color: #fff; /* Màu chữ trắng để dễ đọc trên nền đen */
-}
+    background-color: black;*/ /* Màu nền đen */
+    /*color: #fff;*/ /* Màu chữ trắng để dễ đọc trên nền đen */
+/*}
 
 .profile-title {
     text-align: center;
     font-size: 30px;
     font-weight: bold;
     color: #4caf50;
-}
+}*/
 /* Cập nhật màu nền và border của card */
-.card {
-    background-color: black; /* Màu nền xám đen cho card */
-    color: #fff; /* Màu chữ trắng trên card */
-}
+/*.card {
+    background-color: black;*/ /* Màu nền xám đen cho card */
+    /*color: #fff;*/ /* Màu chữ trắng trên card */
+/*}
 
 .customer-movie {
     background-color: #555;
@@ -152,73 +152,73 @@ main {
     position: absolute;
     color: #fff;
     border: 1px solid #666;
-}
+}*/
 /* Định dạng cho các input và textarea trên nền tối */
-.form-control {
-    background-color: #555; /* Màu nền xám cho input và textarea */
-    color: #fff; /* Màu chữ trắng */
-    border: 1px solid #666; /* Màu border */
-}
+/*.form-control {
+    background-color: #555;*/ /* Màu nền xám cho input và textarea */
+    /*color: #fff;*/ /* Màu chữ trắng */
+    /*border: 1px solid #666;*/ /* Màu border */
+/*}
 
     .form-control:disabled {
-        background-color: #444; /* Màu nền khi input được disable */
-        color: #999; /* Màu chữ khi input được disable */
-    }
+        background-color: #444;*/ /* Màu nền khi input được disable */
+        /*color: #999;*/ /* Màu chữ khi input được disable */
+    /*}
 
     .form-control:focus {
-        background-color: #777; /* Màu nền không thay đổi khi focus */
-        color: #fff; /* Màu chữ không thay đổi khi focus */
-        border-color: 2px #4caf50; /* Màu border khi focus, có thể điều chỉnh theo nhu cầu */
-        outline: none; /* Loại bỏ outline mặc định của trình duyệt */
-    }
+        background-color: #777;*/ /* Màu nền không thay đổi khi focus */
+        /*color: #fff;*/ /* Màu chữ không thay đổi khi focus */
+        /*border-color: 2px #4caf50;*/ /* Màu border khi focus, có thể điều chỉnh theo nhu cầu */
+        /*outline: none;*/ /* Loại bỏ outline mặc định của trình duyệt */
+    /*}*/
 /* Định dạng cho hình ảnh hồ sơ */
-.profile-img {
+/*.profile-img {
     width: 180px;
     height: 180px;
     align-items: center;
-}
+}*/
 
 /* Cập nhật màu nền và border của nút chính */
-.btn-primary {
-    background-color: #007bff; /* Màu nền của nút chính */
-    border-color: #007bff; /* Màu border của nút chính */
-}
+/*.btn-primary {
+    background-color: #007bff;*/ /* Màu nền của nút chính */
+    /*border-color: #007bff;*/ /* Màu border của nút chính */
+/*}*/
 
 /* Định dạng cho các tiêu đề và nhãn */
-label {
-    color: #fff; /* Màu chữ trắng cho nhãn */
-}
+/*label {
+    color: #fff;*/ /* Màu chữ trắng cho nhãn */
+/*}
 
 .form-check {
     margin-right: 70px;
 }
 
 .profile-info {
-    list-style-type: none; /* Bỏ dấu đầu dòng */
-    padding-left: 0; /* Căn sát lề trái */
-    margin-top: 15px; /* Khoảng cách từ ảnh đến danh sách */
-}
+    list-style-type: none;*/ /* Bỏ dấu đầu dòng */
+    /*padding-left: 0;*/ /* Căn sát lề trái */
+    /*margin-top: 15px;*/ /* Khoảng cách từ ảnh đến danh sách */
+/*}
 
     .profile-info li {
-        margin-left: 0; /* Đảm bảo các thẻ <li> bắt sát lề trái */
-        font-family: Arial, sans-serif;
+        margin-left: 0;*/ /* Đảm bảo các thẻ <li> bắt sát lề trái */
+        /*font-family: Arial, sans-serif;
         font-size: 30px
     }
 
 
 
 .profile-info {
-    list-style-type: none; /* Bỏ dấu đầu dòng */
-    padding-left: 0; /* Căn sát lề trái */
-    margin-top: 15px; /* Khoảng cách từ ảnh đến danh sách */
-}
+    list-style-type: none;*/ /* Bỏ dấu đầu dòng */
+    /*padding-left: 0;*/ /* Căn sát lề trái */
+    /*margin-top: 15px;*/ /* Khoảng cách từ ảnh đến danh sách */
+/*}
 
     .profile-info li {
-        margin-left: 0; /* Đảm bảo các thẻ <li> bắt sát lề trái */
-        font-family: Arial, sans-serif;
+        margin-left: 0;*/ /* Đảm bảo các thẻ <li> bắt sát lề trái */
+        /*font-family: Arial, sans-serif;
         font-size: 30px
     }
 
 .table {
     background-color: #C6E2FF;
-}
+}*/
