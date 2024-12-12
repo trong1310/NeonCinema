@@ -1,0 +1,481 @@
+﻿@page "/choose-ticket"
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.BookTicket.Request
+@using NeonCinema_Application.DataTransferObject.BookTicket.Resp
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Collections.Generic
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
+@using NeonCinema_Domain.Database.Entities
+@using System.Text.Json
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject IUserServices UserService
+@inject NavigationManager _navi
+@inject HttpClient _http
+@layout LayoutClient
+
+
+<div class="container-fluid py-5">
+    <div class="row">
+        <!-- Thông tin phim -->
+        <div class="col-md-3">
+            <!-- Card thông tin phim -->
+            <div class="card movie-info-card mb-4">
+                <div class="img-container">
+                    <img src="/images/Client/cam.jpg" class="card-img-top" alt="Tên phim">
+                </div>
+                <div class="card-body">
+                    <p class="card-title text-success">DEVILS STAY: NGÀI QUỶ</p>
+                    
+                    <p class="card-text">
+                        <strong>Suất chiếu:</strong> 23h25 <br>
+                        <strong>Phòng chiếu:</strong> Screen 3
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Danh sách sản phẩm -->
+        <div class="col-md-6 ">
+            <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                <h4>Concession</h4>
+                <div class="product-list ">
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo1.jpg" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL Combo1 - Sweet 22Oz</h5>
+                            <p>
+                                <span class="text-success">80.100 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo2.jpg" alt="OL Combo2 - Sweet 22Oz" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL Combo2 - Sweet 22Oz</h5>
+                            <p>
+                                <span class="text-success">103.500 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL HN Combo Aquafina</h5>
+                            <p>
+                                <span class="text-success">75.600 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL HN Combo Aquafina</h5>
+                            <p>
+                                <span class="text-success">75.600 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL HN Combo Aquafina</h5>
+                            <p>
+                                <span class="text-success">75.600 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                        <div class="product-info flex-grow-1">
+                            <h5>OL HN Combo Aquafina</h5>
+                            <p>
+                                <span class="text-success">75.600 VND</span>
+                            </p>
+                        </div>
+                        <div class="quantity-controls d-flex align-items-center">
+                            <button class="btn control">-</button>
+                            <span class="mx-2">0</span>
+                            <button class="btn control">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Tóm tắt đơn hàng -->
+        <div class="col-md-3">
+            <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                <h4 class="text-center">NEON CINEMA</h4>
+                <p class="text-center">Screen 3 - 12/12/2024 - Suất chiếu: 23h25</p>
+                <div class="order-summary">
+                    <h3 class="card-title">DEVILS STAY: NGÀI QUỶ</h3>
+                    <div class="tags">
+                        <span class="badge bg-danger">T 18</span>
+                        <span class="badge bg-dark">120 phút</span>
+                        <span class="badge bg-success">Ngôn ngữ: VIE</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>C9,C10</span>
+                        <span>50.000 VND</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>OL Combo1 - Sweet 22Oz</span>
+                        <span>80.000 VND</span>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="payment-method mt-3 mb-3">
+                        <label>
+                            <input type="radio" name="paymentMethod" value="cash" class="me-2" id="cashRadio" checked>
+                            Tiền mặt
+                        </label>
+                        <br>
+                        <label>
+                            <input type="radio" name="paymentMethod" value="bankTransfer" class="me-2" id="bankTransferRadio">
+                            Chuyển khoản
+                        </label>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="customer-points mt-3">
+                        <!-- Hiển thị số điểm của khách hàng -->
+                        <p class="points-display">
+                            Số điểm hiện tại của bạn: <strong>100</strong> điểm
+                        </p>
+
+                        <!-- Nhập số điểm muốn sử dụng -->
+                        <div class="d-flex align-items-center mt-3">
+                            <input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng" min="0">
+                            <button class="btn use-points-btn d-flex align-items-center justify-content-center">Dùng điểm</button>
+                        </div>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <strong>Tổng tiền (Đã bao gồm phụ thu)</strong>
+                        <strong>50.000 VND</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4 gap-3">
+                        <button class="btn btn-secondary flex-grow-1">TRỞ LẠI</button>
+                        <button class="btn btn-success flex-grow-1 me-2">THANH TOÁN</button>
+                        
+                    </div>
+
+                    <!-- Thời gian đếm ngược -->
+                    <div class="mt-3">
+                        <h5>
+                            <span>Thời gian còn lại: </span>
+                            <span style="color: red;">@timeLeft</span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (isTimeout)
+    {
+        <div class="modal fade show d-flex align-items-center justify-content-center" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center">
+                    <h5 class="modal-title">Hết thời gian mua vé</h5>
+                    <p>Rất tiếc, phiên giao dịch của bạn đã hết hạn. Bạn có thể bắt đầu lại bằng cách nhấn vào nút bên dưới.</p>
+                    <button class="btn btn-success" @onclick="NagationToBookTicket">Trở lại</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        RestartTransaction(); // Bắt đầu đếm ngược khi vào trang
+    }
+    #region đếm ngược
+
+    private string timeLeft; // Thời gian còn lại
+    private bool isTimeout = false; // Trạng thái hết thời gian
+    private Timer? timer; // Timer để đếm ngược
+    private DateTime endTime; // Thời gian kết thúc
+
+    private void RestartTransaction()
+    {
+        // Thiết lập thời gian kết thúc là 5 phút
+        endTime = DateTime.Now.AddMinutes(1);
+        isTimeout = false;
+
+        // Khởi động lại timer
+        timer?.Dispose();
+        timer = new Timer(CheckTime, null, 0, 1000);
+    }
+
+    private void CheckTime(object? state)
+    {
+        var remaining = endTime - DateTime.Now;
+        if (remaining.TotalSeconds <= 0)
+        {
+            // Hết thời gian
+            isTimeout = true;
+            timeLeft = "00:00";
+            timer?.Dispose(); // Dừng timer
+            InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            // Cập nhật thời gian còn lại
+            timeLeft = $"{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+            InvokeAsync(StateHasChanged);
+        }
+    }
+    private async Task NagationToBookTicket()
+    {
+        _navi.NavigateTo("/list-movie");
+    }
+
+    #endregion
+}
+
+
+<style>
+    .movie-info-card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .movie-info-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-info-card .card-img-top {
+            object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+            width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+            height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+            max-height: 700px; /* Giới hạn chiều cao tối đa */
+        }
+
+        .movie-info-card .card-body {
+            text-align: center;
+            background-color: #292C35; /* Nền tối */
+            color: white;
+            padding: 15px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        .movie-info-card .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: limegreen;
+        }
+
+        .movie-info-card .card-text {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+    .card-title {
+        white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+        overflow: hidden; /* Ẩn phần văn bản bị tràn */
+        text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+        width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+        display: block; /* Hiển thị tiêu đề dưới dạng khối */
+        margin-bottom: 10px; /* Xóa margin dưới */
+        color: forestgreen;
+    }
+    .tags {
+        margin-top: -5px;
+        margin-bottom: 10px;
+    }
+
+        .tags .badge {
+            font-size: 14px; /* Cỡ chữ của các nhãn */
+            padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+            border-radius: 7px; /* Bo góc cho nhãn */
+            margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+        }
+
+            .tags .badge:last-child {
+                margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+            }
+    
+    .bordered-column {
+        border: 1px solid #ccc; /* Đường viền màu xám nhạt */
+        border-radius: 10px; /* Bo góc viền */
+        padding: 20px; /* Thêm khoảng cách bên trong cột */
+        background-color: #fff; /* Nền trắng */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng nhẹ */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .control {
+        border-radius: 50%; /* Tạo viền hình tròn */
+        width: 40px; /* Đặt chiều rộng cố định */
+        height: 40px; /* Đặt chiều cao cố định */
+        display: flex;
+        align-items: center; /* Căn giữa nội dung theo chiều dọc */
+        justify-content: center; /* Căn giữa nội dung theo chiều ngang */
+        padding: 0; /* Loại bỏ padding mặc định */
+        font-size: 18px; /* Kích thước chữ */
+        border: 2px solid #28a745; /* Viền màu xanh lá */
+        background-color: white; /* Nền trắng */
+        color: #28a745; /* Màu chữ xanh lá */
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        cursor: pointer; /* Thay đổi con trỏ khi hover */
+    }
+
+        .control:hover {
+            background-color: #28a745; /* Nền xanh lá khi hover */
+            color: white; /* Màu chữ trắng khi hover */
+            transform: scale(1.1); /* Phóng to nhẹ khi hover */
+        }
+
+        .control:active {
+            transform: scale(0.9); /* Nhỏ lại nhẹ khi bấm */
+
+
+        }
+
+        .control:focus {
+            outline: none; /* Loại bỏ viền khi nút được focus */
+            box-shadow: none; /* Loại bỏ bóng xanh dương khi nhấn */
+        }
+
+    .payment-method label {
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        color: #333; /* Màu chữ */
+        display: flex;
+        align-items: center;
+        cursor: pointer; /* Thay đổi con trỏ thành pointer */
+    }
+
+    .payment-method input[type="radio"] {
+        accent-color: #28a745; /* Màu xanh lá cho nút radio */
+        width: 24px; /* Tăng kích thước nút radio */
+        height: 24px; /* Tăng kích thước nút radio */
+        margin-right: 10px; /* Khoảng cách giữa nút và chữ */
+        cursor: pointer; /* Con trỏ kiểu pointer */
+    }
+
+  
+    .points-display {
+        font-size: 1.25rem; /* Tăng kích thước chữ */
+        color: #333; /* Màu chữ */
+        margin-bottom: 10px; /* Khoảng cách dưới */
+    }
+
+    .points-input {
+        width: 70%; /* Đặt chiều rộng cho ô nhập */
+        padding: 10px; /* Thêm khoảng cách trong */
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        border: 2px solid #ccc; /* Viền xám nhạt */
+        border-radius: 5px; /* Bo góc viền */
+        outline: none; /* Loại bỏ viền xanh khi focus */
+        transition: border-color 0.3s ease;
+        height: auto; /* Tự động điều chỉnh chiều cao */
+    }
+
+        .points-input:focus {
+            border-color: #28a745; /* Đổi màu viền khi focus */
+        }
+
+    .use-points-btn {
+        padding: 10px; /* Khoảng cách trong */
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        background-color: #28a745; /* Nền xanh lá */
+        color: white; /* Chữ trắng */
+        border: none; /* Loại bỏ viền */
+        border-radius: 5px; /* Bo góc viền */
+        height: auto; /* Đảm bảo chiều cao tương tự input */
+        display: flex; /* Để căn giữa chữ */
+        align-items: center; /* Căn giữa chữ theo chiều dọc */
+        justify-content: center; /* Căn giữa chữ theo chiều ngang */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        width: 150px; /* Đặt chiều rộng cố định nếu cần */
+        line-height: normal; /* Đảm bảo chữ nằm trong 1 hàng */
+    }
+
+        .use-points-btn:hover {
+            background-color: #218838; /* Màu đậm hơn khi hover */
+        }
+
+        .use-points-btn:active {
+            transform: scale(0.95); /* Hiệu ứng nhấn */
+        }
+
+    .dotted-line-custom {
+        border-top: 1px dashed gray; /* Đường kẻ dấu chấm */
+        width: 100%; /* Chiều rộng của đường kẻ */
+        margin: 10px 0; /* Khoảng cách trên và dưới đường */
+        height: 0; /* Đảm bảo không có chiều cao */
+        border-style: dashed;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-50px);
+        }
+
+    .modal-dialog {
+        margin: 100px auto;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .modal-header .btn-close {
+        border: none;
+        background: none;
+    }
+</style>

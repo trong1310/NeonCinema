@@ -115,6 +115,8 @@
 
   <ItemGroup>
 
+    <None Include="Pages\Client\Movie\ListMovieClient.razor" />
+
     <None Include="Pages\Client\User\ClientForgotPassword.razor" />
 
     <None Include="Pages\Register.razor" />
