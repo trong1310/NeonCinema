@@ -2,17 +2,22 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 
 namespace NeonCinema_API.Controllers.Service
 {
-    public class UserService : IUserServices
+    public class UserService : IUserServicesss
     {
         private readonly NeonCinemasContext _context;
         public UserService(NeonCinemasContext context)
         {
             _context = context;
         }
+        //public async Task<(int TotalPoints, decimal TotalSpent)> GetUserStatsAsync(Guid userId)
+        //{
+           
+        //}
         public async Task<UserProfile> GetUserProfileAsync(Guid userId)
         {
             var user = await _context.Users
@@ -22,7 +27,7 @@ namespace NeonCinema_API.Controllers.Service
                  FullName = u.FullName,
                  Email = u.Email,
                  PhoneNumber = u.PhoneNumber,
-                 Gender = u.Gender ? "Nam" : "Nữ",
+                 Gender = u.Gender,
                  DateOfBirth = u.DateOrBriht.ToString("yyyy-MM-dd"),
                  Address = u.Adderss,
                  Images = u.Images
@@ -31,6 +36,8 @@ namespace NeonCinema_API.Controllers.Service
 
             return user;
         }
+
+       
 
         public async Task<Users> UpdateProfileAsync(Guid userId, UpdateUserProfileRequest request)
         {
@@ -79,6 +86,7 @@ namespace NeonCinema_API.Controllers.Service
             {
                 user.Images = request.Images;
             }
+            
             _context.Users.Update(user);
 
             try
