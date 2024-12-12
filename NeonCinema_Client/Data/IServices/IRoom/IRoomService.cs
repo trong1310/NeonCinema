@@ -15,5 +15,10 @@ namespace NeonCinema_Client.Data.IServices.IRoom
         Task<RoomDTO> GetRoomById(Guid id);
         Task<List<SeatDTO>> GetSeatsByRoomId(Guid roomId);
 
+
+
+        Task<List<SeatDTO>> GetSeatsByRowAsync(Guid roomId, string rowId);
+        Task<bool> UpdateSeatTypeForRowAsync(Guid roomId, string rowId, Guid seatTypeId);
+
     }
 }
