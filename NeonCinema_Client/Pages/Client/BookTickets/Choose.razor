@@ -1,0 +1,1288 @@
+﻿@page "/choose-ticket/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.BookTicket.Request
+@using NeonCinema_Application.DataTransferObject.BookTicket.Resp
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Collections.Generic
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
+@using NeonCinema_Domain.Database.Entities
+@using System.Text.Json
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject IUserServices UserService
+@inject NavigationManager _navi
+@inject HttpClient _http
+@layout LayoutClient
+
+
+<div class="container-fluid py-5">
+    <div class="row">
+        <!-- Thông tin phim -->
+        <div class="col-md-3">
+            <!-- Card thông tin phim -->
+            <div class="card movie-info-card mb-4">
+                <div class="img-container">
+                    <img src="/images/Client/cam.jpg" class="card-img-top" alt="Tên phim">
+                </div>
+                <div class="card-body">
+                    <p class="card-title text-success">DEVILS STAY: NGÀI QUỶ</p>
+                    
+                    <p class="card-text">
+                        <strong>Suất chiếu:</strong> 23h25 <br>
+                        <strong>Phòng chiếu:</strong> Screen 3
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            @if (_selectedIndex == 0)
+            {   
+                <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                    <h4 class="text-center mb-3">Chọn ghế</h4>
+                    <div class="dotted-line-custom"></div>
+                    <div class="d-flex align-items-center justify-content-center">                       
+                        <!-- Thông tin ghế -->
+                        <div class="seat-type">
+                            <div class="seat-type-item">
+                                <span class="square bg-warning"></span>
+                                <span class="seat-name">Ghế thường</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-danger"></span>
+                                <span class="seat-name">Ghế vip</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-success"></span>
+                                <span class="seat-name">Ghế đôi</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-dark"></span>
+                                <span class="seat-name">Ghế đã bán</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-primary"></span>
+                                <span class="seat-name">Ghế bạn chọn</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-secondary"></span>
+                                <span class="seat-name">Ghế bảo trì</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container-fluid seat-selection mt-4">
+                        <div class="screen">
+                            <svg viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg" class="screen-svg">
+                                <!-- Đường cong -->
+                                <path d="M0,50 Q400,0 800,50" fill="none" stroke="#AFFF00" stroke-width="5" />
+                                <!-- Hiệu ứng gradient -->
+                                <path d="M0,50 Q400,0 800,50 L800,100 L0,100 Z" fill="url(#gradient)" />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="65%">
+                                        <stop offset="0%" style="stop-color:rgba(175, 255, 0, 0.5); stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:white; stop-opacity:0" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="screen-label mt-4">Màn hình</div>
+                        </div>
+
+
+
+                        <!-- Sơ đồ ghế -->
+                        <div class="seat-map mt-2">
+                            <!-- Hàng A -->
+                            <div class="seat-row">
+                                <span>A</span>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng B -->
+                            <div class="seat-row">
+                                <span>B</span>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng C -->
+                            <div class="seat-row">
+                                <span>C</span>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng D -->
+                            <div class="seat-row">
+                                <span>D</span>
+                                <button class="seat vip"></button>
+                                <button class="seat vip"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat vip"></button>
+                                <button class="seat vip"></button>
+                            </div>
+
+                            <!-- Hàng E -->
+                            <div class="seat-row">
+                                <span>E</span>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                            </div>
+                        </div>
+
+                        <!-- Nút -->
+                        <div class="d-flex justify-content-center align-items-center mt-5">
+                            <button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>
+                        </div>
+
+                    </div>
+                </div>
+            }
+            else if (_selectedIndex == 1)
+            {
+                <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                    <h4 class="text-center mb-3">Combo đồ ăn</h4>
+                    <div class="dotted-line-custom"></div>
+                    <div class="product-list ">
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo1.jpg" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL Combo1 - Sweet 22Oz</h5>
+                                <p>
+                                    <span class="text-success">80.100 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo2.jpg" alt="OL Combo2 - Sweet 22Oz" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL Combo2 - Sweet 22Oz</h5>
+                                <p>
+                                    <span class="text-success">103.500 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+
+        <!-- Tóm tắt đơn hàng -->
+        <div class="col-md-3">
+            <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                <h4 class="text-center">NEON CINEMA</h4>
+                <p class="text-center">Room 1 - 12/12/2024 - Suất chiếu: 23h25</p>
+                <div class="order-summary">
+                    <h3 class="card-title">DEVILS STAY: NGÀI QUỶ</h3>
+                    <div class="tags">
+                        <span class="badge bg-danger">T 18</span>
+                        <span class="badge bg-dark">120 phút</span>
+                        <span class="badge bg-success">Ngôn ngữ: VIE</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>C9,C10</span>
+                        <span>50.000 VND</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>OL Combo1 - Sweet 22Oz</span>
+                        <span>80.000 VND</span>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="payment-method mt-3 mb-3">
+                        <label>
+                            <input type="radio" name="paymentMethod" value="cash" class="me-2" id="cashRadio" checked>
+                            Tiền mặt
+                        </label>
+                        <br>
+                        <label>
+                            <input type="radio" name="paymentMethod" value="bankTransfer" class="me-2" id="bankTransferRadio">
+                            Chuyển khoản
+                        </label>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="customer-points mt-3">
+                        <!-- Hiển thị số điểm của khách hàng -->
+                        <p class="points-display">
+                            Số điểm hiện tại của bạn: <strong>100</strong> điểm
+                        </p>
+
+                        <!-- Nhập số điểm muốn sử dụng -->
+                        <div class="d-flex align-items-center mt-3">
+                            <input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng" min="0">
+                            <button class="btn use-points-btn d-flex align-items-center justify-content-center">Dùng điểm</button>
+                        </div>
+                    </div>
+                    <div class="dotted-line-custom"></div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <strong>Tổng tiền (Đã bao gồm phụ thu)</strong>
+                        <strong>50.000 VND</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4 gap-3">
+                        <button class="btn btn-secondary flex-grow-1">TRỞ LẠI</button>
+                        <button class="btn btn-success flex-grow-1 me-2">THANH TOÁN</button>
+                        
+                    </div>
+
+                    <!-- Thời gian đếm ngược -->
+                    <div class="mt-3">
+                        <h5>
+                            <span>Thời gian còn lại: </span>
+                            <span style="color: red;">@timeLeft</span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (isTimeout)
+    {
+        <div class="modal fade show d-flex align-items-center justify-content-center" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center">
+                    <h5 class="modal-title">Hết thời gian mua vé</h5>
+                    <p>Rất tiếc, phiên giao dịch của bạn đã hết hạn. Bạn có thể bắt đầu lại bằng cách nhấn vào nút bên dưới.</p>
+                    <button class="btn btn-success" @onclick="NagationToBookTicket">Trở lại</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    window.onload = function () {
+        // Ẩn QR code mặc định khi tải trang
+        hienThiQR('ẩn');
+    };
+
+    function hienThiQR(hienThi) {
+        const qrCode = document.getElementById("qrcode");
+        const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+
+        if (!qrCode) {
+            console.warn("QR Code element not found.");
+            return;
+        }
+
+        if (hienThi === 'hiện') {
+            // Kiểm tra phần tử tổng tiền
+            if (!amountDisplay) {
+                console.error("Amount display element not found.");
+                qrCode.style.display = 'none';
+                return;
+            }
+            const totalPrice = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
+            if (isNaN(totalPrice) || totalPrice <= 0) {
+                console.error("Invalid amount for QR code.");
+                qrCode.style.display = 'none';
+                return;
+            }
+            // Tạo URL QR code
+            const accountName = "NGUYEN VAN TRONG";
+            const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+
+            qrCode.src = qrUrl;
+            qrCode.style.display = 'block'; // Hiển thị QR code
+        } else {
+            qrCode.style.display = 'none'; // Ẩn QR code
+        }
+    }
+
+    // Thêm sự kiện thay đổi vào radio buttons
+    document.addEventListener('change', function (event) {
+        if (event.target.name === 'flexRadioDefault') {
+            if (event.target.id === 'bankTransferRadio' && event.target.checked) {
+                hienThiQR('hiện');
+            } else if (event.target.id === 'cashRadio' && event.target.checked) {
+                hienThiQR('ẩn');
+            }
+        }
+    });
+
+</script>
+@code {
+	#region
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	private int _selectedIndex = 0;
+	private Dictionary<string,
+	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
+	List<SeatDto> seats = new List<SeatDto>();
+	List<FoodComboDTO> foods = new List<FoodComboDTO>();
+	private decimal totalPrices = 0;
+	private bool showConfirmModal = false;
+	public string? phoneNumber;
+	public string error = "";
+	private void ShowConfirmModal()
+	{
+		showConfirmModal = true;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		screenings = await _services.ChooseScrening(id);
+
+		seats = screenings.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		//	account = await _services.GetAccount(phoneNumber);
+
+		foods = await _services.GetFoodCombo();
+		await RefreshSeatsAsync();
+		RestartTransaction();
+	}
+	private async Task RefreshSeatsAsync()
+	{
+		// Lấy dữ liệu ghế mới từ server
+		var updatedScreening = await _services.ChooseScrening(id);
+
+		// Cập nhật lại danh sách ghế
+		seats = updatedScreening.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+	}
+	public async Task OnClickToEditAmount()
+	{
+		await JS.InvokeVoidAsync("thaydoitongtien", totalPrices);
+		StateHasChanged();
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#region vé
+	private string GetSeatCssClass(SeatDto seat)
+	{
+		return seat.Status switch
+		{
+			NeonCinema_Domain.Enum.seatEnum.Sold => "sold",            // Ghế đã bán
+			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
+			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
+		};
+
+	}
+	private async Task UpdateQRCode()
+	{
+		// Không cố định gọi "hienThiQR('hiện')"
+		await JS.InvokeVoidAsync("hienThiQR"); // JavaScript sẽ kiểm tra trạng thái radio và cập nhật QR code
+		StateHasChanged(); // Làm mới giao diện Razor
+	}
+	private async void NextTab()
+	{
+		if (_selectedIndex < 1)
+		{
+			_selectedIndex++;
+			await InvokeAsync(StateHasChanged); // Đảm bảo giao diện được cập nhật trước
+			await UpdateQRCode(); // Gọi hàm cập nhật QR code
+		}
+	}
+
+	private void PreviousTab()
+	{
+		if (_selectedIndex > 0)
+		{
+			_selectedIndex--;
+			OnClickToEditAmount();
+		}
+	}
+	private List<string> selectedSeats = new List<string>();
+	private string selectedSeatNumbers = "";
+	private List<Guid> selectedSeatsId = new List<Guid>(); // Danh sách lưu trữ ID ghế được chọn
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
+		});
+	}
+
+	private async void SelectSeat(SeatDto seat)
+	{
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra nếu số lượng ghế chọn vượt quá giới hạn
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
+		if (!selectedSeats.Contains(seat.SeatNumber))
+		{
+			char currentRow = seat.SeatNumber[0];
+			int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+
+			foreach (var selectedSeat in selectedSeats)
+			{
+				char selectedRow = selectedSeat[0];
+				int selectedCol = int.Parse(selectedSeat.Substring(1));
+
+				// Kiểm tra ghế giữa trong cùng một hàng
+				if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
+				{
+					int middleCol = (currentCol + selectedCol) / 2;
+					string middleSeat = $"{currentRow}{middleCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+						return;
+					}
+				}
+
+				// Kiểm tra ghế giữa trong cùng một cột
+				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
+				{
+					char middleRow = (char)((currentRow + selectedRow) / 2);
+					string middleSeat = $"{middleRow}{currentCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+						return;
+					}
+				}
+			}
+		}
+
+		// Xử lý chọn/bỏ ghế
+		if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+			selectedSeatsId.Remove(seat.ID);
+			selectedSeats.Remove(seat.SeatNumber);
+			totalPrices -= (decimal)seat.Price;
+		}
+		else
+		{
+			Console.WriteLine($"Adding seat: {seat.SeatNumber}");
+			selectedSeats.Add(seat.SeatNumber);
+			selectedSeatsId.Add(seat.ID);
+			totalPrices += (decimal)seat.Price;
+		}
+
+		selectedSeatNumbers = string.Join(", ", selectedSeats);
+		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+		OnClickToEditAmount();
+		StateHasChanged();
+	}
+	#endregion
+	#region combo
+	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
+	private List<Guid> selectedComboId = new List<Guid>();
+	private int currentValue = 0;
+	private async void Increase(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo))
+		{
+			selectedCombos[combo]++;
+		}
+		else
+		{
+			selectedCombos[combo] = 1;
+		}
+
+		totalPrices += combo.Amount;
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+	private async void Decrease(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
+		{
+			selectedCombos[combo]--;
+			totalPrices -= combo.Amount;
+
+			if (selectedCombos[combo] == 0)
+			{
+				selectedCombos.Remove(combo);
+			}
+		}
+
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+
+	private int GetComboQuantity(FoodComboDTO combo)
+	{
+		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
+	}
+
+
+	#endregion
+	CreateBookTicketRequest request = new CreateBookTicketRequest();
+	NeonCinemasContext _context = new NeonCinemasContext();
+	private string paymentStatus = string.Empty; // Trạng thái thanh toán
+	private BillResp? billResp;
+	private void ResetUI()
+	{
+		selectedCombos.Clear();
+		selectedSeatNumbers = string.Empty;
+		selectedComboId.Clear();
+		selectedSeats.Clear();
+		selectedSeatsId.Clear();
+		currentValue = 0;
+		totalPrices = 0;
+		phoneNumber = string.Empty;
+		Rank.AccountName = string.Empty;
+		Rank.Point = 0;
+		RefreshSeatsAsync();
+	}
+
+	private async Task ProcessPayment()
+	{
+		if (!string.IsNullOrEmpty(phoneNumber))
+		{
+			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = account?.ID,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+		else
+		{
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = null,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+
+		try
+		{
+			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
+
+			if (billResp != null)
+			{
+				ResetUI();
+				paymentStatus = "success";
+			}
+			else
+			{
+				paymentStatus = "failure";
+			}
+		}
+		catch (Exception ex)
+		{
+			paymentStatus = "failure";
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+		}
+
+		StateHasChanged();
+	}
+	public Guid BillTicketId { get; set; }
+	public async Task ExportFile()
+	{
+		try
+		{
+			BillTicketId = (Guid)billResp.Id;
+			var export = await _services.ExportFile(BillTicketId);
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
+			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+		}
+	}
+	private string GetPaymentMessage(string status)
+	{
+		return status switch
+		{
+			"success" => "Thanh toán thành công!",
+			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+			_ => string.Empty,
+		};
+	}
+
+	private string GetAlertClass(string status)
+	{
+		return status switch
+		{
+			"success" => "alert-success",
+			"failure" => "alert-danger",
+			_ => string.Empty,
+		};
+	}
+
+	private void CloseModal()
+	{
+		showConfirmModal = false;
+		paymentStatus = string.Empty;
+		StateHasChanged();
+	}
+	#endregion
+	private bool ShowCreateButton { get; set; }
+
+	private RankMemberResp Rank = new RankMemberResp();
+	private async Task SearchCustomer()
+	{
+		try
+		{
+			var result = await _services.SeachAccount(phoneNumber);
+			if (result != null)
+			{
+				Rank = result;
+				ShowCreateButton = false;
+			}
+			else
+			{
+				ShowCreateButton = true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi tìm kiếm: {ex.Message}");
+			ShowCreateButton = true;
+		}
+	}
+
+
+
+	#region Tạo tài khoản
+
+	private UserCreateRequest requestUser = new UserCreateRequest();
+	private IBrowserFile selectedFile;
+	private bool showPassword = false;
+	private string errorEmailMessage;
+	private string errorPhoneMessage;
+	private string errorYearMessage;
+	private bool IsShowPhoneNotification = true;
+	private bool IsShowEmailNotification = true;
+	private bool IsShowYearNotification = true;
+	private bool showCreateAccountModal = false;
+
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			IsShowEmailNotification = true;
+			IsShowPhoneNotification = true;
+			IsShowYearNotification = true;
+			errorEmailMessage = string.Empty;
+			errorPhoneMessage = string.Empty;
+			errorYearMessage = string.Empty;
+
+			// Nếu không có file được chọn, sử dụng ảnh mặc định
+			if (selectedFile == null)
+			{
+				requestUser.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+			}
+			else
+			{
+				// Xử lý upload ảnh khi có file được chọn
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					var fileName = Path.GetFileName(fileUrl);
+					requestUser.Images = fileName;
+
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
+			}
+
+			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+			if (emailExists)
+			{
+				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				IsShowEmailNotification = false;
+				return;
+			}
+			if (requestUser.DateOrBriht == null ||
+				requestUser.DateOrBriht.Year < 1900 ||
+				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
+				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
+			{
+				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+				IsShowYearNotification = false;
+				return;
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại
+			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+			if (phoneExists)
+			{
+				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+				IsShowPhoneNotification = false;
+				return;
+			}
+
+			var userResponse = await UserService.CreateClient(requestUser);
+			if (userResponse.IsSuccessStatusCode)
+			{
+				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+				await Task.Delay(300);
+				CloseCreateAccountModal();
+			}
+			else
+			{
+				var errorContent = await userResponse.Content.ReadAsStringAsync();
+				Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+
+	private async Task CreateCustomer()
+	{
+		showCreateAccountModal = true;
+	}
+	private void CloseCreateAccountModal()
+	{
+		showCreateAccountModal = false;
+	}
+
+	#endregion
+
+    #region đếm ngược
+
+    private string timeLeft; // Thời gian còn lại
+    private bool isTimeout = false; // Trạng thái hết thời gian
+    private Timer? timer; // Timer để đếm ngược
+    private DateTime endTime; // Thời gian kết thúc
+
+    private void RestartTransaction()
+    {
+        // Thiết lập thời gian kết thúc là 5 phút
+        endTime = DateTime.Now.AddMinutes(10);
+        isTimeout = false;
+
+        // Khởi động lại timer
+        timer?.Dispose();
+        timer = new Timer(CheckTime, null, 0, 1000);
+    }
+
+    private void CheckTime(object? state)
+    {
+        var remaining = endTime - DateTime.Now;
+        if (remaining.TotalSeconds <= 0)
+        {
+            // Hết thời gian
+            isTimeout = true;
+            timeLeft = "00:00";
+            timer?.Dispose(); // Dừng timer
+            InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            // Cập nhật thời gian còn lại
+            timeLeft = $"{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+            InvokeAsync(StateHasChanged);
+        }
+    }
+    private async Task NagationToBookTicket()
+    {
+        _navi.NavigateTo("/list-movie");
+    }
+
+    #endregion
+}
+
+
+
+
+<style>
+    .movie-info-card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .movie-info-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-info-card .card-img-top {
+            object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+            width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+            height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+            max-height: 700px; /* Giới hạn chiều cao tối đa */
+        }
+
+        .movie-info-card .card-body {
+            text-align: center;
+            background-color: #292C35; /* Nền tối */
+            color: white;
+            padding: 15px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        .movie-info-card .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: limegreen;
+        }
+
+        .movie-info-card .card-text {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+    .card-title {
+        white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+        overflow: hidden; /* Ẩn phần văn bản bị tràn */
+        text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+        width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+        display: block; /* Hiển thị tiêu đề dưới dạng khối */
+        margin-bottom: 10px; /* Xóa margin dưới */
+        color: forestgreen;
+    }
+    .tags {
+        margin-top: -5px;
+        margin-bottom: 10px;
+    }
+
+        .tags .badge {
+            font-size: 14px; /* Cỡ chữ của các nhãn */
+            padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+            border-radius: 7px; /* Bo góc cho nhãn */
+            margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+        }
+
+            .tags .badge:last-child {
+                margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+            }
+    
+    .bordered-column {
+        border: 1px solid #ccc; /* Đường viền màu xám nhạt */
+        border-radius: 10px; /* Bo góc viền */
+        padding: 20px; /* Thêm khoảng cách bên trong cột */
+        background-color: #fff; /* Nền trắng */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng nhẹ */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .seat-type {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .seat-type-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .square {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+
+    .seat-map {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .seat-row span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+
+        .seat.standard {
+            background-color: #e0e0e0;
+        }
+
+        .seat.vip {
+            background-color: #ffd700;
+        }
+
+        .seat.couple {
+            background-color: #00dfff;
+        }
+
+        .seat.booked {
+            background-color: #ff4d4d;
+            cursor: not-allowed;
+        }
+
+    .seat-info span.seat {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    .bg-dark {
+        background-color: #343a40; /* Màu ghế đã bán */
+        color: #fff;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d; /* Màu ghế bảo trì */
+        color: #fff;
+    }
+
+    .bg-danger {
+        background-color: #dc3545; /* Màu ghế VIP */
+        color: #fff;
+    }
+
+    .bg-success {
+        background-color: #28a745; /* Màu ghế đôi */
+        color: #fff;
+    }
+    .screen {
+        position: relative;
+        width: 100%;
+        max-width: 1000px; /* Giới hạn chiều dài là 1000 */
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .screen-svg {
+        width: 100%;
+        height: auto;
+    }
+
+    .screen-label {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: #7a7a7a;
+        text-transform: uppercase;
+    }
+
+    .control {
+        border-radius: 50%; /* Tạo viền hình tròn */
+        width: 40px; /* Đặt chiều rộng cố định */
+        height: 40px; /* Đặt chiều cao cố định */
+        display: flex;
+        align-items: center; /* Căn giữa nội dung theo chiều dọc */
+        justify-content: center; /* Căn giữa nội dung theo chiều ngang */
+        padding: 0; /* Loại bỏ padding mặc định */
+        font-size: 18px; /* Kích thước chữ */
+        border: 2px solid #28a745; /* Viền màu xanh lá */
+        background-color: white; /* Nền trắng */
+        color: #28a745; /* Màu chữ xanh lá */
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        cursor: pointer; /* Thay đổi con trỏ khi hover */
+    }
+
+        .control:hover {
+            background-color: #28a745; /* Nền xanh lá khi hover */
+            color: white; /* Màu chữ trắng khi hover */
+            transform: scale(1.1); /* Phóng to nhẹ khi hover */
+        }
+
+        .control:active {
+            transform: scale(0.9); /* Nhỏ lại nhẹ khi bấm */
+
+
+        }
+
+        .control:focus {
+            outline: none; /* Loại bỏ viền khi nút được focus */
+            box-shadow: none; /* Loại bỏ bóng xanh dương khi nhấn */
+        }
+
+    .payment-method label {
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        color: #333; /* Màu chữ */
+        display: flex;
+        align-items: center;
+        cursor: pointer; /* Thay đổi con trỏ thành pointer */
+    }
+
+    .payment-method input[type="radio"] {
+        accent-color: #28a745; /* Màu xanh lá cho nút radio */
+        width: 24px; /* Tăng kích thước nút radio */
+        height: 24px; /* Tăng kích thước nút radio */
+        margin-right: 10px; /* Khoảng cách giữa nút và chữ */
+        cursor: pointer; /* Con trỏ kiểu pointer */
+    }
+
+  
+    .points-display {
+        font-size: 1.25rem; /* Tăng kích thước chữ */
+        color: #333; /* Màu chữ */
+        margin-bottom: 10px; /* Khoảng cách dưới */
+    }
+
+    .points-input {
+        width: 70%; /* Đặt chiều rộng cho ô nhập */
+        padding: 10px; /* Thêm khoảng cách trong */
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        border: 2px solid #ccc; /* Viền xám nhạt */
+        border-radius: 5px; /* Bo góc viền */
+        outline: none; /* Loại bỏ viền xanh khi focus */
+        transition: border-color 0.3s ease;
+        height: auto; /* Tự động điều chỉnh chiều cao */
+    }
+
+        .points-input:focus {
+            border-color: #28a745; /* Đổi màu viền khi focus */
+        }
+
+    .use-points-btn {
+        padding: 10px; /* Khoảng cách trong */
+        font-size: 1.1rem; /* Kích thước chữ lớn hơn */
+        background-color: #28a745; /* Nền xanh lá */
+        color: white; /* Chữ trắng */
+        border: none; /* Loại bỏ viền */
+        border-radius: 5px; /* Bo góc viền */
+        height: auto; /* Đảm bảo chiều cao tương tự input */
+        display: flex; /* Để căn giữa chữ */
+        align-items: center; /* Căn giữa chữ theo chiều dọc */
+        justify-content: center; /* Căn giữa chữ theo chiều ngang */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        width: 150px; /* Đặt chiều rộng cố định nếu cần */
+        line-height: normal; /* Đảm bảo chữ nằm trong 1 hàng */
+    }
+
+        .use-points-btn:hover {
+            background-color: #218838; /* Màu đậm hơn khi hover */
+        }
+
+        .use-points-btn:active {
+            transform: scale(0.95); /* Hiệu ứng nhấn */
+        }
+
+    .dotted-line-custom {
+        border-top: 1px dashed gray; /* Đường kẻ dấu chấm */
+        width: 100%; /* Chiều rộng của đường kẻ */
+        margin: 10px 0; /* Khoảng cách trên và dưới đường */
+        height: 0; /* Đảm bảo không có chiều cao */
+        border-style: dashed;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-50px);
+        }
+
+    .modal-dialog {
+        margin: 100px auto;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .modal-header .btn-close {
+        border: none;
+        background: none;
+    }
+</style>

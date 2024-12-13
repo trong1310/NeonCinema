@@ -50,10 +50,13 @@
         <div class="form-group">
             <label for="status">Trạng Thái:</label>
             <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
-                <option value="@(EntityStatus.Active)">Ghế còn trống</option>
-                <option value="@(EntityStatus.Inactive)">Đã đặt</option>
+                <option value="@(seatEnum.Available)">Ghế còn trống</option>
+                <option value="@(seatEnum.Sold)">Ghế đã bán</option>
+                <option value="@(seatEnum.Selected)">Ghế đã chọn</option>
+                <option value="@(seatEnum.Maintenance)">Ghế bảo trì</option>
             </InputSelect>
         </div>
+
 
         <div style="margin-top: 10px">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Cập Nhật</button>

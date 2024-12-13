@@ -19,6 +19,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 		{
 			_context = context;
 		}
+
 		public async Task<BillResp> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
 			using var transaction = await _context.Database.BeginTransactionAsync();
@@ -42,29 +43,31 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
 					}
-				// Check seat availability
-				var seatsState = await _context.SeatShowTimeStatuss.Include(x => x.Seat).ThenInclude(x => x.SeatTypes)
-					.Where(x => x.ShowtimeId == screening.ShowTimeID)
-				.Where(x => x.RoomID == screening.RoomID).ToArrayAsync();
+				var seats = await _context.SeatShowTimeStatuss
+									.Include(x => x.Seat)
+										.ThenInclude(x => x.SeatTypes)
+									.Where(x => x.ShowtimeId == screening.ShowTimeID && x.RoomID == screening.RoomID)
+									.Where(x => x.ShowDate == screening.ShowDate)
+									.Where(x => request.SeatID.Contains(x.SeatID))
+									.ToListAsync(cancellationToken);
 
-				if (seatsState.Any(s => s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Sold && s.seatEnum == NeonCinema_Domain.Enum.seatEnum.Maintenance))
+				// Kiểm tra ghế không khả dụng
+				var unavailableSeats = seats
+					.Where(x => request.SeatID.Contains(x.SeatID) && x.seatEnum != NeonCinema_Domain.Enum.seatEnum.Available)
+					.Select(x => x.Seat.SeatNumber)
+					.ToList();
+
+				if (unavailableSeats.Count() > 0)
 				{
-					var unavailableSeats = seatsState.Where(s => s.seatEnum != NeonCinema_Domain.Enum.seatEnum.Available)
-												.Select(s => s.Seat.SeatNumber);
-					if (unavailableSeats.Any())
-					{
-						throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
-					}
+					throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
 				}
-
-				// Update seat status to Sold
-				foreach (var seat in seatsState)
+				var selectedSeats = seats.Where(x => request.SeatID.Contains(x.SeatID)).ToList();
+				foreach (var seat in selectedSeats)
 				{
 					seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Sold;
-					_context.UpdateRange(seat);
-					await _context.SaveChangesAsync();
 				}
-
+				_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
+				await _context.SaveChangesAsync();
 				// tinhs gia ve
 				var seatTypes = screening.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);
 				var startTime = screening.ShowTime.StartTime ;
@@ -211,7 +214,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						SeatNumber = tk.Tickets?.Seat?.SeatNumber ?? "N/A",
 					}).ToList() ?? new List<BillTicketResp>(),
 					CreatedAt = billresp.CreatedTime ?? DateTime.MinValue,
-					CustomerName = billresp.Users?.FullName ?? "Khác lẻ",
+					CustomerName = billresp.Users?.FullName ?? "Khách lẻ",
 					TotalPrice = billresp.TotalPrice,
 				};
 
@@ -222,6 +225,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				throw new Exception($"{ex.Message} : {ex.StackTrace}");
 			}
 		}
+
 
 
 
@@ -265,8 +269,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 		public async Task<ScreeningMoviesDto> ChooseScreeningMovies(Guid Id)
 		{
-			TimeSpan currentTime = DateTime.Now.TimeOfDay;
-			var date = DateTime.Now;
 			var screenings = await _context!.Screening
 							.Include(x => x.ShowTime)
 							.Include(x => x.Rooms)
@@ -274,21 +276,63 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 									.ThenInclude(x => x.SeatTypes)
 							.Where(x => x.ID == Id)
 							.FirstOrDefaultAsync();
-			var seats = screenings.Rooms!.Seats!.Select(x =>
+			var seatShowTime = await _context.SeatShowTimeStatuss
+				.Include(x => x.ShowTime)
+				.Include(x => x.Room)
+				.Include(x => x.Seat).ThenInclude(x=>x.SeatTypes).Where(x => x.ShowtimeId == screenings.ShowTimeID)
+				.Where(x => x.RoomID == screenings.RoomID)
+				.Where(x => x.ShowDate == screenings.ShowDate).ToListAsync();
+			var seatTypes = screenings.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);
+			var startTime = screenings.ShowTime.StartTime;
+			var showDate = screenings.ShowDate;
+			var ticketPriceSetting = await _context.TicketPriceSettings
+			.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+			var seats = seatShowTime.Select(x =>
 			{
 				// Lấy giá dựa trên SeatTypeID thay vì SeatID
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatTypeID == x.SeatTypeID) // Sửa: Lấy giá theo SeatTypeID
+					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID) // Sửa: Lấy giá theo SeatTypeID
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
+				decimal basePrice = 0;
+
+				// Xác định giá cơ bản theo ngày trong tuần và giờ chiếu
+				if (showDate.DayOfWeek == DayOfWeek.Monday ||
+					showDate.DayOfWeek == DayOfWeek.Tuesday ||
+					showDate.DayOfWeek == DayOfWeek.Wednesday ||
+					showDate.DayOfWeek == DayOfWeek.Thursday)
+				{
+					basePrice = startTime < new TimeSpan(17, 0, 0)
+						? ticketPriceSetting.PriceBefore17hWeekDay
+						: ticketPriceSetting.PriceAfter17hWeekDay;
+				}
+				else if (showDate.DayOfWeek == DayOfWeek.Friday ||
+						 showDate.DayOfWeek == DayOfWeek.Saturday ||
+						 showDate.DayOfWeek == DayOfWeek.Sunday)
+				{
+					basePrice = startTime < new TimeSpan(17, 0, 0)
+						? ticketPriceSetting.PriceBefore17hWeekeend
+						: ticketPriceSetting.PriceAfter17hWeekeend;
+				}
+
+				// Thêm phụ phí cho loại ghế
+				string seatTypeName = x.Seat.SeatTypes.SeatTypeName;
+				if (seatTypeName == "Ghế Vip")
+				{
+					basePrice += ticketPriceSetting.SurchargeVIP;
+				}
+				else if (seatTypeName == "Ghế đôi")
+				{
+					basePrice += ticketPriceSetting.SurchargeCouple;
+				}
 
 				return new SeatDto
 				{
-					ID = x.ID,
-					SeatNumber = x.SeatNumber,
-					SeatType = x.SeatTypes.SeatTypeName,
-					Status = x.Status,
-					Price = ticketPrice // Gán giá lấy được từ bảng TicketPrice
+					ID = x.Seat.ID,
+					SeatNumber = x.Seat.SeatNumber,
+					SeatType = x.Seat.SeatTypes.SeatTypeName,
+					Status = x.seatEnum,
+					Price = basePrice // Gán giá lấy được từ bảng TicketPrice
 				};
 			}).ToList();
 			var dto = new ScreeningMoviesDto()

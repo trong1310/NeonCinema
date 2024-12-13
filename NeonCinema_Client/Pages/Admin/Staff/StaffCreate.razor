@@ -246,7 +246,6 @@
             if (userResponse.IsSuccessStatusCode)
             {
                 ShowSnackbar("Thêm nhân viên thành công.", Severity.Success);
-                await Task.Delay(3000);
                 _navigation.NavigateTo("/staff");
             }
             else

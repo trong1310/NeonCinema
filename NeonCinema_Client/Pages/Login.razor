@@ -74,21 +74,21 @@
                             <h5 class="modal-title">Quên mật khẩu</h5>
                             <button type="button" class="btn-close" aria-label="Close" @onclick="CloseForgotPasswordDialog"></button>
                         </div>
-                    
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label" style="color: black;">Email khôi phục</label>
-                                    <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
-                                    placeholder="Nhập email của bạn..." style="color:black; background-color: white">
-                                </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" style="color: black;">Email khôi phục</label>
+                                <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
+                                placeholder="Nhập email của bạn..." style="color:black; background-color: white">
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @onclick="CloseForgotPasswordDialog">Hủy</button>
-                                <button type="submit" class="btn btn-primary" disabled="@isLoading">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isLoading ? "inline-block" : "none");"></span>
-                                    Gửi yêu cầu
-                                </button>                              
-                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseForgotPasswordDialog">Hủy</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isLoading ? "inline-block" : "none");"></span>
+                                Gửi yêu cầu
+                            </button>                              
+                        </div>
                         @if (!string.IsNullOrEmpty(responseMessage))
                         {
                             <div class="alert mt-3 alert-@(isSuccess ? "success" : "danger")" style="margin-left: 3px; margin-right: 3px;">
@@ -96,16 +96,16 @@
                             </div>
                         }
                     </div>
-                    
+
                 </EditForm>
-                
+
             </div>
         </div>
     }
     <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerLabel" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 1200px">
             <EditForm Model="request" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
+                <DataAnnotationsValidator />
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Đăng kí tài khoản</h5>
@@ -174,7 +174,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group position-relative">
-                     
+
                                                 <label for="pass" class="font-weight-bold">Mật khẩu</label>
                                                 <div class="password-container">
                                                     <input type="@(showPassword ? "text" : "password")" id="password" class="form-control" @bind-value="request.PassWord"
@@ -187,7 +187,7 @@
                                                 {
                                                     <span class="text-danger">@errorPasswordMessage</span>
                                                 }
-                                            </div>                                          
+                                            </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -275,7 +275,7 @@
                     }
                 </div>
             </EditForm>
-            
+
         </div>
     </div>
 
@@ -313,11 +313,26 @@
                 if (response != null && !string.IsNullOrEmpty(response.Token))
                 {
                     await _localstorage.SetItemAsync("authToken", response.Token);
-                    _navi.NavigateTo("/customer-profilee");
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(response.Token);
+                    var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                    if (roleName == "Client")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (roleName == "Admin")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (roleName == "Staff")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                   
                 }
                 else
                 {
-                    errorMessage = "Token không hợp lệ";
+                    errorMessage = "Thông tin đăng nhập không chính xác";
                 }
             }
             else
@@ -338,8 +353,8 @@
     }
     public class LoginModel
     {
-        public string EmailorPhone { get; set; }  
-        public string Password { get; set; }      
+        public string EmailorPhone { get; set; }
+        public string Password { get; set; }
     }
     #endregion
 
@@ -457,7 +472,7 @@
         errorYearMessage = string.Empty;
         try
         {
-            
+
 
             // Nếu không có file được chọn, sử dụng ảnh mặc định
             if (selectedFile == null)
@@ -571,21 +586,107 @@
 
 }
 
-    <style>
-        button.btn-link {
-            background: none;
-            border: none;
-            color: #007bff;
-            text-decoration: underline;
-            cursor: pointer;
-            padding: 0;
-            font-size: 1rem;
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
+
+    .background-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #bg-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .login-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        padding: 30px;
+        border-radius: 10px;
+        color: #fff;
+        width: 650px;
+        height: 400px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+        .login-container h1 {
+            margin-top: 0;
+            text-align: center;
         }
 
-            button.btn-link:hover {
-                border: none;
-                color: #0056b3;
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+        .input-group label {
+            margin-bottom: 5px;
+        }
+
+        .input-group .form-control {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            height: 50px;
+        }
+
+    button {
+        width: 40%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    .links {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+            .links a:hover {
+                text-decoration: underline;
             }
+
+    button.btn-link {
+        background: none;
+        border: none;
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1rem;
+    }
+
+        button.btn-link:hover {
+            border: none;
+            color: #0056b3;
+        }
 
     .profile-pic {
         width: 200px;
@@ -695,4 +796,4 @@
             .password-container .password-icon:hover {
                 color: #aaa;
             }
-    </style>
+</style>

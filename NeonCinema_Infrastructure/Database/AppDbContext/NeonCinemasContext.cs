@@ -76,7 +76,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
            // optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
 
 
 		}
@@ -535,7 +537,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					Name = "Room 1",
 					SeatingCapacity = 100,
 					Status = EntityStatus.Active,
-					CreatedTime = DateTime.Now,
+                    RowNumber = 12,
+                    ColumnNumber = 12,
+                    CreatedTime = DateTime.Now,
 					CinemasId = cinemaData[0].ID,
 				},
 				new Room
@@ -543,7 +547,9 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 					ID = Guid.NewGuid(),
 					Name = "Room 2",
 					SeatingCapacity = 150,
-					Status = EntityStatus.Active,
+                    RowNumber = 12,
+                    ColumnNumber = 12,
+                    Status = EntityStatus.Active,
 					CreatedTime = DateTime.Now,
 					CinemasId = cinemaData[0].ID,
 				}
