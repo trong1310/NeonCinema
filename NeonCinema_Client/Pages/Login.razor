@@ -79,7 +79,7 @@
                             <div class="mb-3">
                                 <label class="form-label" style="color: black;">Email khôi phục</label>
                                 <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
-                                       placeholder="Nhập email của bạn..." style="color:black; background-color: white">
+                                placeholder="Nhập email của bạn..." style="color:black; background-color: white">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -87,7 +87,7 @@
                             <button type="submit" class="btn btn-primary" disabled="@isLoading">
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isLoading ? "inline-block" : "none");"></span>
                                 Gửi yêu cầu
-                            </button>
+                            </button>                              
                         </div>
                         @if (!string.IsNullOrEmpty(responseMessage))
                         {
@@ -313,11 +313,26 @@
                 if (response != null && !string.IsNullOrEmpty(response.Token))
                 {
                     await _localstorage.SetItemAsync("authToken", response.Token);
-                    _navi.NavigateTo("/customer-profilee");
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(response.Token);
+                    var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                    if (roleName == "Client")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (roleName == "Admin")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                    if (roleName == "Staff")
+                    {
+                        _navi.NavigateTo("/client-dashboard");
+                    }
+                   
                 }
                 else
                 {
-                    errorMessage = "Token không hợp lệ";
+                    errorMessage = "Thông tin đăng nhập không chính xác";
                 }
             }
             else

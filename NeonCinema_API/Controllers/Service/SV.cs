@@ -27,5 +27,7 @@ namespace NeonCinema_API.Controllers.Service
                  .FirstOrDefaultAsync();
             return (totalPoints, totalSpent, rankuser);
         }
+
+        
     }
 }
