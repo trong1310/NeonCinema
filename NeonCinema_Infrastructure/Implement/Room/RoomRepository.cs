@@ -41,12 +41,14 @@ namespace NeonCinema_Infrastructure.Implement.Room
 
             for (int row = 1; row <= request.RowNumber; row++)
             {
+                // Chuyển hàng (row) từ số thành chữ cái (A, B, C, ...)
+                char rowLetter = (char)('A' + row - 1);
                 for (int column = 1; column <= request.ColumnNumber; column++)
                 {
                     var seat = new NeonCinema_Domain.Database.Entities.Seat
                     {
                         ID = Guid.NewGuid(),
-                        SeatNumber = $"{row}-{column}",
+                        SeatNumber = $"{rowLetter}{column}",
                         Row = row.ToString(),
                         Column = column.ToString(),
                         Status = seatEnum.Available,
@@ -125,6 +127,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
             // Lặp qua hàng và cột để kiểm tra ghế
             for (int row = 1; row <= request.RowNumber; row++)
             {
+                char rowLetter = (char)('A' + row - 1); // Chuyển hàng thành chữ cái
                 for (int column = 1; column <= request.ColumnNumber; column++)
                 {
                     string seatNumber = $"{row}-{column}";
@@ -136,7 +139,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     if (existingSeat != null)
                     {
                         // Cập nhật thông tin ghế nếu cần
-                        existingSeat.Row = row.ToString();
+                        existingSeat.Row = rowLetter.ToString();
                         existingSeat.Column = column.ToString();
                         existingSeat.Status = seatEnum.Available; // Cập nhật trạng thái nếu cần
                     }
@@ -147,7 +150,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                         {
                             ID = Guid.NewGuid(),
                             SeatNumber = seatNumber,
-                            Row = row.ToString(),
+                            Row = rowLetter.ToString(),
                             Column = column.ToString(),
                             Status = seatEnum.Available,
                             RoomID = room.ID,
@@ -159,7 +162,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
             }
             foreach (var existingSeat in existingSeats)
             {
-                int row = int.Parse(existingSeat.Row);
+                char rowLetter = existingSeat.Row[0];
+                int row = rowLetter - 'A' + 1; // Chuyển chữ cái thành số hàng
                 int column = int.Parse(existingSeat.Column);
 
                 if (row > request.RowNumber || column > request.ColumnNumber)

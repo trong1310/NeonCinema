@@ -168,9 +168,7 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                 obj.SeatNumber = request.SeatNumber;
                 obj.Column = request.Column;
                 obj.Row = request.Row;
-                obj.Status = obj.Status == seatEnum.Available ? seatEnum.Sold :
-                  obj.Status == seatEnum.Sold ? seatEnum.Maintenance :
-                  seatEnum.Available;
+                obj.Status = request.Status;
                 obj.SeatTypeID = request.SeatTypeID;
                 _context.Seat.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
