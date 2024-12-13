@@ -5,6 +5,9 @@
 @using Blazored.LocalStorage
 @using System.Text
 @using System.Text.Json
+@using NeonCinema_Domain.Enum
+@using System.Security.Claims
+@inject ISV isv
 @inject ILocalStorageService _localstorage
 @inject HttpClient _http
 @inject NavigationManager _navi
@@ -18,25 +21,83 @@
 
 else
 {
+
     <div class="container">
+
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="card shadow-lg rounded-lg">
-                    <div class="card-body">
-                        <div class="text-center mb-4">
-                            @if (user.Images != null)
-                            {
-                                <img src="@user.Images" alt="Hình ảnh cá nhân" class="img-fluid rounded-circle profile-img" />
-                            }
-                            else
-                            {
-                                <img src="/images/Customer/user-icon.png" alt="Hình ảnh cá nhân" class="img-fluid rounded-circle profile-img" />
-                            }
+                    @if (successMessages != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @successMessages
+                        </div>
+                    }
 
+                    @if (errorMessages != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessages
+                        </div>
+                    }
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <h5><strong>Thông Tin Cá Nhân</strong></h5>
+                            <div class="col-8">
+                                <InputFile class="form-control" OnChange="OnFileChange" />
+                                @if (!string.IsNullOrEmpty(previewImage))
+                                {
+                                    <img src="@previewImage" alt="Hình ảnh vừa chọn" class="img-thumbnail mt-2" style="max-width: 150px; max-height: 150px;" />
+                                }
+                                else if (!string.IsNullOrEmpty(user.Images))
+                                {
+                                    <img src="@user.Images" alt="Hình ảnh đã tải lên" class="img-thumbnail mt-2" style="max-width: 150px; max-height: 150px;" />
+                                }
+                                @* @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <p class="text-danger">@errorMessage</p>
+                                }
+                                @if (!string.IsNullOrEmpty(successMessage))
+                                {
+                                    <p class="text-success">@successMessage</p>
+                                } *@
+                            </div>
+                            <div class="container mt-4">
+                                @* <h4>Thông Tin Tài Khoản</h4> *@
+                                <div class="card shadow-lg rounded-lg p-3">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Điểm tích lũy:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>@TotalPoints</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <strong>Tổng chi tiêu:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>@TotalSpent.ToString("N0") vnd</span>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <strong>Hạng thành viên:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <span>@Rank</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+
+
                         <div class="mb-3">
-                            <h5><strong>Thông Tin Cá Nhân</strong></h5>
+                            
 
                             <div class="row mb-3">
                                 <div class="col-4"><strong>Họ tên:</strong></div>
@@ -62,9 +123,9 @@ else
                             <div class="row mb-3">
                                 <div class="col-4"><strong>Giới tính:</strong></div>
                                 <div class="col-8">
-                                    <select class="form-control" @bind="user.Gender">
-                                        <option value="Nữ">Nữ</option>
-                                        <option value="Nam">Nam</option>
+                                    <select class="form-control" @bind="user.Gender" disabled>
+                                        <option value="true">Nam</option>
+                                        <option value="false">Nữ</option>
                                     </select>
                                 </div>
                             </div>
@@ -83,6 +144,7 @@ else
                                 </div>
                             </div>
                         </div>
+
                         <div class="text-center mt-3">
                             <button class="btn btn-warning" @onclick="OnChangePasswordClick">Đổi mật khẩu</button>
                         </div>
@@ -97,7 +159,7 @@ else
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        
+
 
                                         <div class="modal-body">
                                             <div class="mb-3">
@@ -135,22 +197,9 @@ else
                             </div>
                         }
 
-                        @if (successMessages != null)
-                        {
-                            <div class="alert alert-success" role="alert">
-                                @successMessages
-                            </div>
-                        }
-
-                        @if (errorMessages != null)
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @errorMessages
-                            </div>
-                        }
                         <div class="text-center mt-3">
-                    <button class="btn btn-primary" @onclick="OnSaveProfile">Lưu thay đổi</button>
-                    </div>
+                            <button class="btn btn-primary" @onclick="OnSaveProfile">Lưu thay đổi</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -168,20 +217,66 @@ else
     private string? successMessage;
     private string? successMessages;
     private string errorMessages;
+    private IBrowserFile selectedFile;
+    private string previewImage;
+    private int TotalPoints = 0;
+    private decimal TotalSpent = 0;
+    private string Rank;
+    private Guid CurrentUserId;
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            if (!file.ContentType.StartsWith("image"))
+            {
+                errorMessage = "Chỉ cho phép tải lên hình ảnh.";
+                successMessage = null;
+                return;
+            }
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await file.OpenReadStream().CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var buffer = memoryStream.ToArray();
+                previewImage = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+                successMessage = "Tải lên thành công!";
+                errorMessage = null;
+                user.Images = previewImage;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Đã xảy ra lỗi: {ex.Message}";
+                successMessage = null;
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        var token = await _localstorage.GetItemAsync<string>("authToken");
 
+        var token = await _localstorage.GetItemAsync<string>("authToken");
         if (string.IsNullOrEmpty(token))
         {
-            _navi.NavigateTo("/login");
+            //_navi.NavigateTo("/login");
             return;
         }
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        CurrentUserId = Guid.Parse(userIdClaim.Value);
+        var userStats = await isv.GetUserStatsAsync(CurrentUserId);
+        TotalPoints = userStats.TotalPoints;
+        TotalSpent = userStats.TotalSpent;
+        Rank = userStats.ranks;
+
+
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/getfrofile");
         requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
         var response = await _http.SendAsync(requestMessage);
-
         if (response.IsSuccessStatusCode)
         {
             user = await response.Content.ReadFromJsonAsync<UserProfile>();
@@ -249,11 +344,6 @@ else
             return;
         }
     }
-
-
-
-
-
 
     private async Task OnSaveProfile()
     {

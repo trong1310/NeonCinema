@@ -16,6 +16,7 @@ using Com.CloudRail.SI.ServiceCode.Commands;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Infrastructure.Extention;
 using Twilio.TwiML.Voice;
+using NeonCinema_Domain.Enum;
 
 namespace NeonCinema_Infrastructure.Implement.Seats
 {
@@ -163,16 +164,12 @@ namespace NeonCinema_Infrastructure.Implement.Seats
                         Content = new StringContent("Không tìm thấy ghế hoặc ghế đã bị xóa")
                     };
                 }
-
-                // Gán các giá trị mới từ request vào obj
                 obj.ID = request.ID;    
                 obj.SeatNumber = request.SeatNumber;
                 obj.Column = request.Column;
                 obj.Row = request.Row;
                 obj.Status = request.Status;
                 obj.SeatTypeID = request.SeatTypeID;
-
-                // Thực hiện cập nhật vào database
                 _context.Seat.Update(obj);
                 await _context.SaveChangesAsync(cancellationToken);
 

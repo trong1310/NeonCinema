@@ -19,6 +19,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 		{
 			_context = context;
 		}
+
 		public async Task<BillResp> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
 			using var transaction = await _context.Database.BeginTransactionAsync();
@@ -224,6 +225,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				throw new Exception($"{ex.Message} : {ex.StackTrace}");
 			}
 		}
+
 
 
 
