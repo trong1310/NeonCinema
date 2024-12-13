@@ -61,6 +61,15 @@
                     <button type="submit" class=" btn btn-primary">Cập nhật</button>
                     <button @onclick="Cancel" class="btn btn-primary">hủy</button>
                 </div>
+                <div class="update-button text-center mt-4">
+                    <button class="btn btn-primary"
+                            disabled="@(!selectedSeats.Any())"
+                            @onclick="ShowModalForSelectedSeats" @onclick:preventDefault="true">
+                        Cập nhật
+                    </button>
+                </div>
+
+
             </div>
             <div class="col-md-6">
                 <div class="seat-header">
@@ -79,23 +88,23 @@
                             @for (int row = 1; row <= request.RowNumber; row++)
                             {
                                 <tr>
-                                    <button class="btn btn-info" @onclick="() => OpenRowSeatModal(row)" @onclick:preventDefault="true">Sửa</button> 
-
-                                    @for(int col = 1; col <= request.ColumnNumber; col++)
+                                    @for (int col = 1; col <= request.ColumnNumber; col++)
                                     {
-
                                         var seat = seats.FirstOrDefault(s => s.Row == row.ToString() && s.Column == col.ToString());
                                         string rowLabel = GetRowLabel(row);
                                         string seatLabel = $"{rowLabel}{col}";
+
                                         <td>
                                             @if (seat != null)
                                             {
                                                 <div class="seat" style="font-size: 12px">
-                                                    <button style="@GetSeatColor(seat); color: white; font-weight: bold" @onclick="() =>
-                                                        ShowSeatModal(seat)" @onclick:preventDefault="true">@seatLabel
-                                                    </button>
+                                                    <button style="@GetSeatColor"
+                                        @onclick="() => ToggleSeatSelection(seat)" @onclick:preventDefault="true">
+                                                                @seatLabel
+                                                     </button>
                                                 </div>
                                             }
+
                                             else
                                             {
                                                 <div class="seat empty">
@@ -105,7 +114,8 @@
                                         </td>
                                     }
                                 </tr>
-                            } 
+                            }
+
                         }
                         <div class="seatcolor">
                             <div class="seat-legend">
@@ -147,7 +157,7 @@
     </div>
 } *@
 
-@if (showRowModal)
+@* @if (showRowModal)
 {
     <div class="modal-overlay">
         <div class="modal-content">
@@ -196,7 +206,27 @@
             <button @onclick="CloseModal" class="btn btn-secondary">Hủy</button>
         </div>
     </div>
+} *@
+@if (showSeatTypeModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <h4>Chọn kiểu ghế cho các ghế đã chọn</h4>
+            <div class="form-group">
+                <label for="seatType"><strong>Chọn loại ghế:</strong></label>
+                <InputSelect id="seatType" class="form-control" @bind-Value="selectedSeatTypeId">
+                    @foreach (var seatType in seatTypes)
+                    {
+                        <option value="@seatType.ID">@seatType.SeatTypeName</option>
+                    }
+                </InputSelect>
+            </div>
+            <button class="btn btn-primary" @onclick="SaveSeatTypeChanges">Lưu</button>
+            <button class="btn btn-secondary" @onclick="CloseSeatTypeModal">Hủy</button>
+        </div>
+    </div>
 }
+
 
 @code {
     [Parameter] public Guid roomId { get; set; }
@@ -211,23 +241,56 @@
     private bool showRowModal = false;
     private int selectedRow ; 
     private Guid? selectedRowSeatTypeId; 
-    private int selectedSeatTypeId;
+    private Guid selectedSeatTypeId;
     private Room selectedRowSeat;
-
-
-
-    private void OpenRowSeatModal(int row)
+    private List<Guid> selectedSeats = new List<Guid>();
+    private bool showSeatTypeModal = false;
+   
+    private void ToggleSeatSelection(SeatDTO seat)
     {
-        // if (row > 0 && row <= request.RowNumber)
-        // {
-            selectedRow = row;
-            showRowModal = true; 
-        // }
-        // else
-        // {
-        //     JSRuntime.InvokeVoidAsync("alert", "Giá trị hàng không hợp lệ.");// thông báo nổi trên màn hình
-        // }
+        if (selectedSeats.Contains(seat.ID))
+        {
+            selectedSeats.Remove(seat.ID);
+        }
+        else
+        {
+            selectedSeats.Add(seat.ID);
+        }
     }
+    private void CloseSeatTypeModal()
+    {
+        showSeatTypeModal = false;
+    }
+    private async Task SaveSeatTypeChanges()
+    {
+        if (selectedSeatTypeId == Guid.Empty || !selectedSeats.Any())
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Vui lòng chọn kiểu ghế và ghế cần cập nhật.");
+            return;
+        }
+        await seatservice.UpdateSeatsAsync(selectedSeats, selectedSeatTypeId);
+        seats = await RoomService.GetSeatsByRoomId(request.ID);
+        selectedSeats.Clear();
+        showSeatTypeModal = false;
+    }
+
+    private void ShowModalForSelectedSeats()
+    {
+        if (selectedSeats.Any())
+        {
+            showModal = true;
+        }
+    }
+
+
+
+
+
+
+
+
+
+   
     private void CloseRowModal()
     {
         showRowModal = false;
@@ -298,6 +361,9 @@
              SeatTypeName = seat.SeatTypeName
         };
     }
+
+
+
     private void ShowSeatModal(SeatDTO seat)
     {
         selectedSeat.SeatNumber = $"{GetRowLabel(int.Parse(seat.Row))}{seat.Column}";
@@ -316,17 +382,13 @@
         if (result.IsSuccessStatusCode)
         {
             seats = await RoomService.GetSeatsByRoomId(roomId);
-            CloseModal();
+           // CloseModal();
             Console.WriteLine("Seat updated successfully.");
         }
         else
         {
             Console.WriteLine("Failed to update seat.");
         }
-    }
-    private void CloseModal()
-    {
-        showModal = false;
     }
     private async Task UpdateRoom()
     {
@@ -339,8 +401,10 @@
     {
         return ((char)('A' + (row - 1))).ToString();
     }
-    private string GetSeatColor(SeatDTO seat)
+    private string GetSeatColor(SeatDTO seat, bool isSelected)
     {
+        if (isSelected)
+            return "background-color: #ffcc00"; // Màu vàng cho ghế được chọn
         if (seat.Status.ToString() == "Selected")
         {
             return "background-color: blue;"; 
@@ -354,7 +418,7 @@
             return "background-color: gray;"; 
         }
         
-        if (seat.SeatTypeID == new Guid("61706b52-740d-42b3-b9e0-5d53fe4d2000"))
+        if (seat.SeatTypeID == new Guid("802c1bae-c27f-4c9e-97ed-5b94a160d380"))
         {
             return "background-color: #69d685;";
         }
@@ -362,7 +426,7 @@
         {
             return "background-color: #ee4646;";
         }
-        else if (seat.SeatTypeID == new Guid("f0a83726-9df2-4330-bbd7-fe5f4fdb8b78"))
+        else if (seat.SeatTypeID == new Guid("16fab0a5-c0e5-4e4d-a92c-9f10c6b6802c"))
         {
             return "background-color: #a064d6;";
         }
