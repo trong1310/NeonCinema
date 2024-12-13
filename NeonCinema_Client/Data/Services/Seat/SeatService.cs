@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Countrys;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -105,6 +106,21 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-        
+        public async Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId)
+        {
+            var seatType = await _context.SeatTypes.FindAsync(newSeatTypeId);
+            if (seatType == null)
+            {
+                throw new ArgumentException("Seat type not found.", nameof(newSeatTypeId));
+            }
+            var seatsToUpdate = await _context.Seat
+            .Where(s => selectedSeatIds.Contains(s.ID)).ToListAsync();
+            foreach (var seat in seatsToUpdate)
+            {
+                seat.SeatTypeID = newSeatTypeId;
+            }
+            _context.Seat.UpdateRange(seatsToUpdate);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace NeonCinema_Client.Data.IServices.Seat
         public Task<HttpResponseMessage> UpdateSeate(Guid id, UpdateSeatDTO request);
         public Task<SeatDTO> GetSeatById(Guid id);
         Task<List<SeatDTO>> GetAllSeats(CancellationToken cancellationToken);
-        
+        Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId);
 
     }
 }

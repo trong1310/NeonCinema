@@ -261,7 +261,7 @@ else
         var token = await _localstorage.GetItemAsync<string>("authToken");
         if (string.IsNullOrEmpty(token))
         {
-            _navi.NavigateTo("/login");
+            //_navi.NavigateTo("/login");
             return;
         }
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
