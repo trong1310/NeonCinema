@@ -168,6 +168,11 @@ namespace NeonCinema_Infrastructure.Implement.Users
 			return _map.Map<UserDTO>(obj);
 		}
 
+		public Task<CreateClientResponse> UpdateAccount(UserUpdateRequest request, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+
 
 		//Create Client
 		private string GenerateRandomPassword()
