@@ -38,7 +38,8 @@ namespace NeonCinema_Domain.Enum
     {
         InActive = 0,
         Showing = 1,
-        Ended = 2
+        Ended = 2,
+        Cancelled = 3
     }
 
 }

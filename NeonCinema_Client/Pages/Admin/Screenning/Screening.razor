@@ -27,7 +27,7 @@ else
 			<div class="row mt-5">
 				<div class="col-11"></div>
 				<div class="col-1">
-					<button @onclick="ToggleCreateForm" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
+					<button @onclick="async () => await ToggleCreateForm()" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
 				</div>
 			</div>
 			<div class="row mt-2 table-promotion">
@@ -138,6 +138,10 @@ else
 												<label for="" class="form-label">Giờ kết thúc</label>
 												<input type="time" @bind="endTime" class="form-control" readonly />
 											</div>
+											@if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+											{
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị chồng lấn lên lịch khác</p>
+											}
 
 											<button type="submit" class="btn btn-primary">Tạo lịch</button>
 										</ChildContent>
@@ -318,9 +322,10 @@ else
 		_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
-	private void ToggleCreateForm()
+	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
+		await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()
@@ -335,50 +340,63 @@ else
 		{
 			try
 			{
-				List<SeatDTO> lstSeatInRoom = await _roSv.GetSeatsByRoomId(newScreening.RoomID);
-				newShowTime.StartTime = TimeSpan.Parse(startTime.ToString("HH:mm"));
-				newShowTime.EndTime = TimeSpan.Parse(endTime.ToString("HH:mm"));
-				newShowTime.Status = NeonCinema_Domain.Enum.EntityStatus.Inactive;
-
-				if(await _stSv.CreateShowTime(newShowTime, CancellationToken.None))
+				if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 				{
-					var lstSt = await _stSv.GetAllShowTimes(CancellationToken.None);
+					messageString = "Faild";
+					return;
+				}
+				else
+				{
+					List<SeatDTO> lstSeatInRoom = await _roSv.GetSeatsByRoomId(newScreening.RoomID);
+					newShowTime.StartTime = TimeSpan.Parse(startTime.ToString("HH:mm"));
+					newShowTime.EndTime = TimeSpan.Parse(endTime.ToString("HH:mm"));
+					newShowTime.Status = NeonCinema_Domain.Enum.EntityStatus.Inactive;
 
-					var showtime = lstSt.FirstOrDefault(x => x.StartTime == newShowTime.StartTime && x.EndTime == newShowTime.EndTime);
-
-					//thêm các trường còn thiếu screening
-					newScreening.ShowDate = DateTime.Parse(date.ToShortDateString());
-					newScreening.ShowTimeID = showtime.ID;
-					newScreening.Status = ScreeningStatus.InActive;
-					//
-
-
-					if(await _scrSv.CreateScreeningAsync(newScreening))
+					if (await _stSv.CreateShowTime(newShowTime, CancellationToken.None))
 					{
-						//tạo seatshowtimestatus ứng với các ghế trong phòng
-						foreach (var item in lstSeatInRoom)
-						{
-							SeatShowTimeStatusDTO input = new SeatShowTimeStatusDTO
-							{
-								ID = Guid.NewGuid(),
-								ShowtimeId = showtime.ID,
-								RoomID = newScreening.RoomID,
-								SeatID = item.ID,
-								ShowDate = newScreening.ShowDate,
-								seatEnum = NeonCinema_Domain.Enum.seatEnum.Available
-							};
-							if(!await _scrSv.CreateSSS(input))
-							{
-								return;
-							}
-						}
-						//
-						scope.Complete();
-						messageString = "Success";
-						newScreening = new ScreeningCreateRequest();
-						newShowTime = new ShowTimeCreateRequest();
+						var lstSt = await _stSv.GetAllShowTimes(CancellationToken.None);
 
-						await LoadScreening();
+						var showtime = lstSt.FirstOrDefault(x => x.StartTime == newShowTime.StartTime && x.EndTime == newShowTime.EndTime);
+
+						//thêm các trường còn thiếu screening
+						newScreening.ShowDate = DateTime.Parse(date.ToShortDateString());
+						newScreening.ShowTimeID = showtime.ID;
+						newScreening.Status = ScreeningStatus.InActive;
+						//
+
+
+						if (await _scrSv.CreateScreeningAsync(newScreening))
+						{
+							//tạo seatshowtimestatus ứng với các ghế trong phòng
+							foreach (var item in lstSeatInRoom)
+							{
+								SeatShowTimeStatusDTO input = new SeatShowTimeStatusDTO
+									{
+										ID = Guid.NewGuid(),
+										ShowtimeId = showtime.ID,
+										RoomID = newScreening.RoomID,
+										SeatID = item.ID,
+										ShowDate = newScreening.ShowDate,
+										seatEnum = NeonCinema_Domain.Enum.seatEnum.Available
+									};
+								if (!await _scrSv.CreateSSS(input))
+								{
+									return;
+								}
+							}
+							//
+							scope.Complete();
+							messageString = "Success";
+							newScreening = new ScreeningCreateRequest();
+							newShowTime = new ShowTimeCreateRequest();
+
+							await LoadScreening();
+						}
+						else
+						{
+							messageString = "Faild";
+							return;
+						}
 					}
 					else
 					{
@@ -386,11 +404,7 @@ else
 						return;
 					}
 				}
-				else
-				{
-					messageString = "Faild";
-					return;
-				}
+				
 			}
 			catch(Exception ex)
 			{
@@ -438,7 +452,7 @@ else
 
 			endTime = starttime + x + thoigianbu;
 		}
-		
+
 	}
 
 	private async Task OnInputChangedRoom(ChangeEventArgs e)
@@ -452,13 +466,13 @@ else
 				roomName = item.Name;
 			}
 		}
-		LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
-		LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	//Màu trạng thái
@@ -470,6 +484,22 @@ else
 			ScreeningStatus.InActive => "bg-warning", 
 			ScreeningStatus.Ended => "bg-danger"    
 		};
+	}
+
+	//validate st
+	private bool ValidateST(TimeSpan startTime, TimeSpan endTime)
+	{
+		foreach (var item in _lstSTFil)
+		{
+			// Kiểm tra các trường hợp chồng lấn
+			if ((startTime >= item.StartTime && startTime < item.EndTime) ||  // startTime nằm trong khoảng
+				(endTime > item.StartTime && endTime <= item.EndTime) ||    // endTime nằm trong khoảng
+				(startTime <= item.StartTime && endTime >= item.EndTime))   // Bao phủ toàn bộ khoảng
+			{
+				return false; // Có chồng lấn
+			}
+		}
+		return true; // Không có chồng lấn
 	}
 
 

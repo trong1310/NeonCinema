@@ -4,6 +4,7 @@ using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Screenning;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -111,7 +112,7 @@ public class ScreeningService : IScreeningService
 
 
         //lọc danh sách showtime theo danh sách ID và trả về
-        return lstShowTime.Where(x => lstIdShowtime.Equals(x.ID)).ToList(); // cần sửa đoạn này
+        return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList(); // cần sửa đoạn này
  	}
 
 	public Task<bool> ValidateShowTimeInRoom(Guid roomId)

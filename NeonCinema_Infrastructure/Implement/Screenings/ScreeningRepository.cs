@@ -63,7 +63,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
         {
             try
             {
-                var lstScr = await _context.Screening.Where(x => x.RoomID == roomId && x.ShowDate == showDate).ToListAsync();
+                var lstScr = await _context.Screening.Where(x => x.RoomID == roomId && x.ShowDate == showDate && x.Status != ScreeningStatus.Ended && x.Status != ScreeningStatus.Cancelled).ToListAsync();
 
                 return lstScr.Select(x => _mapper.Map<ScreeningSupportValidate>(x)).ToList();
             }
