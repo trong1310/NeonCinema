@@ -22,8 +22,8 @@ namespace NeonCinema_API.Controllers
         private readonly IUserRepository _userRepository;
         private readonly ISendMailService _emailService;
         private readonly NeonCinemasContext _context;
-        private readonly IUserServices _userService;
-        public UserController(IUserRepository us, ISendMailService emailService, NeonCinemasContext context, IUserServices userService)
+        private readonly IUserServicesss _userService;
+        public UserController(IUserRepository us, ISendMailService emailService, NeonCinemasContext context, IUserServicesss userService)
         {
             _userRepository = us;
             _emailService = emailService;
@@ -110,14 +110,14 @@ namespace NeonCinema_API.Controllers
                 }
                 var userId = Guid.Parse(userIdClaim);
                 var bills = await _context.BillDetails
-            .Include(b => b.BillTickets)
-                .ThenInclude(bt => bt.Tickets)
-                    .ThenInclude(t => t.Screenings)
-                        .ThenInclude(s => s.ShowTime)
-            .Include(b => b.BillTickets)
-                .ThenInclude(bt => bt.Tickets)
-                    .ThenInclude(t => t.Movies)
-            .Include(b => b.BillTickets)
+                .Include(b => b.BillTickets)
+                    .ThenInclude(bt => bt.Tickets)
+                        .ThenInclude(t => t.Screenings)
+                            .ThenInclude(s => s.ShowTime)
+                .Include(b => b.BillTickets)
+                    .ThenInclude(bt => bt.Tickets)
+                        .ThenInclude(t => t.Movies)
+                .Include(b => b.BillTickets)
                 .ThenInclude(bt => bt.Tickets)
                     .ThenInclude(t => t.Seat)
             .Where(b => b.UserID == userId)
@@ -358,6 +358,7 @@ namespace NeonCinema_API.Controllers
 
             return Ok(userProfile);
         }
+
 
 
         [Authorize]

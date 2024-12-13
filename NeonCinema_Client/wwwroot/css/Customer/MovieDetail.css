@@ -1,57 +1,57 @@
-﻿body {
-    margin: 0; /* Loại bỏ margin mặc định */
-    font-family: 'Be Vietnam Pro', sans-serif; /* Sử dụng font */
-}
+﻿/*body {
+    margin: 0;*/ /* Loại bỏ margin mặc định */
+    /*font-family: 'Be Vietnam Pro', sans-serif;*/ /* Sử dụng font */
+/*}
 
 .movie-detail-background {
-    width: 80vw; /* Chiếm toàn bộ chiều rộng viewport */
-    background-color: #f8f9fa; /* Màu nền sáng hơn */
-    padding: 30px; /* Thêm khoảng cách bên trong */
-    margin-left: 120px; /* Căn giữa */
-    position: relative; /* Để căn giữa đúng */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng */
-}
+    width: 80vw;*/ /* Chiếm toàn bộ chiều rộng viewport */
+    /*background-color: #f8f9fa;*/ /* Màu nền sáng hơn */
+    /*padding: 30px;*/ /* Thêm khoảng cách bên trong */
+    /*margin-left: 120px;*/ /* Căn giữa */
+    /*position: relative;*/ /* Để căn giữa đúng */
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/ /* Đổ bóng */
+/*}
 
 .title {
     font-weight: bold;
-    font-size: 2.5rem; /* Kích thước chữ tiêu đề lớn hơn */
-    color: #4caf50; /* Màu tiêu đề */
-    margin-top: 20px; /* Khoảng cách trên */
-    text-align: center;
+    font-size: 2.5rem;*/ /* Kích thước chữ tiêu đề lớn hơn */
+    /*color: #4caf50;*/ /* Màu tiêu đề */
+    /*margin-top: 20px;*/ /* Khoảng cách trên */
+    /*text-align: center;
 }
 
 .img-movie-detail img {
-    width: 50%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của khung */
-    max-height: auto; /* Giới hạn chiều cao tối đa */
-    object-fit: cover; /* Giữ tỉ lệ ảnh */
-    border-radius: 10px; /* Bo góc cho ảnh */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Đổ bóng cho ảnh */
-    margin-left: 130px;
+    width: 50%;*/ /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của khung */
+    /*max-height: auto;*/ /* Giới hạn chiều cao tối đa */
+    /*object-fit: cover;*/ /* Giữ tỉ lệ ảnh */
+    /*border-radius: 10px;*/ /* Bo góc cho ảnh */
+    /*box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);*/ /* Đổ bóng cho ảnh */
+    /*margin-left: 130px;
     margin-top: 35px;
 }
 
 .description {
-    font-size: 1.1rem; /* Kích thước chữ mô tả */
-    margin-bottom: 15px; /* Khoảng cách dưới mô tả */
-    line-height: 1.6; /* Khoảng cách dòng */
-}
+    font-size: 1.1rem;*/ /* Kích thước chữ mô tả */
+    /*margin-bottom: 15px;*/ /* Khoảng cách dưới mô tả */
+    /*line-height: 1.6;*/ /* Khoảng cách dòng */
+/*}
 
 .movie-detail-background p {
-    color: #343a40; /* Màu chữ tối để tương phản */
-    margin-bottom: 10px; /* Khoảng cách giữa các đoạn văn */
-    font-size: 1.1rem; /* Kích thước chữ cho các đoạn văn */
-}
+    color: #343a40;*/ /* Màu chữ tối để tương phản */
+    /*margin-bottom: 10px;*/ /* Khoảng cách giữa các đoạn văn */
+    /*font-size: 1.1rem;*/ /* Kích thước chữ cho các đoạn văn */
+/*}
 
 .movie-detail-background strong {
-    margin-right: 10px; /* Khoảng cách bên phải của chữ đậm */
-}
+    margin-right: 10px;*/ /* Khoảng cách bên phải của chữ đậm */
+/*}
 
 .trailer-title {
-    font-size: 1.5rem; /* Kích thước tiêu đề trailer */
-    margin-top: 30px; /* Khoảng cách trên */
-    color: #4caf50; /* Màu tiêu đề trailer */
-}
+    font-size: 1.5rem;*/ /* Kích thước tiêu đề trailer */
+    /*margin-top: 30px;*/ /* Khoảng cách trên */
+    /*color: #4caf50;*/ /* Màu tiêu đề trailer */
+/*}
 
 .embed-responsive {
-    margin-top: 20px; /* Thêm khoảng cách trên trailer */
-}
+    margin-top: 20px;*/ /* Thêm khoảng cách trên trailer */
+/*}*/

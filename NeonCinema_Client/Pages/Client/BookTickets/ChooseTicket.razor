@@ -406,16 +406,17 @@
 	{
 		screenings = await _services.ChooseScrening(id);
 
-		seats = screenings.Seats;
-
 		groupedSeats = seats
-			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
-			.OrderBy(g => g.Key)
-			.ToDictionary(
-				g => g.Key,
-				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
-						.ToList()
-			);
+		.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+		.OrderBy(g => g.Key)
+		.ToDictionary(
+			g => g.Key,
+			g => g
+				.Where(seat => int.TryParse(seat.SeatNumber.Substring(1), out _)) // Lọc các giá trị hợp lệ
+				.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+				.ToList()
+		);
+
 		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
 		genres = await _movieServices.GetAllGenre();
 		languages = await _movieServices.GetAllLanguage();
@@ -428,10 +429,7 @@
 	}
 	private async Task RefreshSeatsAsync()
 	{
-		// Lấy dữ liệu ghế mới từ server
 		var updatedScreening = await _services.ChooseScrening(id);
-
-		// Cập nhật lại danh sách ghế
 		seats = updatedScreening.Seats;
 
 		groupedSeats = seats

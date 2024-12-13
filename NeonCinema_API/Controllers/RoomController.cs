@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.Interface.Room;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using System.Net;
 
 namespace NeonCinema_API.Controllers
@@ -11,10 +12,12 @@ namespace NeonCinema_API.Controllers
     public class RoomController : ControllerBase
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly NeonCinemasContext _context;
 
-        public RoomController(IRoomRepository roomRepository)
+        public RoomController(IRoomRepository roomRepository, NeonCinemasContext context)
         {
             _roomRepository = roomRepository;
+            _context = context;
         }
         [HttpPost("create")]
         public async Task<IActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
@@ -89,6 +92,8 @@ namespace NeonCinema_API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
             }
         }
+
+        
 
     }
 }

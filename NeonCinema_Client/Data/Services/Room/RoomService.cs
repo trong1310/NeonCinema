@@ -53,12 +53,42 @@ namespace NeonCinema_Client.Data.Services.Room
             return response;
         }
 
+        public async Task<List<SeatDTO>> GetSeatsByRowAsync(Guid roomId, string rowId)
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<List<SeatDTO>>($"api/Room/{roomId}/seats/row/{rowId}");
+                return response ?? new List<SeatDTO>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching seats for row {rowId}: {ex.Message}");
+            }
+        }
+
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request)
         {
             var response = await _httpClient.PutAsJsonAsync($"api/Room/update/{id}", request);
             return response;
         }
 
-        
+        public async Task<bool> UpdateSeatTypeForRowAsync(Guid roomId, string rowId, Guid seatTypeId)
+        {
+            try
+            {
+                var request = new
+                {
+                    RowId = rowId,
+                    SeatTypeId = seatTypeId
+                };
+
+                var response = await _httpClient.PutAsJsonAsync($"api/Room/{roomId}/seats/update-row", request);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating seat type for row {rowId}: {ex.Message}");
+            }
+        }
     }
 }

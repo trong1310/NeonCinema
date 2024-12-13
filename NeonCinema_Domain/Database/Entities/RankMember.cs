@@ -16,7 +16,6 @@ namespace NeonCinema_Domain.Database.Entities
         public double MinPoint { get; set; }
         public EntityStatus Status { get; set; }
         public DateTime StarDate { get; set; }
-        //
         public virtual Users? Users { get; set; }
     }
 }
