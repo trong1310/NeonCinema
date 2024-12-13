@@ -1,4 +1,4 @@
-﻿@page "/choose-ticket"
+﻿@page "/choose-ticket/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.BookTicket
 @using NeonCinema_Application.DataTransferObject.BookTicket.Request
 @using NeonCinema_Application.DataTransferObject.BookTicket.Resp
@@ -47,105 +47,221 @@
                 </div>
             </div>
         </div>
-        <!-- Danh sách sản phẩm -->
-        <div class="col-md-6 ">
-            <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
-                <h4>Concession</h4>
-                <div class="product-list ">
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo1.jpg" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL Combo1 - Sweet 22Oz</h5>
-                            <p>
-                                <span class="text-success">80.100 VND</span>
-                            </p>
-                        </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
-                        </div>
-                    </div>
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo2.jpg" alt="OL Combo2 - Sweet 22Oz" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL Combo2 - Sweet 22Oz</h5>
-                            <p>
-                                <span class="text-success">103.500 VND</span>
-                            </p>
-                        </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
-                        </div>
-                    </div>
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL HN Combo Aquafina</h5>
-                            <p>
-                                <span class="text-success">75.600 VND</span>
-                            </p>
-                        </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
+        <div class="col-md-6">
+            @if (_selectedIndex == 0)
+            {   
+                <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                    <h4 class="text-center mb-3">Chọn ghế</h4>
+                    <div class="dotted-line-custom"></div>
+                    <div class="d-flex align-items-center justify-content-center">                       
+                        <!-- Thông tin ghế -->
+                        <div class="seat-type">
+                            <div class="seat-type-item">
+                                <span class="square bg-warning"></span>
+                                <span class="seat-name">Ghế thường</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-danger"></span>
+                                <span class="seat-name">Ghế vip</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-success"></span>
+                                <span class="seat-name">Ghế đôi</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-dark"></span>
+                                <span class="seat-name">Ghế đã bán</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-primary"></span>
+                                <span class="seat-name">Ghế bạn chọn</span>
+                            </div>
+                            <div class="seat-type-item">
+                                <span class="square bg-secondary"></span>
+                                <span class="seat-name">Ghế bảo trì</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL HN Combo Aquafina</h5>
-                            <p>
-                                <span class="text-success">75.600 VND</span>
-                            </p>
+                    <div class="container-fluid seat-selection mt-4">
+                        <div class="screen">
+                            <svg viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg" class="screen-svg">
+                                <!-- Đường cong -->
+                                <path d="M0,50 Q400,0 800,50" fill="none" stroke="#AFFF00" stroke-width="5" />
+                                <!-- Hiệu ứng gradient -->
+                                <path d="M0,50 Q400,0 800,50 L800,100 L0,100 Z" fill="url(#gradient)" />
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="65%">
+                                        <stop offset="0%" style="stop-color:rgba(175, 255, 0, 0.5); stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:white; stop-opacity:0" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="screen-label mt-4">Màn hình</div>
                         </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
+
+
+
+                        <!-- Sơ đồ ghế -->
+                        <div class="seat-map mt-2">
+                            <!-- Hàng A -->
+                            <div class="seat-row">
+                                <span>A</span>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng B -->
+                            <div class="seat-row">
+                                <span>B</span>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng C -->
+                            <div class="seat-row">
+                                <span>C</span>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat standard"></button>
+                                <button class="seat standard"></button>
+                            </div>
+
+                            <!-- Hàng D -->
+                            <div class="seat-row">
+                                <span>D</span>
+                                <button class="seat vip"></button>
+                                <button class="seat vip"></button>
+                                <button class="seat booked"></button>
+                                <button class="seat vip"></button>
+                                <button class="seat vip"></button>
+                            </div>
+
+                            <!-- Hàng E -->
+                            <div class="seat-row">
+                                <span>E</span>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                                <button class="seat couple"></button>
+                            </div>
                         </div>
+
+                        <!-- Nút -->
+                        <div class="d-flex justify-content-center align-items-center mt-5">
+                            <button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>
+                        </div>
+
                     </div>
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL HN Combo Aquafina</h5>
-                            <p>
-                                <span class="text-success">75.600 VND</span>
-                            </p>
+                </div>
+            }
+            else if (_selectedIndex == 1)
+            {
+                <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
+                    <h4 class="text-center mb-3">Combo đồ ăn</h4>
+                    <div class="dotted-line-custom"></div>
+                    <div class="product-list ">
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo1.jpg" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL Combo1 - Sweet 22Oz</h5>
+                                <p>
+                                    <span class="text-success">80.100 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
                         </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo2.jpg" alt="OL Combo2 - Sweet 22Oz" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL Combo2 - Sweet 22Oz</h5>
+                                <p>
+                                    <span class="text-success">103.500 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="product-item d-flex align-items-center mb-3">
-                        <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
-                        <div class="product-info flex-grow-1">
-                            <h5>OL HN Combo Aquafina</h5>
-                            <p>
-                                <span class="text-success">75.600 VND</span>
-                            </p>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
                         </div>
-                        <div class="quantity-controls d-flex align-items-center">
-                            <button class="btn control">-</button>
-                            <span class="mx-2">0</span>
-                            <button class="btn control">+</button>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
+                        </div>
+                        <div class="product-item d-flex align-items-center mb-3">
+                            <img src="/images/combo3.jpg" alt="OL HN Combo Aquafina" class="product-image me-3">
+                            <div class="product-info flex-grow-1">
+                                <h5>OL HN Combo Aquafina</h5>
+                                <p>
+                                    <span class="text-success">75.600 VND</span>
+                                </p>
+                            </div>
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn control">-</button>
+                                <span class="mx-2">0</span>
+                                <button class="btn control">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
+            }
         </div>
+        
 
         <!-- Tóm tắt đơn hàng -->
         <div class="col-md-3">
             <div class="bordered-column" style="margin-left: 5px; margin-right:5px">
                 <h4 class="text-center">NEON CINEMA</h4>
-                <p class="text-center">Screen 3 - 12/12/2024 - Suất chiếu: 23h25</p>
+                <p class="text-center">Room 1 - 12/12/2024 - Suất chiếu: 23h25</p>
                 <div class="order-summary">
                     <h3 class="card-title">DEVILS STAY: NGÀI QUỶ</h3>
                     <div class="tags">
@@ -222,11 +338,587 @@
     }
 </div>
 
-@code {
-    protected override void OnInitialized()
-    {
-        RestartTransaction(); // Bắt đầu đếm ngược khi vào trang
+<script>
+    window.onload = function () {
+        // Ẩn QR code mặc định khi tải trang
+        hienThiQR('ẩn');
+    };
+
+    function hienThiQR(hienThi) {
+        const qrCode = document.getElementById("qrcode");
+        const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+
+        if (!qrCode) {
+            console.warn("QR Code element not found.");
+            return;
+        }
+
+        if (hienThi === 'hiện') {
+            // Kiểm tra phần tử tổng tiền
+            if (!amountDisplay) {
+                console.error("Amount display element not found.");
+                qrCode.style.display = 'none';
+                return;
+            }
+            const totalPrice = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
+            if (isNaN(totalPrice) || totalPrice <= 0) {
+                console.error("Invalid amount for QR code.");
+                qrCode.style.display = 'none';
+                return;
+            }
+            // Tạo URL QR code
+            const accountName = "NGUYEN VAN TRONG";
+            const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+
+            qrCode.src = qrUrl;
+            qrCode.style.display = 'block'; // Hiển thị QR code
+        } else {
+            qrCode.style.display = 'none'; // Ẩn QR code
+        }
     }
+
+    // Thêm sự kiện thay đổi vào radio buttons
+    document.addEventListener('change', function (event) {
+        if (event.target.name === 'flexRadioDefault') {
+            if (event.target.id === 'bankTransferRadio' && event.target.checked) {
+                hienThiQR('hiện');
+            } else if (event.target.id === 'cashRadio' && event.target.checked) {
+                hienThiQR('ẩn');
+            }
+        }
+    });
+
+</script>
+@code {
+	#region
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	private int _selectedIndex = 0;
+	private Dictionary<string,
+	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
+	List<SeatDto> seats = new List<SeatDto>();
+	List<FoodComboDTO> foods = new List<FoodComboDTO>();
+	private decimal totalPrices = 0;
+	private bool showConfirmModal = false;
+	public string? phoneNumber;
+	public string error = "";
+	private void ShowConfirmModal()
+	{
+		showConfirmModal = true;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		screenings = await _services.ChooseScrening(id);
+
+		seats = screenings.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		//	account = await _services.GetAccount(phoneNumber);
+
+		foods = await _services.GetFoodCombo();
+		await RefreshSeatsAsync();
+		RestartTransaction();
+	}
+	private async Task RefreshSeatsAsync()
+	{
+		// Lấy dữ liệu ghế mới từ server
+		var updatedScreening = await _services.ChooseScrening(id);
+
+		// Cập nhật lại danh sách ghế
+		seats = updatedScreening.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+	}
+	public async Task OnClickToEditAmount()
+	{
+		await JS.InvokeVoidAsync("thaydoitongtien", totalPrices);
+		StateHasChanged();
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#region vé
+	private string GetSeatCssClass(SeatDto seat)
+	{
+		return seat.Status switch
+		{
+			NeonCinema_Domain.Enum.seatEnum.Sold => "sold",            // Ghế đã bán
+			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
+			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
+		};
+
+	}
+	private async Task UpdateQRCode()
+	{
+		// Không cố định gọi "hienThiQR('hiện')"
+		await JS.InvokeVoidAsync("hienThiQR"); // JavaScript sẽ kiểm tra trạng thái radio và cập nhật QR code
+		StateHasChanged(); // Làm mới giao diện Razor
+	}
+	private async void NextTab()
+	{
+		if (_selectedIndex < 1)
+		{
+			_selectedIndex++;
+			await InvokeAsync(StateHasChanged); // Đảm bảo giao diện được cập nhật trước
+			await UpdateQRCode(); // Gọi hàm cập nhật QR code
+		}
+	}
+
+	private void PreviousTab()
+	{
+		if (_selectedIndex > 0)
+		{
+			_selectedIndex--;
+			OnClickToEditAmount();
+		}
+	}
+	private List<string> selectedSeats = new List<string>();
+	private string selectedSeatNumbers = "";
+	private List<Guid> selectedSeatsId = new List<Guid>(); // Danh sách lưu trữ ID ghế được chọn
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
+		});
+	}
+
+	private async void SelectSeat(SeatDto seat)
+	{
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra nếu số lượng ghế chọn vượt quá giới hạn
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
+		if (!selectedSeats.Contains(seat.SeatNumber))
+		{
+			char currentRow = seat.SeatNumber[0];
+			int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+
+			foreach (var selectedSeat in selectedSeats)
+			{
+				char selectedRow = selectedSeat[0];
+				int selectedCol = int.Parse(selectedSeat.Substring(1));
+
+				// Kiểm tra ghế giữa trong cùng một hàng
+				if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
+				{
+					int middleCol = (currentCol + selectedCol) / 2;
+					string middleSeat = $"{currentRow}{middleCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+						return;
+					}
+				}
+
+				// Kiểm tra ghế giữa trong cùng một cột
+				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
+				{
+					char middleRow = (char)((currentRow + selectedRow) / 2);
+					string middleSeat = $"{middleRow}{currentCol}";
+
+					if (!selectedSeats.Contains(middleSeat))
+					{
+						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+						return;
+					}
+				}
+			}
+		}
+
+		// Xử lý chọn/bỏ ghế
+		if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+			selectedSeatsId.Remove(seat.ID);
+			selectedSeats.Remove(seat.SeatNumber);
+			totalPrices -= (decimal)seat.Price;
+		}
+		else
+		{
+			Console.WriteLine($"Adding seat: {seat.SeatNumber}");
+			selectedSeats.Add(seat.SeatNumber);
+			selectedSeatsId.Add(seat.ID);
+			totalPrices += (decimal)seat.Price;
+		}
+
+		selectedSeatNumbers = string.Join(", ", selectedSeats);
+		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+		OnClickToEditAmount();
+		StateHasChanged();
+	}
+	#endregion
+	#region combo
+	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
+	private List<Guid> selectedComboId = new List<Guid>();
+	private int currentValue = 0;
+	private async void Increase(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo))
+		{
+			selectedCombos[combo]++;
+		}
+		else
+		{
+			selectedCombos[combo] = 1;
+		}
+
+		totalPrices += combo.Amount;
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+	private async void Decrease(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
+		{
+			selectedCombos[combo]--;
+			totalPrices -= combo.Amount;
+
+			if (selectedCombos[combo] == 0)
+			{
+				selectedCombos.Remove(combo);
+			}
+		}
+
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+
+	private int GetComboQuantity(FoodComboDTO combo)
+	{
+		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
+	}
+
+
+	#endregion
+	CreateBookTicketRequest request = new CreateBookTicketRequest();
+	NeonCinemasContext _context = new NeonCinemasContext();
+	private string paymentStatus = string.Empty; // Trạng thái thanh toán
+	private BillResp? billResp;
+	private void ResetUI()
+	{
+		selectedCombos.Clear();
+		selectedSeatNumbers = string.Empty;
+		selectedComboId.Clear();
+		selectedSeats.Clear();
+		selectedSeatsId.Clear();
+		currentValue = 0;
+		totalPrices = 0;
+		phoneNumber = string.Empty;
+		Rank.AccountName = string.Empty;
+		Rank.Point = 0;
+		RefreshSeatsAsync();
+	}
+
+	private async Task ProcessPayment()
+	{
+		if (!string.IsNullOrEmpty(phoneNumber))
+		{
+			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = account?.ID,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+		else
+		{
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = null,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+				};
+		}
+
+		try
+		{
+			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
+
+			if (billResp != null)
+			{
+				ResetUI();
+				paymentStatus = "success";
+			}
+			else
+			{
+				paymentStatus = "failure";
+			}
+		}
+		catch (Exception ex)
+		{
+			paymentStatus = "failure";
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+		}
+
+		StateHasChanged();
+	}
+	public Guid BillTicketId { get; set; }
+	public async Task ExportFile()
+	{
+		try
+		{
+			BillTicketId = (Guid)billResp.Id;
+			var export = await _services.ExportFile(BillTicketId);
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
+			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+		}
+	}
+	private string GetPaymentMessage(string status)
+	{
+		return status switch
+		{
+			"success" => "Thanh toán thành công!",
+			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+			_ => string.Empty,
+		};
+	}
+
+	private string GetAlertClass(string status)
+	{
+		return status switch
+		{
+			"success" => "alert-success",
+			"failure" => "alert-danger",
+			_ => string.Empty,
+		};
+	}
+
+	private void CloseModal()
+	{
+		showConfirmModal = false;
+		paymentStatus = string.Empty;
+		StateHasChanged();
+	}
+	#endregion
+	private bool ShowCreateButton { get; set; }
+
+	private RankMemberResp Rank = new RankMemberResp();
+	private async Task SearchCustomer()
+	{
+		try
+		{
+			var result = await _services.SeachAccount(phoneNumber);
+			if (result != null)
+			{
+				Rank = result;
+				ShowCreateButton = false;
+			}
+			else
+			{
+				ShowCreateButton = true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi tìm kiếm: {ex.Message}");
+			ShowCreateButton = true;
+		}
+	}
+
+
+
+	#region Tạo tài khoản
+
+	private UserCreateRequest requestUser = new UserCreateRequest();
+	private IBrowserFile selectedFile;
+	private bool showPassword = false;
+	private string errorEmailMessage;
+	private string errorPhoneMessage;
+	private string errorYearMessage;
+	private bool IsShowPhoneNotification = true;
+	private bool IsShowEmailNotification = true;
+	private bool IsShowYearNotification = true;
+	private bool showCreateAccountModal = false;
+
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			IsShowEmailNotification = true;
+			IsShowPhoneNotification = true;
+			IsShowYearNotification = true;
+			errorEmailMessage = string.Empty;
+			errorPhoneMessage = string.Empty;
+			errorYearMessage = string.Empty;
+
+			// Nếu không có file được chọn, sử dụng ảnh mặc định
+			if (selectedFile == null)
+			{
+				requestUser.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+			}
+			else
+			{
+				// Xử lý upload ảnh khi có file được chọn
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					var fileName = Path.GetFileName(fileUrl);
+					requestUser.Images = fileName;
+
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
+			}
+
+			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+			if (emailExists)
+			{
+				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				IsShowEmailNotification = false;
+				return;
+			}
+			if (requestUser.DateOrBriht == null ||
+				requestUser.DateOrBriht.Year < 1900 ||
+				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
+				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
+			{
+				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+				IsShowYearNotification = false;
+				return;
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại
+			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+			if (phoneExists)
+			{
+				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+				IsShowPhoneNotification = false;
+				return;
+			}
+
+			var userResponse = await UserService.CreateClient(requestUser);
+			if (userResponse.IsSuccessStatusCode)
+			{
+				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+				await Task.Delay(300);
+				CloseCreateAccountModal();
+			}
+			else
+			{
+				var errorContent = await userResponse.Content.ReadAsStringAsync();
+				Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+
+	private async Task CreateCustomer()
+	{
+		showCreateAccountModal = true;
+	}
+	private void CloseCreateAccountModal()
+	{
+		showCreateAccountModal = false;
+	}
+
+	#endregion
+
     #region đếm ngược
 
     private string timeLeft; // Thời gian còn lại
@@ -237,7 +929,7 @@
     private void RestartTransaction()
     {
         // Thiết lập thời gian kết thúc là 5 phút
-        endTime = DateTime.Now.AddMinutes(1);
+        endTime = DateTime.Now.AddMinutes(10);
         isTimeout = false;
 
         // Khởi động lại timer
@@ -270,6 +962,8 @@
 
     #endregion
 }
+
+
 
 
 <style>
@@ -343,6 +1037,119 @@
         background-color: #fff; /* Nền trắng */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng nhẹ */
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .seat-type {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .seat-type-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .square {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+
+    .seat-map {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .seat-row span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+
+        .seat.standard {
+            background-color: #e0e0e0;
+        }
+
+        .seat.vip {
+            background-color: #ffd700;
+        }
+
+        .seat.couple {
+            background-color: #00dfff;
+        }
+
+        .seat.booked {
+            background-color: #ff4d4d;
+            cursor: not-allowed;
+        }
+
+    .seat-info span.seat {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    .bg-dark {
+        background-color: #343a40; /* Màu ghế đã bán */
+        color: #fff;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d; /* Màu ghế bảo trì */
+        color: #fff;
+    }
+
+    .bg-danger {
+        background-color: #dc3545; /* Màu ghế VIP */
+        color: #fff;
+    }
+
+    .bg-success {
+        background-color: #28a745; /* Màu ghế đôi */
+        color: #fff;
+    }
+    .screen {
+        position: relative;
+        width: 100%;
+        max-width: 1000px; /* Giới hạn chiều dài là 1000 */
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .screen-svg {
+        width: 100%;
+        height: auto;
+    }
+
+    .screen-label {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: #7a7a7a;
+        text-transform: uppercase;
     }
 
     .control {
