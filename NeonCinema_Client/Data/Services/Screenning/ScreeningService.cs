@@ -4,6 +4,7 @@ using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Screenning;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -90,5 +91,32 @@ public class ScreeningService : IScreeningService
             return true;
         }
         else return false;
+	}
+
+    //validate nè
+	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate)
+	{
+        //lấy danh sách lịch chiếu đã lọc
+        List<ScreeningSupportValidate> lstScr = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>($"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
+
+        //lấy danh sách id showtime từ danh sách lịch chiếu trên
+        var lstIdShowtime = new List<Guid>();
+
+        foreach (var item in lstScr)
+        {
+            lstIdShowtime.Add(item.ShowTimeID);
+        }
+
+        var lstShowTime = await GetAllShowTimesAsync();
+
+
+
+        //lọc danh sách showtime theo danh sách ID và trả về
+        return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList(); // cần sửa đoạn này
+ 	}
+
+	public Task<bool> ValidateShowTimeInRoom(Guid roomId)
+	{
+		throw new NotImplementedException();
 	}
 }
