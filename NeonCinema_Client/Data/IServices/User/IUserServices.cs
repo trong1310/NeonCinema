@@ -22,7 +22,6 @@ namespace NeonCinema_Client.Data.IServices.User
         public Task<HttpResponseMessage> CheckPass(CheckPass request);
         public Task<List<Bill>> ClientCheckTicket(CancellationToken cancellationToken);
         
-
-
+        public Task UpdateState(UpdateStateAccountRequestModels request);
     }
 }
