@@ -17,7 +17,8 @@ namespace NeonCinema_Domain.Enum
         Nữ = 7,//Nữ
         ABC = 8,// Khác
         HD= 9, //trang thai hoat d
-        KHD = 10
+        KHD = 10,
+        
     }
     public enum seatEnum
     {
