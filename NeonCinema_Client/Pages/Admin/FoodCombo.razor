@@ -1,0 +1,208 @@
+﻿@page "/food-combos"
+@layout LayoutAdmin
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<div class="container-fluid mt-4">
+    <h3 class="text-center text-secondary-emphasis">Danh sách combo</h3>
+
+    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" data-bs-toggle="modal" data-bs-target="#addCombo">
+		<i class="fas fa-plus"></i> Thêm combo
+	</button>
+	<table class="table table-hover combo-table">
+		<thead>
+			<tr>
+				<th class="text-center">STT</th>
+				<th class="text-center">Hình Ảnh</th>
+				<th class="text-center">Tên</th>
+				<th class="text-center">Mô tả</th>
+				<th class="text-center">Số lượng sản phẩm</th>
+				<th class="text-center">Giá</th>
+				<th class="text-center">Hành Động</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="text-center align-middle">1</td>
+				<td class="text-center align-middle">
+					<img src= alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+				</td>
+				<td class="text-center align-middle">Combo 1</td>
+				<td class="text-center align-middle">2 bắp + 2 cola</td>
+				<td class="text-center align-middle">4</td>
+				<td class="text-center align-middle">150.000</td>
+				<td class="text-center align-middle">
+                    <button class="btn btn-outline-primary btn-sm" style="border: none;" data-bs-toggle="modal" data-bs-target="#addCombo">
+						<i class="fas fa-edit"></i>
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+    <div class="modal fade" id="addCombo" tabindex="-1" aria-labelledby="addComboLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Thêm combo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 text-center mb-4" style="margin-top:10px;">
+                                <img src="/images/Customer/user.png" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+                                <label class="custom-file-upload">
+                                    <span style="margin-left:-5px">
+                                        <i class="material-icons">cloud_upload</i>
+                                    </span>
+                                    <InputFile  class="d-none" style="width: 200px" />
+                                    <span>Chọn ảnh</span>
+                                </label>
+                            </div>
+                            <div class="col-md-8" style="margin-top:10px;">
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Tên combo</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Mô tả</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Số lượng sản phẩm</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Giá</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+                    <button type="submit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editCombo" tabindex="-1" aria-labelledby="editComboLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Cập nhật combo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 text-center mb-4" style="margin-top:10px;">
+                                <img src="/images/Customer/user.png" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+                                <label class="custom-file-upload">
+                                    <span style="margin-left:-5px">
+                                        <i class="material-icons">cloud_upload</i>
+                                    </span>
+                                    <InputFile class="d-none" style="width: 200px" />
+                                    <span>Chọn ảnh</span>
+                                </label>
+                            </div>
+                            <div class="col-md-8" style="margin-top:10px;">
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Tên combo</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7" />
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Mô tả</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Số lượng sản phẩm</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label class="form-label">Giá</label>
+                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+                    <button type="submit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}
+
+
+<style>
+	body {
+		background-color: #f8f9fa;
+		font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+	}
+
+	.combo-table {
+		background-color: white; /* Màu nền bảng là trắng */
+		border-radius: 8px; /* Bo góc bảng */
+		overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+	}
+
+    .profile-pic {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid #eaeaea;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .custom-file-upload {
+        display: flex;
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        background-color: #a9a9a9; /* Màu nền của nút */
+        color: white; /* Màu chữ */
+        border: none; /* Bỏ viền */
+        text-align: center;
+        width: 150px;
+        margin-left: auto; /* Thêm */
+        margin-right: auto;
+    }
+
+        .custom-file-upload span {
+            margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+        }
+
+        .custom-file-upload:hover {
+            background-color: #8f8f8f; /* Màu nền khi hover */
+        }
+
+</style>

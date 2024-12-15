@@ -1,6 +1,7 @@
 ﻿@page "/client"
 @using MudBlazor
 @using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Application.DataTransferObject.User.Request
 @using NeonCinema_Client.Data.IServices.User
 @using NeonCinema_Domain.Enum
 @using System.Text
@@ -11,295 +12,404 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-<div class="container-fluid mt-5">
-    <h3 class="text-center text-secondary-emphasis">Danh Sách Khách Hàng</h3>
+<div class="container-fluid mt-3">
+	<h3 class="text-center text-secondary-emphasis">Danh sách khách hàng</h3>
 
-    <!-- Search and Filter Section -->
-    <div class="row mb-4 p-3 search-filter-container">
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind="searchTerm" @oninput="SearchUsers" />
-        </div>
-
-        <div class="col-md-4">
-            <select class="form-select" @onchange="GenderChanged">
-                <option value="">Chọn giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <label class="form-label">Trạng thái:</label>
-                </div>
-                <div class="col-md-8">
-                    <div class="d-flex">
-                        <div class="form-check me-3">
-                            <input class="form-check-input" type="radio" name="status" id="all" value="all" @onchange="StatusChanged" checked>
-                            <label class="form-check-label" for="all">Tất Cả</label>
-                        </div>
-                        <div class="form-check me-3 ml-4">
-                            <input class="form-check-input" type="radio" name="status" id="active" value="active" @onchange="StatusChanged">
-                            <label class="form-check-label" for="resigned">Hoạt động</label>
-                        </div>
-                    </div>
-                    <div class="form-check mt-1">
-                        <input class="form-check-input" type="radio" name="status" id="pendingConfirmation" value="pendingConfirmation" @onchange="StatusChanged">
-                        <label class="form-check-label" for="resigned">Không hoạt động</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="NavigateToCreate">
-        <i class="fas fa-plus"></i> Thêm khách hàng
-    </button>
+	<!-- Search and Filter Section -->
+	<div class="row mb-4 p-3 search-filter-container">
+		<div class="col-md-4">
+			<input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind="searchTerm" @oninput="SearchUsers" />
+		</div>
+		<div class="col-md-2">
+			<input type="text" class="form-control" placeholder="Tìm kiếm theo SĐT..." @bind="searchPhone" @oninput="SearchPhones" />
+		</div>
+		<div class="col-md-2">
+			<select class="form-select" @onchange="GenderChanged">
+				<option value="">Chọn giới tính</option>
+				<option value="Nam">Nam</option>
+				<option value="Nữ">Nữ</option>
+			</select>
+		</div>
+		<div class="col-md-4 d-flex align-items-center">
+			<label class="form-label me-2">Trạng thái:</label>
+			<div class="d-flex align-items-center">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="status" id="all" value="all" @onchange="StatusChanged" checked>
+					<label class="form-check-label" for="all">Tất cả</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="status" id="active" value="active" @onchange="StatusChanged">
+					<label class="form-check-label" for="active">Hoạt động</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="status" id="locked" value="locked" @onchange="StatusChanged">
+					<label class="form-check-label" for="locked">Không hoạt động</label>
+				</div>
+			</div>
+		</div>
 
 
-    <!-- Employee Table -->
-    <table class="table table-hover employee-table">
-        <thead>
-            <tr>
-                <th class="text-center">STT</th>
-                <th class="text-center">Hình Ảnh</th>
-                <th class="text-center">Tên</th>
-                <th class="text-center">Ngày Sinh</th>
-                <th class="text-center">Số Điện Thoại</th>
-                <th class="text-center">Email</th>
-                <th class="text-center">Giới Tính</th>
-                <th class="text-center">Địa Chỉ</th>
-                <th class="text-center">Trạng Thái</th>
-                <th class="text-center">Hành Động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (filteredUsers != null && filteredUsers.Any())
-            {
-                var usersToDisplay = filteredUsers.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-                foreach (var user in usersToDisplay)
-                {
-                    <tr>
-                        <td class="text-center align-middle">@(@filteredUsers.IndexOf(user) + 1)</td>
 
 
-                        <td class="text-center align-middle">
-                            <img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
-                        </td>
-                        <td class="text-center align-middle">@user.FullName</td>
-                        <td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>
-                        <td class="text-center align-middle">@user.PhoneNumber</td>
-                        <td class="text-center align-middle">@user.Email</td>
-                        <td class="text-center align-middle">
-                            @if (user.Gender)
-                            {
-                                <span>Nam</span>
-                            }
-                            else if (!user.Gender)
-                            {
-                                <span>Nữ</span>
-                            }
-                        </td>
-                        <td class="text-center align-middle">@user.Adderss</td>
-                        <td class="text-center align-middle">
-                            <span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge">
-                                @(user.Status == EntityStatus.Active ? "Active" : "Inactive")
-                            </span>
-                        </td>
-                        <td class="text-center align-middle">
-                            <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToEdit(user.ID)">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="10" class="text-center">Không có nhân viên nào.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-    <!-- Pagination -->
-    <nav>
-        <ul class="pagination justify-content-center">
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" @onclick="() => ChangePage(currentPage - 1)">Trước</a>
-            </li>
-            @for (var i = 1; i <= totalPages; i++)
-            {
-                <li class="page-item @(currentPage == i ? "active" : "")">
-                    <a class="page-link" @onclick="() => ChangePage(i)">@i</a>
-                </li>
-            }
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link" @onclick="() => ChangePage(currentPage + 1)">Sau</a>
-            </li>
-        </ul>
-    </nav>
+	</div>
+	<button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" @onclick="NavigateToCreate">
+		<i class="fas fa-plus"></i> Thêm khách hàng
+	</button>
+
+
+	<!-- Employee Table -->
+	<table class="table table-hover employee-table">
+		<thead>
+			<tr>
+				<th class="text-center">STT</th>
+				<th class="text-center">Hình Ảnh</th>
+				<th class="text-center">Tên</th>
+				<th class="text-center">Ngày Sinh</th>
+				<th class="text-center">Số Điện Thoại</th>
+				<th class="text-center">Email</th>
+				<th class="text-center">Giới Tính</th>
+				<th class="text-center">Địa Chỉ</th>
+				<th class="text-center">Trạng Thái</th>
+				<th class="text-center">Hành Động</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (filteredUsers != null && filteredUsers.Any())
+			{
+				var usersToDisplay = filteredUsers.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+				foreach (var user in usersToDisplay)
+				{
+					<tr>
+						<td class="text-center align-middle">@(@filteredUsers.IndexOf(user) + 1)</td>
+
+
+						<td class="text-center align-middle">
+							<img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+						</td>
+						<td class="text-center align-middle">@user.FullName</td>
+						<td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>
+						<td class="text-center align-middle">@user.PhoneNumber</td>
+						<td class="text-center align-middle">@user.Email</td>
+						<td class="text-center align-middle">
+							@if (user.Gender)
+							{
+								<span>Nam</span>
+							}
+							else if (!user.Gender)
+							{
+								<span>Nữ</span>
+							}
+						</td>
+						<td class="text-center align-middle">@user.Adderss</td>
+						<td class="text-center align-middle">
+							<div class="dropdown">
+								<span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge dropdown-toggle"
+									  data-bs-toggle="dropdown"
+									  aria-expanded="false">
+									@(user.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
+								</span>
+								<ul class="dropdown-menu">
+									<li>
+										<span class="badge bg-success text-light small-badge dropdown-item"
+											  style="cursor: pointer;"
+											  @onclick="() => UpdateStatus(user, EntityStatus.Active)">
+											Hoạt động
+										</span>
+									</li>
+									<li>
+										<span class="badge bg-danger text-light small-badge dropdown-item"
+											  style="cursor: pointer;"
+											  @onclick="() => UpdateStatus(user, EntityStatus.Locked)">
+											Không hoạt động
+										</span>
+									</li>
+								</ul>
+
+							</div>
+						</td>
+						<td class="text-center align-middle">
+							<button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToEdit(user.ID)">
+								<i class="fas fa-edit"></i>
+							</button>
+						</td>
+					</tr>
+				}
+			}
+			else
+			{
+				<tr>
+					<td colspan="10" class="text-center">Không có nhân viên nào.</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<!-- Pagination -->
+	<nav>
+		<ul class="pagination justify-content-center">
+			<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+				<a class="page-link" @onclick="() => ChangePage(currentPage - 1)">Trước</a>
+			</li>
+			@for (var i = 1; i <= totalPages; i++)
+			{
+				<li class="page-item @(currentPage == i ? "active" : "")">
+					<a class="page-link" @onclick="() => ChangePage(i)">@i</a>
+				</li>
+			}
+			<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+				<a class="page-link" @onclick="() => ChangePage(currentPage + 1)">Sau</a>
+			</li>
+		</ul>
+	</nav>
 </div>
 
 @code {
-    private List<UserDTO> users = new List<UserDTO>();
-    private List<UserDTO> filteredUsers = new List<UserDTO>();
-    private string searchTerm = string.Empty;
-    private string selectedGender = string.Empty;
-    private string selectedStatus = "all";
-    private int currentPage = 1;
-    private const int pageSize = 5;
-    private Guid roleIdToFilter = Guid.Parse("BA820C64-1A81-4C44-80EA-47038C930C3B");
+	private List<UserDTO> users = new List<UserDTO>();
+	private List<UserDTO> filteredUsers = new List<UserDTO>();
+	private string searchPhone = string.Empty;
+	private string searchTerm = string.Empty;
+	private string selectedGender = string.Empty;
+	private string selectedStatus = "all";
+	private int currentPage = 1;
+	private const int pageSize = 5;
+	private Guid roleIdToFilter = Guid.Parse("BA820C64-1A81-4C44-80EA-47038C930C3B");
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            users = await UserService.GetAllUser(CancellationToken.None);
-            // Kiểm tra nếu không có người dùng nào
-            if (users == null || !users.Any())
-            {
-                filteredUsers = new List<UserDTO>(); // Hoặc hiển thị thông báo không có dữ liệu
-                return;
-            }
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			users = await UserService.GetAllUser(CancellationToken.None);
+			// Kiểm tra nếu không có người dùng nào
+			if (users == null || !users.Any())
+			{
+				filteredUsers = new List<UserDTO>(); // Hoặc hiển thị thông báo không có dữ liệu
+				return;
+			}
 
-            // Filter users by the specified Role ID when initializing
-            filteredUsers = users.Where(u => u.RoleID == roleIdToFilter).ToList();
-            currentPage = 1; // Reset current page to 1 after filtering
-        }
-        catch (HttpRequestException httpRequestException)
-        {
-            // Xử lý lỗi 404 hoặc các lỗi khác tại đây
-            Console.WriteLine($"Lỗi khi lấy dữ liệu người dùng: {httpRequestException.Message}");
-            // Có thể hiển thị thông báo cho người dùng nếu cần
-        }
-        catch (Exception ex)
-        {
-            // Xử lý các lỗi khác
-            Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
-        }
-    }
+			// Filter users by the specified Role ID when initializing
+			filteredUsers = users.Where(u => u.RoleID == roleIdToFilter).ToList();
+			currentPage = 1; // Reset current page to 1 after filtering
+		}
+		catch (HttpRequestException httpRequestException)
+		{
+			// Xử lý lỗi 404 hoặc các lỗi khác tại đây
+			Console.WriteLine($"Lỗi khi lấy dữ liệu người dùng: {httpRequestException.Message}");
+			// Có thể hiển thị thông báo cho người dùng nếu cần
+		}
+		catch (Exception ex)
+		{
+			// Xử lý các lỗi khác
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+		}
+	}
 
 
-    private void SearchUsers(ChangeEventArgs e)
-    {
-        searchTerm = e.Value?.ToString() ?? string.Empty;
-        FilterUsers();
-    }
+	private async Task UpdateStatus(UserDTO user, EntityStatus newStatus)
+	{
+		if (user.Status == newStatus) return; // Không thay đổi nếu trạng thái không đổi
 
-    private void GenderChanged(ChangeEventArgs e)
-    {
-        selectedGender = e.Value?.ToString() ?? string.Empty;
-        FilterUsers();
-    }
+		try
+		{
+			user.Status = newStatus;
 
-    private void StatusChanged(ChangeEventArgs e)
-    {
-        selectedStatus = e.Value?.ToString() ?? "all";
-        FilterUsers();
-    }
+			var account = new UpdateStateAccountRequestModels
+				{
+					Id = user.ID,
+					State = user.Status,
+				};
 
-    private void FilterUsers()
-    {
-        filteredUsers = users.Where(u =>
-             u.RoleID == roleIdToFilter &&
-             (string.IsNullOrWhiteSpace(selectedGender) ||
-             (selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
-             (selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
-             (string.IsNullOrWhiteSpace(searchTerm) ||
-             RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
-             (selectedStatus == "all" ||
-             (selectedStatus == "active" && u.Status == EntityStatus.Active) ||
-             (selectedStatus == "pendingConfirmation" && u.Status == EntityStatus.PendingForConfirmation))
-    ).ToList();
+			// Gửi yêu cầu cập nhật qua API
+			await UserService.UpdateState(account);
 
-        currentPage = 1; // Reset current page to 1 after filtering
-    }
+			// Cập nhật giao diện
+			StateHasChanged();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Có lỗi xảy ra khi cập nhật trạng thái: {ex.Message}");
+		}
+	}
+	private void SearchUsers(ChangeEventArgs e)
+	{
+		searchTerm = e.Value?.ToString() ?? string.Empty;
 
-    private void ChangePage(int newPage)
-    {
-        if (newPage < 1 || newPage > totalPages) return;
-        currentPage = newPage;
-    }
+		FilterUsers();
+	}
+	private void SearchPhones(ChangeEventArgs e)
+	{
+		searchPhone = e.Value?.ToString() ?? string.Empty;
 
-    private int totalPages => (int)Math.Ceiling((double)filteredUsers.Count / pageSize);
+		FilterUsers();
+	}
+	private void GenderChanged(ChangeEventArgs e)
+	{
+		selectedGender = e.Value?.ToString() ?? string.Empty;
+		FilterUsers();
+	}
 
-    private string RemoveDiacritics(string text)
-    {
-        if (string.IsNullOrEmpty(text))
-            return text;
+	private void StatusChanged(ChangeEventArgs e)
+	{
+		selectedStatus = e.Value?.ToString() ?? "all";
+		FilterUsers();
+	}
 
-        var normalizedString = text.Normalize(NormalizationForm.FormD);
-        var stringBuilder = new StringBuilder();
+	private void FilterUsers()
+	{
+		filteredUsers = users.Where(u =>
+				u.RoleID == roleIdToFilter &&
+				(string.IsNullOrWhiteSpace(selectedGender) ||
+				(selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
+				(selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
+				(string.IsNullOrWhiteSpace(searchTerm) ||
+				RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
+				(string.IsNullOrWhiteSpace(searchPhone) ||
+				RemoveDiacritics(u.PhoneNumber).Contains(RemoveDiacritics(searchPhone), StringComparison.OrdinalIgnoreCase)) &&
+				(selectedStatus == "all" ||
+				(selectedStatus == "active" && u.Status == EntityStatus.Active) ||
+				(selectedStatus == "locked" && u.Status == EntityStatus.Locked))
+	).ToList();
 
-        foreach (var c in normalizedString)
-        {
-            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-            {
-                stringBuilder.Append(c);
-            }
-        }
+		currentPage = 1; // Reset current page to 1 after filtering
+	}
 
-        return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-    }
-    private async Task NavigateToEdit(Guid id)
-    {
-        Navigation.NavigateTo($"/client-details/{id}");
-    }
-    private async Task NavigateToCreate()
-    {
-        Navigation.NavigateTo($"/client-create");
-    }
-    private string GetImageUrl(string imageUrl)
-    {
-        return $"https://localhost:7211/api/Resources/{imageUrl}";
-    }
+	private void ChangePage(int newPage)
+	{
+		if (newPage < 1 || newPage > totalPages) return;
+		currentPage = newPage;
+	}
+
+	private int totalPages => (int)Math.Ceiling((double)filteredUsers.Count / pageSize);
+
+	private string RemoveDiacritics(string text)
+	{
+		if (string.IsNullOrEmpty(text))
+			return text;
+
+		var normalizedString = text.Normalize(NormalizationForm.FormD);
+		var stringBuilder = new StringBuilder();
+
+		foreach (var c in normalizedString)
+		{
+			var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+			if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+			{
+				stringBuilder.Append(c);
+			}
+		}
+
+		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+	}
+	private async Task NavigateToEdit(Guid id)
+	{
+		Navigation.NavigateTo($"/staff-details/{id}");
+	}
+	private async Task NavigateToCreate()
+	{
+		Navigation.NavigateTo($"/staff-create");
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
 
 }
 
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
-    }
+	body {
+		background-color: #f8f9fa;
+		font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+	}
 
-    .container-fluid {
-        font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
-    }
+	.container-fluid {
+		font-family: 'Roboto', sans-serif; /* Sử dụng font chữ Roboto */
+	}
 
-    .employee-table {
-        background-color: white; /* Màu nền bảng là trắng */
-        border-radius: 8px; /* Bo góc bảng */
-        overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
-    }
+	.employee-table {
+		background-color: white; /* Màu nền bảng là trắng */
+		border-radius: 8px; /* Bo góc bảng */
+		overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+	}
 
-    .pagination .page-item.active .page-link {
-        background-color: #007bff; /* Màu nền cho trang hiện tại */
-        border-color: #007bff; /* Màu viền cho trang hiện tại */
-    }
+	.pagination .page-item.active .page-link {
+		background-color: #007bff; /* Màu nền cho trang hiện tại */
+		border-color: #007bff; /* Màu viền cho trang hiện tại */
+	}
 
-    .small-badge {
-        font-size: 0.75rem; /* Kích thước chữ nhỏ cho badge */
-    }
+	.small-badge {
+		font-size: 0.75rem; /* Kích thước chữ nhỏ cho badge */
+	}
 
-    .search-filter-container {
-        background-color: #ffffff; /* Màu nền cho khung tìm kiếm và lọc */
-        border-radius: 8px; /* Bo góc cho khung */
-        padding: 20px; /* Padding cho khung */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho khung */
-        margin-left: 1px;
-        margin-right: 1px;
-    }
+	.search-filter-container {
+		display: flex; /* Sử dụng flexbox */
+		flex-wrap: nowrap; /* Không cho xuống dòng */
+		align-items: center; /* Căn giữa theo trục dọc */
+		justify-content: space-between; /* Căn đều các phần tử */
+		background-color: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		margin-left: 1px;
+		margin-right: 1px;
+	}
 
-    .form-control {
-        border-radius: 5px; /* Bo góc cho ô input */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho ô input */
-    }
+	.form-control {
+		border-radius: 5px; /* Bo góc cho ô input */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho ô input */
+	}
 
-    .form-select {
-        border-radius: 5px; /* Bo góc cho ô chọn */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho ô chọn */
-    }
+	.form-select {
+		border-radius: 5px; /* Bo góc cho ô chọn */
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng cho ô chọn */
+	}
+
+	.dropdown-menu {
+		background-color: #f8f9fa; /* Màu nền sáng */
+		border: 1px solid #ddd; /* Viền nhẹ */
+		border-radius: 8px; /* Bo góc cho dropdown */
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Thêm bóng cho dropdown */
+		padding: 0.5rem; /* Thêm khoảng cách padding bên trong */
+		min-width: 180px; /* Đặt chiều rộng tối thiểu */
+	}
+
+		.dropdown-menu .badge {
+			display: block; /* Đảm bảo mỗi badge nằm trên một dòng riêng */
+			text-align: center; /* Căn giữa nội dung trong badge */
+			padding: 8px 12px; /* Thêm khoảng cách padding bên trong */
+			margin: 5px 0; /* Thêm khoảng cách giữa các badge */
+			border-radius: 6px; /* Bo góc cho badge */
+			transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng hover */
+			cursor: pointer; /* Đổi con trỏ chuột thành pointer khi hover */
+		}
+
+			.dropdown-menu .badge:hover {
+				transform: scale(1.05); /* Phóng to nhẹ khi hover */
+				opacity: 0.9; /* Hiệu ứng mờ khi hover */
+			}
+
+			.dropdown-menu .badge.bg-success:hover {
+				background-color: #218838; /* Màu xanh đậm hơn khi hover */
+			}
+
+			.dropdown-menu .badge.bg-danger:hover {
+				background-color: #c82333; /* Màu đỏ đậm hơn khi hover */
+			}
+
+	.d-flex.align-items-center {
+		display: flex; /* Đảm bảo các thành phần hiển thị ngang hàng */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		gap: 15px; /* Khoảng cách giữa các phần tử */
+	}
+
+	.form-check-inline {
+		margin-right: 15px; /* Khoảng cách giữa các radio button */
+	}
+
+	.form-label {
+		white-space: nowrap; /* Đảm bảo chữ "Trạng thái" không xuống dòng */
+		margin-right: 10px; /* Khoảng cách giữa label và các radio button */
+		margin-bottom: 0; /* Loại bỏ khoảng cách dưới label */
+	}
+
 </style>
