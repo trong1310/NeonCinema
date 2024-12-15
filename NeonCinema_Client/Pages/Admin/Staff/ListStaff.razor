@@ -104,11 +104,11 @@
 						<td class="text-center align-middle">@user.Adderss</td>
 						<td class="text-center align-middle">
                             <div class="dropdown">
-                                <span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge dropdown-toggle"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false">
-                                    @(user.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
-                                </span>
+								<span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge dropdown-toggle"
+									  data-bs-toggle="dropdown" aria-expanded="false"
+									  style="cursor: pointer;">
+									@(user.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
+								</span>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <span class="badge bg-success text-light small-badge dropdown-item"
@@ -328,8 +328,12 @@
 		border-radius: 8px; /* Bo góc bảng */
 		overflow: hidden; /* Ẩn đi các phần tràn ra ngoài */
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+		overflow: visible;
 	}
 
+		.employee-table tbody tr {
+			position: relative; /* Đảm bảo các thành phần bên trong dòng không bị che */
+		}
 	.pagination .page-item.active .page-link {
 		background-color: #007bff; /* Màu nền cho trang hiện tại */
 		border-color: #007bff; /* Màu viền cho trang hiện tại */
@@ -369,6 +373,7 @@
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Thêm bóng cho dropdown */
 		padding: 0.5rem; /* Thêm khoảng cách padding bên trong */
 		min-width: 180px; /* Đặt chiều rộng tối thiểu */
+		z-index: 1050;
 	}
 
 		.dropdown-menu .badge {
@@ -379,6 +384,7 @@
 			border-radius: 6px; /* Bo góc cho badge */
 			transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng hover */
 			cursor: pointer; /* Đổi con trỏ chuột thành pointer khi hover */
+			
 		}
 
 			.dropdown-menu .badge:hover {
@@ -409,6 +415,4 @@
 		margin-right: 10px; /* Khoảng cách giữa label và các radio button */
 		margin-bottom: 0; /* Loại bỏ khoảng cách dưới label */
 	}
-
-
 </style>
