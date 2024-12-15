@@ -123,11 +123,11 @@
 	}
 	private async Task ChooseSeatNavigate(Guid id)
 	{
-		_navi.NavigateTo($"/select-seat/{id}");
+		_navi.NavigateTo($"/choose-ticket/{id}");
 	}
 	private async Task NavigateToBack()
 	{
-		_navi.NavigateTo("/book_ticket");
+		_navi.NavigateTo("/list-movie");
 	}
 }
 

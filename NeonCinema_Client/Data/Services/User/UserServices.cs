@@ -19,6 +19,7 @@ using NeonCinema_Infrastructure.Database.AppDbContext;
 using static NeonCinema_Client.Pages.Client.User.Profile;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Enum;
+using System.Threading;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -154,6 +155,18 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-        
-    }
+		public Task UpdateState(UpdateStateAccountRequestModels request)
+		{
+			try
+			{
+
+                var reponse =  _httpClient.PostAsJsonAsync($"https://localhost:7211/api/User/update-state", request);
+				return reponse;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Bạn chưa đặt vé nào:{ex.Message}");
+			}
+		}
+	}
 }

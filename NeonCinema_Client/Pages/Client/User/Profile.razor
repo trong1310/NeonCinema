@@ -53,14 +53,14 @@ else
                                 {
                                     <img src="@user.Images" alt="Hình ảnh đã tải lên" class="img-thumbnail mt-2" style="max-width: 150px; max-height: 150px;" />
                                 }
-                                @if (!string.IsNullOrEmpty(errorMessage))
+                                @* @if (!string.IsNullOrEmpty(errorMessage))
                                 {
                                     <p class="text-danger">@errorMessage</p>
                                 }
                                 @if (!string.IsNullOrEmpty(successMessage))
                                 {
                                     <p class="text-success">@successMessage</p>
-                                }
+                                } *@
                             </div>
                             <div class="container mt-4">
                                 @* <h4>Thông Tin Tài Khoản</h4> *@
@@ -261,11 +261,9 @@ else
         var token = await _localstorage.GetItemAsync<string>("authToken");
         if (string.IsNullOrEmpty(token))
         {
-            _navi.NavigateTo("/login");
+            //_navi.NavigateTo("/login");
             return;
         }
-
-
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
         var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);

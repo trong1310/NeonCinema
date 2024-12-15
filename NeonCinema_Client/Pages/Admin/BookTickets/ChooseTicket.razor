@@ -77,9 +77,22 @@
 					</div>
 				</div>
 			</div>
-			<div class="screen-area my-3">
-				<div class="screen text-center">Màn hình</div>
+			<div class="screen">
+				<svg viewBox="0 0 1000 100" xmlns="http://www.w3.org/2000/svg" class="screen-svg">
+					<!-- Đường cong -->
+					<path d="M0,50 Q500,0 1000,50" fill="none" stroke="#AFFF00" stroke-width="5" />
+					<!-- Hiệu ứng gradient -->
+					<path d="M0,50 Q500,0 1000,50 L1000,100 L0,100 Z" fill="url(#gradient)" />
+					<defs>
+						<linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+							<stop offset="0%" style="stop-color:rgba(175, 255, 0, 0.5); stop-opacity:1" />
+							<stop offset="100%" style="stop-color:white; stop-opacity:0" />
+						</linearGradient>
+					</defs>
+				</svg>
+				<div class="screen-label mt-4">Màn hình</div>
 			</div>
+
 			<div class="seat-selection">
 				@foreach (var row in groupedSeats)
 				{
@@ -1070,17 +1083,30 @@
 		font-size: 14px;
 	}
 
-	.screen-area {
+	.screen {
+		position: relative;
+		width: 100%;
+		max-width: 1000px; /* Giới hạn chiều dài là 1000 */
+		margin: 0 auto;
 		text-align: center;
-		margin: 20px 0;
 	}
 
-	.screen {
-		background-color: #ddd;
-		padding: 10px;
-		font-weight: bold;
-		margin-bottom: 20px;
+	.screen-svg {
+		width: 100%;
+		height: auto;
 	}
+
+	.screen-label {
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 18px;
+		font-weight: bold;
+		color: #7a7a7a;
+		text-transform: uppercase;
+	}
+
 
 	.seat-selection {
 		display: flex;
