@@ -16,8 +16,8 @@
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <div class="container-fluid mt-5">
-        <h2 class="text-center mb-4 font-weight-bold">Thêm khách hàng mới</h2>
+    <div class="container-fluid mt-3">
+        <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
                 <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
@@ -76,30 +76,13 @@
                     </div>
                 </div>
 
-                @*  <div class="row">
-                <div class="col-md-6">
-                <div class="form-group">
-                <label for="images" class="font-weight-bold">Images</label>
-                <InputFile OnChange="HandleSelected" />
-                </div>
-                </div>
-                <div class="col-md-6">
-                <div class="form-group">
-                <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
-                <ValidationMessage For="@(() => request.PassWord)" />
-                </div>
-                </div>
-                </div> *@
-
-
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label">Giới tính</label> <br />
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
+                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" checked />
                                     <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -107,42 +90,28 @@
                                     <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                                 </div>
                             </div>
-                            <ValidationMessage For="@(() => request.Gender)" style="margin-top: 2px" />
                         </div>
 
                     </div>
-                   @*  <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                            <input type="@(showPassword ? "text" : "password")" class="form-control" id="pass" @bind="request.PassWord" />
-
-                            <div class="input-group-append">
-                                <span class="input-group-text password-icon" @onclick="TogglePasswordVisibility">
-                                    <i class="material-icons">@((showPassword) ? "visibility_off" : "visibility")</i>
-                                </span>
-                            </div>
-                            <ValidationMessage For="@(() => request.PassWord)" />
-                        </div>
-                    </div> *@
-                    @*     <div class="col-md-6">
-                    <div class="form-group">
-                    <label>Trạng thái</label>
-                    <select class="form-select" @bind="request.Status">
-                    <option value="@(EntityStatus.Active)">Đang hoạt động</option>
-                    <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
-                    </select>
-                    </div>
-                    </div> *@
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Địa chỉ</label>
                     <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss"></textarea>
-                    <ValidationMessage For="@(() => request.Adderss)" style="margin-top: 2px" />
+                    @if (!IsShowAddressNotification)
+                    {
+                        <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorAddressMessage</span>
+                    }
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="submit" class="btn btn-success btn-lg" disabled="@isSubmitting"
+                            style="width: 15%; min-width: 200px;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                              style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+                        <span>@(isSubmitting ? "Đang xử lý..." : "Thêm")</span>
+                    </button>
+
                     <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToStaff">Quay lại</button>
                 </div>
             </div>
@@ -158,9 +127,14 @@
     private string errorEmailMessage;
     private string errorPhoneMessage;
     private string errorYearMessage;
+    private string errorAddressMessage;
     private bool IsShowPhoneNotification = true;
     private bool IsShowEmailNotification = true;
     private bool IsShowYearNotification = true;
+    private bool IsShowGenderNotification = true;
+    private bool IsShowAddressNotification = true;
+    private bool isSubmitting = false;
+    private bool shouldNavigate = false;
 
     private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
     private void ShowSnackbar(string message, Severity severity)
@@ -170,7 +144,15 @@
             options.RequireInteraction = false; // Không bắt buộc người dùng tắt
             options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
         });
+        isSubmitting = false;
+        // Chuyển hướng sau khi hoàn tất hiển thị
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+            _navigation.NavigateTo("/client"); // Chuyển hướng
+        });
     }
+
     private async Task HandleSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
@@ -201,6 +183,7 @@
 
     private async Task HandleSubmit()
     {
+        isSubmitting = true;
         try
         {
             IsShowEmailNotification = true;
@@ -209,7 +192,6 @@
             errorEmailMessage = string.Empty;
             errorPhoneMessage = string.Empty;
             errorYearMessage = string.Empty;
-
             // Nếu không có file được chọn, sử dụng ảnh mặc định
             if (selectedFile == null)
             {
@@ -247,24 +229,33 @@
             {
                 errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
                 IsShowEmailNotification = false;
+                isSubmitting = false;
                 return;
             }
             if (request.DateOrBriht == null ||
                 request.DateOrBriht.Year < 1900 ||
-                request.DateOrBriht > DateTime.Now.AddYears(-18) ||
-                request.DateOrBriht <= DateTime.Now.AddYears(-50))
+                request.DateOrBriht > DateTime.Now.AddYears(-16))
             {
-                errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+                errorYearMessage = "Khách hàng phải từ 16 trở lên.";
                 IsShowYearNotification = false;
+                isSubmitting = false;
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(request.Adderss))
+            {
+                errorAddressMessage = "Địa chỉ không được để trống.";
+                IsShowAddressNotification = false;
+                isSubmitting = false;
+                return;
+            }
             // Kiểm tra số điện thoại đã tồn tại
             var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
             if (phoneExists)
             {
                 errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
                 IsShowPhoneNotification = false;
+                isSubmitting = false;
                 return;
             }
 
@@ -272,13 +263,12 @@
             if (userResponse.IsSuccessStatusCode)
             {
                 ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
-                await Task.Delay(1000);
-                _navigation.NavigateTo("/client");
+                isSubmitting = false;
             }
             else
             {
                 var errorContent = await userResponse.Content.ReadAsStringAsync();
-                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+                Console.WriteLine($"Có lỗi xảy ra khi tạo khách hàng: {errorContent}");
             }
         }
         catch (Exception ex)
