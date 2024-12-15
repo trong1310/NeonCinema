@@ -138,4 +138,10 @@
     <UpToDateCheckInput Remove="Pages\Register.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\images\Client\avt-default.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
