@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\NewFolder\**" />
-    <Content Remove="wwwroot\NewFolder\**" />
-    <EmbeddedResource Remove="wwwroot\NewFolder\**" />
-    <None Remove="wwwroot\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Resources\1cf8711b-54c6-43d8-9ea7-064e127cd692.jpg" />
   </ItemGroup>
 
@@ -30,15 +23,24 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Oscore.QrCodes.SkiaSharp" Version="1.1.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="QRCoder-ImageSharp" Version="0.10.0" />
+    <PackageReference Include="QRCoder.Core" Version="1.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="SkiaSharp.QrCode" Version="0.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NeonCinema_Application\NeonCinema_Application.csproj" />
     <ProjectReference Include="..\NeonCinema_Domain\NeonCinema_Domain.csproj" />
     <ProjectReference Include="..\NeonCinema_Infrastructure\NeonCinema_Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\invoices\" />
+    <Folder Include="wwwroot\tickets_temp\" />
   </ItemGroup>
 
 </Project>
