@@ -116,7 +116,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             .Include(x => x.TicketSeats)
                             .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(request.SearchName))
+
+			if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
             }
@@ -124,8 +125,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             var dataview = (from a in result.Data
                             join b in query on a.ID
-                            equals b.ID
-                            orderby b.CreatedTime
+                            equals b.ID orderby b.CreatedTime descending
+                         
 
 							select new MovieDTO
                             {
@@ -275,8 +276,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Countrys)
                 .Include(x => x.TicketSeats)
                 .Where(x => x.Status == MovieStatus.Active)
-                .OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
-                .Take(8) // Lấy top 8 phim
+                .OrderByDescending(x => x.CreatedTime) 
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -315,8 +315,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Countrys)
 				.Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.Comingsoon)
-				.OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
-				.Take(8) // Lấy top 8 phim
+				.OrderByDescending(x => x.CreatedTime) 
 				.AsNoTracking()
 				.ToListAsync();
 
