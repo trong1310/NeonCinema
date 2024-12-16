@@ -303,15 +303,15 @@
                     var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
                     if (roleName == "Client")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie");
                     }
                     if (roleName == "Admin")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
                     if (roleName == "Staff")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
 
                 }
