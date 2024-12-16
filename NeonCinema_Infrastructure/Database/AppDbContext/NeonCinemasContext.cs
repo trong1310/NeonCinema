@@ -72,7 +72,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
 			//optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
+
 			optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -330,6 +335,22 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "images/ngoc.jpg",
 		Gender = false,
 		RoleID = Guid.Parse("ba820c64-1a81-4c44-80ea-47038c930c3b")
+	},
+	new Users
+	{
+		ID = Guid.NewGuid(),
+		CreatedTime = DateTime.Now,
+		FullName = "Phùng Tiến Giáp",
+		Email = "giaphipp@gmail.com",
+		PassWord = Hash.Encrypt("abc123"),
+		Status = EntityStatus.Active,
+		PhoneNumber = "0862774830",
+		Adderss = "Hà Nội",
+		DateOrBriht = DateTime.Parse("01/01/2004"),
+		Images = "images/mai.jpg",
+		Gender = false,
+		RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
+
 	}
 };
 

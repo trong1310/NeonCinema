@@ -99,60 +99,21 @@
                             <div class="screen-label mt-4">Màn hình</div>
                         </div>
 
-
-
-                        <!-- Sơ đồ ghế -->
                         <div class="seat-map mt-2">
-                            <!-- Hàng A -->
-                            <div class="seat-row">
-                                <span>A</span>
-                                <button class="seat standard"></button>
-                                <button class="seat standard"></button>
-                                <button class="seat booked"></button>
-                                <button class="seat standard"></button>
-                                <button class="seat standard"></button>
-                            </div>
-
-                            <!-- Hàng B -->
-                            <div class="seat-row">
-                                <span>B</span>
-                                <button class="seat standard"></button>
-                                <button class="seat booked"></button>
-                                <button class="seat booked"></button>
-                                <button class="seat standard"></button>
-                                <button class="seat standard"></button>
-                            </div>
-
-                            <!-- Hàng C -->
-                            <div class="seat-row">
-                                <span>C</span>
-                                <button class="seat standard"></button>
-                                <button class="seat standard"></button>
-                                <button class="seat booked"></button>
-                                <button class="seat standard"></button>
-                                <button class="seat standard"></button>
-                            </div>
-
-                            <!-- Hàng D -->
-                            <div class="seat-row">
-                                <span>D</span>
-                                <button class="seat vip"></button>
-                                <button class="seat vip"></button>
-                                <button class="seat booked"></button>
-                                <button class="seat vip"></button>
-                                <button class="seat vip"></button>
-                            </div>
-
-                            <!-- Hàng E -->
-                            <div class="seat-row">
-                                <span>E</span>
-                                <button class="seat couple"></button>
-                                <button class="seat couple"></button>
-                                <button class="seat couple"></button>
-                                <button class="seat couple"></button>
-                            </div>
+                            @foreach (var row in groupedSeats)
+                            {
+                                <div class="seat-row">
+                                    @foreach (var seat in row.Value)
+                                    {
+                                        <div class="seat-box @GetSeatCssClass(seat)"
+                                             id="@seat.ID"
+                                             @onclick="() => SelectSeat(seat)">
+                                            @seat.SeatNumber
+                                        </div>
+                                    }
+                                </div>
+                            }
                         </div>
-
                         <!-- Nút -->
                         <div class="d-flex justify-content-center align-items-center mt-5">
                             <button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>

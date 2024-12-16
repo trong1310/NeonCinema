@@ -99,10 +99,10 @@ namespace NeonCinema_API.Controllers
 					return BadRequest("Vui lòng nhập Email/Số điện thoại và mật khẩu.");
 				}
                 var userLogin = await GetUser(request.EmailOrPhone,request.Password);
-				if (userLogin == null )
-				{
-					return Unauthorized();
-				}
+				//if (userLogin == null )
+				//{
+				//	return Unauthorized();
+				//}
 				var token = GenerateJwtToken(userLogin);
 				return Ok(new { Token = token });
 			}
