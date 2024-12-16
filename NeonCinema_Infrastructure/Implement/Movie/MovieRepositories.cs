@@ -128,7 +128,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             equals b.ID orderby b.CreatedTime descending
                          
 
-                            select new MovieDTO
+							select new MovieDTO
                             {
                                 ID = b.ID,
                                 AgeAllowed = b.AgeAllowed,
