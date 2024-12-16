@@ -10,12 +10,13 @@
 @inject NavigationManager _navigation
 @inject HttpClient _http
 @inject ISnackbar Snackbar
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <div class="container-fluid mt-5">
+    <div class="container-fluid mt-3">
         <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
@@ -32,21 +33,20 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="name" class="font-weight-bold">Họ và tên</label>
+                            <label class="form-label">Họ và tên</label>
                             <input type="text" class="form-control" id="name" @bind-value="request.FullName" />
-                            <ValidationMessage For="@(() => request.FullName)" />
+                            <ValidationMessage For="@(() => request.FullName)" style="margin-top: 2px" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="phone" class="font-weight-bold">Số điện thoại</label>
+                            <label class="form-label">Số điện thoại</label>
                             <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber">
-                            <ValidationMessage For="@(() => request.PhoneNumber)" />
+                            <ValidationMessage For="@(() => request.PhoneNumber)" style="margin-top: 2px" />
                             @if (!IsShowPhoneNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorPhoneMessage</span>
+                                <span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
                             }
-
                         </div>
                     </div>
                 </div>
@@ -54,52 +54,35 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="email" class="font-weight-bold">Email</label>
+                            <label class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" @bind-value="request.Email">
-                            <ValidationMessage For="@(() => request.Email)" />
+                            <ValidationMessage For="@(() => request.Email)" style="margin-top: 2px" />
                             @if (!IsShowEmailNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorEmailMessage</span>
+                                <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
                             }
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dob" class="font-weight-bold">Ngày sinh</label>
+                            <label class="form-label">Ngày sinh</label>
                             <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht">
-                            <ValidationMessage For="@(() => request.DateOrBriht)" />
-                                @if (!IsShowYearNotification)
+                            <ValidationMessage For="@(() => request.DateOrBriht)" style="margin-top: 2px" />
+                            @if (!IsShowYearNotification)
                             {
-                                <span class="text-danger" style="font-size: 1rem">@errorYearMessage</span>
+                                <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
                             }
                         </div>
                     </div>
                 </div>
-
-                @*  <div class="row">
-                <div class="col-md-6">
-                <div class="form-group">
-                <label for="images" class="font-weight-bold">Images</label>
-                <InputFile OnChange="HandleSelected" />
-                </div>
-                </div>
-                <div class="col-md-6">
-                <div class="form-group">
-                <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                <input type="text" class="form-control" id="pass" @bind-value="request.PassWord">
-                <ValidationMessage For="@(() => request.PassWord)" />
-                </div>
-                </div>
-                </div> *@
-
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Giới tính</label> <br />
+                            <label class="form-label">Giới tính</label> <br />
                             <div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
+                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" checked />
                                     <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -107,21 +90,28 @@
                                     <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                                 </div>
                             </div>
-                            <ValidationMessage For="@(() => request.Gender)" />
                         </div>
+
                     </div>
-                    
                 </div>
 
-
                 <div class="form-group">
-                    <label for="Description" class="font-weight-bold">Địa chỉ</label>
+                    <label class="form-label">Địa chỉ</label>
                     <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss"></textarea>
-                    <ValidationMessage For="@(() => request.Adderss)" />
+                    @if (!IsShowAddressNotification)
+                    {
+                        <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorAddressMessage</span>
+                    }
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success btn-lg">Thêm</button>
+                    <button type="submit" class="btn btn-success btn-lg" disabled="@isSubmitting"
+                            style="width: 15%; min-width: 200px;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                              style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+                        <span>@(isSubmitting ? "Đang xử lý..." : "Thêm")</span>
+                    </button>
+
                     <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToStaff">Quay lại</button>
                 </div>
             </div>
@@ -134,13 +124,17 @@
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
     private bool showPassword = false;
-
     private string errorEmailMessage;
     private string errorPhoneMessage;
     private string errorYearMessage;
+    private string errorAddressMessage;
     private bool IsShowPhoneNotification = true;
     private bool IsShowEmailNotification = true;
     private bool IsShowYearNotification = true;
+    private bool IsShowGenderNotification = true;
+    private bool IsShowAddressNotification = true;
+    private bool isSubmitting = false;
+    private bool shouldNavigate = false;
 
     private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
     private void ShowSnackbar(string message, Severity severity)
@@ -150,7 +144,15 @@
             options.RequireInteraction = false; // Không bắt buộc người dùng tắt
             options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
         });
+        isSubmitting = false;
+        // Chuyển hướng sau khi hoàn tất hiển thị
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+            _navigation.NavigateTo("/staff"); // Chuyển hướng
+        });
     }
+
     private async Task HandleSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
@@ -181,6 +183,7 @@
 
     private async Task HandleSubmit()
     {
+        isSubmitting = true;
         try
         {
             IsShowEmailNotification = true;
@@ -189,47 +192,61 @@
             errorEmailMessage = string.Empty;
             errorPhoneMessage = string.Empty;
             errorYearMessage = string.Empty;
+            // Nếu không có file được chọn, sử dụng ảnh mặc định
             if (selectedFile == null)
             {
-                return;
-            }
-
-            var content = new MultipartFormDataContent();
-            var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
-
-            content.Add(fileContent, "file", selectedFile.Name);
-            var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var jsonDoc = JsonDocument.Parse(jsonResponse);
-                var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-                var fileName = Path.GetFileName(fileUrl);
-                request.Images = fileName;
-
-                Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+                request.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
             }
             else
             {
-                Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-                return;
+                // Xử lý upload ảnh khi có file được chọn
+                var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+                content.Add(fileContent, "file", selectedFile.Name);
+                var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var jsonDoc = JsonDocument.Parse(jsonResponse);
+                    var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+                    var fileName = Path.GetFileName(fileUrl);
+                    request.Images = fileName;
+
+                    Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+                }
+                else
+                {
+                    Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+                    return;
+                }
             }
+
             var emailExists = _context.Users.Any(x => x.Email == request.Email);
             if (emailExists)
             {
                 errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
                 IsShowEmailNotification = false;
+                isSubmitting = false;
                 return;
             }
             if (request.DateOrBriht == null ||
                 request.DateOrBriht.Year < 1900 ||
-                request.DateOrBriht > DateTime.Now.AddYears(-18) ||
-                request.DateOrBriht <= DateTime.Now.AddYears(-50))
+                request.DateOrBriht > DateTime.Now.AddYears(-18))
             {
-                errorYearMessage = "Nhân viên phải từ 18 đến 50 tuổi.";
+                errorYearMessage = "Nhân viên phải từ 16 trở lên.";
                 IsShowYearNotification = false;
+                isSubmitting = false;
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Adderss))
+            {
+                errorAddressMessage = "Địa chỉ không được để trống.";
+                IsShowAddressNotification = false;
+                isSubmitting = false;
                 return;
             }
             // Kiểm tra số điện thoại đã tồn tại
@@ -238,21 +255,20 @@
             {
                 errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
                 IsShowPhoneNotification = false;
+                isSubmitting = false;
                 return;
             }
-
 
             var userResponse = await UserService.CreateUser(request);
             if (userResponse.IsSuccessStatusCode)
             {
                 ShowSnackbar("Thêm nhân viên thành công.", Severity.Success);
-                await Task.Delay(3000);
-                _navigation.NavigateTo("/staff");
+                isSubmitting = false;
             }
             else
             {
                 var errorContent = await userResponse.Content.ReadAsStringAsync();
-                ShowSnackbar($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}", Severity.Warning);
+                Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
             }
         }
         catch (Exception ex)
@@ -261,8 +277,10 @@
             Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
         }
     }
+
     private async Task NavigateToStaff()
     {
+        // _navigation.NavigateTo("/staff");
         _navigation.NavigateTo("/staff");
     }
     private void TogglePasswordVisibility()
@@ -322,7 +340,6 @@
             background-color: #8f8f8f; /* Màu nền khi hover */
         }
 
-
     label {
         font-size: 14px;
         color: #555;
@@ -373,6 +390,7 @@
         padding-left: 0; /* Loại bỏ padding thừa */
         margin-left: 0;
     }
+
 
     .password-icon {
         position: absolute;

@@ -17,7 +17,8 @@ namespace NeonCinema_Domain.Enum
         Nữ = 7,//Nữ
         ABC = 8,// Khác
         HD= 9, //trang thai hoat d
-        KHD = 10
+        KHD = 10,
+        
     }
     public enum seatEnum
     {
@@ -38,7 +39,8 @@ namespace NeonCinema_Domain.Enum
     {
         InActive = 0,
         Showing = 1,
-        Ended = 2
+        Ended = 2,
+        Cancelled = 3
     }
 
 }

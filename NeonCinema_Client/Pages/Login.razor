@@ -187,6 +187,10 @@
                                                 {
                                                     <span class="text-danger">@errorPasswordMessage</span>
                                                 }
+                                                @if (!ShowRegexPass)
+                                                {
+                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@regexPass</span>
+                                                }
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -213,7 +217,7 @@
                                                 <label class="form-label">Giới tính</label> <br />
                                                 <div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" />
+                                                        <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" checked/>
                                                         <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
@@ -225,34 +229,15 @@
                                             </div>
 
                                         </div>
-                                        @*  <div class="col-md-6">
-                                        <div class="form-group">
-                                        <label for="pass" class="font-weight-bold">Mật khẩu</label>
-                                        <input type="@(showPassword ? "text" : "password")" class="form-control" id="pass" @bind="request.PassWord" />
-
-                                        <div class="input-group-append">
-                                        <span class="input-group-text password-icon" @onclick="TogglePasswordVisibility">
-                                        <i class="material-icons">@((showPassword) ? "visibility_off" : "visibility")</i>
-                                        </span>
-                                        </div>
-                                        <ValidationMessage For="@(() => request.PassWord)" />
-                                        </div>
-                                        </div> *@
-                                        @*     <div class="col-md-6">
-                                        <div class="form-group">
-                                        <label>Trạng thái</label>
-                                        <select class="form-select" @bind="request.Status">
-                                        <option value="@(EntityStatus.Active)">Đang hoạt động</option>
-                                        <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
-                                        </select>
-                                        </div>
-                                        </div> *@
                                     </div>
 
                                     <div class="form-group">
                                         <label class="form-label">Địa chỉ</label>
                                         <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss" style="color:black; background-color: #f7f7f7"></textarea>
-                                        <ValidationMessage For="@(() => request.Adderss)" style="margin-top: 2px" />
+                                        @if (!IsShowAddressNotification)
+                                        {
+                                            <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorAddressMessage</span>
+                                        }
                                     </div>
 
                                 </div>
@@ -318,17 +303,17 @@
                     var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
                     if (roleName == "Client")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie");
                     }
                     if (roleName == "Admin")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
                     if (roleName == "Staff")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
-                   
+
                 }
                 else
                 {
@@ -410,6 +395,8 @@
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
     private bool showPassword = false;
+    private string regexPass;
+    private bool ShowRegexPass = true;
     private string errorEmailMessage;
     private string errorPhoneMessage;
     private string errorYearMessage;
@@ -458,6 +445,8 @@
     private string confirmPassword = ""; // Biến để lưu giá trị "Nhập lại mật khẩu"
     private string errorPasswordMessage = ""; // Thông báo lỗi liên quan đến mật khẩu
     private string errorConfirmPasswordMessage = ""; // Thông báo lỗi liên quan đến nhập lại mật khẩu
+    private string errorAddressMessage;
+    private bool IsShowAddressNotification = true;
     private async Task HandleSubmit()
     {
         isSubmitting = true; // Hiển thị spinner
@@ -511,7 +500,13 @@
                 isSubmitting = false;
                 return;
             }
-
+            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
+            if (!regex.IsMatch(request.PassWord))
+            {
+                regexPass = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
+                ShowRegexPass = false;
+                isSubmitting = false;
+            }
             // Kiểm tra "Nhập lại mật khẩu" không để trống và khớp với mật khẩu
             if (string.IsNullOrWhiteSpace(confirmPassword))
             {
@@ -530,18 +525,25 @@
             {
                 errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
                 IsShowEmailNotification = false;
+                isSubmitting = false;
                 return;
             }
             if (request.DateOrBriht == null ||
-                request.DateOrBriht.Year < 1900 ||
-                request.DateOrBriht > DateTime.Now.AddYears(-18) ||
-                request.DateOrBriht <= DateTime.Now.AddYears(-50))
+               request.DateOrBriht.Year < 1900 ||
+               request.DateOrBriht > DateTime.Now.AddYears(-18))
             {
-                errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+                errorYearMessage = "Bạn phải từ 18 tuổi trở lên.";
                 IsShowYearNotification = false;
+                isSubmitting = false;
                 return;
             }
-
+            if (string.IsNullOrWhiteSpace(request.Adderss))
+            {
+                errorAddressMessage = "Địa chỉ không được để trống.";
+                IsShowAddressNotification = false;
+                isSubmitting = false;
+                return;
+            }
             // Kiểm tra số điện thoại đã tồn tại
             var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
             if (phoneExists)

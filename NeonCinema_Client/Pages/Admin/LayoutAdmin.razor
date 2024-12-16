@@ -7,6 +7,15 @@
 @inject NavigationManager _navi
 @using NeonCinema_API.Controllers.Service
 
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<!-- Custom CSS -->
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+
+
     <MudThemeProvider />
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Dark">
@@ -28,7 +37,7 @@
                     }
                     else if (user != null && !string.IsNullOrEmpty(user.Images))
                     {
-                        <img src="@user.Images" alt="Hình ảnh đã tải lên" style="width: 100%; height: 100%; border-radius: 50%;" />
+                        <img src="@GetImageUrl(user.Images)" alt="Hình ảnh đã tải lên" style="width: 100%; height: 100%; border-radius: 50%;" />
                     }
                 </MudAvatar>
 
@@ -44,6 +53,12 @@
         @Body
     </MudMainContent>
 </MudLayout>
+
+<!-- Tải jQuery trước Owl Carousel -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 @code {
     private UserProfile user;
@@ -93,5 +108,9 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
     }
 }

@@ -1,6 +1,8 @@
 ﻿
 using NeonCinema_Application.DataTransferObject.User;
+using NeonCinema_Application.DataTransferObject.User.Request;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
