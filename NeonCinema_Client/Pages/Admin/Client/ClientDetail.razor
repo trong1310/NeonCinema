@@ -5,6 +5,7 @@
 @using System.Globalization
 @inject IUserServices UserService
 
+
 <div class="container-fluid mt-5">
 	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
 	<div class="row justify-content-center">
@@ -81,7 +82,7 @@
 							<label>Trạng thái</label>
 							<select class="form-select" @bind="status">
 								<option value="Active">Đang hoạt động</option>
-								<option value="PendingForConfirmation">Không hoạt động</option>
+								<option value="Locked">Không hoạt động</option>
 							</select>
 						</div>
 					</div>

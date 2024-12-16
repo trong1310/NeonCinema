@@ -50,10 +50,13 @@
         <div class="form-group">
             <label for="status">Trạng Thái:</label>
             <InputSelect id="status" class="form-control" @bind-Value="seatToUpdate.Status">
-                <option value="@(EntityStatus.Active)">Ghế còn trống</option>
-                <option value="@(EntityStatus.Inactive)">Đã đặt</option>
+                <option value="@(seatEnum.Available)">Ghế còn trống</option>
+                <option value="@(seatEnum.Sold)">Ghế đã bán</option>
+                <option value="@(seatEnum.Selected)">Ghế đã chọn</option>
+                <option value="@(seatEnum.Maintenance)">Ghế bảo trì</option>
             </InputSelect>
         </div>
+
 
         <div style="margin-top: 10px">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Cập Nhật</button>
@@ -71,12 +74,8 @@
     [Parameter] public Guid seatId { get; set; }
     private UpdateSeatDTO seatToUpdate = new UpdateSeatDTO();
     private List<SeatTypeDTO> seatTypes = new List<SeatTypeDTO>();
-    
-
     protected override async Task OnInitializedAsync()
     {
-       
-
         seatTypes = await SeatTypeService.GetAllSeatType();
         var seatResponse = await SeatService.GetSeatById(seatId);
         if (seatResponse != null)
@@ -89,7 +88,6 @@
                     Row = seatResponse.Row,
                     Status = seatResponse.Status,
                     SeatTypeID = seatResponse.SeatTypeID
-
             };
         }
     }
@@ -97,16 +95,13 @@
     private async Task HandleValidSubmit()
     {
         var result = await SeatService.UpdateSeate(seatToUpdate.ID, seatToUpdate);
-
-        
         if (result != null && result.IsSuccessStatusCode)
         {
             Navigation.NavigateTo("/listseat");
         }
         else
         {
-            Console.WriteLine("Error: Could not update seat information.");
-            
+            Console.WriteLine("Error: Could not update seat information."); 
         }
     }
 

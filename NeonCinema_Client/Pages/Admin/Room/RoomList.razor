@@ -2,151 +2,152 @@
 @using NeonCinema_Application.DataTransferObject.Cinemas
 @using NeonCinema_Application.DataTransferObject.Room
 @using NeonCinema_Client.Data.IServices.IRoom
+@using NeonCinema_Domain.Enum
 @inject IRoomService RoomService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<h2 class="d-flex justify-content-center align-content-center m-auto mt-5">Danh sách phòng chiếu</h2>
+<div class="container-fluid mt-5">
+    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-top: 10px; margin-left:1px; " @onclick="AddRoom">
+        <i class="bi bi-plus-circle"></i> Thêm phòng chiếu
+    </button>
+    @if (rooms == null)
+    {
+        <p class="text-center">Đang tải danh sách phòng chiếu...</p>
+    }
+    else if (rooms.Count == 0)
+    {
+        <p class="text-center">Không có phòng chiếu nào.</p>
+    }
+    else
+    {
+        @* <div class="d-flex justify-content-end ">
+            <button class="btn btn-success" @onclick="AddRoom" title="Thêm phòng chiếu">
+                <i class="bi bi-plus-circle"></i> Thêm phòng
+            </button>
+        </div> *@
 
-<h3 class="text-center mb-4">Danh Sách Phòng Chiếu</h3>
-
-@if (rooms == null)
-{
-    <p class="text-center">Đang tải danh sách phòng chiếu...</p>
-}
-else if (rooms.Count == 0)
-{
-    <p class="text-center">Không có phòng chiếu nào.</p>
-}
-else
-{
-    <div class="mb-3 text-right">
-        <button class="btn btn-success btn-lg" @onclick="AddRoom" data-bs-toggle="tooltip" data-bs-placement="top" title="Thêm phòng chiếu">
-            <i class="bi bi-plus-circle"></i>
-        </button>
-    </div>
-
-
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Tên Phòng</th>
-                    <th>Sức Chứa</th>
-                    <th>Tên Rạp</th>
-                    <th>Số Hàng</th>
-                    <th>Số Cột</th>
-                    <th>Trạng Thái</th>
-                    <th>Thao Tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var room in rooms)
-                {
-                    var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
+        <div class="table-responsive">
+            <table class="table table-hover room-table">
+                <thead class="">
                     <tr>
-                        <td>@room.Name</td>
-                        <td>@(room.RowNumber * room.ColumnNumber)</td>
-                        <td>@cinema?.Name</td>
-                        <td>@room.RowNumber</td>
-                        <td>@room.ColumnNumber</td>
-                        <td>@room.Status.ToString()</td>
-                        <td>
-                            <button class="btn btn-sm" @onclick="() => ViewRoomDetails(room.ID)">
-                                <i class="bi bi-eye"></i> 
-                            </button>
-                            <button class="btn btn-sm" @onclick="() => EditRoom(room.ID)">
-                                <i class="bi bi-pencil"></i> 
-                            </button>
-                        </td>
+                        <th>STT</th>
+                        <th>Tên phòng</th>
+                        <th>Sức chứa</th>
+                        <th>Tên rạp</th>
+                        <th>Số hàng</th>
+                        <th>Số cột</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                </thead>
+                <tbody>
+                    @if (rooms != null)
+                    {
+                        int index = 1; // Khởi tạo bên ngoài vòng lặp
+                        foreach (var room in rooms)
+                        {
+                            var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
+                            <tr>
+                                <td>@index</td> <!-- Hiển thị số thứ tự -->
+                                <td>@room.Name</td>
+                                <td>@(room.RowNumber * room.ColumnNumber)</td>
+                                <td>@cinema?.Name</td>
+                                <td>@room.RowNumber</td>
+                                <td>@room.ColumnNumber</td>
+                                <td>
+                                    <span class="badge @(room.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge">
+                                        @(room.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm" style="border: none" @onclick="() => EditRoom(room.ID)" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            index++; // Tăng giá trị sau mỗi lần lặp
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @code {
     private List<RoomDTO> rooms;
-
     private List<CinemasDTO> cinemasdto;
-    
     protected override async Task OnInitializedAsync()
     {
         rooms = await RoomService.GetAllRooms();
         cinemasdto = await RoomService.GetAllCinemas();
     }
-
     private void ViewRoomDetails(Guid roomId)
     {
         Navigation.NavigateTo($"/roomdetails/{roomId}");
     }
-
     private void EditRoom(Guid roomId)
     {
         Navigation.NavigateTo($"/editroom/{roomId}");
     }
-
     private void AddRoom()
     {
         Navigation.NavigateTo("/addroom");
     }
 }
-
 <style>
-    /* Custom styling for the page */
-    .table-responsive {
-        margin-top: 20px;
-    }
 
-    .table th, .table td {
-        vertical-align: middle;
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif; 
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
+    .table {
+        margin-top: 20px;
         text-align: center;
     }
-
-    .table td {
-        font-size: 14px;
-    }
-
-    .table th {
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    .table-dark {
         background-color: #343a40;
         color: white;
     }
 
     .btn {
-        margin: 5px;
+        margin: 0 5px;
     }
 
-    .btn-lg {
-        padding: 12px 24px;
-    }
-
-   
     .btn-sm {
         padding: 5px 10px;
-       
     }
-
-    .btn-info, .btn-warning {
-        font-size: 16px;
+    .btn-info {
+        color: white;
+        background-color: #17a2b8;
     }
-
-    .text-right {
-        text-align: left;
+    .btn-warning {
+        color: white;
+        background-color: #ffc107;
     }
-
-    .mb-4 {
-        margin-bottom: 2rem;
+    .text-center {
+        font-weight: 500;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
     }
-
-    .bi {
-        margin-right: 5px;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
-    }
-
     .table-hover tbody tr:hover {
         background-color: #f1f1f1;
+    }
+    .room-table {
+        background-color: white; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>

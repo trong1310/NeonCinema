@@ -10,12 +10,16 @@ namespace NeonCinema_Client.Data.IServices.Screenning
     {
         Task<List<ScreeningDTO>> GetAllScreeningsAsync();
         Task<ScreeningDTO> GetScreeningByIdAsync(Guid id);
-        Task CreateScreeningAsync(ScreeningCreateRequest request);
+        Task<bool> CreateScreeningAsync(ScreeningCreateRequest request);
         Task UpdateScreeningAsync(ScreeningUpdateRequest request);
         Task DeleteScreeningAsync(Guid id);
         Task<List<ShowTimeDTO>> GetAllShowTimesAsync();
         Task<PaginationResponse<MovieDTO>> GetAllMoviesAsync();
         Task<List<RoomDTO>> GetAllRoomsAsync();
+        Task<bool> CreateSSS(SeatShowTimeStatusDTO input);
+        Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate);
+        Task<bool> ValidateShowTimeInRoom(Guid roomId);
+
 
     }
 }

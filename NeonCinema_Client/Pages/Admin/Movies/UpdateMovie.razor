@@ -19,12 +19,10 @@
 	<h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
 	<div class="row">
 		<div class="col-md-3 text-center mb-4 mt-5">
-			<img src="@GetImageUrl(movieDto.Images)" alt="Profile" class="img-fluid profile-pic"> <br />
+			<img src="@movieDto.Images" alt="Profile" class="img-fluid profile-pic" /> <br />
 			<label class="custom-file-upload">
-				<span style="margin-left:-5px">
-					<i class="material-icons">cloud_upload</i> <!-- Hoặc biểu tượng khác bạn muốn sử dụng -->
-				</span>
-				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+				<i class="material-icons">cloud_upload</i>
+				<InputFile OnChange="HandleSelected" class="d-none" />
 				<span>Chọn ảnh</span>
 			</label>
 		</div>
@@ -88,7 +86,7 @@
 							<option value="" disabled selected>Chọn thể loại</option>
 							@foreach (var genre in genres)
 							{
-								<option value="@genre.ID">@genre.GenreName</option>
+								<option value="@genre.GenreName">@genre.GenreName</option>
 							}
 						</select>
 					</div>
@@ -100,7 +98,7 @@
 							<option value="" disabled selected>Chọn ngôn ngữ</option>
 							@foreach (var language in languages)
 							{
-								<option value="@language.ID">@language.LanguageName</option>
+								<option value="@language.LanguageName">@language.LanguageName</option>
 							}
 						</select>
 					</div>
@@ -115,7 +113,7 @@
 							<option value="" disabled selected>Chọn quốc gia</option>
 							@foreach (var country in countries)
 							{
-								<option value="@country.ID">@country.CountryName</option>
+								<option value="@country.CountryName">@country.CountryName</option>
 							}
 						</select>
 					</div>
@@ -127,7 +125,7 @@
 							<option value="" disabled selected>Chọn đạo diễn</option>
 							@foreach (var director in directors)
 							{
-								<option value="@director.ID">@director.FullName</option>
+								<option value="@director.FullName">@director.FullName</option>
 							}
 						</select>
 					</div>
@@ -159,50 +157,59 @@
 	</div>
 	@if (isActorModalOpen)
 	{
-		<div class="modal show" tabindex="-1" role="dialog" style="display:block;">
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" @onclick="CloseActorDialog">
-							<i class="material-icons">close</i>
+						<h5 class="modal-title">Chọn diễn viên</h5>
+						<button type="button" class="close" @onclick="CloseActorDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
 						</button>
 					</div>
-
-					<div class="modal-body">
-						<h5 class="modal-title">Chọn diễn viên</h5>
-						@foreach (var item in actors.Data)
-						{
-							<div class="form-check d-flex align-items-center mb-4">
-								<input class="form-check-input" type="checkbox" value="@item.ID"
-									   @onchange="(e) => ToggleActorSelection(item.ID, (bool)e.Value)" />
-								<label class="form-check-label ms-2" for="actor1">@item.FullName</label>
+					<div class="modal-body" style="margin-bottom: -20px">
+							<div class="row mb-3">
+								@foreach (var actor in actors.Data)
+								{
+									<div class="col-4 d-flex align-items-center justify-content-center">
+										<input class="form-check-input me-2"
+											   type="checkbox" id="@actor.ID"
+											   @onchange="e => ToggleActorSelection(actor.ID, bool.Parse(e.Value.ToString()))" />
+										<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
+									</div>
+								}
 							</div>
-						}
-
-						<hr />
-						<h5 class="modal-title">Thêm diễn viên mới</h5>
-						<div class="row">
-							<div class="col-md-8">
-								<div class="form-group">
-									<label for="actorName" class="font-weight-bold">Tên Diễn Viên</label>
-									<input type="text" class="form-control" id="actorName" />
+					</div>
+					<hr />
+					<div class="modal-header" style="margin-top: -15px">
+						<h5 class="modal-title">Thêm diễn viên</h5>
+					</div>
+					<div class="modal-body add-actor d-flex justify-content-center">
+						<div class="row mb-3 justify-content-center align-items-center">
+							<div class="col-5 d-flex flex-column justify-content-center align-items-center">
+								<div class="form-group  text-center">
+									<label class="font-weight-bold mb-2">Tên Diễn Viên</label>
+									<input type="text" class="form-control" placeholder="Nhập tên diễn viên" />
 								</div>
-								<div class="form-group">
-									<label for="status" class="font-weight-bold">Trạng Thái</label>
-									<select class="form-control" id="status">
-										<option value="Active">Hoạt Động</option>
-										<option value="Inactive">Không Hoạt Động</option>
+							</div>
+							<div class="col-4 d-flex flex-column justify-content-center align-items-center">
+								<div class="form-group  text-center">
+									<label class="font-weight-bold mb-2">Trạng Thái</label>
+									<select class="form-control custom-select">
+										<option value="" disabled selected>Chọn trạng thái</option>
+										<option value="Active">Hoạt động</option>
+										<option value="Inactive">Không hoạt động</option>
 									</select>
 								</div>
 							</div>
-							<div class="text-center">
-								<button type="button" class="btn btn-success btn-lg">Thêm</button>
+							<div class="col-3 d-flex justify-content-center align-items-center">
+								<button class="btn btn-primary">Thêm</button>
 							</div>
 						</div>
 					</div>
+
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" @onclick="CloseActorDialog">Đóng</button>
-						<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn</button>
+						<button type="button" class="btn btn-primary" @onclick="SelectActors">Chọn diễn viên</button>
 					</div>
 				</div>
 			</div>
@@ -213,8 +220,8 @@
 
 
 @code {
-	[Parameter]
-	public Guid id { get; set; }
+	// Các tham số và biến đã khai báo sẵn
+	[Parameter] public Guid id { get; set; }
 	private MovieDTO movieDto = new MovieDTO();
 	private IBrowserFile selectedFile;
 	private bool isActorModalOpen = false;
@@ -234,7 +241,6 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
-
 	}
 	private bool isEditing = false;
 	#region update
@@ -245,15 +251,19 @@
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
 		selectedFile = e.File;
-
-		// Tạo URL tạm thời cho hình ảnh đã chọn
 		var imageUrl = await GetImageUrl(selectedFile);
 		if (imageUrl != null)
 		{
+			Console.WriteLine(imageUrl); // Kiểm tra giá trị URL
 			movieDto.Images = imageUrl;
-			StateHasChanged(); // Cập nhật giao diện
+			StateHasChanged();
+		}
+		else
+		{
+			Console.WriteLine("Invalid image file");
 		}
 	}
+
 	private async Task<string> GetImageUrl(IBrowserFile file)
 	{
 		// Chỉ tạo URL cho các tệp hình ảnh
@@ -466,9 +476,6 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.form-check {
-		margin-right: 15px; /* Adjust spacing between radio buttons */
-	}
 
 	img {
 		margin-top: 20px;
@@ -501,6 +508,16 @@
 			background-color: #8f8f8f; /* Màu nền khi hover */
 		}
 
+	.add-icon {
+		position: absolute;
+		right: 30px; /* Khoảng cách từ icon đến bên phải */
+		top: 50%; /* Đặt icon giữa theo chiều dọc */
+		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
+		cursor: pointer;
+		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
+		font-size: 24px; /* Kích thước của icon */
+	}
+
 	.btn-success {
 		background-color: #007bff;
 		border: none;
@@ -518,6 +535,40 @@
 		padding: 10px 20px;
 		border-radius: 5px;
 		font-size: 16px;
+	}
+
+	.add-actor {
+		display: flex;
+		justify-content: center;
+	}
+
+		.add-actor .row {
+			display: flex;
+			align-items: center; /* Căn giữa các cột theo chiều dọc */
+			justify-content: center; /* Tạo khoảng cách đều giữa các cột */
+			margin-left: 5px;
+		}
+
+		.add-actor .form-group {
+			margin-bottom: 0; /* Loại bỏ khoảng cách không cần thiết */
+			text-align: center;
+		}
+
+		.add-actor label {
+			display: block;
+			text-align: left; /* Đảm bảo label được canh trái */
+		}
+
+		.add-actor button {
+			margin-top: 1.9rem; /* Đẩy nút xuống để căn ngang với input và select */
+		}
+
+	.custom-select {
+		min-width: 150px; /* Đặt chiều rộng tối thiểu */
+	}
+
+	.modal-body .add-actor {
+		max-width: 100%; /* Đảm bảo input và select không vượt quá giới hạn cột */
 	}
 
 </style>

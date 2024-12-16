@@ -1,9 +1,20 @@
 @page "/login"
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Application.DataTransferObject.User.Request
 @using NeonCinema_Client.Pages.Client
 @using System.IdentityModel.Tokens.Jwt
 @layout LayoutClient
 @inject NavigationManager _navi
+@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Text.Json
+@inject IUserServices UserServices
 @inject Blazored.LocalStorage.ILocalStorageService _localstorage
+@inject ISnackbar Snackbar
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <body>
     <div class="background-video">
         <video autoplay muted loop id="bg-video">
@@ -43,11 +54,216 @@
 
             </div>
             <div class="links">
-                <a href="#">Quên Mật Khẩu?</a>
-                <a href="#">Đăng ký</a>
+                <div class="links">
+                    <button type="button" class="btn btn-link" @onclick="OpenForgotPasswordDialog">Quên Mật Khẩu?</button>
+                    <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#addCustomerModal">Đăng ký</button>
+                </div>
+
             </div>
         </EditForm>
     </div>
+    @if (showForgotPasswordDialog)
+    {
+        <div class="modal show" tabindex="-1" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+            <div class="modal-dialog ">
+                <EditForm Model="@forgotPassRequest" OnValidSubmit="@SubmitForgotPassword" class="needs-validation">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="alert alert-danger" />
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Quên mật khẩu</h5>
+                            <button type="button" class="btn-close" aria-label="Close" @onclick="CloseForgotPasswordDialog"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" style="color: black;">Email khôi phục</label>
+                                <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
+                                placeholder="Nhập email của bạn..." style="color:black; background-color: white">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseForgotPasswordDialog">Hủy</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isLoading ? "inline-block" : "none");"></span>
+                                Gửi yêu cầu
+                            </button>                              
+                        </div>
+                        @if (!string.IsNullOrEmpty(responseMessage))
+                        {
+                            <div class="alert mt-3 alert-@(isSuccess ? "success" : "danger")" style="margin-left: 3px; margin-right: 3px;">
+                                @responseMessage
+                            </div>
+                        }
+                    </div>
+
+                </EditForm>
+
+            </div>
+        </div>
+    }
+    <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 1200px">
+            <EditForm Model="request" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Đăng kí tài khoản</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row justify-content-center">
+                                <div class="col-md-3 text-center mb-4 mt-5">
+                                    <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+                                    <label class="custom-file-upload">
+                                        <span style="margin-left:-5px">
+                                            <i class="material-icons">cloud_upload</i>
+                                        </span>
+                                        <InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+                                        <span>Chọn ảnh</span>
+                                    </label>
+                                </div>
+                                <div class="col-md-9" style="margin-top:10px;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Họ và tên</label>
+                                                <input type="text" class="form-control" id="name" @bind-value="request.FullName" style="color:black; background-color: #f7f7f7" />
+                                                <ValidationMessage For="@(() => request.FullName)" style="margin-top: 2px" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber" style="color:black; background-color: #f7f7f7">
+                                                <ValidationMessage For="@(() => request.PhoneNumber)" style="margin-top: 2px" />
+                                                @if (!IsShowPhoneNotification)
+                                                {
+                                                    <span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="email" @bind-value="request.Email" style="color:black; background-color: #f7f7f7">
+                                                <ValidationMessage For="@(() => request.Email)" style="margin-top: 2px" />
+                                                @if (!IsShowEmailNotification)
+                                                {
+                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Ngày sinh</label>
+                                                <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht" style="color:black; background-color: #f7f7f7">
+                                                <ValidationMessage For="@(() => request.DateOrBriht)" style="margin-top: 2px" />
+                                                @if (!IsShowYearNotification)
+                                                {
+                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group position-relative">
+
+                                                <label for="pass" class="font-weight-bold">Mật khẩu</label>
+                                                <div class="password-container">
+                                                    <input type="@(showPassword ? "text" : "password")" id="password" class="form-control" @bind-value="request.PassWord"
+                                                           style="color:black; background-color: #f7f7f7" />
+                                                    <span class="material-icons password-icon" @onclick="TogglePasswordVisibility">
+                                                        @((showPassword) ? "visibility_off" : "visibility")
+                                                    </span>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(errorPasswordMessage))
+                                                {
+                                                    <span class="text-danger">@errorPasswordMessage</span>
+                                                }
+                                                @if (!ShowRegexPass)
+                                                {
+                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@regexPass</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="confirmPass" class="font-weight-bold">Nhập lại mật khẩu</label>
+                                                <div class="password-container">
+                                                    <input type="@(showConfirmPassword ? "text" : "password")" id="confirmPassword" class="form-control" @bind-value="confirmPassword"
+                                                           style="color:black; background-color: #f7f7f7" />
+                                                    <span class="material-icons password-icon" @onclick="ToggleConfirmPasswordVisibility">
+                                                        @((showConfirmPassword) ? "visibility_off" : "visibility")
+                                                    </span>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(errorConfirmPasswordMessage))
+                                                {
+                                                    <span class="text-danger">@errorConfirmPasswordMessage</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Giới tính</label> <br />
+                                                <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" @onchange="@((e) => request.Gender = true)" checked/>
+                                                        <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" @onchange="@((e) => request.Gender = false)" />
+                                                        <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                                                    </div>
+                                                </div>
+                                                <ValidationMessage For="@(() => request.Gender)" style="margin-top: 2px" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Địa chỉ</label>
+                                        <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss" style="color:black; background-color: #f7f7f7"></textarea>
+                                        @if (!IsShowAddressNotification)
+                                        {
+                                            <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorAddressMessage</span>
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting" style="width: 10%">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isSubmitting ? "inline-block" : "none");"></span>
+                            <span>@(isSubmitting ? "Đang xử lý..." : "Đăng ký")</span>
+                        </button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(registrationMessage))
+                    {
+                        <div class="alert mt-3 alert-@(registrationMessage.Contains("thành công") ? "success" : "danger")">
+                            @registrationMessage
+                        </div>
+                    }
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+
 </body>
 
 
@@ -55,6 +271,8 @@
 
 
 @code {
+
+    #region Đăng nhập
     private LoginModel loginModel = new LoginModel();
     private bool isProcessing;
     private string errorMessage;
@@ -70,50 +288,36 @@
 
         try
         {
+
             var login = await _http.PostAsJsonAsync("https://localhost:7211/api/Login/Login", loginModel);
+
             if (login.IsSuccessStatusCode)
             {
-                try
+                var response = await login.Content.ReadFromJsonAsync<LoginResponse>();
+
+                if (response != null && !string.IsNullOrEmpty(response.Token))
                 {
-                    var content = await login.Content.ReadAsStringAsync();
-                    var token = new JwtSecurityTokenHandler().ReadJwtToken(content);
-                    var claim = token.Claims;
-                    var name = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-                    var nameidentifier = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                    var mobilephone = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone")?.Value;
-                    var email = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
-                    var address = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress")?.Value;
-                    var dateofbirth = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth")?.Value;
-                    var gender = claim.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender")?.Value;
-                    var role = claim.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-                    var images = claim.FirstOrDefault(c => c.Type == "profile_image_url")?.Value;
-                    await _localstorage.SetItemAsync("userId", nameidentifier?.Trim());
-                    await _localstorage.SetItemAsync("mobilephone", mobilephone?.Trim());
-                    await _localstorage.SetItemAsync("email", email?.Trim());
-                    await _localstorage.SetItemAsync("address", address?.Trim());
-                    await _localstorage.SetItemAsync("dateofbirth", dateofbirth?.Trim());
-                    await _localstorage.SetItemAsync("gender", gender?.Trim());
-                    await _localstorage.SetItemAsync("name", name?.Trim());
-                    await _localstorage.SetItemAsync("role", role?.Trim());
-
-                    if (role.Equals("Admin"))
+                    await _localstorage.SetItemAsync("authToken", response.Token);
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(response.Token);
+                    var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                    if (roleName == "Client")
                     {
-                        _navi.NavigateTo("/admin-dashboard");
-
+                        _navi.NavigateTo("/list-movie");
                     }
-                    if (role.Equals("Client"))
+                    if (roleName == "Admin")
                     {
-                        _navi.NavigateTo("/client-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
-                    if (role.Equals("Staff"))
+                    if (roleName == "Staff")
                     {
-                        _navi.NavigateTo("/staff-dashboard");
+                        _navi.NavigateTo("/list-movie-admin");
                     }
 
                 }
-                catch (Exception ex)
+                else
                 {
-                    errorMessage = $"Lỗi khi xử lý JSON: {ex.Message}";
+                    errorMessage = "Thông tin đăng nhập không chính xác";
                 }
             }
             else
@@ -128,9 +332,470 @@
         isProcessing = false;
     }
 
+    public class LoginResponse
+    {
+        public string Token { get; set; }
+    }
     public class LoginModel
     {
         public string EmailorPhone { get; set; }
         public string Password { get; set; }
     }
+    #endregion
+
+    #region Quên mật khẩu
+    private bool showForgotPasswordDialog;
+    private Forgotpass forgotPassRequest = new Forgotpass();
+    private string responseMessage;
+    private bool isLoading = false;
+    private bool isSuccess = false;
+    private void OpenForgotPasswordDialog()
+    {
+        showForgotPasswordDialog = true;
+
+    }
+
+    private void CloseForgotPasswordDialog()
+    {
+        showForgotPasswordDialog = false;
+        responseMessage = string.Empty;
+    }
+    private async Task SubmitForgotPassword()
+    {
+        isLoading = true;
+        responseMessage = string.Empty;
+        try
+        {
+            var response = await UserServices.ForgotPass(forgotPassRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                isSuccess = true;
+                responseMessage = "Mật khẩu mới đã được gửi tới email của bạn. Vui lòng kiểm tra!";
+            }
+            else
+            {
+                isSuccess = false;
+                responseMessage = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            responseMessage = $"Lỗi: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    #endregion
+
+    private NeonCinemasContext _context = new NeonCinemasContext();
+    private UserCreateRequest request = new UserCreateRequest();
+    private IBrowserFile selectedFile;
+    private bool showPassword = false;
+    private string regexPass;
+    private bool ShowRegexPass = true;
+    private string errorEmailMessage;
+    private string errorPhoneMessage;
+    private string errorYearMessage;
+    private bool IsShowPhoneNotification = true;
+    private bool IsShowEmailNotification = true;
+    private bool IsShowYearNotification = true;
+
+    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+    private void ShowSnackbar(string message, Severity severity)
+    {
+        Snackbar.Add(message, severity, options =>
+        {
+            options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+            options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
+        });
+    }
+    private async Task HandleSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+
+        // Tạo URL tạm thời cho hình ảnh đã chọn
+        var imageUrl = await GetImageUrl(selectedFile);
+        if (imageUrl != null)
+        {
+            profileImage = imageUrl;
+            StateHasChanged(); // Cập nhật giao diện
+        }
+    }
+
+    private async Task<string> GetImageUrl(IBrowserFile file)
+    {
+        // Chỉ tạo URL cho các tệp hình ảnh
+        if (file.ContentType.StartsWith("image/"))
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+            return $"data:{file.ContentType};base64,{imageBase64}";
+        }
+
+        return null;
+    }
+    private bool isSubmitting = false; // Biến để kiểm tra trạng thái đang xử lý
+    private string registrationMessage = ""; // Thông báo sau khi đăng ký
+    private string confirmPassword = ""; // Biến để lưu giá trị "Nhập lại mật khẩu"
+    private string errorPasswordMessage = ""; // Thông báo lỗi liên quan đến mật khẩu
+    private string errorConfirmPasswordMessage = ""; // Thông báo lỗi liên quan đến nhập lại mật khẩu
+    private string errorAddressMessage;
+    private bool IsShowAddressNotification = true;
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true; // Hiển thị spinner
+        registrationMessage = ""; // Xóa thông báo cũ
+        errorPasswordMessage = ""; // Xóa thông báo lỗi mật khẩu cũ
+        errorConfirmPasswordMessage = ""; // Xóa thông báo lỗi nhập lại mật khẩu cũ
+        IsShowEmailNotification = true;
+        IsShowPhoneNotification = true;
+        IsShowYearNotification = true;
+        errorEmailMessage = string.Empty;
+        errorPhoneMessage = string.Empty;
+        errorYearMessage = string.Empty;
+        try
+        {
+
+
+            // Nếu không có file được chọn, sử dụng ảnh mặc định
+            if (selectedFile == null)
+            {
+                request.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+            }
+            else
+            {
+                // Xử lý upload ảnh khi có file được chọn
+                var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+                content.Add(fileContent, "file", selectedFile.Name);
+                var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var jsonDoc = JsonDocument.Parse(jsonResponse);
+                    var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+                    var fileName = Path.GetFileName(fileUrl);
+                    request.Images = fileName;
+
+                    Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+                }
+                else
+                {
+                    Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+                    return;
+                }
+            }
+            if (string.IsNullOrWhiteSpace(request.PassWord))
+            {
+                errorPasswordMessage = "Mật khẩu không được để trống.";
+                isSubmitting = false;
+                return;
+            }
+            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
+            if (!regex.IsMatch(request.PassWord))
+            {
+                regexPass = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
+                ShowRegexPass = false;
+                isSubmitting = false;
+            }
+            // Kiểm tra "Nhập lại mật khẩu" không để trống và khớp với mật khẩu
+            if (string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                errorConfirmPasswordMessage = "Vui lòng nhập lại mật khẩu.";
+                isSubmitting = false;
+                return;
+            }
+            if (request.PassWord != confirmPassword)
+            {
+                errorConfirmPasswordMessage = "Mật khẩu và nhập lại mật khẩu không khớp.";
+                isSubmitting = false;
+                return;
+            }
+            var emailExists = _context.Users.Any(x => x.Email == request.Email);
+            if (emailExists)
+            {
+                errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+                IsShowEmailNotification = false;
+                isSubmitting = false;
+                return;
+            }
+            if (request.DateOrBriht == null ||
+               request.DateOrBriht.Year < 1900 ||
+               request.DateOrBriht > DateTime.Now.AddYears(-18))
+            {
+                errorYearMessage = "Bạn phải từ 18 tuổi trở lên.";
+                IsShowYearNotification = false;
+                isSubmitting = false;
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(request.Adderss))
+            {
+                errorAddressMessage = "Địa chỉ không được để trống.";
+                IsShowAddressNotification = false;
+                isSubmitting = false;
+                return;
+            }
+            // Kiểm tra số điện thoại đã tồn tại
+            var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
+            if (phoneExists)
+            {
+                errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+                IsShowPhoneNotification = false;
+                return;
+            }
+
+            var userResponse = await UserServices.CreateClient(request);
+            if (userResponse.IsSuccessStatusCode)
+            {
+                registrationMessage = "Đăng kí thành công!";
+            }
+            else
+            {
+                var errorContent = await userResponse.Content.ReadAsStringAsync();
+                registrationMessage = $"Có lỗi xảy ra: {errorContent}";
+            }
+        }
+        catch (Exception ex)
+        {
+            registrationMessage = $"Lỗi: {ex.Message}";
+            registrationMessage = $"Chi tiết ngoại lệ: {ex.StackTrace}";
+        }
+        finally
+        {
+            isSubmitting = false; // Tắt spinner
+        }
+    }
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword; // Đổi trạng thái hiển thị mật khẩu
+    }
+
+    private bool showConfirmPassword = false;
+
+    private void ToggleConfirmPasswordVisibility()
+    {
+        showConfirmPassword = !showConfirmPassword; // Toggle visibility of the confirm password field
+    }
+
 }
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
+
+    .background-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #bg-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .login-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        padding: 30px;
+        border-radius: 10px;
+        color: #fff;
+        width: 650px;
+        height: 400px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+        .login-container h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+        .input-group label {
+            margin-bottom: 5px;
+        }
+
+        .input-group .form-control {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            height: 50px;
+        }
+
+    button {
+        width: 40%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    .links {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+            .links a:hover {
+                text-decoration: underline;
+            }
+
+    button.btn-link {
+        background: none;
+        border: none;
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1rem;
+    }
+
+        button.btn-link:hover {
+            border: none;
+            color: #0056b3;
+        }
+
+    .profile-pic {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid #eaeaea;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .custom-file-upload {
+        display: flex;
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        background-color: #a9a9a9; /* Màu nền của nút */
+        color: white; /* Màu chữ */
+        border: none; /* Bỏ viền */
+        text-align: center;
+        width: 150px;
+        margin-left: auto; /* Thêm */
+        margin-right: auto;
+    }
+
+        .custom-file-upload span {
+            margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+        }
+
+        .custom-file-upload:hover {
+            background-color: #8f8f8f; /* Màu nền khi hover */
+        }
+
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-left: -20px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .btn-success {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-warning {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-check {
+        margin-top: 5px;
+        margin-right: 50px;
+        padding-left: 0; /* Loại bỏ padding thừa */
+        margin-left: 0;
+    }
+
+    .password-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .password-container input {
+            width: 100%;
+        }
+
+        .password-container .password-icon {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: black;
+            transition: color 0.3s ease;
+        }
+
+            .password-container .password-icon:hover {
+                color: #aaa;
+            }
+</style>

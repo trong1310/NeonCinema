@@ -213,16 +213,25 @@ namespace NeonCinema_API.Controllers
 
 				// Khởi tạo mã ưu đãi (hoặc thông tin ưu đãi)
 
-				var email = _config["EmailSettings:Email"]; //email from
-				var appPass = _config["EmailSettings:AppPassword"]; //app password
+				var email = _config["EmailSetting:Username"]; //email from
+				var appPass = _config["EmailSetting:Password"]; //app password
 
 				foreach (var item in lstMail)
 				{
 					var emailMessage = new MimeMessage();
+					string discounttext = "";
+					if(item.DiscountPercentage != null)
+					{
+						discounttext = $"Giảm {item.DiscountPercentage}%";
+					}
+					else
+					{
+						discounttext = $"Giảm {item.DiscountAmount} VND";
+					}
 
 					emailMessage.From.Add(new MailboxAddress("Từ: ", email));
 					emailMessage.To.Add(new MailboxAddress("Xin Chào: ", item.ToEmail));
-					emailMessage.Subject = "Chúc mừng! Bạn nhận được ưu đãi từ chúng tôi";
+					emailMessage.Subject = "Rạp chiếu phim NeonCinemas";
 
 					var bodyEmail = new BodyBuilder
 					{
@@ -231,8 +240,9 @@ namespace NeonCinema_API.Controllers
                 <p>Xin chào {item.FullName},</p>
                 <p>Chúng tôi vui mừng thông báo rằng bạn đã nhận được ưu đãi mới từ NeonCinemas!</p>
 				<p>{item.NamePromotion}</p>
-                <p>Mã ưu đãi của bạn: <strong>{item.Code}</strong></p>
-                <p>Hãy truy cập trang web của chúng tôi và nhập mã ưu đãi để nhận khuyến mãi đặc biệt này!</p>
+                <p>Ưu đãi giảm {discounttext} khi thanh toán hóa đơn đặt vé xem phim</p>
+                <p>Thời hạn từ {item.StartDate.ToShortTimeString()} ngày {item.StartDate.ToShortDateString()} đến {item.EndDate.ToShortTimeString()} ngày {item.EndDate.ToShortDateString()}</p>
+                <p>Hãy truy cập trang web của chúng tôi và nhập mã <strong>{item.Code}</strong> để nhận khuyến mãi đặc biệt này!</p>
                 <p>Trân trọng,<br>Đội ngũ hỗ trợ khách hàng NeonCinemas</p>"
 					};
 

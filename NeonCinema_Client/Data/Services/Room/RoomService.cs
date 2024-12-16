@@ -46,9 +46,24 @@ namespace NeonCinema_Client.Data.Services.Room
             return respones;
         }
 
-        public Task<List<SeatDTO>> GetSeat()
+        public async Task<List<SeatDTO>> GetSeatsByRoomId(Guid roomId)
         {
-            throw new NotImplementedException();
+
+            var response = await _httpClient.GetFromJsonAsync<List<SeatDTO>>($"api/Room/GetSeatsByRoomId/{roomId}");
+            return response;
+        }
+
+        public async Task<List<SeatDTO>> GetSeatsByRowAsync(Guid roomId, string rowId)
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<List<SeatDTO>>($"api/Room/{roomId}/seats/row/{rowId}");
+                return response ?? new List<SeatDTO>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching seats for row {rowId}: {ex.Message}");
+            }
         }
 
         public async Task<HttpResponseMessage> UpdateRoom(Guid id, RoomUpdateRequest request)
@@ -57,9 +72,23 @@ namespace NeonCinema_Client.Data.Services.Room
             return response;
         }
 
-        public Task UpdateSeatType(UpdateSeatDTO seatDTO)
+        public async Task<bool> UpdateSeatTypeForRowAsync(Guid roomId, string rowId, Guid seatTypeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var request = new
+                {
+                    RowId = rowId,
+                    SeatTypeId = seatTypeId
+                };
+
+                var response = await _httpClient.PutAsJsonAsync($"api/Room/{roomId}/seats/update-row", request);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating seat type for row {rowId}: {ex.Message}");
+            }
         }
     }
 }

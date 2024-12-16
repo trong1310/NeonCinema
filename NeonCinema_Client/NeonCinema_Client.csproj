@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <AssemblyName>NeonCinema_Client</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -70,6 +71,8 @@
 
     <Folder Include="wwwroot\json\" />
 
+    <Folder Include="wwwroot\NewFolder\" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -80,10 +83,13 @@
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.2" />
     <PackageReference Include="Blazorise.LottieAnimation" Version="1.6.2" />
     <PackageReference Include="Bogus" Version="35.6.1" />
+    <PackageReference Include="itext7" Version="9.0.0" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.15" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
@@ -109,6 +115,10 @@
 
   <ItemGroup>
 
+    <None Include="Pages\Client\Movie\ListMovieClient.razor" />
+
+    <None Include="Pages\Client\User\ClientForgotPassword.razor" />
+
     <None Include="Pages\Register.razor" />
     <None Include="Pages\Users.razor" />
     <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />
@@ -126,6 +136,12 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\Register.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\images\Client\avt-default.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

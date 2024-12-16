@@ -17,21 +17,30 @@ namespace NeonCinema_Domain.Enum
         Nữ = 7,//Nữ
         ABC = 8,// Khác
         HD= 9, //trang thai hoat d
-        KHD = 10
+        KHD = 10,
+        
     }
     public enum seatEnum
     {
-		Available,   // Ghế còn trống
-		Sold,        // Ghế đã bán
-		Selected,    // Ghế đã chọn
-		Maintenance  // Ghế bảo trì
+		Available =1  ,  // Ghế còn trống
+		Sold =2     ,   // Ghế đã bán
+		Selected =3,    // Ghế đã chọn
+		Maintenance =4  // Ghế bảo trì
 	}
     public enum ticketEnum
     {
-
+        checkin =0,
         waiting_for_payment = 1,
         paid = 2,
         cancel = 3,
+    }
+
+    public enum ScreeningStatus
+    {
+        InActive = 0,
+        Showing = 1,
+        Ended = 2,
+        Cancelled = 3
     }
 
 }

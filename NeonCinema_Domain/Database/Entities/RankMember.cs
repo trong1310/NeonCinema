@@ -13,10 +13,9 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid ID { get; set; }
         public Guid UserID { get; set; }
         public string Rank { get; set; }
-        public int MinPoint { get; set; }
+        public double MinPoint { get; set; }
         public EntityStatus Status { get; set; }
         public DateTime StarDate { get; set; }
-        //
         public virtual Users? Users { get; set; }
     }
 }

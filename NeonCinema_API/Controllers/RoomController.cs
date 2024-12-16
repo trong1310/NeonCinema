@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.Interface.Room;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using System.Net;
 
 namespace NeonCinema_API.Controllers
@@ -11,10 +12,12 @@ namespace NeonCinema_API.Controllers
     public class RoomController : ControllerBase
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly NeonCinemasContext _context;
 
-        public RoomController(IRoomRepository roomRepository)
+        public RoomController(IRoomRepository roomRepository, NeonCinemasContext context)
         {
             _roomRepository = roomRepository;
+            _context = context;
         }
         [HttpPost("create")]
         public async Task<IActionResult> CreateRoom([FromBody] RoomCreateRequest request, CancellationToken cancellationToken)
@@ -62,6 +65,35 @@ namespace NeonCinema_API.Controllers
 
             return StatusCode((int)response.StatusCode, "Failed to update room");
         }
+
+
+        [HttpGet("GetSeatsByRoomId/{roomId}")]
+        public async Task<IActionResult> GetSeatsByRoomId(Guid roomId, CancellationToken cancellationToken)
+        {
+            if (roomId == Guid.Empty)
+            {
+                return BadRequest("Invalid room ID");
+            }
+
+            try
+            {
+                
+                var seats = await _roomRepository.GetSeatsByRoomId(roomId, cancellationToken);
+
+                if (seats == null || seats.Count == 0)
+                {
+                    return NotFound("No seats found for this room.");
+                }
+
+                return Ok(seats);  
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        
 
     }
 }

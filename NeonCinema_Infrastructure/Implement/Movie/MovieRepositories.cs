@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NeonCinema_Application.DataTransferObject.ActorMovies;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Movie;
@@ -45,10 +46,17 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
-                    
+ 
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
+                var actorMovies = request.ActorMovies.Select(x => new NeonCinema_Domain.Database.Entities.ActorMovies
+                {
+                    MovieID = movies.ID,
+                    ActorID = x,
+                }).ToList();
+                await _context.ActorMovies.AddRangeAsync(actorMovies);
+                await _context.SaveChangesAsync();
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
 				{
 					Content = new StringContent("Thêm thành công")
@@ -63,9 +71,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				};
 			}
 		}
-
-
-
         public async Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken)
         {
             try
@@ -99,7 +104,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 };
             }
         }
-
         public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
         {
 
@@ -112,7 +116,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             .Include(x => x.TicketSeats)
                             .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(request.SearchName))
+
+			if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
             }
@@ -120,10 +125,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
             var dataview = (from a in result.Data
                             join b in query on a.ID
-                            equals b.ID
-                            orderby b.StarTime
+                            equals b.ID orderby b.CreatedTime descending
+                         
 
-                            select new MovieDTO
+							select new MovieDTO
                             {
                                 ID = b.ID,
                                 AgeAllowed = b.AgeAllowed,
@@ -149,8 +154,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 PageSize = result.PageSize
             };
         }
-
-
         public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
         {
             var movie = await _context.Movies
@@ -187,50 +190,83 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
             return movieDTO;
         }
+		public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+				if (obj == null || obj.Deleted == true)
+				{
+					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Không tìm thấy phim")
+					};
+				}
 
-        public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if (obj.Deleted == true && obj == null)
-                {
+				// Cập nhật thông tin cơ bản của phim
+				obj.Duration = request.Duration;
+				obj.Name = request.Name;
+				obj.Status = request.Status;
+				obj.AgeAllowed = request.AgeAllowed;
+				obj.CountryID = request.CountryID;
+				obj.Description = request.Description;
+				obj.DirectorID = request.DirectorID;
+				obj.Trailer = request.Trailer;
+				obj.GenreID = request.GenreID;
+				obj.LenguageID = request.LenguageID;
+				obj.StarTime = request.StarTime;
+				obj.ModifiedTime = DateTime.UtcNow;
+				obj.Images = request.Images;
 
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy phim")
-                    };
-                }
-                obj.Duration = request.Duration;
-                obj.Name = request.Name;
-                obj.Status = request.Status;
-                obj.AgeAllowed = request.AgeAllowed;
-                obj.CountryID = request.CountryID;
-                obj.Description = request.Description;
-                obj.DirectorID = request.DirectorID;
-                obj.Trailer = request.Trailer;
-                obj.GenreID = request.GenreID;
-                obj.LenguageID = request.LenguageID;
-                obj.StarTime = request.StarTime;
-                obj.ModifiedTime = DateTime.UtcNow;
-                obj.Images = request.Images;
-                _context.Movies.Update(obj);
-                await _context.SaveChangesAsync(cancellationToken);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                {
-                    Content = new StringContent("Sửa thành công")
-                };
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
-                };
-            }
-        }
+				// Cập nhật danh sách diễn viên
+				var existingActors = await _context.ActorMovies
+					.Where(am => am.MovieID == obj.ID)
+					.ToListAsync(cancellationToken);
 
-        public async Task<List<MovieDTO>> GetFilmsNowShowing()
+				// Lấy danh sách ActorID mới từ request
+				var newActorIDs = request.ActorMovies;
+
+				// Tìm các diễn viên cần xóa
+				var actorsToRemove = existingActors
+					.Where(am => !newActorIDs.Contains(am.ActorID))
+					.ToList();
+
+				// Tìm các diễn viên cần thêm mới
+				var actorsToAdd = newActorIDs
+					.Where(actorID => !existingActors.Any(am => am.ActorID == actorID))
+					.Select(actorID => new NeonCinema_Domain.Database.Entities.ActorMovies
+					{
+						MovieID = obj.ID,
+						ActorID = actorID
+					}).ToList();
+
+				// Xóa diễn viên cũ
+				_context.ActorMovies.RemoveRange(actorsToRemove);
+
+				// Thêm diễn viên mới
+				await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
+
+				// Cập nhật thông tin phim
+				_context.Movies.Update(obj);
+
+				// Lưu thay đổi
+				await _context.SaveChangesAsync(cancellationToken);
+
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Sửa thành công")
+				};
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+				};
+			}
+		}
+
+		public async Task<List<MovieDTO>> GetFilmsNowShowing()
         {
             var query = await _context.Movies
                 .Include(x => x.Genre)
@@ -240,13 +276,12 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Countrys)
                 .Include(x => x.TicketSeats)
                 .Where(x => x.Status == MovieStatus.Active)
-                .OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
-                .Take(8) // Lấy top 8 phim
+                .OrderByDescending(x => x.CreatedTime) 
                 .AsNoTracking()
                 .ToListAsync();
 
             if (query == null || !query.Any()) return null;
-
+            var actor = await _context.ActorMovies.Include(x => x.Actor).AsNoTracking().ToListAsync();
             var movieDtos = query.Select(result => new MovieDTO
             {
                 ID = result.ID,
@@ -262,11 +297,14 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
                 Status = result.Status,
                 Trailer = result.Trailer,
+                ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
+                {
+                    ActorName = act.Actor.Name,
+                }).ToList(),
             }).ToList();
 
             return movieDtos;
         }
-
 		public async Task<List<MovieDTO>> GetFilmsComing()
 		{
 			var query = await _context.Movies
@@ -277,8 +315,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Countrys)
 				.Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.Comingsoon)
-				.OrderByDescending(x => x.Screening.Max(s => s.ShowDate)) // Sắp xếp theo thời gian chiếu gần nhất
-				.Take(8) // Lấy top 8 phim
+				.OrderByDescending(x => x.CreatedTime) 
 				.AsNoTracking()
 				.ToListAsync();
 
