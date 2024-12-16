@@ -108,9 +108,11 @@ namespace NeonCinema_API.Controllers
 
 			return Ok(billDetails);
 		}
+
 		[HttpGet("generate-invoice-pdf/{billTicketId}")]
 		public async Task<IActionResult> GenerateInvoicePdf(Guid billTicketId)
 		{
+			// 1) Lấy danh sách BillTickets
 			var billTickets = await _context.BillTickets
 				.Include(bt => bt.Bills).ThenInclude(b => b.Users)
 				.Include(bt => bt.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo)
@@ -128,205 +130,31 @@ namespace NeonCinema_API.Controllers
 
 			var bill = billTickets.First().Bills;
 
-			// Tìm user có RoleName = "Staff"
-			var staff = _context.Users
-				.Include(u => u.Roles)
-				.FirstOrDefault(u => u.Roles.RoleName == "Staff");
-			string staffName = staff != null ? staff.FullName : "Nhân viên (không xác định)";
-
-			// --- BƯỚC 1: Đặt tên file PDF & đường dẫn local ---
-			var invoiceFolder = Path.Combine("wwwroot", "invoices");
-			if (!Directory.Exists(invoiceFolder))
-				Directory.CreateDirectory(invoiceFolder);
-
-			string fileName = $"HoaDon_{bill.Users?.FullName ?? "khachhang"}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-			var filePath = Path.Combine(invoiceFolder, fileName);
-
-			// --- BƯỚC 2: Tạo URL public trỏ tới file PDF ---
-			string pdfUrl = $"{Request.Scheme}://{Request.Host}/invoices/{fileName}";
-
-			using (var stream = new MemoryStream())
-			{
-				var writer = new PdfWriter(stream);
-				var pdf = new PdfDocument(writer);
-				var document = new Document(pdf);
-
-				var fontPath = Path.Combine("wwwroot", "fonts", "ttf", "DejaVuSerif.ttf");
-				var boldFontPath = Path.Combine("wwwroot", "fonts", "ttf", "DejaVuSans-Bold.ttf");
-				var normalFont = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H);
-				var boldFont = PdfFontFactory.CreateFont(boldFontPath, PdfEncodings.IDENTITY_H);
-
-				// HEADER
-				document.Add(new Paragraph("NeonCinemas")
-					.SetFont(boldFont)
-					.SetFontSize(20)
-					.SetTextAlignment(TextAlignment.CENTER));
-				document.Add(new Paragraph("Địa chỉ: Số 1 Việt Nam\nĐiện thoại: 0334583920\nTài khoản: 1160087273 – BIDV – Nguyễn Văn Trọng")
-					.SetFont(normalFont)
-					.SetFontSize(10)
-					.SetTextAlignment(TextAlignment.CENTER));
-				document.Add(new Paragraph("Hóa đơn thanh toán")
-					.SetFont(boldFont)
-					.SetFontSize(15)
-					.SetTextAlignment(TextAlignment.CENTER));
-
-				document.Add(new Paragraph("\n"));
-
-				// Bảng thông tin Hóa đơn
-				var invoiceInfo = new Table(UnitValue.CreatePercentArray(new float[] { 3, 7 })).UseAllAvailableWidth();
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Hóa đơn").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.BillCode}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Ngày tạo").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.CreatedTime:dd/MM/yyyy}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Khách hàng").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.Users?.FullName.ToLower() ?? "Khách hàng"}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				// Nhân viên xuất file
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Nhân viên xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph(staffName).SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				// Thời gian xuất file
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Thời gian xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{DateTime.Now:dd/MM/yyyy HH:mm:ss}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				var screening = billTickets.First().Tickets.Screenings;
-				var showTime = screening?.ShowTime;
-
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Suất chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph(showTime != null ? $"{showTime.StartTime} - {showTime.EndTime}" : "Không xác định").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Phòng chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph(screening?.Rooms?.Name ?? "Không xác định").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-
-				document.Add(invoiceInfo);
-				document.Add(new Paragraph("\n"));
-
-				// BẢNG CHI TIẾT VÉ / COMBO
-				var detailsTable = new Table(UnitValue.CreatePercentArray(new float[] { 4, 2, 2 })).UseAllAvailableWidth();
-				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Dịch vụ").SetFont(boldFont).SetFontSize(10)));
-				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Số lượng").SetFont(boldFont).SetFontSize(10)));
-				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Thành tiền").SetFont(boldFont).SetFontSize(10)));
-
-				// Chi tiết vé
-				foreach (var bt in billTickets)
-				{
-					var ticket = bt.Tickets;
-					if (ticket != null)
-					{
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {ticket.Movies?.Name}").SetFont(normalFont).SetFontSize(10)));
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {ticket.Seat.Column}{ticket.Seat.Row}").SetFont(normalFont).SetFontSize(10)));
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"{ticket.Price:n0}đ").SetFont(normalFont).SetFontSize(10)));
-					}
-				}
-
-				// Chi tiết combo
-				decimal totalComboPrice = 0;
-				foreach (var combo in bill.BillCombos)
-				{
-					decimal total = combo.FoodCombo.TotalPrice * combo.Quantity;
-					totalComboPrice += total;
-
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"Combo: {combo.FoodCombo.Content}").SetFont(normalFont).SetFontSize(10)));
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"{combo.Quantity}").SetFont(normalFont).SetFontSize(10)));
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"{total:n0}đ").SetFont(normalFont).SetFontSize(10)));
-				}
-
-				document.Add(detailsTable);
-				document.Add(new Paragraph("\n"));
-
-				// TỔNG TIỀN
-				decimal totalBillPrice = billTickets.Sum(bt => bt.Tickets.Price) + totalComboPrice;
-				document.Add(new Paragraph($"Tổng tiền: {totalBillPrice:n0}đ")
-					.SetFont(boldFont)
-					.SetFontSize(12)
-					.SetTextAlignment(TextAlignment.RIGHT));
-
-				// THÊM QR CODE pdfUrl
-				document.Add(new Paragraph("\n"));
-				try
-				{
-					using (var qrGenerator = new QRCodeGenerator())
-					{
-						var qrCodeData = qrGenerator.CreateQrCode(pdfUrl, QRCodeGenerator.ECCLevel.Q);
-						var qrByteCode = new BitmapByteQRCode(qrCodeData);
-						byte[] qrBytes = qrByteCode.GetGraphic(10, "#000000", "#FFFFFF");
-
-						using (var msQr = new MemoryStream(qrBytes))
-						{
-							ImageData imgData = ImageDataFactory.Create(msQr.ToArray());
-							var qrImage = new iText.Layout.Element.Image(imgData)
-								.SetWidth(80)
-								.SetHeight(80)
-								.SetHorizontalAlignment(HorizontalAlignment.CENTER);
-
-							document.Add(new Paragraph("Quét QR để mở hoá đơn PDF:").SetFont(normalFont));
-							document.Add(qrImage);
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine("Lỗi tạo QR code: " + ex.Message);
-				}
-
-				document.Add(new Paragraph("\nNeonCinemas xin cảm ơn quý khách, hẹn gặp lại!")
-					.SetFont(normalFont)
-					.SetFontSize(10)
-					.SetTextAlignment(TextAlignment.CENTER));
-
-				document.Close();
-				writer.Close();
-
-				// --- BƯỚC 3: Ghi PDF ra file ---
-				System.IO.File.WriteAllBytes(filePath, stream.ToArray());
-			}
-
-			// --- BƯỚC 4: Trả file PDF về client ---
-			var fileData = System.IO.File.ReadAllBytes(filePath);
-			return File(fileData, "application/pdf", fileName);
-		}
-		[HttpGet("generate-multiple-pdf/{billId}")]
-		public async Task<IActionResult> GenerateMultiplePdf(Guid billId)
-		{
-			// 1) Lấy danh sách BillTickets
-			var billTickets = await _context.BillTickets
-				.Include(bt => bt.Bills).ThenInclude(b => b.Users)
-				.Include(bt => bt.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Seat).ThenInclude(s => s.SeatTypes)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Movies)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.ShowTime)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.Rooms)
-				.Where(bt => bt.BillId == billId)
-				.ToListAsync();
-
-			if (billTickets == null || !billTickets.Any())
-			{
-				return NotFound("Không tìm thấy thông tin hóa đơn hoặc vé.");
-			}
-
-			var bill = billTickets.First().Bills;
-
 			// Tìm user Staff (nhân viên)
 			var staff = _context.Users
 				.Include(u => u.Roles)
 				.FirstOrDefault(u => u.Roles.RoleName == "Staff");
 			string staffName = staff != null ? staff.FullName : "Nhân viên (không xác định)";
 
-			// 2) Folder tạm
+			// 2) Tạo folder tạm
 			var tempFolder = Path.Combine("wwwroot", "tickets_temp");
 			if (!Directory.Exists(tempFolder))
 				Directory.CreateDirectory(tempFolder);
 
+			// Danh sách file PDF cần nén
 			List<string> pdfFilePaths = new List<string>();
 
-			// 3) Mỗi ghế -> tạo file PDF riêng
-			// Tính tổng combos 1 lần (vì combos chung cho bill)
+			// Tính tổng combos + tổng tiền Bill (có combos)
 			decimal totalComboPrice = bill.BillCombos.Sum(cb => cb.FoodCombo.TotalPrice * cb.Quantity);
-			// Tính tổng tiền = sum vé + sum combos
 			decimal totalBillPrice = billTickets.Sum(bt => bt.Tickets.Price) + totalComboPrice;
 
+			// Bước A: Tạo PDF TỔNG (có combos + tổng tiền)
+			string summaryFileName = $"HoaDon_TONG_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+			var summaryPdfPath = Path.Combine(tempFolder, summaryFileName);
+			GenerateBillSummaryPdf_WithCombo(billTickets, staffName, totalComboPrice, totalBillPrice, summaryPdfPath);
+			pdfFilePaths.Add(summaryPdfPath);
+
+			// Bước B: Mỗi ghế -> 1 file PDF (chỉ giá ghế)
 			foreach (var bt in billTickets)
 			{
 				var ticket = bt.Tickets;
@@ -336,12 +164,12 @@ namespace NeonCinema_API.Controllers
 				string pdfFileName = $"Ticket_{seatName}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
 				var pdfPath = Path.Combine(tempFolder, pdfFileName);
 
-				GenerateSingleSeatInvoicePdf(bt, billTickets, staffName, totalComboPrice, totalBillPrice, pdfPath);
+				GenerateSingleSeatPdf_NoCombo(bt, staffName, pdfPath);
 				pdfFilePaths.Add(pdfPath);
 			}
 
-			// 4) Nén tất cả PDF vào .zip
-			string zipFileName = $"Tickets_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.zip";
+			// 4) Nén tất cả PDF (1 PDF tổng + N PDF ghế) vào .zip
+			string zipFileName = $"BillAndTickets_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.zip";
 			var zipFilePath = Path.Combine(tempFolder, zipFileName);
 
 			using (var zipArchiveStream = new FileStream(zipFilePath, FileMode.Create))
@@ -365,10 +193,9 @@ namespace NeonCinema_API.Controllers
 			return File(zipBytes, "application/octet-stream", zipFileName);
 		}
 
-		// Hàm in PDF y hệt GenerateInvoicePdf, nhưng cho 1 ghế
-		private void GenerateSingleSeatInvoicePdf(
-			BillTicket bt,
-			List<BillTicket> allBillTickets,
+		// ============== HÀM 1: PDF TỔNG (CÓ combos + tổng tiền) ===================
+		private void GenerateBillSummaryPdf_WithCombo(
+			List<BillTicket> billTickets,
 			string staffName,
 			decimal totalComboPrice,
 			decimal totalBillPrice,
@@ -385,12 +212,10 @@ namespace NeonCinema_API.Controllers
 				var normalFont = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H);
 				var boldFont = PdfFontFactory.CreateFont(boldFontPath, PdfEncodings.IDENTITY_H);
 
-				var bill = bt.Bills;
-				var ticket = bt.Tickets;
+				var bill = billTickets.First().Bills;
 
-				// Tạo public URL ảo (nếu cần). Hoặc để trống
-				// -> Nếu muốn QR code trỏ đến PDF, phải sinh url. Tạm thay "No URL" 
-				string pdfUrl = "NoURL"; // Hoặc build real url
+				// Tạo pdfUrl ảo
+				string pdfUrl = "NoURL"; // link ảo
 
 				// HEADER
 				document.Add(new Paragraph("NeonCinemas")
@@ -401,7 +226,7 @@ namespace NeonCinema_API.Controllers
 					.SetFont(normalFont)
 					.SetFontSize(10)
 					.SetTextAlignment(TextAlignment.CENTER));
-				document.Add(new Paragraph("Hóa đơn thanh toán")
+				document.Add(new Paragraph("Hóa đơn thanh toán (Tổng)")
 					.SetFont(boldFont)
 					.SetFontSize(15)
 					.SetTextAlignment(TextAlignment.CENTER));
@@ -417,17 +242,19 @@ namespace NeonCinema_API.Controllers
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.CreatedTime:dd/MM/yyyy}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Khách hàng").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.Users?.FullName.ToLower() ?? "Khách hàng"}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.Users?.FullName.ToLower() ?? "Khách hàng"}")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				// Nhân viên
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Nhân viên xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph(staffName).SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Thời gian xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{DateTime.Now:dd/MM/yyyy HH:mm:ss}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{DateTime.Now:dd/MM/yyyy HH:mm:ss}")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
-				// Lấy info suất chiếu, phòng
-				var screening = ticket.Screenings;
+				// Lấy info screening
+				var screening = billTickets.First().Tickets.Screenings;
 				var showTime = screening?.ShowTime;
 
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Suất chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
@@ -436,48 +263,62 @@ namespace NeonCinema_API.Controllers
 				).SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Phòng chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
-				invoiceInfo.AddCell(new Cell().Add(new Paragraph(screening?.Rooms?.Name ?? "Không xác định").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph(screening?.Rooms?.Name ?? "Không xác định")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				document.Add(invoiceInfo);
 				document.Add(new Paragraph("\n"));
 
-				// BẢNG CHI TIẾT: chỉ 1 ghế + combos
+				// BẢNG CHI TIẾT (Có combos, hiển thị combos + vé)
 				var detailsTable = new Table(UnitValue.CreatePercentArray(new float[] { 4, 2, 2 })).UseAllAvailableWidth();
 				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Dịch vụ").SetFont(boldFont).SetFontSize(10)));
 				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Số lượng").SetFont(boldFont).SetFontSize(10)));
 				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Thành tiền").SetFont(boldFont).SetFontSize(10)));
 
-				// Chỉ ghế này
-				detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {ticket.Movies?.Name}").SetFont(normalFont).SetFontSize(10)));
-				detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {ticket.Seat.Column}{ticket.Seat.Row}").SetFont(normalFont).SetFontSize(10)));
-				detailsTable.AddCell(new Cell().Add(new Paragraph($"{ticket.Price:n0}đ").SetFont(normalFont).SetFontSize(10)));
+				// Vé
+				foreach (var bt in billTickets)
+				{
+					var ticket = bt.Tickets;
+					if (ticket != null)
+					{
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {ticket.Movies?.Name}")
+							.SetFont(normalFont).SetFontSize(10)));
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {ticket.Seat.Column}{ticket.Seat.Row}")
+							.SetFont(normalFont).SetFontSize(10)));
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"{ticket.Price:n0}đ")
+							.SetFont(normalFont).SetFontSize(10)));
+					}
+				}
 
-				// Combos (in chung bill)
+				// Combo
+				 totalComboPrice = 0;
 				foreach (var combo in bill.BillCombos)
 				{
 					decimal total = combo.FoodCombo.TotalPrice * combo.Quantity;
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"Combo: {combo.FoodCombo.Content}").SetFont(normalFont).SetFontSize(10)));
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"{combo.Quantity}").SetFont(normalFont).SetFontSize(10)));
-					detailsTable.AddCell(new Cell().Add(new Paragraph($"{total:n0}đ").SetFont(normalFont).SetFontSize(10)));
+					totalComboPrice += total;
+					detailsTable.AddCell(new Cell().Add(new Paragraph($"Combo: {combo.FoodCombo.Content}")
+						.SetFont(normalFont).SetFontSize(10)));
+					detailsTable.AddCell(new Cell().Add(new Paragraph($"{combo.Quantity}")
+						.SetFont(normalFont).SetFontSize(10)));
+					detailsTable.AddCell(new Cell().Add(new Paragraph($"{total:n0}đ")
+						.SetFont(normalFont).SetFontSize(10)));
 				}
 
 				document.Add(detailsTable);
 				document.Add(new Paragraph("\n"));
 
-				// TỔNG TIỀN (toàn bill)
-				document.Add(new Paragraph($"Tổng tiền: {totalBillPrice:n0}đ")
-					.SetFont(boldFont)
-					.SetFontSize(12)
-					.SetTextAlignment(TextAlignment.RIGHT));
+				// Tính total
+				decimal sumTickets = billTickets.Sum(bt => bt.Tickets.Price);
+				decimal finalTotal = sumTickets + totalComboPrice;
+				document.Add(new Paragraph($"Tổng tiền: {finalTotal:n0}đ")
+					.SetFont(boldFont).SetFontSize(12).SetTextAlignment(TextAlignment.RIGHT));
 
+				// QR code
 				document.Add(new Paragraph("\n"));
-
-				// QR code (pdfUrl hay chuỗi)
 				try
 				{
 					using (var qrGenerator = new QRCodeGenerator())
 					{
-						// tạm dùng "pdfUrl" = "NoURL" hoặc build link
 						var qrCodeData = qrGenerator.CreateQrCode(pdfUrl, QRCodeGenerator.ECCLevel.Q);
 						var qrByteCode = new BitmapByteQRCode(qrCodeData);
 						byte[] qrBytes = qrByteCode.GetGraphic(10, "#000000", "#FFFFFF");
@@ -486,11 +327,11 @@ namespace NeonCinema_API.Controllers
 						{
 							ImageData imgData = ImageDataFactory.Create(msQr.ToArray());
 							var qrImage = new iText.Layout.Element.Image(imgData)
-								.SetWidth(80)
-								.SetHeight(80)
+								.SetWidth(80).SetHeight(80)
 								.SetHorizontalAlignment(HorizontalAlignment.CENTER);
 
-							document.Add(new Paragraph("Quét QR để mở hoá đơn PDF:").SetFont(normalFont));
+							document.Add(new Paragraph("Quét QR để mở hoá đơn PDF:")
+								.SetFont(normalFont));
 							document.Add(qrImage);
 						}
 					}
@@ -508,12 +349,143 @@ namespace NeonCinema_API.Controllers
 				document.Close();
 				writer.Close();
 
-				// Ghi file PDF ra disk
+				// Ghi file PDF
 				System.IO.File.WriteAllBytes(outputPath, ms.ToArray());
 			}
 		}
 
-		// Format TimeSpan "hh:mm"
+		// ============== HÀM 2: PDF CHO MỖI GHẾ (KHÔNG combo, KHÔNG tổng) ================
+		private void GenerateSingleSeatPdf_NoCombo(
+			BillTicket bt,
+			string staffName,
+			string outputPath)
+		{
+			using (var ms = new MemoryStream())
+			{
+				var writer = new PdfWriter(ms);
+				var pdf = new PdfDocument(writer);
+				var document = new Document(pdf);
+
+				var fontPath = Path.Combine("wwwroot", "fonts", "ttf", "DejaVuSerif.ttf");
+				var boldFontPath = Path.Combine("wwwroot", "fonts", "ttf", "DejaVuSans-Bold.ttf");
+				var normalFont = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H);
+				var boldFont = PdfFontFactory.CreateFont(boldFontPath, PdfEncodings.IDENTITY_H);
+
+				var bill = bt.Bills;
+				var ticket = bt.Tickets;
+				string pdfUrl = "NoURL"; // Link ảo cho QR code
+
+				// HEADER
+				document.Add(new Paragraph("NeonCinemas")
+					.SetFont(boldFont)
+					.SetFontSize(20)
+					.SetTextAlignment(TextAlignment.CENTER));
+				document.Add(new Paragraph("Địa chỉ: Số 1 Việt Nam\nĐiện thoại: 0334583920\nTài khoản: 1160087273 – BIDV – Nguyễn Văn Trọng")
+					.SetFont(normalFont)
+					.SetFontSize(10)
+					.SetTextAlignment(TextAlignment.CENTER));
+				document.Add(new Paragraph("Hóa đơn thanh toán (Ghế lẻ)")
+					.SetFont(boldFont)
+					.SetFontSize(15)
+					.SetTextAlignment(TextAlignment.CENTER));
+
+				document.Add(new Paragraph("\n"));
+
+				// Bảng info
+				var invoiceInfo = new Table(UnitValue.CreatePercentArray(new float[] { 3, 7 })).UseAllAvailableWidth();
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Hóa đơn").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.BillCode}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Ngày tạo").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.CreatedTime:dd/MM/yyyy}").SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Khách hàng").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{bill.Users?.FullName.ToLower() ?? "Khách hàng"}")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				// Nhân viên
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Nhân viên xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph(staffName).SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Thời gian xuất file").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph($"{DateTime.Now:dd/MM/yyyy HH:mm:ss}")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				var screening = ticket.Screenings;
+				var showTime = screening?.ShowTime;
+
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Suất chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph(
+					showTime != null ? $"{showTime.StartTime} - {showTime.EndTime}" : "Không xác định"
+				).SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Phòng chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+				invoiceInfo.AddCell(new Cell().Add(new Paragraph(screening?.Rooms?.Name ?? "Không xác định")
+					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
+
+				document.Add(invoiceInfo);
+				document.Add(new Paragraph("\n"));
+
+				// BẢNG CHI TIẾT VÉ (chỉ giá ghế)
+				var detailsTable = new Table(UnitValue.CreatePercentArray(new float[] { 4, 2, 2 })).UseAllAvailableWidth();
+				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Dịch vụ").SetFont(boldFont).SetFontSize(10)));
+				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Số lượng").SetFont(boldFont).SetFontSize(10)));
+				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Thành tiền").SetFont(boldFont).SetFontSize(10)));
+
+				detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {ticket.Movies?.Name}")
+					.SetFont(normalFont).SetFontSize(10)));
+				detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {ticket.Seat.Column}{ticket.Seat.Row}")
+					.SetFont(normalFont).SetFontSize(10)));
+				detailsTable.AddCell(new Cell().Add(new Paragraph($"{ticket.Price:n0}đ")
+					.SetFont(normalFont).SetFontSize(10)));
+
+				document.Add(detailsTable);
+				document.Add(new Paragraph("\n"));
+
+				// KHÔNG combo, KHÔNG tổng tiền
+
+				// QR code
+				try
+				{
+					using (var qrGenerator = new QRCodeGenerator())
+					{
+						var qrCodeData = qrGenerator.CreateQrCode(pdfUrl, QRCodeGenerator.ECCLevel.Q);
+						var qrByteCode = new BitmapByteQRCode(qrCodeData);
+						byte[] qrBytes = qrByteCode.GetGraphic(10, "#000000", "#FFFFFF");
+
+						using (var msQr = new MemoryStream(qrBytes))
+						{
+							ImageData imgData = ImageDataFactory.Create(msQr.ToArray());
+							var qrImage = new iText.Layout.Element.Image(imgData)
+								.SetWidth(80)
+								.SetHeight(80)
+								.SetHorizontalAlignment(HorizontalAlignment.CENTER);
+
+							document.Add(new Paragraph("Quét QR để mở hoá đơn PDF:")
+								.SetFont(normalFont));
+							document.Add(qrImage);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Lỗi tạo QR code: " + ex.Message);
+				}
+
+				document.Add(new Paragraph("\nNeonCinemas xin cảm ơn quý khách, hẹn gặp lại!")
+					.SetFont(normalFont)
+					.SetFontSize(10)
+					.SetTextAlignment(TextAlignment.CENTER));
+
+				document.Close();
+				writer.Close();
+
+				// Ghi file PDF
+				System.IO.File.WriteAllBytes(outputPath, ms.ToArray());
+			}
+		}
+
+		// ========== Helper format TimeSpan "hh:mm" ==========
 		private string TimeSpanToString(TimeSpan ts)
 		{
 			int hours = (int)ts.TotalHours;
@@ -522,4 +494,9 @@ namespace NeonCinema_API.Controllers
 		}
 
 	}
+
+
 }
+
+
+	
