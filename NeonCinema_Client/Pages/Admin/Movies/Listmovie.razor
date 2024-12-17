@@ -44,11 +44,11 @@
 				</div>
 				<div class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="status" id="comingsoon" value="Comingsoon" @onchange="StatusChanged">
-					<label class="form-check-label" for="comingsoon">Phim sắp chiếu</label>
+					<label class="form-check-label" for="comingsoon">Sắp phát hành</label>
 				</div>
 				<div class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="status" id="active" value="Active" @onchange="StatusChanged">
-					<label class="form-check-label" for="active">Phim đang chiếu</label>
+					<label class="form-check-label" for="active">Đang phát hành</label>
 				</div>
 			</div>
 		</div>
@@ -117,7 +117,7 @@
 						<td class="text-center align-middle">@item.AgeAllowed</td>
 						<td class="text-center align-middle">
 							<span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-primary" : "bg-success") text-light small-badge">
-								@(item.Status == MovieStatus.Comingsoon ? "Sắp Chiếu" : "Đang chiếu")
+								@(item.Status == MovieStatus.Comingsoon ? "Sắp phát hành" : "Đang phát hành")
 							</span>
 						</td>
 						<td class="text-center align-middle">
