@@ -96,27 +96,32 @@ public class ScreeningService : IScreeningService
     //validate nè
 	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate)
 	{
-		//lấy danh sách lịch chiếu đã lọc
-		var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
-	$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
-
-		List<ScreeningSupportValidate> lstScr = result ?? new List<ScreeningSupportValidate>();
-
-		//lấy danh sách id showtime từ danh sách lịch chiếu trên
-		var lstIdShowtime = new List<Guid>();
-
-
-        foreach (var item in lstScr)
+        try
         {
-            lstIdShowtime.Add(item.ShowTimeID);
+            //lấy danh sách lịch chiếu đã lọc
+            var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
+        $"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
+
+            List<ScreeningSupportValidate> lstScr = result ?? new List<ScreeningSupportValidate>();
+
+            //lấy danh sách id showtime từ danh sách lịch chiếu trên
+            var lstIdShowtime = new List<Guid>();
+
+
+            foreach (var item in lstScr)
+            {
+                lstIdShowtime.Add(item.ShowTimeID);
+            }
+
+            var lstShowTime = await GetAllShowTimesAsync();
+
+
+
+            //lọc danh sách showtime theo danh sách ID và trả về
+            return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList(); // cần sửa đoạn này
         }
-
-        var lstShowTime = await GetAllShowTimesAsync();
-
-
-
-        //lọc danh sách showtime theo danh sách ID và trả về
-        return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList(); // cần sửa đoạn này
+        catch (Exception ex) { throw new Exception(ex.Message); }
+		
  	}
 
 	public Task<bool> ValidateShowTimeInRoom(Guid roomId)
