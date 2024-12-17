@@ -172,7 +172,8 @@
 
 							<!-- Đáp tổng tiền vào đây -->
 							@* <input type="text" id="totalPrice" value="@totalPrices.ToString("c")"> *@
-							<div class="concession-item">
+							<div class="payment-method mt-3 mb-3">
+								<span>@totalPrices.ToString("N0") </span>
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="flexRadioDefault" id="cashRadio" checked>
 									<label class="form-check-label" for="cashRadio">
@@ -185,8 +186,8 @@
 										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 									</label>
 								</div>
+								<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
 							</div>
-							<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
 							<div class="form-group">
 								<label for="search">Tìm kiếm khách hàng:</label>
 								<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
