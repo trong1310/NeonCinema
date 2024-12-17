@@ -66,24 +66,14 @@
     bool _drawerOpen = true;
     protected override async Task OnInitializedAsync(){
         var token = await _localstorage.GetItemAsync<string>("authToken");
-        if (string.IsNullOrEmpty(token))
-        {
-            _navi.NavigateTo("/login");
-            return;
-        }
-
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/getfrofile");
         requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         var response = await _http.SendAsync(requestMessage);
-
         if (response.IsSuccessStatusCode)
         {
             user = await response.Content.ReadFromJsonAsync<UserProfile>();
         }
-        else
-        {
-            _navi.NavigateTo("/login");
-        }
+      
     }
     private async Task OnFileChange(InputFileChangeEventArgs e)
     {
