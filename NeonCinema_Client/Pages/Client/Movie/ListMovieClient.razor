@@ -80,54 +80,6 @@
 
 </div>
 
-<div class="container-fluid movie-nowshowing">
-    <div style="text-align: center;">
-        <h2 class="mb-4 green-title">PHIM SẮP PHÁT HÀNH</h2>
-    </div>
-    <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-inner">
-                @for (int i = 0; i < moviesComing.Count; i += 5)
-                {
-                    <div class="carousel-item @(i == 0 ? "active" : "")">
-                        <div class="row">
-                            @foreach (var movie in moviesComing.Skip(i).Take(5))
-                            {
-                                <div class="col-custom">
-                                    <div class="card movie-card">
-                                        <div class="image-container">
-                                            <img src="@GetImageUrl(movie.Images)" class="card-img-top" loading="lazy" alt="@movie.Name">
-                                            <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID)">
-                                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
-                                            </button>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="tags">
-                                                <span class="badge bg-danger">T @movie.AgeAllowed</span>
-                                                <span class="badge bg-dark">@movie.Duration phút</span>
-                                                <span class="badge bg-success">Ngôn ngữ: @movie.LanguareName</span>
-                                            </div>
-                                            <h3 class="card-title">@movie.Name</h3>
-                                            <p class="card-text">Thể loại phim: <span class="genre">@movie.GenreName</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#movieCarousel" data-bs-slide="prev">
-            <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#movieCarousel" data-bs-slide="next">
-            <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-</div>
 
 <div class="container-fluid promotion-section">
     <div style="text-align: center;">
@@ -246,7 +198,7 @@
 
 <div class="container-fluid movie-nowshowing">
     <div style="text-align: center;">
-    <h2 class="mb-4 green-title">PHIM SẮP CHIẾU</h2>
+    <h2 class="mb-4 green-title">PHIM ĐANG PHÁT HÀNH</h2>
 </div>
 <div id="movieCarouselComing" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
@@ -260,7 +212,7 @@
                                 <div class="col-custom">
                                     <div class="card movie-card">
                                         <div class="image-container">
-                                            <img src="/images/Client/cam.jpg" class="card-img-top" loading="lazy" alt="@movie.Name">
+                                            <img src="@GetImageUrl(movie.Images)" class="card-img-top" loading="lazy" alt="@movie.Name">
                                             <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID)">
                                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                                             </button>
