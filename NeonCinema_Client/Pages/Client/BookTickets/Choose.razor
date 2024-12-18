@@ -118,7 +118,7 @@
 						</div>
 						<!-- Nút -->
 						<div class="d-flex justify-content-center align-items-center mt-5">
-							<button class="btn btn-primary" style="width: 35%" @onclick="NextTab">Tiếp tục</button>
+							<button class="btn btn-primary" style="width: 100px" @onclick="NextTab">Tiếp tục</button>
 						</div>
 
 					</div>
@@ -1096,14 +1096,20 @@
 	.sold {
 		background-color: rgb(33 37 41);
 		cursor: not-allowed;
+		color: white;
 	}
 
 	.selected {
 		background-color: rgb(13 110 253);
+		color: white;
 	}
 
 	.available {
-		background-color: none;
+		background-color: #ffc107; /* Màu ghế thường */
+		cursor: pointer;
+		border-radius: 4px;
+		color: #fff;
+		font-weight: bold;
 	}
 
 	.seat.standard {

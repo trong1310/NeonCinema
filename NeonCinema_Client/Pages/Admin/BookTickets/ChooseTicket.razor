@@ -44,9 +44,7 @@
 	<div class="col-md-8 card shadow position-relative">
 		@if (_selectedIndex == 0)
 		{
-			<h3 class="text-center">Chọn Ghế</h3>
-			<hr />
-			<h5>@screenings.RoomName</h5>
+			<h3 class="text-center mt-2">Chọn Ghế</h3>
 			<hr />
 			<div class="d-flex align-items-center">
 				<span>Giá vé: </span>
@@ -109,7 +107,7 @@
 				}
 			</div>
 			<div class="button-container">
-				<button class="btn btn-primary" style="width: 25%" @onclick="NextTab">Tiếp tục</button>
+				<button class="btn btn-primary mb-3" style="width: 100px" @onclick="NextTab">Tiếp tục</button>
 			</div>
 		}
 		else if (_selectedIndex == 1)
@@ -1154,6 +1152,7 @@
 	.sold {
 		background-color: rgb(33 37 41);
 		cursor: not-allowed;
+		color: white;
 	}
 
 	.selected {
