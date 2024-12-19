@@ -38,7 +38,7 @@
 			<!-- Card thông tin phim -->
 			<div class="card movie-info-card mb-4">
 				<div class="img-container">
-					<img src="/images/Client/cam.jpg" class="card-img-top" alt="Tên phim">
+					<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
 				</div>
 				<div class="card-body">
 					<p class="card-title text-success">Phim : @movieDto.Name</p>
@@ -118,7 +118,7 @@
 						</div>
 						<!-- Nút -->
 						<div class="d-flex justify-content-center align-items-center mt-5">
-							<button class="btn btn-primary" style="width: 35%" @onclick="NextTab">Tiếp tục</button>
+							<button class="btn btn-primary" style="width: 100px" @onclick="NextTab">Tiếp tục</button>
 						</div>
 
 					</div>
@@ -1096,14 +1096,20 @@
 	.sold {
 		background-color: rgb(33 37 41);
 		cursor: not-allowed;
+		color: white;
 	}
 
 	.selected {
 		background-color: rgb(13 110 253);
+		color: white;
 	}
 
 	.available {
-		background-color: none;
+		background-color: #ffc107; /* Màu ghế thường */
+		cursor: pointer;
+		border-radius: 4px;
+		color: #fff;
+		font-weight: bold;
 	}
 
 	.seat.standard {

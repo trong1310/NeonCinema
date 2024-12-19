@@ -340,5 +340,5 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
 			return movieDtos;
 		}
-	}
+    }
 }

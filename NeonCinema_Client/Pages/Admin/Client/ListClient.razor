@@ -106,7 +106,8 @@
 							<div class="dropdown">
 								<span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge dropdown-toggle"
 									  data-bs-toggle="dropdown"
-									  aria-expanded="false">
+									  aria-expanded="false"
+									  style="cursor: pointer;">
 									@(user.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
 								</span>
 								<ul class="dropdown-menu">

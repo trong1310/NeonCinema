@@ -103,28 +103,31 @@
 						</td>
 						<td class="text-center align-middle">@user.Adderss</td>
 						<td class="text-center align-middle">
-                            <div class="dropdown">
+							<div class="dropdown">
 								<span class="badge @(user.Status == EntityStatus.Active ? "bg-success" : "bg-danger") text-light small-badge dropdown-toggle"
-									  data-bs-toggle="dropdown" aria-expanded="false"
+									  data-bs-toggle="dropdown"
+									  aria-expanded="false"
 									  style="cursor: pointer;">
 									@(user.Status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
 								</span>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <span class="badge bg-success text-light small-badge dropdown-item"
-                                              style="cursor: pointer;"
-                                              @onclick="() => UpdateStatus(user, EntityStatus.Active)"> Hoạt động
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <span class="badge bg-danger text-light small-badge dropdown-item"
-                                              style="cursor: pointer;"
-                                              @onclick="() => UpdateStatus(user, EntityStatus.Locked)"> Không hoạt động
-                                        </span>
-                                    </li>
-                                </ul>
+								<ul class="dropdown-menu">
+									<li>
+										<span class="badge bg-success text-light small-badge dropdown-item"
+											  style="cursor: pointer;"
+											  @onclick="() => UpdateStatus(user, EntityStatus.Active)">
+											Hoạt động
+										</span>
+									</li>
+									<li>
+										<span class="badge bg-danger text-light small-badge dropdown-item"
+											  style="cursor: pointer;"
+											  @onclick="() => UpdateStatus(user, EntityStatus.Locked)">
+											Không hoạt động
+										</span>
+									</li>
+								</ul>
 
-                            </div>
+							</div>
                         </td>
 						<td class="text-center align-middle">
 							<button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick=" () => NavigateToEdit(user.ID)">
