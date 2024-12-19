@@ -1,0 +1,431 @@
+﻿@page "/profile"
+@using NeonCinema_API.Controllers.Service
+@using NeonCinema_Application.DataTransferObject.User.Request
+@using NeonCinema_Client.Pages.Client
+@using Blazored.LocalStorage
+@using System.Text
+@using System.Text.Json
+@using NeonCinema_Domain.Enum
+@using System.Security.Claims
+@inject ISV isv
+@inject ILocalStorageService _localstorage
+@inject HttpClient _http
+@inject NavigationManager _navi
+@layout LayoutClient
+
+
+@if (user == null)
+{
+    <div class="text-center">
+        <p>Đang tải dữ liệu...</p>
+    </div>
+}
+else
+{
+    <div class="container-fluid mt-3">
+        <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-3 text-center mb-4 mt-5">
+                @if (!string.IsNullOrEmpty(previewImage))
+                {
+                    <img src="@previewImage" alt="Hình ảnh vừa chọn" class="rounded-circle img-fluid profile-pic" /> <br />
+                }
+                else if (!string.IsNullOrEmpty(user.Images))
+                {
+                    <img src="@user.Images" alt="Hình ảnh đã tải lên" class="rounded-circle img-fluid profile-pic" /> <br />
+                }
+                <label class="custom-file-upload">
+                    <span style="margin-left:-5px">
+                        <i class="material-icons">cloud_upload</i>
+                    </span>
+                    <InputFile OnChange="OnFileChange" class="d-none" style="width: 200px" />
+                    <span>Chọn ảnh</span>
+                </label>
+            </div>
+            <div class="col-md-9" style="margin-top:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" @bind="user.FullName" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" @bind="user.PhoneNumber">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" @bind="user.Email">
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="datetime" class="form-control" @bind="user.DateOfBirth">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Giới tính</label> <br />
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderMale" name="gender" value="true" checked />
+                                    <label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="genderFemale" name="gender" value="false" />
+                                    <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Địa chỉ</label>
+                    <textarea class="form-control" id="Description" rows="3" @bind="user.Address"></textarea>
+
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg"
+                            style="width: 15%; min-width: 200px;" @onclick="OnSaveProfile"> Lưu
+                    </button>
+
+                    <button type="button" class="btn btn-warning btn-lg">Quay lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    private UserProfile user;
+    private ClientChangerPass check = new ClientChangerPass();
+    private bool showPasswordModal = false;
+    private string currentPassword;
+    private string newPassword;
+    private string confirmPassword;
+    private string errorMessage;
+    private string? successMessage;
+    private string? successMessages;
+    private string errorMessages;
+    private IBrowserFile selectedFile;
+    private string previewImage;
+    private int TotalPoints = 0;
+    private decimal TotalSpent = 0;
+    private string Rank;
+    private Guid CurrentUserId;
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            if (!file.ContentType.StartsWith("image"))
+            {
+                errorMessage = "Chỉ cho phép tải lên hình ảnh.";
+                successMessage = null;
+                return;
+            }
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await file.OpenReadStream().CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var buffer = memoryStream.ToArray();
+                previewImage = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+                successMessage = "Tải lên thành công!";
+                errorMessage = null;
+                user.Images = previewImage;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Đã xảy ra lỗi: {ex.Message}";
+                successMessage = null;
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            //_navi.NavigateTo("/login");
+            return;
+        }
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        CurrentUserId = Guid.Parse(userIdClaim.Value);
+        var userStats = await isv.GetUserStatsAsync(CurrentUserId);
+        TotalPoints = userStats.TotalPoints;
+        TotalSpent = userStats.TotalSpent;
+        Rank = userStats.ranks;
+
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/getfrofile");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            user = await response.Content.ReadFromJsonAsync<UserProfile>();
+        }
+        else
+        {
+            _navi.NavigateTo("/login");
+        }
+    }
+    private void OnChangePasswordClick()
+    {
+        showPasswordModal = true;
+    }
+
+    private void OnClosePasswordModal()
+    {
+        showPasswordModal = false;
+    }
+    private async Task OnSubmitChangePassword()
+    {
+        if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
+        {
+            ShowErrorMessage("Vui lòng điền đầy đủ các trường mật khẩu.");
+            return;
+        }
+        if (newPassword != confirmPassword)
+        {
+            ShowErrorMessage("Mật khẩu mới và mật khẩu xác nhận không khớp.");
+            return;
+        }
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            _navi.NavigateTo("/login");
+            return;
+        }
+        var checkPasswordRequest = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7211/api/User/Check-Current-Password");
+        checkPasswordRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        checkPasswordRequest.Content = new StringContent(JsonSerializer.Serialize(new { password = currentPassword }), Encoding.UTF8, "application/json");
+
+        var checkPasswordResponse = await _http.SendAsync(checkPasswordRequest);
+        if (!checkPasswordResponse.IsSuccessStatusCode)
+        {
+            var errorResponse = await checkPasswordResponse.Content.ReadAsStringAsync();
+            ShowErrorMessage($"Lỗi Mật khẩu hiện tại không đúng: {errorResponse}");
+            return;
+        }
+
+
+        var check = new ClientChangerPass { Currenpassword = currentPassword, Newpassword = newPassword, Confirmpasss = confirmPassword };
+        var requestMessage = new HttpRequestMessage(HttpMethod.Put, "https://localhost:7211/api/User/Changer-Password");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(check), Encoding.UTF8, "application/json");
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            ShowSuccessMessage("Đổi mật khẩu thành công.");
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Lỗi HTTP: {response.StatusCode}");
+            Console.WriteLine($"Thông báo lỗi từ server: {errorResponse}");
+            ShowErrorMessage($"Đổi mật khẩu thất bại: {errorResponse}");
+            return;
+        }
+    }
+
+    private async Task OnSaveProfile()
+    {
+
+        if (string.IsNullOrEmpty(user.FullName) ||
+            string.IsNullOrEmpty(user.Email) ||
+            string.IsNullOrEmpty(user.PhoneNumber) ||
+            string.IsNullOrEmpty(user.Address))
+        {
+            ShowErrorMessageUpdate("Vui lòng điền đầy đủ thông tin.");
+            return;
+        }
+        // if (!System.Text.RegularExpressions.Regex.IsMatch(user.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        // {
+        //     ShowErrorMessageUpdate(   "Email không đúng định dạng.");
+        //     return;
+        // }
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            _navi.NavigateTo("/login");
+            return;
+        }
+        var requestMessage = new HttpRequestMessage(HttpMethod.Put, "https://localhost:7211/api/User/UpdateProfile");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            ShowMessageUpdate("Cập nhật thông tin cá nhân thành công.");
+
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            ShowErrorMessageUpdate($"Cập nhật thông tin thất bại: {errorResponse}");
+            return;
+        }
+    }
+    private void ShowErrorMessage(string message)
+    {
+        errorMessage = message;
+        successMessage = null;
+    }
+    private void ShowSuccessMessage(string message)
+    {
+        successMessage = message;
+        errorMessage = null;
+    }
+    private void ShowErrorMessageUpdate(string message)
+    {
+        errorMessage = message;
+        successMessage = null;
+    }
+    private void ShowMessageUpdate(string message)
+    {
+        errorMessages = message;
+        successMessages = null;
+    }
+}
+
+
+<style>
+    body {
+        background-color: #f4f4f9;
+    }
+
+    .card {
+        border-radius: 10px;
+        background-color: white;
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    h2 {
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    .profile-pic {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid #eaeaea;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .custom-file-upload {
+        display: flex;
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        background-color: #a9a9a9; /* Màu nền của nút */
+        color: white; /* Màu chữ */
+        border: none; /* Bỏ viền */
+        text-align: center;
+        width: 150px;
+        margin-left: auto; /* Thêm */
+        margin-right: auto;
+    }
+
+        .custom-file-upload span {
+            margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+        }
+
+        .custom-file-upload:hover {
+            background-color: #8f8f8f; /* Màu nền khi hover */
+        }
+
+    label {
+        font-size: 14px;
+        color: #555;
+    }
+
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-left: -20px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .btn-success {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-warning {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-check {
+        margin-top: 5px;
+        margin-right: 50px;
+        padding-left: 0; /* Loại bỏ padding thừa */
+        margin-left: 0;
+    }
+
+
+    .password-icon {
+        position: absolute;
+        right: 30px; /* Khoảng cách từ lề phải */
+        top: 62%; /* Đưa icon vào giữa theo chiều dọc */
+        transform: translateY(-50%); /* Căn giữa hoàn toàn */
+        cursor: pointer; /* Con trỏ tay khi hover */
+        background: transparent; /* Nền trong suốt */
+        border: none; /* Bỏ viền */
+    }
+</style>
