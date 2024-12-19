@@ -70,19 +70,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			//optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-
-			//optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-			//optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-		//	optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
-			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			//optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-
+			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -707,12 +695,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
     new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Bố Già 2",
+		Name = "DEVILS STAY: NGÀI QUỶ",
 		Duration = 130,
-		Description = "Hành trình cảm động về tình cha con giữa Sài Gòn.",
+		Description = "Một bác sĩ chuyên khoa tim nghi ngờ cái chết của con gái mình sau một cuộc trừ tà, " +
+		"tin rằng trái tim cô bé vẫn đập. Trong đám tang cô bé, anh và một linh mục đã tranh cãi về sự thật, " +
+		"mỗi người đều cố gắng chứng minh lập trường của mình có thể cứu cô bé.",
 		StarTime = DateTime.Parse("2024-08-15"),
-		Trailer = "https://www.youtube.com/watch?v=bogia2-trailer",
-		Images = "0e9f825c-5346-44f1-a94d-7078909ce83a.png",
+		Trailer = "https://youtu.be/4d7xzz0cTVw",
+		Images = "ngaiquy.jpg",
 		AgeAllowed = 16,
 		Status = MovieStatus.Active,
 		GenreID = genreData[0].ID,
@@ -724,15 +714,16 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Chị Mười Ba: Cuộc Chiến Nhân Tình",
-		Duration = 120,
-		Description = "Những mâu thuẫn căng thẳng giữa các băng nhóm trong thế giới ngầm.",
+		Name = "BLINDING SOULS: XÍCH: TRÓI HỒN YỂM XÁC",
+		Duration = 81,
+		Description = "5 học sinh nghiên cứu hồ sơ cựu học sinh của một trường học bị chiếm đóng về những trải nghiệm siêu nhiên và các cô gái mất tích." +
+		" Người hướng dẫn của họ tạo ra những sự kiện kỳ ​​lạ đưa họ đến một cái cây cổ thụ, nơi mà hiệu trưởng vô tình đào được xương.",
 		StarTime = DateTime.Parse("2024-09-10"),
 		Trailer = "https://www.youtube.com/watch?v=chimuoiba-trailer",
-		Images = "161cd6ca-380d-4627-8071-2d5af03a1cf2.png",
+		Images = "xich.jpg",
 		AgeAllowed = 18,
 		Status = MovieStatus.Active,
-		GenreID = genreData[1].ID,
+		GenreID = genreData[2].ID,
 		LenguageID = languageData[1].ID,
 		CountryID = countryData[0].ID,
 		DirectorID = directorData[1].ID,
@@ -741,30 +732,32 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Nhà Bà Nữ",
-		Duration = 110,
-		Description = "Cuộc sống đầy biến động của một gia đình truyền thống Việt.",
+		Name = "CÔNG TỬ BẠC LIÊU",
+		Duration = 113,
+		Description = "Lấy cảm hứng từ giai thoại nổi tiếng của nhân vật được mệnh danh là thiên hạ đệ nhất chơi ngông," +
+		" Công Tử Bạc Liêu lấy bối cảnh Nam Kỳ Lục Tỉnh xưa của Việt Nam. Từ con trai của chủ ngân hàng đầu tiên của Việt Nam trở thành \"Công Tử Bạc Liêu\".",
 		StarTime = DateTime.Parse("2024-07-25"),
-		Trailer = "https://www.youtube.com/watch?v=nhabanu-trailer",
-		Images = "100f852c-f5b4-43f0-8560-84ab0b42b9b9.png",
+		Trailer = "https://youtu.be/wqJXnO_TKpY",
+		Images = "congtubaclieu.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.Active,
 		GenreID = genreData[2].ID,
 		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		CountryID = countryData[5].ID,
 		DirectorID = directorData[2].ID,
 		CreatedTime = DateTime.Now
 	},
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Gái Già Lắm Chiêu 6",
-		Duration = 140,
-		Description = "Cuộc sống sang chảnh và những bí mật động trời của giới thượng lưu.",
+		Name = "HEAR ME: OUR SUMMER: YÊU EM KHÔNG CẦN LỜI NÓI",
+		Duration = 109,
+		Description = "Một cô gái khiếm thính và một anh giao hàng tìm thấy sự kết nối bất chấp rào cản giao tiếp." +
+		" Họ sử dụng ẩn dụ về những chú chim nước và cây cối kiên trì để tượng trưng cho việc vượt qua những trở ngại trong chuyện tình cảm và dẫn đến sự gắn bó.",
 		StarTime = DateTime.Parse("2024-06-20"),
-		Trailer = "https://www.youtube.com/watch?v=gaigialamchieu-trailer",
-		Images = "11d330e9-7ab3-49d6-bb78-0ab3acabf6cf.png",
-		AgeAllowed = 15,
+		Trailer = "https://youtu.be/JzY-5ZtVD88",
+		Images = "yeuem.jpg",
+		AgeAllowed = 16,
 		Status = MovieStatus.Active,
 		GenreID = genreData[3].ID,
 		LenguageID = languageData[0].ID,
@@ -775,12 +768,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Tiệc Trăng Máu 2",
-		Duration = 125,
-		Description = "Bữa tiệc đầy những bí mật được phơi bày qua trò chơi mạo hiểm.",
+		Name = "SENGKOLO: MALAM SATU SURO",
+		Duration = 99,
+		Description = "Trong văn hóa Java, Sengkolo là một thực thể tiêu cực thường ám ảnh con người, " +
+		"mang lại vận rủi và tai họa. Vào đêm đầu tiên của Suro, Sengkolo di chuyển để nhắm vào một số weton là con mồi của mình.",
 		StarTime = DateTime.Parse("2024-09-01"),
-		Trailer = "https://www.youtube.com/watch?v=tiectrangmau-trailer",
-		Images = "2d2a89fa-61c6-4662-a2de-ab4b337c88d7.png",
+		Trailer = "https://youtu.be/-Sux3ihKodI?si=bbzqRn3w7kxqDaEi",
+		Images = "tetamhon.jpg",
 		AgeAllowed = 18,
 		Status = MovieStatus.Active,
 		GenreID = genreData[4].ID,
@@ -794,12 +788,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
     new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Rừng Thế Mạng 2",
-		Duration = 115,
-		Description = "Hành trình sinh tồn đầy kịch tính trong khu rừng bí ẩn.",
+		Name = "SONIC THE HEDGEHOG: NHÍM SONIC 3",
+		Duration = 100 ,
+        Description = "Phần hậu truyện của Nhím Sonic 1 và 2, đồng thời cũng là phần phim liên kết với Knuckles (2024).",
 		StarTime = DateTime.Parse("2024-12-15"),
-		Trailer = "https://www.youtube.com/watch?v=rungthemanh-trailer",
-		Images = "rungthemanh.png",
+		Trailer = "https://youtu.be/2gFjV9v7QVE",
+		Images = "SONIC.jpg",
 		AgeAllowed = 16,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[0].ID,
@@ -811,12 +805,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Em Và Trịnh 2",
-		Duration = 150,
-		Description = "Câu chuyện tình yêu đầy lãng mạn và cảm động của Trịnh Công Sơn.",
+		Name = "BỘ TỨ BÁO THỦ",
+		Duration = 120,
+		Description = "Bộ tứ báo thủ bao gồm Chét-Xi-Cà, Dì Bốn, Cậu Mười Một, Con Kiều chính thức xuất hiện cùng với phi vụ báo thế kỉ." +
+		" Nghe nói kế hoạch tiếp theo là ở Đà Lạt, liệu bốn báo thủ sẽ quậy Tết tung nóc cỡ nào?",
 		StarTime = DateTime.Parse("2024-11-30"),
-		Trailer = "https://www.youtube.com/watch?v=emvatrinh-trailer",
-		Images = "5b626704-f3d1-482f-b77c-903284966efa.png",
+		Trailer = "https://youtu.be/2k0jK_sWmwE",
+		Images = "botubaothu.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[1].ID,
@@ -828,12 +823,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Mắt Biếc 2",
-		Duration = 130,
-		Description = "Tiếp tục câu chuyện tình yêu day dứt giữa Ngạn và Hà Lan.",
+		Name = "BAD BOYZ BAND: TRẺ TRÂU KHÔNG ĐÙA ĐƯỢC ĐÂU",
+		Duration = 110 ,
+        Description = "Lần đầu tiên nhìn thấy cô gái yêu nhạc rock xinh đẹp Jinny, cậu bé Song đã yêu." +
+		" Chú Pong – một cựu Rocker giúp Song lập ban nhạc Bad Boyz Band để Song có thể mời Jinny tham gia. Tuy nhiên Jenny lại lọt vào mắt nhà sản xuất âm nhạc tên Arm.",
 		StarTime = DateTime.Parse("2024-12-01"),
-		Trailer = "https://www.youtube.com/watch?v=matbiec-trailer",
-		Images = "7502d22a-c967-400c-bc8c-3062d00c7fcc.png",
+		Trailer = "https://youtu.be/GKqrTQGHE3s",
+		Images = "tretraukhongduaduocdau.jpg",
 		AgeAllowed = 12,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[2].ID,
@@ -845,12 +841,12 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Người Nhện Việt Nam",
-		Duration = 145,
-		Description = "Phiên bản Việt của Người Nhện với những pha hành động gay cấn.",
+		Name = "ABOUT FAMILY: CHUYỆN NHÀ BÁNH XẾP",
+		Duration = 110,
+		Description = "Đây là một bộ phim hài về gia đình. Phim kể câu chuyện về một người đàn ông là sinh viên y khoa ưu tú quyết định trở thành một linh mục.",
 		StarTime = DateTime.Parse("2024-12-20"),
-		Trailer = "https://www.youtube.com/watch?v=nguoinhenvietnam-trailer",
-		Images = "96cc9263-2adb-46f1-a015-fe0a18c4b781.png",
+		Trailer = "https://youtu.be/X3SY9XUlQAA",
+		Images = "chuyennhabanh.png",
 		AgeAllowed = 15,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[3].ID,
@@ -862,12 +858,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 	new Movies
 	{
 		ID = Guid.NewGuid(),
-		Name = "Sài Gòn Trong Cơn Mưa 2",
+		Name = "404 RUN RUN: CHẠY NGAY ĐI",
 		Duration = 100,
-		Description = "Những câu chuyện tình yêu lãng mạn tại Sài Gòn mưa rơi.",
+		Description = "Nakrob, một kẻ lừa đảo bất động sản trẻ tuổi, phát hiện ra một khách sạn trên sườn đồi bị bỏ hoang gần bãi biển." +
+		" Nhìn thấy cơ hội, anh ta quyết định biến nó thành một vụ lừa đảo khách sạn sang trọng.",
 		StarTime = DateTime.Parse("2024-11-25"),
-		Trailer = "https://www.youtube.com/watch?v=saigonmuaroi-trailer",
-		Images = "96cc9263-2adb-46f1-a015-fe0a18c4b781.png",
+		Trailer = "https://youtu.be/jS6TZkBB0lY",
+		Images = "chayngaydi.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.Comingsoon,
 		GenreID = genreData[4].ID,

@@ -21,20 +21,21 @@ namespace NeonCinema_API.Controllers.Service
         public async Task<UserProfile> GetUserProfileAsync(Guid userId)
         {
             var user = await _context.Users
-             .Where(u => u.ID == userId)
-             .Select(u => new UserProfile
-             {
-                 FullName = u.FullName,
-                 Email = u.Email,
-                 PhoneNumber = u.PhoneNumber,
-                 Gender = u.Gender,
-                 DateOfBirth = u.DateOrBriht.ToString("yyyy-MM-dd"),
-                 Address = u.Adderss,
-                 Images = u.Images
-             })
-             .FirstOrDefaultAsync();
-
-            return user;
+             .Where(u => u.ID == userId).FirstOrDefaultAsync();
+            var rank = await _context.RankMembers.Where(x=>x.UserID == user.ID).Select(x=>x.MinPoint).FirstOrDefaultAsync();
+            var results = new UserProfile()
+            {
+                ID = userId,
+                Address = user?.Adderss,
+                DateOfBirth = user?.DateOrBriht.ToString(),
+                Email = user?.Email,
+                FullName = user?.FullName,
+                Gender = user?.Gender,
+                Images = user?.Images,
+                PhoneNumber = user?.PhoneNumber,
+                Ponit = rank,
+            };
+             return results;
         }
 
        

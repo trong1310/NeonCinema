@@ -52,7 +52,24 @@ else
 								<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
 								<td>@item.value.ShowTime?.ToString()</td>
 								<td>@item.value.RoomName</td>
-								<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
+								<td><span class="@GetStatusClass(item.value.Status) text-white rounded">
+										@if(item.value.Status == ScreeningStatus.InActive)
+										{
+											<text>Chưa chiếu</text>
+										}
+										else if (item.value.Status == ScreeningStatus.Showing)
+										{
+											<text>Đang chiếu</text>
+										}
+										else if (item.value.Status == ScreeningStatus.Ended)
+										{
+											<text>Đã kết thúc</text>
+										}
+										else if (item.value.Status == ScreeningStatus.Cancelled)
+										{
+											<text>Bị hủy</text>
+										}
+									</span></td>
 								<td>
 									<button @onclick="() => EditScreening(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
 									<button @onclick="() => DeleteScreening(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
