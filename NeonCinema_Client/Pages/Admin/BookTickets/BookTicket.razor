@@ -7,26 +7,75 @@
 @inject BookTicketServices _service
 @inject NavigationManager _navi
 
-<div class="container-fluid mt-5" style="max-width: 98%;">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+
+<div class="container-fluid mt-3" style="max-width: 98%;">
     <div class="row justify-content-center">
         <h3 class="text-center text-secondary-emphasis">Bán vé</h3>
     </div>
-    <div class="row justify-content-end mb-5" >
+    <div class="row mb-4">
         <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." />
+            <div class="card text-center overview">
+                <div class="icon-top-right icon-now-showing">
+                    <span class="material-icons">movie</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="text-uppercase">Số phim đang chiếu</h5>
+                    <h3>@NowShowingCount</h3>
+                </div>
+            </div>
         </div>
+        <div class="col-md-4">
+            <div class="card text-center overview">
+                <div class="icon-top-right icon-coming-soon">
+                    <span class="material-icons">event</span> <!-- Icon lịch sự kiện -->
+                </div>
+                <div class="card-body">
+                    <h5 class="text-uppercase">Số phim sắp chiếu</h5>
+                    <h3>@ComingSoonCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center overview">
+                <div class="icon-top-right icon-stopped">
+                    <span class="material-icons">do_not_disturb</span> <!-- Icon dừng -->
+                </div>
+                <div class="card-body">
+                    <h5 class="text-uppercase">Số phim đã dừng chiếu</h5>
+                    <h3>15</h3>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="border p-4 mt-5">
-        <div class="text-center mb-4">
+    <div class="border p-4 mt-3">
+        <div class="text-center mb-3">
             <h2 class="green-title">Phim đang chiếu</h2>
         </div>
+        <div class="row mb-5">
+            <div class="col-md-4 mt-4">
+                <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchNowShowing" @oninput="SearchNameShowing" />
+            </div>
+            <div class="col-md-4">
+                <label for="startDate">Từ ngày:</label>
+                <input type="date" class="form-control" @oninput="OnStartDateShowingChanged" />
+            </div>
+            <div class="col-md-4">
+                <label for="endDate">Đến ngày:</label>
+                <input type="date" class="form-control" @oninput="OnEndDateShowingChanged" />
+            </div>
+
+        </div>
         <div class="row">
-            @foreach (var item in moviesNowShowing)
+            @foreach (var item in FillterShowing)
             {
                 <div class="col-4 col-md-3 mb-4 col-custom">
                     <div class="card movie-card">
-                        <img src="/images/Client/cam.jpg" class="card-img-top" alt="@item.Name" loading="lazy">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
                         <div class="card-body">
                             <div class="tags">
                                 <span class="badge bg-danger">T @item.AgeAllowed</span>
@@ -45,12 +94,27 @@
         </div>
     </div>
 
-    <div class="border p-4 mt-5">
-        <div class="text-center mb-4">
+    <div class="border p-4 mt-3">
+        <div class="text-center mb-3">
             <h2 class="green-title">Phim sắp chiếu</h2>
         </div>
+        <div class="row mb-5">
+            <div class="row mb-5">
+                <div class="col-md-4 mt-4">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchComing" @oninput="SearchNameComing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="startDate">Từ ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnStartDateComingChanged" />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate">Đến ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnEndDateComingChanged" />
+                </div>
+            </div>
+        </div>
         <div class="row">
-            @foreach (var item in moviesComing)
+            @foreach (var item in FillterComing)
             {
                 <div class="col-4 col-md-3 mb-4 col-custom">
                     <div class="card movie-card">
@@ -77,6 +141,22 @@
 @code {
     List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
     List<MovieDTO> moviesComing = new List<MovieDTO>();
+    List<MovieDTO> moviesStopped = new List<MovieDTO>();
+    List<MovieDTO> FillterShowing = new List<MovieDTO>();
+    List<MovieDTO> FillterComing = new List<MovieDTO>();
+
+
+    string searchNowShowing = "";
+    DateTime? startDateNowShowing = null;
+    DateTime? endDateNowShowing = null;
+
+    string searchComing = "";
+    DateTime? startDateComing = null;
+    DateTime? endDateComing = null;
+
+    int NowShowingCount => moviesNowShowing.Count;
+    int ComingSoonCount => moviesComing.Count;
+    int StoppedCount => moviesStopped.Count;
     protected override async Task OnInitializedAsync()
     {
         await LoadMovies();
@@ -96,6 +176,18 @@
             var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
             movie.ActorMovies = actors;
         }
+        FillterShowing = await _service.MoviesNowShowing();
+        foreach (var movie in FillterShowing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        FillterComing = await _service.MoviesComing();
+        foreach (var movie in FillterComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
     }
 
     private string GetImageUrl(string imageUrl)
@@ -107,6 +199,108 @@
     {
         _navi.NavigateTo($"/book-details/{id}");
     }
+    public void ApplyNowShowingFilter()
+    {
+        if (!startDateNowShowing.HasValue && !endDateNowShowing.HasValue && string.IsNullOrEmpty(searchNowShowing))
+        {
+            // Nếu không có bất kỳ bộ lọc nào, hiển thị lại danh sách gốc
+            FillterShowing = new List<MovieDTO>(moviesNowShowing);
+        }
+        else
+        {
+            // Áp dụng bộ lọc nếu có
+            FillterShowing = moviesNowShowing
+                .Where(movie =>
+                    (string.IsNullOrEmpty(searchNowShowing) || movie.Name.Contains(searchNowShowing, StringComparison.OrdinalIgnoreCase)) &&
+                    (!startDateNowShowing.HasValue || movie.StarTime >= startDateNowShowing.Value) &&
+                    (!endDateNowShowing.HasValue || movie.StarTime <= endDateNowShowing.Value))
+                .ToList();
+        }
+    }
+
+    private void OnStartDateShowingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            startDateNowShowing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            startDateNowShowing = date; // Cập nhật giá trị ngày
+        }
+        ApplyNowShowingFilter();
+    }
+
+    private void OnEndDateShowingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            endDateNowShowing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            endDateNowShowing = date; // Cập nhật giá trị ngày
+        }
+        ApplyNowShowingFilter();
+    }
+
+    private async void SearchNameShowing(ChangeEventArgs e)
+    {
+        searchNowShowing = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    public void ApplyComingFilter()
+    {
+        if (!startDateComing.HasValue && !endDateComing.HasValue && string.IsNullOrEmpty(searchComing))
+        {
+            // Nếu không có bất kỳ bộ lọc nào, hiển thị lại danh sách gốc
+            FillterComing = new List<MovieDTO>(moviesComing);
+        }
+        else
+        {
+            // Áp dụng bộ lọc nếu có
+            FillterComing = moviesComing
+                .Where(movie =>
+                    (string.IsNullOrEmpty(searchComing) || movie.Name.Contains(searchComing, StringComparison.OrdinalIgnoreCase)) &&
+                    (!startDateComing.HasValue || movie.StarTime >= startDateComing.Value) &&
+                    (!endDateComing.HasValue || movie.StarTime <= endDateComing.Value))
+                .ToList();
+        }
+    }
+
+    private void OnStartDateComingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            startDateComing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            startDateComing = date; // Cập nhật giá trị ngày
+        }
+        ApplyComingFilter();
+    }
+
+    private void OnEndDateComingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            endDateComing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            endDateComing = date; // Cập nhật giá trị ngày
+        }
+        ApplyComingFilter();
+    }
+
+    private async void SearchNameComing(ChangeEventArgs e)
+    {
+        searchComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
 }
 
 <style>
@@ -117,11 +311,84 @@
         border-radius: 10px;
         background-color: white;
     }
-    .col-custom {
-        padding: 20px; /* Thêm padding cho các cột */
-        display: flex; /* Use flexbox for centering */
+
+    .icon-top-right {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
         justify-content: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+        color: white; /* Màu mặc định */
     }
+
+        .icon-top-right .material-icons {
+            font-size: 30px; /* Kích thước icon */
+        }
+
+    /* Phim đang chiếu */
+    .icon-now-showing {
+        background: linear-gradient(135deg, #28a745, #85e085); /* Gradient xanh lá cây */
+        color: white;
+    }
+
+    /* Phim sắp chiếu */
+    .icon-coming-soon {
+        background: linear-gradient(135deg, #ffc107, #ffdd57); /* Gradient vàng cam */
+        color: white;
+    }
+
+    /* Phim đã dừng chiếu */
+    .icon-stopped {
+        background: linear-gradient(135deg, #dc3545, #ff6f71); /* Gradient đỏ */
+        color: white;
+    }
+
+
+
+    .overview {
+        position: relative; /* Để đặt biểu tượng tuyệt đối */
+        border: 1px solid #ddd;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: #ffffff;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 120px; /* Tăng chiều cao cho cân đối */
+    }
+
+        .overview h5 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        .overview h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+        }
+
+    .icon-container {
+        font-size: 3rem; /* Tăng kích thước biểu tượng */
+        color: #007bff; /* Màu nổi bật */
+        margin-bottom: 10px; /* Thêm khoảng cách dưới */
+    }
+
+    .col-custom {
+        flex: 0 0 20%; /* Chiếm 20% chiều rộng */
+        max-width: 20%; /* Đảm bảo không vượt quá 20% */
+    }
+
 
     .row {
         display: flex;
@@ -192,7 +459,7 @@
         margin-bottom: 10px;
     }
         .tags .badge {
-            font-size: 14px; /* Cỡ chữ của các nhãn */
+            font-size: 12px; /* Cỡ chữ của các nhãn */
             padding: 5px 9px; /* Khoảng cách trong của các nhãn */
             border-radius: 7px; /* Bo góc cho nhãn */
             margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
