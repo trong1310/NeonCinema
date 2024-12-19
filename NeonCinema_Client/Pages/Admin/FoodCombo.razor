@@ -1,160 +1,417 @@
 ﻿@page "/food-combos"
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Client.Data.Services
+@using System.Text.Json
 @layout LayoutAdmin
+@inject FoodComboServices _services
+@inject HttpClient _http
+@inject NavigationManager _navigation
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-<div class="container-fluid mt-4">
-    <h3 class="text-center text-secondary-emphasis">Danh sách combo</h3>
+@if (IsLoading == true)
+{
+	<p class="mt-5" align="center"><LottieAnimation Path="/json/Loading_Animation.json" Style="width: 100px; height: 100px;" Loop="true" /></p>
+}
+else
+{
+	<div class="container-fluid mt-4">
+		<h3 class="text-center text-secondary-emphasis">Danh sách combo</h3>
 
-    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" data-bs-toggle="modal" data-bs-target="#addCombo">
-		<i class="fas fa-plus"></i> Thêm combo
-	</button>
-	<table class="table table-hover combo-table">
-		<thead>
-			<tr>
-				<th class="text-center">STT</th>
-				<th class="text-center">Hình Ảnh</th>
-				<th class="text-center">Tên</th>
-				<th class="text-center">Mô tả</th>
-				<th class="text-center">Số lượng sản phẩm</th>
-				<th class="text-center">Giá</th>
-				<th class="text-center">Hành Động</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="text-center align-middle">1</td>
-				<td class="text-center align-middle">
-					<img src= alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
-				</td>
-				<td class="text-center align-middle">Combo 1</td>
-				<td class="text-center align-middle">2 bắp + 2 cola</td>
-				<td class="text-center align-middle">4</td>
-				<td class="text-center align-middle">150.000</td>
-				<td class="text-center align-middle">
-                    <button class="btn btn-outline-primary btn-sm" style="border: none;" data-bs-toggle="modal" data-bs-target="#addCombo">
-						<i class="fas fa-edit"></i>
-					</button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-    <div class="modal fade" id="addCombo" tabindex="-1" aria-labelledby="addComboLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Thêm combo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row justify-content-center">
-                            <div class="col-md-4 text-center mb-4" style="margin-top:10px;">
-                                <img src="/images/Customer/user.png" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
-                                <label class="custom-file-upload">
-                                    <span style="margin-left:-5px">
-                                        <i class="material-icons">cloud_upload</i>
-                                    </span>
-                                    <InputFile  class="d-none" style="width: 200px" />
-                                    <span>Chọn ảnh</span>
-                                </label>
-                            </div>
-                            <div class="col-md-8" style="margin-top:10px;">
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Tên combo</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7" />
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Mô tả</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Số lượng sản phẩm</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Giá</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
-                    <button type="submit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="editCombo" tabindex="-1" aria-labelledby="editComboLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Cập nhật combo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row justify-content-center">
-                            <div class="col-md-4 text-center mb-4" style="margin-top:10px;">
-                                <img src="/images/Customer/user.png" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
-                                <label class="custom-file-upload">
-                                    <span style="margin-left:-5px">
-                                        <i class="material-icons">cloud_upload</i>
-                                    </span>
-                                    <InputFile class="d-none" style="width: 200px" />
-                                    <span>Chọn ảnh</span>
-                                </label>
-                            </div>
-                            <div class="col-md-8" style="margin-top:10px;">
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Tên combo</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7" />
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Mô tả</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Số lượng sản phẩm</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="form-group">
-                                        <label class="form-label">Giá</label>
-                                        <input type="text" class="form-control" style="color:black; background-color: #f7f7f7">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
-                    <button type="submit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+		<button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" data-bs-toggle="modal" data-bs-target="#addCombo">
+			<i class="fas fa-plus"></i> Thêm combo
+		</button>
+		<table class="table table-hover combo-table">
+			<thead>
+				<tr>
+					<th class="text-center">STT</th>
+					<th class="text-center">Hình Ảnh</th>
+					<th class="text-center">Tên</th>
+					<th class="text-center">Mô tả</th>
+					<th class="text-center">Giá</th>
+					<th class="text-center">Hành Động</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in foodsDto)
+				{
+					stt++;
+					<tr>
+						<td class="text-center align-middle">@stt</td>
+						<td class="text-center align-middle">
+							<img src="@GetImageUrl(item.Images)" alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+						</td>
+						<td class="text-center align-middle">@item.Content</td>
+						<td class="text-center align-middle">@item.Description</td>
+						<td class="text-center align-middle">@item.Amount.ToString("N0") VNĐ</td>
+						<td class="text-center align-middle">
+							<button class="btn btn-outline-primary btn-sm" style="border: none;" data-bs-toggle="modal" data-bs-target="#editCombo" @onclick="() => GetComboUpdate(item.ID)">
+								<i class="fas fa-edit"></i>
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="modal fade" id="addCombo" tabindex="-1" aria-labelledby="addComboLabel" aria-hidden="true">
+			<div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title w-100 text-center" id="addCustomerLabel">Thêm combo</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="container-fluid">
+							<div class="row justify-content-center">
+								<div class="col-md-4 text-center mb-4" style="margin-top:10px;">
+									<img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+									<label class="custom-file-upload">
+										<span style="margin-left:-5px">
+											<i class="material-icons">cloud_upload</i>
+										</span>
+										<InputFile class="d-none" OnChange="HandleSelected" style="width: 200px" />
+										<span>Chọn ảnh</span>
+									</label>
+								</div>
+								<div class="col-md-8" style="margin-top:10px;">
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Tên combo</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.Content" />
+											@if (!string.IsNullOrEmpty(contentMessage))
+											{
+												<span class="text-danger">@contentMessage</span>
+											}
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Mô tả</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.Description">
+											@if (!string.IsNullOrEmpty(descipMessage))
+											{
+												<span class="text-danger">@descipMessage</span>
+											}
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Giá</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.TotalPrice">
+											@if (!string.IsNullOrEmpty(priceMessage))
+											{
+												<span class="text-danger">@priceMessage</span>
+											}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+						<button @onclick="HandleSubmit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="editCombo" tabindex="-1" aria-labelledby="editComboLabel" aria-hidden="true">
+			<div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title w-100 text-center" id="addCustomerLabel">Cập nhật combo</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="container-fluid">
+							<div class="row justify-content-center">
+								<div class="col-md-4 text-center mb-4" style="margin-top:10px;">
+									<img src="@profileImageUpdate" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+									<label class="custom-file-upload">
+										<span style="margin-left:-5px">
+											<i class="material-icons">cloud_upload</i>
+										</span>
+										<InputFile class="d-none" OnChange="HandleSelectedUpdate" style="width: 200px" />
+										<span>Chọn ảnh</span>
+									</label>
+								</div>
+								<div class="col-md-8" style="margin-top:10px;">
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Tên combo</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="@foods.Content" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Mô tả</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="@foods.Description" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="form-group">
+											<label class="form-label">Giá</label>
+											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7"
+												   @bind="foods.FormattedAmount" placeholder="VNĐ" />
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+						<button type="button" class="btn btn-success btn-lg" style="font-size: 1rem" @onclick="UpdateSumbit">Cập nhật</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
 
 @code {
+	private bool IsLoading = true;
+	int stt = 1;
+	List<FoodComboDTO> foodsDto = new List<FoodComboDTO>();
+	private IBrowserFile selectedFile;
+	private IBrowserFile UpdateImage;
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	private string profileImageUpdate = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	protected override async Task OnInitializedAsync()
+	{
+		profileImageUpdate = GetImageUrl(foods.Images);
 
+		await LoadFoodCombo();
+		StateHasChanged();
+	}
+	private async Task LoadFoodCombo()
+	{
+		try
+		{
+			foodsDto = await _services.GetAllFoodCombo();
+			await Task.Delay(2000);
+			IsLoading = false;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception(ex.Message);
+		}
+
+	}
+	private async Task HandleSelectedUpdate(InputFileChangeEventArgs e)
+	{
+		UpdateImage = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã ch
+		var imageUrl = await GetImageUrlUpdate(UpdateImage);
+		if (imageUrl != null)
+		{
+			profileImageUpdate = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrlCreate(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+	private FoodComboDTO selectedCombo = new FoodComboDTO();
+
+	private void LoadEditForm(FoodComboDTO combo)
+	{
+		if (combo == null)
+		{
+			Console.WriteLine("Combo is null");
+			return;
+		}
+
+		selectedCombo = combo;
+		profileImage = GetImageUrl(combo.Images ?? ""); // Nếu `Images` null, đặt chuỗi rỗng
+		StateHasChanged();
+	}
+	private async Task<string> GetImageUrlUpdate(IBrowserFile file)
+	{
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+		return null;
+	}
+	private async Task<string> GetImageUrlCreate(IBrowserFile file)
+	{
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+		return null;
+	}
+	FoodComboCreateRequest request = new FoodComboCreateRequest();
+	private string contentMessage = "";
+	private string priceMessage = "";
+	private string descipMessage = "";
+	private bool isSubmitting = false;
+	public async Task HandleSubmit()
+	{
+		isSubmitting = true;
+		contentMessage = "";
+		descipMessage = "";
+		priceMessage = "";
+		try
+		{
+			if (string.IsNullOrEmpty(request.Content))
+			{
+				contentMessage = "Không được để trống tên";
+				isSubmitting = false;
+			}
+			if (request.TotalPrice == null && request.TotalPrice <= 0)
+			{
+				priceMessage = "Giá bán phải lớn hơn 0";
+				isSubmitting = false;
+			}
+			if (string.IsNullOrEmpty(request.Description))
+			{
+				descipMessage = "Không được để trống mô tả";
+				isSubmitting = false;
+			}
+			var content = new MultipartFormDataContent();
+			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+			content.Add(fileContent, "file", selectedFile.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				var fileName = Path.GetFileName(fileUrl);
+				request.Images = fileName;
+
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+			var foodCombos = await _services.CreateFood(request);
+			if (foodCombos != null)
+			{
+				StateHasChanged();
+				Console.WriteLine($"Successfully");
+			}
+			else
+			{
+				Console.WriteLine("Có lỗi khi tạo");
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
+		}
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private FoodComboDTO foods = new FoodComboDTO();
+	private FoodComboUpdateRequest updateRequest = new FoodComboUpdateRequest();
+	public async Task GetComboUpdate(Guid id)
+	{
+		foods = await _services.DetailCombo(id);
+		profileImageUpdate = GetImageUrl(foods.Images);
+	}
+	   
+	public async Task UpdateSumbit()
+	{
+		isSubmitting = true;
+		contentMessage = "";
+		descipMessage = "";
+		priceMessage = "";
+		if (string.IsNullOrEmpty(request.Content))
+		{
+			contentMessage = "Không được để trống tên";
+			isSubmitting = false;
+		}
+		if (request.TotalPrice == null && request.TotalPrice <= 0)
+		{
+			priceMessage = "Giá bán phải lớn hơn 0";
+			isSubmitting = false;
+		}
+		if (string.IsNullOrEmpty(request.Description))
+		{
+			descipMessage = "Không được để trống mô tả";
+			isSubmitting = false;
+		}
+		try
+		{
+			var content = new MultipartFormDataContent();
+			var fileContent = new StreamContent(UpdateImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(UpdateImage.ContentType);
+
+			content.Add(fileContent, "file", UpdateImage.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+			string fileName;
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				fileName = Path.GetFileName(fileUrl);
+
+
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+			updateRequest = new FoodComboUpdateRequest()
+				{
+					ID = foods.ID,
+					Amount = foods.Amount,
+					Content = foods.Content,
+					Description = foods.Description,
+					
+				};
+				updateRequest.Images = fileName;
+			Console.WriteLine($"Image file path sent to API: {updateRequest.Images}");
+
+			var updateFood = await _services.UpdateFood(updateRequest);
+			if (updateRequest != null)
+			{
+				await LoadFoodCombo();
+				StateHasChanged();
+				Console.WriteLine($"Successfully");
+			}
+			else
+			{
+				Console.WriteLine("Có lỗi khi tạo");
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
+		}
+	}
 }
 
 
@@ -171,38 +428,38 @@
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
 	}
 
-    .profile-pic {
-        width: 200px;
-        height: 200px;
-        object-fit: cover;
-        border: 3px solid #eaeaea;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
+	.profile-pic {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border: 3px solid #eaeaea;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
 
-    .custom-file-upload {
-        display: flex;
-        align-items: center; /* Căn giữa theo chiều dọc */
-        justify-content: center; /* Căn giữa theo chiều ngang */
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 10px;
-        background-color: #a9a9a9; /* Màu nền của nút */
-        color: white; /* Màu chữ */
-        border: none; /* Bỏ viền */
-        text-align: center;
-        width: 150px;
-        margin-left: auto; /* Thêm */
-        margin-right: auto;
-    }
+	.custom-file-upload {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+		margin-left: auto; /* Thêm */
+		margin-right: auto;
+	}
 
-        .custom-file-upload span {
-            margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
-        }
+		.custom-file-upload span {
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
 
-        .custom-file-upload:hover {
-            background-color: #8f8f8f; /* Màu nền khi hover */
-        }
+		.custom-file-upload:hover {
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
 
 </style>

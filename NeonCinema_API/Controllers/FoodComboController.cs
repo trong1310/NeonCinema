@@ -29,11 +29,11 @@ namespace NeonCinema_API.Controllers
         }
 
         [HttpPost("create-foodcombo")]
-        public async Task<IActionResult> Post([FromBody] FoodComboDTO request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Post([FromBody] FoodComboCreateRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _repos.Create(_mapper.Map<FoodCombo>(request), cancellationToken);
+                var result = await _repos.CreateFoodCombo(request);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace NeonCinema_API.Controllers
         {
             try
             {
-                var result = await _repos.Update(_mapper.Map<FoodCombo>(request), cancellationToken);
+                var result = await _repos.UpdateCombo(request);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,26 +56,26 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpDelete("delete-foodcombo")]
-        public async Task<IActionResult> Delete([FromBody] FoodComboDeleteRequest requests, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var result = await _repos.Delete(_mapper.Map<FoodCombo>(requests), cancellationToken);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+        //[HttpDelete("delete-foodcombo")]
+        //public async Task<IActionResult> Delete([FromBody] FoodComboDeleteRequest requests, CancellationToken cancellationToken)
+        //{
+        //    try
+        //    {
+        //        var result = await _repos.Delete(_mapper.Map<FoodCombo>(requests), cancellationToken);
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex);
+        //    }
+        //}
 
         [HttpGet("get-foodcombo-by-id")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(Guid id)
         {
-            var result = await _repos.GetById(id, cancellationToken);
+            var result = await _repos.DetailCombo(id);
 
-            return Ok(_mapper.Map<FoodComboDTO>(result));
+            return Ok(result);
         }
     }
 }
