@@ -53,7 +53,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddScoped<TwilioClient, TwilioClient>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRolesRepository, RoleRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
@@ -76,8 +75,6 @@ builder.Services.AddScoped<ISendMailService, SendMailService>();
 builder.Services.AddScoped<UserProfile>();
 builder.Services.AddScoped<UpdateUserProfileRequest>();
 builder.Services.AddScoped<IUserServicesss, UserService>();
-//builder.Services.AddScoped<UserService>();
-
 
 builder.Services.Configure<FormOptions>(options =>
 {
