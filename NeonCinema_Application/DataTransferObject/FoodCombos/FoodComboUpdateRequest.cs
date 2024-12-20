@@ -9,9 +9,9 @@ namespace NeonCinema_Application.DataTransferObject.FoodCombos
     public class FoodComboUpdateRequest
     {
         public Guid ID { get; set; }
-        public int Quantity { get; set; }
-        public decimal TotalPrice { get; set; }
-        public Guid ServiceID { get; set; }
-        public Guid BillID { get; set; }
+        public string? Content { get; set; }
+        public string? Images { get; set; }
+        public string? Description { get; set; }
+        public Decimal? Amount { get; set; }
     }
 }

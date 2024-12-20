@@ -19,7 +19,7 @@
 	<h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
 	<div class="row">
 		<div class="col-md-3 text-center mb-4 mt-5">
-			<img src="@movieDto.Images" alt="Profile" class="img-fluid profile-pic" /> <br />
+			<img src="@GetImageUrl(movieDto.Images)" alt="Profile" class="img-fluid profile-pic" /> <br />
 			<label class="custom-file-upload">
 				<i class="material-icons">cloud_upload</i>
 				<InputFile OnChange="HandleSelected" class="d-none" />
