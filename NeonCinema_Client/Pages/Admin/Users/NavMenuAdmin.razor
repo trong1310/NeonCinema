@@ -6,81 +6,7 @@
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-@* <style>
-    .custom-nav-link {
-        height: 60px; /* Đặt chiều cao cho MudNavLink */
-        display: flex;
-        transition: none; /* Bỏ hiệu ứng chuyển tiếp */
-        align-items: center;
-    }
 
-        /* Bỏ hover mặc định */
-        .custom-nav-link:hover {
-            background-color: transparent !important; /* Bỏ nền hover */
-            color: inherit !important; /* Giữ nguyên màu sắc chữ */
-        }
-
-    .nav-header {
-        padding: 16px; /* Khoảng cách cho tiêu đề */
-        font-weight: bold; /* Làm đậm tiêu đề */
-    }
-
-    .nav-divider {
-        margin: 8px 0; /* Khoảng cách cho đường phân cách */
-    }
-</style>
-
-<MudPaper Width="270px" Class="d-inline-flex py-3" Elevation="1">
-    <MudNavMenu Class="mud-width-full" Color="Color.Transparent">
-        <MudText Typo="Typo.h6" Class="nav-header" Style="font-size: 1rem;">Đặng Đức Cường</MudText>
-        <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary nav-header" Style="font-size: 0.875rem;">Admin</MudText>
-
-        <MudDivider Class="nav-divider" />
-        <MudNavLink Href="/list-movie-admin" Icon="fas fa-film" IconColor="Color.Success" Class="custom-nav-link" Active="true">Quản lý phim</MudNavLink>
-        <MudNavLink Href="/servers" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
-        <MudNavLink Href="/rooms" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
-        <MudNavLink Href="/showtimes" Icon="fas fa-clock" IconColor="Color.Info" Class="custom-nav-link">Quản lý giờ chiếu</MudNavLink>
-        <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
-        <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
-        <MudNavLink Href="/list-promotion-admin" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
-        <MudNavLink Href="/tickets" Icon="fas fa-ticket-alt" IconColor="Color.Error" Class="custom-nav-link">Quản lý vé</MudNavLink>
-        <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
-        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info">
-            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person">Nhân Viên</MudNavLink>
-            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People">Khách Hàng</MudNavLink>
-        </MudNavGroup>
-
-    </MudNavMenu>
-</MudPaper> *@
-
-@* <div class="sidebar">
-    <div class="user-info">
-        <img src="/images/Client/logo.jpg" alt="User Avatar" class="user-avatar">
-        <span class="user-name">Đặng Đức Cường</span>
-    </div>
-    <nav class="nav-menu">
-        <ul>
-            <li><a href="/list-movie-admin"><i class="fas fa-film"></i> Quản lý phim</a></li>
-            <li><a href="/screenings"><i class="fas fa-calendar-alt"></i> Quản lý lịch chiếu</a></li>
-            <li><a href="/rooms"><i class="fas fa-chair"></i> Quản lý phòng chiếu</a></li>
-            <li><a href="/showtimes"><i class="fas fa-clock"></i> Quản lý giờ chiếu</a></li>
-            <li><a href="/listactor"><i class="fas fa-user-tie"></i> Quản lý diễn viên</a></li>
-            <li><a href="/listDirector"><i class="fas fa-user"></i> Quản lý đạo diễn</a></li>
-            <li><a href="/list-promotion-admin"><i class="fas fa-tags"></i> Quản lý khuyến mãi</a></li>
-            <li><a href="/tickets"><i class="fa-sharp fa-solid fa-ticket"></i> Quản lý vé</a></li>
-            <li><a href="/statistics.html"><i class="fas fa-chart-line"></i> Thống kê</a></li>
-            <li>
-                <a href="javascript:void(0);" class="dropdown-toggle">
-                    <i class="fas fa-users"></i> Tài khoản
-                </a>
-                <ul>
-                    <li><a href="/staff"><i class="fas fa-user-shield"></i> Nhân viên</a></li>
-                    <li><a href="/client"><i class="fas fa-user-friends"></i> Khách hàng</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-</div> *@
 
 <MudPaper Width="250px" Class="d-inline-flex" Elevation="0">
     <MudNavMenu Class="mud-width-full" Style="display: flex; flex-direction: column;">
@@ -96,7 +22,7 @@
         </MudGrid>
 
         <MudDivider Class="my-1" />
-        <MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success">
+        <MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success" >
             <MudNavLink Href="/list-movie-admin" Icon="fas fa-video" IconColor="Color.Error" Class="custom-nav-link" Active="true">Danh sách phim</MudNavLink>
             <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
             <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
@@ -110,20 +36,19 @@
 
         <MudNavGroup Title="Quản lý vé" Icon="@Icons.Material.Filled.CardTravel" IconColor="Color.Error">
             @* <MudNavLink Href="/ticketprices" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary">Quản lý giá vé</MudNavLink> *@
-            <MudNavLink Href="/ticket-pricing" Icon="@Icons.Material.Filled.Event" IconColor="Color.Secondary">Danh sách giá vé</MudNavLink>
-            <MudNavLink Href="/book_ticket" Icon="@Icons.Material.Filled.BookOnline" IconColor="Color.Success">Đặt vé</MudNavLink>
-            <MudNavLink Href="/booking-history" Icon="@Icons.Material.Filled.History" IconColor="Color.Primary">Lịch sử đặt vé</MudNavLink>
+            <MudNavLink Href="/ticket-pricing" Icon="@Icons.Material.Filled.Event" IconColor="Color.Secondary" Class="custom-nav-link">Danh sách giá vé</MudNavLink>
+            <MudNavLink Href="/book_ticket" Icon="@Icons.Material.Filled.BookOnline" IconColor="Color.Success" Class="custom-nav-link">Đặt vé</MudNavLink>
+            <MudNavLink Href="/booking-history" Icon="@Icons.Material.Filled.History" IconColor="Color.Primary" Class="custom-nav-link">Lịch sử đặt vé</MudNavLink>
         </MudNavGroup>
 
         <MudNavLink Href="/food-combos" Icon="fas fa-hamburger" IconColor="Color.Tertiary" Class="custom-nav-link">Quản lý combo đồ ăn</MudNavLink>
 
         <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
 
-        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info">
-            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person">Nhân Viên</MudNavLink>
-            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People">Khách Hàng</MudNavLink>
+        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info" >
+            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
+            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
         </MudNavGroup>
-
         <!-- Nút Đăng Xuất -->
         <MudNavLink Href="/" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
     </MudNavMenu>
@@ -136,14 +61,24 @@
 
 <style>
     .custom-nav-link {
-        height: 59px; /* Tăng chiều cao của mỗi NavLink */
+        height: 59px; /* Chiều cao của NavLink */
         display: flex;
         align-items: center; /* Căn giữa nội dung theo chiều dọc */
+        text-decoration: none !important; /* Bỏ gạch chân */
+        color: inherit; /* Giữ nguyên màu chữ từ MudBlazor */
     }
 
-        .custom-nav-link .mud-icon-root {
-            font-size: 20px; /* Tùy chỉnh kích thước icon nếu muốn */
+        .custom-nav-link:hover,
+        .custom-nav-link:focus,
+        .custom-nav-link:visited,
+        .custom-nav-link:active {
+            text-decoration: none !important; /* Đảm bảo không có gạch chân trong tất cả trạng thái */
+            outline: none; /* Bỏ viền nếu có */
         }
+
+    .mud-nav-link {
+        text-decoration: none !important; /* Bỏ gạch chân từ các lớp mặc định */
+    }
 </style>
 
 @code {

@@ -18,8 +18,9 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
             CreateMap<FoodComboDeleteRequest, FoodCombo>();
             CreateMap<FoodComboUpdateRequest, FoodCombo>();
             CreateMap<FoodCombo, ComboStatisticsDTO>();
-            
-            
-        }
-    }
+			CreateMap<FoodComboCreateRequest, FoodComboDTO>();
+
+
+		}
+	}
 }
