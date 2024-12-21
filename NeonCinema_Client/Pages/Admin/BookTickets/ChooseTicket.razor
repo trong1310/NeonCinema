@@ -31,17 +31,29 @@
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 
 <div class="row m-2">
-	<div class="col-md-4" style="width: 25% ; height:80%">
-		<div class="card">
-			<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" style="height: 33%; width: 100%" alt="Movie Poster">
-			<div class="card-body text-center">
-				<p><strong>Phim: </strong>@movieDto.Name</p>
-				<p><strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") @screenings.ShowTime</p>
-				<p><strong>Phòng:</strong> @screenings.RoomName</p>
+	<!-- Thông tin phim -->
+	<div class="col-md-3">
+			<!-- Card thông tin phim -->
+			<div class="card movie-info-card mb-4">
+				<div class="img-container">
+					<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
+				</div>
+				<div class="card-body">
+					<h3 class="card-title">@movieDto.Name</h3>
+					<div class="tags">
+						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+					</div>
+
+					<p class="card-text">
+						<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
+						<strong>Phòng chiếu:</strong> @screenings.RoomName
+					</p>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-8 card shadow position-relative">
+	<div class="col-md-6 card shadow position-relative">
 		@if (_selectedIndex == 0)
 		{
 			<h3 class="text-center mt-2">Chọn Ghế</h3>
@@ -123,7 +135,7 @@
 							@foreach (var combo in foods)
 							{
 								<div class="icon-box featured-box align-middle icon-box-left text-left">
-									<div class="icon-box-img" style="width: 80px;">
+									<div class="icon-box-img" >
 										<div class="icon">
 											<div class="icon-inner">
 												<img src="@GetImageUrl(combo.Images)">
@@ -151,86 +163,10 @@
 						</div>
 					</div>
 				</div>
-				<div class="payment-method-container">
-					<div class="card" style="width: 18rem;">
-						<div class="card-body">
-							<h5 class="card-title">Phương thức thanh toán</h5>
-							<hr class="dashed">
-							<p>
-								<strong>Đồ ăn nhanh: </strong>
-								@foreach (var selectedCombo in selectedCombos)
-								{
-									<span>@selectedCombo.Key.Content - Số lượng: @selectedCombo.Value</span>
-
-									<br />
-								}
-							</p>
-							<p><strong>Ghế: </strong>@selectedSeatNumbers </p>
-							<span style="cursor: pointer;" id="amount-display">@totalPrices.ToString("N0")</span>
-
-							<!-- Đáp tổng tiền vào đây -->
-							@* <input type="text" id="totalPrice" value="@totalPrices.ToString("c")"> *@
-							<div class="payment-method mt-3 mb-3">
-								<span>@totalPrices.ToString("N0") </span>
-								<div class="form-check">
-									<input class="form-check-input" type="radio" name="flexRadioDefault" id="cashRadio" checked>
-									<label class="form-check-label" for="cashRadio">
-										<i class="fa-solid fa-money-bill"></i> Tiền mặt
-									</label>
-								</div>
-								<div class="form-check">
-									<input class="form-check-input" type="radio" name="flexRadioDefault" id="bankTransferRadio">
-									<label class="form-check-label" for="bankTransferRadio">
-										<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
-									</label>
-								</div>
-								<img id="qrcode" style="border: 1px solid;height: 320px;width: 260px; display: none;" alt="QR Code">
-							</div>
-							<div class="form-group">
-								<label for="search">Tìm kiếm khách hàng:</label>
-								<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
-								<button @onclick="SearchCustomer" class="btn btn-primary mt-2">Tìm kiếm</button>
-							</div>
-
-							@if (!string.IsNullOrEmpty(Rank.AccountName))
-							{
-								<div class="mt-3">
-									<h5>Thông tin khách hàng</h5>
-									<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
-									<p><strong>Số điểm:</strong> @Rank.Point</p>
-									<div class="mb-3">
-										<label for="pointsToUse" class="form-label">Nhập số điểm muốn sử dụng:</label>
-										<input id="pointsToUse" type="number" class="form-control"/>
-									</div>
-									<!-- Button xác nhận sử dụng điểm -->
-									<button class="btn btn-primary" >Sử dụng điểm</button>
-									<div class="mt-4 alert alert-secondary">
-										<strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@
-									</div>
-									
-								</div>
-							}
-							else if (ShowCreateButton)
-							{
-								<div class="mt-3">
-									<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
-									<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
-								</div>
-							}
-							<!-- Thời gian đếm ngược -->
-							<div class="mt-3">
-								<h5>
-									<span>Thời gian còn lại: </span>
-									<span style="color: red;">@timeLeft</span>
-								</h5>
-							</div>
-						</div>
-					</div>
-				</div>
+				
 			</div>
 			<div class="button-container">
 				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
-				<button class="btn btn-primary" style="width: 25%" @onclick="ShowConfirmModal">Thanh toán</button>
 			</div>
 
 			@if (showConfirmModal)
@@ -296,6 +232,131 @@
 			</div>
 		}
 	</div>
+	<!-- Tóm tắt đơn hàng -->
+	<div class="col-md-3" >
+		<div class="card shadow order-summary-card" style="background-color: white">
+			<h4 class="text-center mt-3">NEON CINEMA</h4>
+				<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
+				<div class="order-summary">
+					<h4 class="card-title">@movieDto.Name</h4>
+					<div class="tags">
+						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+					</div>
+					<hr class="dashed">
+					<div class="d-flex justify-content-between mb-3">
+						<span>Ghế : @selectedSeatNumbers</span>
+						<span>@seatPrices.ToString("N0")</span>
+					</div>
+					@foreach (var combo in selectedCombos)
+					{
+						<div class="d-flex justify-content-between mb-3">
+							<span>@combo.Key.Content  x @combo.Value</span>
+							<span>@combo.Key.Amount.ToString("N0")</span>
+						</div>
+					}
+					<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền combo</span>
+						<span>@comboPrices.ToString("N0")</span>
+					</div>
+					<hr class="dashed">
+					<div class="form-group">
+						<label for="search">Tìm kiếm khách hàng:</label>
+						<div class="row g-2">
+							<div class="col-md-8">
+								<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
+							</div>
+							<div class="col-md-4" style="margin-top: 14px">
+								<button @onclick="SearchCustomer" class="btn btn-primary w-100 form-control">Tìm kiếm</button>
+							</div>
+						</div>
+					</div>
+
+					@if (!string.IsNullOrEmpty(Rank.AccountName))
+					{
+						<div class="mt-2">
+							<h5>Thông tin khách hàng</h5>
+							<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
+							<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
+							<div class="row g-2" style="margin-top: -20px">
+								<div class="col-md-8">
+									<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng"/>
+								</div>
+								<div class="col-md-4" style="margin-top: 14px">
+									<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control" >Dùng điểm</button>
+								</div>
+							</div>
+							<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+							<div class="row g-2" style="margin-top: -20px">
+								<div class="col-md-8">
+									<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
+								</div>
+								<div class="col-md-4" style="margin-top: 14px">
+									<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
+								</div>
+							</div>
+							<p class="mt-2"><strong>Số tiền giảm giá:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						</div>
+					}
+					else if (ShowCreateButton)
+					{
+						<div class="mt-3">
+							<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+							<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
+						</div>
+					}
+					
+					<hr class="dashed">
+					<div class="payment-method mt-3 mb-3">
+						<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
+						<div class="form-check">
+							<label class="form-check-label" for="cashRadio">
+								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+								<i class="fa-solid fa-money-bill"></i> Tiền mặt
+							</label>
+						</div>
+						<div class="form-check">
+							<label class="form-check-label" for="bankTransferRadio">
+								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+								<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+							</label>
+						</div>
+						<div class="qr-code-container">
+							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+						</div>
+					</div>
+					<hr class="dashed">
+					<div class="d-flex justify-content-between mt-3">
+						<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
+						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+					</div>
+					<div class="d-flex justify-content-between mt-3">
+						
+						<strong>Tiền khách đưa</strong>
+						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+						
+					</div>
+					<div class="d-flex justify-content-between mt-3">
+					
+						<strong>Tiền thừa</strong>
+						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+					</div>
+					<div class="button-container">
+						<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
+					</div>
+					<!-- Thời gian đếm ngược -->
+					<div class="mt-3">
+						<h5>
+							<span>Thời gian còn lại: </span>
+							<span style="color: red;">@timeLeft</span>
+						</h5>
+					</div>
+				</div>
+		</div>		
+	</div>	
 	@if (showCreateAccountModal)
 	{
 		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
@@ -436,6 +497,7 @@
 	List<FoodComboDTO> foods = new List<FoodComboDTO>();
 	private decimal totalPrices = 0;
 	private bool showConfirmModal = false;
+	private decimal seatPrices = 0;
 	public string? phoneNumber;
 	public string error = "";
 	private void ShowConfirmModal()
@@ -603,6 +665,7 @@
 			Console.WriteLine($"Removing seat: {seat.SeatNumber}");
 			selectedSeatsId.Remove(seat.ID);
 			selectedSeats.Remove(seat.SeatNumber);
+			seatPrices -= (decimal)seat.Price;
 			totalPrices -= (decimal)seat.Price;
 		}
 		else
@@ -610,6 +673,7 @@
 			Console.WriteLine($"Adding seat: {seat.SeatNumber}");
 			selectedSeats.Add(seat.SeatNumber);
 			selectedSeatsId.Add(seat.ID);
+			seatPrices += (decimal)seat.Price;
 			totalPrices += (decimal)seat.Price;
 		}
 
@@ -623,6 +687,7 @@
 	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
 	private List<Guid> selectedComboId = new List<Guid>();
 	private int currentValue = 0;
+	private decimal comboPrices = 0;
 	private async void Increase(FoodComboDTO combo)
 	{
 		if (selectedCombos.ContainsKey(combo))
@@ -634,6 +699,7 @@
 			selectedCombos[combo] = 1;
 		}
 
+		comboPrices += combo.Amount;
 		totalPrices += combo.Amount;
 		await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
@@ -643,6 +709,7 @@
 		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
 		{
 			selectedCombos[combo]--;
+			comboPrices -= combo.Amount;
 			totalPrices -= combo.Amount;
 
 			if (selectedCombos[combo] == 0)
@@ -993,6 +1060,72 @@
 	#endregion
 }
 <style>
+	.movie-info-card {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		border-radius: 10px;
+		overflow: hidden;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+		@* .movie-info-card:hover {
+			transform: scale(1.05);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		}
+ *@
+		.movie-info-card .card-img-top {
+			object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+			width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+			height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+			max-height: 700px; /* Giới hạn chiều cao tối đa */
+		}
+
+		.movie-info-card .card-body {
+			text-align: center;
+			background-color: #white; /* Nền tối */
+			color: black;
+			padding: 15px;
+			font-family: 'Be Vietnam Pro', sans-serif;
+		}
+
+		.movie-info-card .card-title {
+			font-size: 1.25rem;
+			margin-bottom: 10px;
+			color: limegreen;
+		}
+
+		.movie-info-card .card-text {
+			font-size: 1rem;
+			line-height: 1.5;
+		}
+		.order-summary-card {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+	.card-title {
+		white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+		overflow: hidden; /* Ẩn phần văn bản bị tràn */
+		text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+		width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+		display: block; /* Hiển thị tiêu đề dưới dạng khối */
+		margin-bottom: 10px; /* Xóa margin dưới */
+		color: forestgreen;
+	}
+
+	.tags {
+		margin-top: -5px;
+		margin-bottom: 10px;
+	}
+
+		.tags .badge {
+			font-size: 14px; /* Cỡ chữ của các nhãn */
+			padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+			border-radius: 7px; /* Bo góc cho nhãn */
+			margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+		}
+
+			.tags .badge:last-child {
+				margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+			}
 	.form-group {
 		margin-bottom: 15px;
 	}
@@ -1297,5 +1430,16 @@
 		background-color: #28a745; /* Màu ghế đôi */
 		color: #fff;
 	}
+	.qr-code-container {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center;    /* Căn giữa theo chiều dọc */
+    margin-top: 10px;       /* Thêm khoảng cách trên */
+}
+
+.qr-code-container img {
+    max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+    height: auto;
+}
 
 </style>

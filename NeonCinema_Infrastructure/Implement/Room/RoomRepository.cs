@@ -33,7 +33,9 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Status = request.Status,
                 RowNumber = request.RowNumber,
                 ColumnNumber = request.ColumnNumber,
-                CinemasId = request.CinemasId
+                CinemasId = request.CinemasId,
+                CreatedTime = DateTime.Now,
+                
             };
             _context.Room.Add(room);
 
@@ -67,7 +69,8 @@ namespace NeonCinema_Infrastructure.Implement.Room
         public async Task<List<RoomDTO>> GetAllRooms(CancellationToken cancellationToken)
         {
             return await _context.Room
-                .Select(room => new RoomDTO
+				 .OrderByDescending(room => room.CreatedTime)
+				.Select(room => new RoomDTO
                 {
                     ID = room.ID,
                     Name = room.Name,
