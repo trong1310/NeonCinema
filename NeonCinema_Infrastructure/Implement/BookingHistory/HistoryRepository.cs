@@ -108,6 +108,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 						MovieName = bt.Tickets.Movies.Name,
 						ShowDate = bt.Tickets.Screenings.ShowDate,
 						StartTime = bt.Tickets.Screenings.ShowTime.StartTime,
+						EndTime = bt.Tickets.Screenings.ShowTime.EndTime,
 						SeatNumber = bt.Tickets.Seat.SeatNumber,
 						Price = bt.Tickets.Price,
 						Room = bt.Tickets.Screenings.Rooms.Name,

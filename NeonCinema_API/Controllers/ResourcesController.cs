@@ -67,18 +67,12 @@ namespace NeonCinema_API.Controllers
 		[HttpGet("get-bill-details/{billId}")]
 		public async Task<IActionResult> GetBillDetails(Guid billId)
 		{
-			var bill = await _context.BillDetails
-				.Include(b => b.Users) // Khách hàng
-				.Include(b => b.BillTickets)
-					.ThenInclude(bt => bt.Tickets)
-						.ThenInclude(t => t.Seat) // Ghế
-						.ThenInclude(s => s.SeatTypes) // Loại ghế
-				.Include(b => b.BillTickets)
-					.ThenInclude(bt => bt.Tickets)
-						.ThenInclude(t => t.Movies) // Phim
-				.Include(b => b.BillCombos)
-					.ThenInclude(bc => bc.FoodCombo) // Combo thức ăn
-				.FirstOrDefaultAsync(b => b.ID == billId);
+			var bill = await _context.BillTickets
+				.Include(b => b.Bills).ThenInclude(b => b.Users) // Khách hàng
+				.Include(b => b.Tickets).ThenInclude(t => t.Movies) // Phim
+				.Include(b => b.Tickets).ThenInclude(t => t.Screenings).ThenInclude(s => s.Rooms) // Phòng chiếu
+				.Include(b => b.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo) // Combo
+				.FirstOrDefaultAsync(b => b.BillId == billId);
 
 			if (bill == null)
 			{
@@ -87,27 +81,32 @@ namespace NeonCinema_API.Controllers
 
 			var billDetails = new
 			{
-				BillCode = bill.BillCode,
-				CreatedTime = bill.CreatedTime,
-				CustomerName = bill.Users?.FullName,
-				Tickets = bill.BillTickets.Select(bt => new
+				BillCode = bill.Bills.BillCode,
+				CustomerName = bill.Bills.Users?.FullName ?? "Khách hàng",
+				TheaterName = "Neon Cinemas",
+				TheaterAddress = "Số 1 Việt Nam, Hà Nội",
+				PrintedTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+				Tickets = bill.Tickets.BillTickets.Select(ticket => new
 				{
-					MovieName = bt.Tickets.Movies?.Name,
-					Seat = $"Hàng {bt.Tickets.Seat.Row}, Cột {bt.Tickets.Seat.Column}",
-					SeatType = bt.Tickets.Seat.SeatTypes?.SeatTypeName ?? "Ghế thường",
-					Price = bt.Tickets.Price
+					MovieName = ticket.Tickets.Movies.Name,
+					ShowDate = ticket.Tickets.Screenings.ShowDate,
+					StartTime = ticket.Tickets.Screenings.ShowTime.StartTime,
+					SeatNumber = $"{ticket.Tickets.Seat.Row}{ticket.Tickets.Seat.Column}",
+					Room = ticket.Tickets.Screenings.Rooms.Name,
+					Price = ticket.Tickets.Price
 				}),
-				Combos = bill.BillCombos.Select(bc => new
+				Combos = bill.Bills.BillCombos.Select(combo => new
 				{
-					Content = bc.FoodCombo.Content,
-					Quantity = bc.FoodCombo.Quantity,
-					TotalPrice = bc.FoodCombo.TotalPrice
+					ComboName = combo.FoodCombo.Content,
+					Quantity = combo.Quantity,
+					Price = combo.FoodCombo.TotalPrice
 				}),
-				TotalPrice = bill.TotalPrice
+				TotalPrice = bill.Bills.TotalPrice
 			};
 
 			return Ok(billDetails);
 		}
+
 
 		[HttpGet("generate-invoice-pdf/{billTicketId}")]
 		public async Task<IActionResult> GenerateInvoicePdf(Guid billTicketId)
