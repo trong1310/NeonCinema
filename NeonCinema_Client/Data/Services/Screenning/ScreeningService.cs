@@ -1,10 +1,14 @@
-﻿using NeonCinema_Application.DataTransferObject.Movie;
+﻿using Blazorise;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.Room;
 using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Screenning;
 using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -51,18 +55,43 @@ public class ScreeningService : IScreeningService
             return true;
         }
         else return false;
+	}
+
+    public async Task UpdateScreeningAsync(Guid id)
+    {
+        using (var context = new NeonCinemasContext())
+        {
+            var scr = await context.Screening.FindAsync(id);
+
+            if(scr != null && scr.Status == ScreeningStatus.InActive)
+            {
+                scr.Status = ScreeningStatus.Cancelled;
+
+                context.Screening.Update(scr);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 
-    public async Task UpdateScreeningAsync(ScreeningUpdateRequest request)
+    public async Task<bool> DeleteScreeningAsync(Guid id)
     {
-        var response = await _httpClient.PutAsJsonAsync($"api/Screening/update-screening/{request.ID}", request);
-        response.EnsureSuccessStatusCode();
-    }
+        try
+        {
+			var response = await _httpClient.PutAsJsonAsync($"https://localhost:7211/api/Screening/delete?id={id}", (object)null);
 
-    public async Task DeleteScreeningAsync(Guid id)
-    {
-        var response = await _httpClient.DeleteAsync($"api/Screening/delete-screening/{id}");
-        response.EnsureSuccessStatusCode();
+			if (response.IsSuccessStatusCode)
+			{
+				return true;
+			}
+			else
+			{
+				throw new Exception($"StatusCode: {response.StatusCode}, Reason: {response.ReasonPhrase}");
+			}
+		}
+        catch (Exception ex) 
+        {
+            throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
+        }
     }
     public async Task<List<ShowTimeDTO>> GetAllShowTimesAsync()
     {
