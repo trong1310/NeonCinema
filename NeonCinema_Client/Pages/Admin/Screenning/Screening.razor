@@ -16,7 +16,7 @@
 
 @if (IsLoading == true)
 {
-	<p class="mt-5" align="center"><LottieAnimation Path="/json/Loading_Animation.json" Style="width: 100px; height: 100px;" Loop="true"/></p>
+	<p class="mt-5" align="center"><LottieAnimation Path="/json/Loading_Animation.json" Style="width: 100px; height: 100px;" Loop="true" /></p>
 }
 else
 {
@@ -52,8 +52,9 @@ else
 								<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
 								<td>@item.value.ShowTime?.ToString()</td>
 								<td>@item.value.RoomName</td>
-								<td><span class="@GetStatusClass(item.value.Status) text-white rounded">
-										@if(item.value.Status == ScreeningStatus.InActive)
+								<td>
+									<span class="@GetStatusClass(item.value.Status) text-white rounded">
+										@if (item.value.Status == ScreeningStatus.InActive)
 										{
 											<text>Chưa chiếu</text>
 										}
@@ -69,7 +70,8 @@ else
 										{
 											<text>Bị hủy</text>
 										}
-									</span></td>
+									</span>
+								</td>
 								<td>
 									<button @onclick="() => EditScreening(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
 									<button @onclick="() => DeleteScreening(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
@@ -183,7 +185,7 @@ else
 								</div>
 							</div>
 						</div>
-						
+
 					</div>
 				</div>
 			</div>
@@ -212,7 +214,7 @@ else
 						<div class="modal-body">
 							<div class="col-12">
 								<div class="row">
-									@if(IsLoadingAct == true)
+									@if (IsLoadingAct == true)
 									{
 										<p align="center"><LottieAnimation Path="/json/Loading_Animation.json" Style="width: 200px; height: 200px" Loop="true" /></p>
 									}
@@ -412,9 +414,9 @@ else
 						return;
 					}
 				}
-				
+
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				messageString = "Faild";
 				return;
@@ -434,8 +436,9 @@ else
 
 	private async Task DeleteScreening(Guid id)
 	{
-		await _scrSv.DeleteScreeningAsync(id);
-		screenings = await _scrSv.GetAllScreeningsAsync();
+		await _scrSv.UpdateScreeningAsync(id);
+
+		await LoadScreening();
 	}
 
 	//
@@ -452,7 +455,7 @@ else
 	{
 		DateTime starttime = DateTime.Parse(e.Value.ToString());
 
-		if(duration != null)
+		if (duration != null)
 		{
 			TimeSpan x = TimeSpan.FromMinutes(Convert.ToDouble(duration));
 
@@ -469,7 +472,7 @@ else
 
 		foreach (var item in rooms)
 		{
-			if(item.ID == roomId)
+			if (item.ID == roomId)
 			{
 				roomName = item.Name;
 			}
@@ -488,9 +491,10 @@ else
 	{
 		return status switch
 		{
-			ScreeningStatus.Showing => "bg-primary", 
-			ScreeningStatus.InActive => "bg-warning", 
-			ScreeningStatus.Ended => "bg-danger"    
+			ScreeningStatus.Showing => "bg-primary",
+			ScreeningStatus.InActive => "bg-warning",
+			ScreeningStatus.Ended => "bg-danger",
+			ScreeningStatus.Cancelled => "bg-dark"
 		};
 	}
 

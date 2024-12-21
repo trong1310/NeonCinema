@@ -41,7 +41,12 @@
 					<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
 				</div>
 				<div class="card-body">
-					<p class="card-title text-success">Phim : @movieDto.Name</p>
+					<h4 class="card-title mb-2">@movieDto.Name</h4>
+					<div class="tags">
+						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+						<span class="badge bg-secondary">Thời lượng: @movieDto.Duration phút</span>
+						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+					</div>
 
 					<p class="card-text">
 						<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
@@ -133,7 +138,7 @@
 						@foreach (var item in foods)
 						{
 							<div class="product-item d-flex align-items-center mb-3">
-								<img src="@GetImageUrl(item.Images)" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
+								<img src="@GetImageUrl(item.Images)" class="product-image me-3">
 								<div class="product-info flex-grow-1">
 									<h5>@item.Content</h5>
 									<p>
@@ -162,7 +167,7 @@
 					<h3 class="card-title">@movieDto.Name</h3>
 					<div class="tags">
 						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-dark">Thời lượng: @movieDto.Duration</span>
+						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
 						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
 					</div>
 					<div class="d-flex justify-content-between mb-3">
@@ -172,49 +177,66 @@
 					@foreach (var combo in selectedCombos)
 					{
 						<div class="d-flex justify-content-between mb-3">
-							<span>@combo.Key.Content</span>
+							<span>@combo.Key.Content x @combo.Value</span>
 							<span>@combo.Key.Amount.ToString("N0")</span>
 						</div>
 					}
-					<span>@comboPrices.ToString("N0")</span>
-					<div class="dotted-line-custom"></div>
-					<div class="payment-method mt-3 mb-3">
-						<strong>Tổng tiền : @totalPrices.ToString("N0")</strong>
-						<div class="form-check">
-							<label class="form-check-label" for="cashRadio">
-								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
-								<i class="fa-solid fa-money-bill"></i> Tiền mặt
-							</label>
-						</div>
-						<div class="form-check">
-							<label class="form-check-label" for="bankTransferRadio">
-								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
-								<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
-							</label>
-						</div>
-						<img id="qrcode" style="border: 1px solid;height: 300px;width: 260px; display: none;" alt="QR Code">
+					<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền combo</span>
+						<span>@comboPrices.ToString("N0")</span>
 					</div>
+					
+					
 					<div class="dotted-line-custom"></div>
-					<div class="customer-points mt-3">
+					<div class="customer-points mt-2">
 						<!-- Hiển thị số điểm của khách hàng -->
 						<p class="points-display">
 							Số điểm hiện tại của bạn: <strong>@user.Ponit</strong> điểm (2000 điểm = 1k VND)
 						</p>
 
 						<!-- Nhập số điểm muốn sử dụng -->
-						<div class="d-flex align-items-center mt-3">
+						<div class="d-flex align-items-center mt-2">
 							<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
 							<button class="btn use-points-btn d-flex align-items-center justify-content-center" @onclick="ApplyPoint">Dùng điểm</button>
 						</div>
+						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						<div class="row g-2" style="margin-top: -15px">
+							<div class="col-md-8">
+								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
+							</div>
+							<div class="col-md-4">
+								<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
+							</div>
+						</div>
+						<p class="mt-2"><strong>Số tiền giảm giá:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
 					</div>
 					<div class="dotted-line-custom"></div>
 					<div class="d-flex justify-content-between mt-3">
-						<strong>Tổng tiền phải trả (Đã bao gồm phụ thu và giảm giá)</strong>
-						<strong id="amount-display">@finalPrices.ToString("N0")</strong>
+						<strong>Tổng tiền</strong>
+						<strong id="amount-display">@finalPrices.ToString("N0") VND</strong>
 					</div>
-					<div class="button-container">
-						<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
-						<button class="btn btn-primary" style="width: 25%" @onclick="ShowConfirmModal">Thanh toán</button>
+					
+					<div class="payment-method mt-3 mb-3">
+						<div class="form-check">
+							<label class="form-check-label" for="cashRadio">
+								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+								<i class="fa-solid fa-money-bill" style=" margin-right: 5px"></i> Tiền mặt
+							</label>
+						</div>
+						<div class="form-check">
+							<label class="form-check-label" for="bankTransferRadio">
+								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+								<i class="fa-solid fa-money-check-dollar" style=" margin-right: 5px"></i> Chuyển khoản
+							</label>
+						</div>
+						<div class="qr-code-container">
+							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+						</div>
+					</div>
+					<div class="button-pay d-flex justify-content-center gap-3 mt-4">
+						<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
+						<button class="btn btn-primary" @onclick="ShowConfirmModal">Thanh toán</button>
 						@if (showConfirmModal)
 						{
 							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1312,4 +1334,40 @@
 		border: none;
 		background: none;
 	}
+
+	.qr-code-container {
+		display: flex;
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		margin-top: 10px; /* Thêm khoảng cách trên */
+	}
+
+		.qr-code-container img {
+			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+			height: auto;
+		}
+
+	.button-pay {
+		display: flex;
+		justify-content: center; /* Căn giữa các nút theo chiều ngang */
+		gap: 10px; /* Khoảng cách giữa các nút */
+		margin-top: 20px; /* Thêm khoảng cách trên */
+	}
+
+		.button-pay .btn {
+			padding: 10px 20px; /* Khoảng cách trong nút */
+			font-size: 16px; /* Kích thước chữ */
+			border-radius: 5px; /* Bo góc nút */
+			transition: transform 0.2s ease, background-color 0.3s ease;
+			width: 100%;
+		}
+
+			.button-pay .btn:hover {
+				transform: scale(1.05); /* Phóng to nhẹ khi hover */
+			}
+
+			.button-pay .btn:active {
+				transform: scale(0.95); /* Hiệu ứng nhỏ lại khi bấm */
+			}
+
 </style>
