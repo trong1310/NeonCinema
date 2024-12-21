@@ -46,6 +46,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title font-weight-bold">Mã Hóa Đơn: @bill.BillCode</h5>
                                     <p>Người dùng: <span class="text-primary">@bill.UserName</span></p>
+                                    <p>Nhân viên xử lý: <span class="text-info">@bill.StaffName</span></p>
                                     <p>Ngày hóa đơn: @bill.BillDate.ToString("dd/MM/yyyy")</p>
                                     <p>Tổng tiền: <span class="text-success font-weight-bold">@bill.TotalPrice.ToString("C0")</span></p>
                                     <button class="btn btn-detail" @onclick="(() => ShowDetail(bill))">
@@ -80,9 +81,9 @@
                     <h4>Thông Tin Hóa Đơn</h4>
                     <p><b>Mã Hóa Đơn:</b> @selectedBill.BillCode</p>
                     <p><b>Khách Hàng:</b> @selectedBill.UserName</p>
+                    <p><b>Nhân viên xử lý:</b> @selectedBill.StaffName</p>
                     <p><b>Tên Rạp:</b> @selectedBill.TheaterName</p>
                     <p><b>Địa Chỉ Rạp:</b> @selectedBill.TheaterAddress</p>
-                  
 
                     <h4 class="mt-4">Thông Tin Vé</h4>
                     @if (selectedBill.Tickets.Any())
@@ -179,6 +180,7 @@
             (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
         );
 }
+
 <script>
     function downloadFile(fileName, bytes, mimeType) {
         const blob = new Blob([new Uint8Array(bytes)], { type: mimeType });
