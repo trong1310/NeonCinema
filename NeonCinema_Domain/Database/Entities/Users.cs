@@ -25,8 +25,8 @@ namespace NeonCinema_Domain.Database.Entities
     
         public virtual Roles? Roles { get; set; }
         public virtual ICollection<Bill>? Bills { get; set; }
+        public virtual ICollection<PendingPoint>? PendingPoint { get; set; }
         public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
-        public virtual ICollection<Point>? Points { get; set; }
         public virtual ICollection<RankMember>? RankMembers { get; set; }
         public virtual ICollection<WorkShift> Workshifts { get; set; }
     }

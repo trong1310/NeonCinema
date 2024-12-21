@@ -20,7 +20,8 @@ namespace NeonCinema_Domain.Database.Entities
 		public virtual Users? Users { get; set; }
 		public virtual ICollection<BillCombo> BillCombos { get; set; }
 		public virtual ICollection<BillTicket>? BillTickets { get; set; }
-       
+		public virtual ICollection<PendingPoint>? PendingPoint { get; set; }
 
-    }
+
+	}
 }

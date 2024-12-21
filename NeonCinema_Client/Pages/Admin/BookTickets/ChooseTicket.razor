@@ -1,4 +1,5 @@
 ﻿@page "/select-seat/{id:guid}"
+@using Blazored.LocalStorage
 @using NeonCinema_Application.DataTransferObject.BookTicket
 @using NeonCinema_Application.DataTransferObject.BookTicket.Request
 @using NeonCinema_Application.DataTransferObject.BookTicket.Resp
@@ -17,6 +18,7 @@
 @using NeonCinema_Client.Models.Enums
 @using NeonCinema_Domain.Database.Entities
 @using System.Text.Json
+@using System.Security.Claims
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
@@ -26,6 +28,7 @@
 @inject NavigationManager _navigation
 @inject HttpClient _http
 @inject NavigationManager _navi
+@inject ILocalStorageService _localstorage
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
@@ -33,26 +36,26 @@
 <div class="row m-2">
 	<!-- Thông tin phim -->
 	<div class="col-md-3">
-			<!-- Card thông tin phim -->
-			<div class="card movie-info-card mb-4">
-				<div class="img-container">
-					<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
+		<!-- Card thông tin phim -->
+		<div class="card movie-info-card mb-4">
+			<div class="img-container">
+				<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
+			</div>
+			<div class="card-body">
+				<h3 class="card-title">@movieDto.Name</h3>
+				<div class="tags">
+					<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+					<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
 				</div>
-				<div class="card-body">
-					<h3 class="card-title">@movieDto.Name</h3>
-					<div class="tags">
-						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
-						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
-					</div>
 
-					<p class="card-text">
-						<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
-						<strong>Phòng chiếu:</strong> @screenings.RoomName
-					</p>
-				</div>
+				<p class="card-text">
+					<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
+					<strong>Phòng chiếu:</strong> @screenings.RoomName
+				</p>
 			</div>
 		</div>
+	</div>
 	<div class="col-md-6 card shadow position-relative">
 		@if (_selectedIndex == 0)
 		{
@@ -163,7 +166,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 			<div class="button-container">
 				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
@@ -236,125 +239,125 @@
 	<div class="col-md-3" >
 		<div class="card shadow order-summary-card" style="background-color: white">
 			<h4 class="text-center mt-3">NEON CINEMA</h4>
-				<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
-				<div class="order-summary">
-					<h4 class="card-title">@movieDto.Name</h4>
-					<div class="tags">
-						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
-						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
-					</div>
-					<hr class="dashed">
+			<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
+			<div class="order-summary">
+				<h4 class="card-title">@movieDto.Name</h4>
+				<div class="tags">
+					<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+					<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+				</div>
+				<hr class="dashed">
+				<div class="d-flex justify-content-between mb-3">
+					<span>Ghế : @selectedSeatNumbers</span>
+					<span>@seatPrices.ToString("N0")</span>
+				</div>
+				@foreach (var combo in selectedCombos)
+				{
 					<div class="d-flex justify-content-between mb-3">
-						<span>Ghế : @selectedSeatNumbers</span>
-						<span>@seatPrices.ToString("N0")</span>
+						<span>@combo.Key.Content  x @combo.Value</span>
+						<span>@combo.Key.Amount.ToString("N0")</span>
 					</div>
-					@foreach (var combo in selectedCombos)
-					{
-						<div class="d-flex justify-content-between mb-3">
-							<span>@combo.Key.Content  x @combo.Value</span>
-							<span>@combo.Key.Amount.ToString("N0")</span>
+				}
+				<div class="d-flex justify-content-between mb-3">
+					<span>Tổng tiền combo</span>
+					<span>@comboPrices.ToString("N0")</span>
+				</div>
+				<hr class="dashed">
+				<div class="form-group">
+					<label for="search">Tìm kiếm khách hàng:</label>
+					<div class="row g-2">
+						<div class="col-md-8">
+							<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
 						</div>
-					}
-					<div class="d-flex justify-content-between mb-3">
-						<span>Tổng tiền combo</span>
-						<span>@comboPrices.ToString("N0")</span>
-					</div>
-					<hr class="dashed">
-					<div class="form-group">
-						<label for="search">Tìm kiếm khách hàng:</label>
-						<div class="row g-2">
-							<div class="col-md-8">
-								<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
-							</div>
-							<div class="col-md-4" style="margin-top: 14px">
-								<button @onclick="SearchCustomer" class="btn btn-primary w-100 form-control">Tìm kiếm</button>
-							</div>
+						<div class="col-md-4" style="margin-top: 14px">
+							<button @onclick="SearchCustomer" class="btn btn-primary w-100 form-control">Tìm kiếm</button>
 						</div>
-					</div>
-
-					@if (!string.IsNullOrEmpty(Rank.AccountName))
-					{
-						<div class="mt-2">
-							<h5>Thông tin khách hàng</h5>
-							<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
-							<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
-							<div class="row g-2" style="margin-top: -20px">
-								<div class="col-md-8">
-									<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng"/>
-								</div>
-								<div class="col-md-4" style="margin-top: 14px">
-									<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng điểm</button>
-								</div>
-							</div>
-							<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
-							<div class="row g-2" style="margin-top: -20px">
-								<div class="col-md-8">
-									<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
-								</div>
-								<div class="col-md-4" style="margin-top: 14px">
-									<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
-								</div>
-							</div>
-							<p class="mt-2"><strong>Số tiền giảm giá:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
-						</div>
-					}
-					else if (ShowCreateButton)
-					{
-						<div class="mt-3">
-							<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
-							<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
-						</div>
-					}
-					
-					<hr class="dashed">
-					<div class="payment-method mt-3 mb-3">
-						<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
-						<div class="form-check">
-							<label class="form-check-label" for="cashRadio">
-								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
-								<i class="fa-solid fa-money-bill"></i> Tiền mặt
-							</label>
-						</div>
-						<div class="form-check">
-							<label class="form-check-label" for="bankTransferRadio">
-								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
-								<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
-							</label>
-						</div>
-						<div class="qr-code-container">
-							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
-						</div>
-					</div>
-					<hr class="dashed">
-					<div class="d-flex justify-content-between mt-3">
-						<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
-						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-					</div>
-					<div class="d-flex justify-content-between mt-3">
-						
-						<strong>Tiền khách đưa</strong>
-						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-						
-					</div>
-					<div class="d-flex justify-content-between mt-3">
-					
-						<strong>Tiền thừa</strong>
-						<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-					</div>
-					<div class="button-container">
-						<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
-					</div>
-					<!-- Thời gian đếm ngược -->
-					<div class="mt-3">
-						<h5>
-							<span>Thời gian còn lại: </span>
-							<span style="color: red;">@timeLeft</span>
-						</h5>
 					</div>
 				</div>
+
+				@if (!string.IsNullOrEmpty(Rank.AccountName))
+				{
+					<div class="mt-2">
+						<h5>Thông tin khách hàng</h5>
+						<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
+						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
+						<div class="row g-2" style="margin-top: -20px">
+							<div class="col-md-8">
+								<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng"/>
+							</div>
+							<div class="col-md-4" style="margin-top: 14px">
+								<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control" >Dùng điểm</button>
+							</div>
+						</div>
+						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						<div class="row g-2" style="margin-top: -20px">
+							<div class="col-md-8">
+								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
+							</div>
+							<div class="col-md-4" style="margin-top: 14px">
+								<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
+							</div>
+						</div>
+						<p class="mt-2"><strong>Số tiền giảm giá:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+					</div>
+				}
+				else if (ShowCreateButton)
+				{
+					<div class="mt-3">
+						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
+					</div>
+				}
+
+				<hr class="dashed">
+				<div class="payment-method mt-3 mb-3">
+					<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
+					<div class="form-check">
+						<label class="form-check-label" for="cashRadio">
+							<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+							<i class="fa-solid fa-money-bill"></i> Tiền mặt
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label" for="bankTransferRadio">
+							<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+						</label>
+					</div>
+					<div class="qr-code-container">
+						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+					</div>
+				</div>
+				<hr class="dashed">
+				<div class="d-flex justify-content-between mt-3">
+					<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
+					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+				</div>
+				<div class="d-flex justify-content-between mt-3">
+
+					<strong>Tiền khách đưa</strong>
+					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+
+				</div>
+				<div class="d-flex justify-content-between mt-3">
+
+					<strong>Tiền thừa</strong>
+					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
+				</div>
+				<div class="button-container">
+					<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
+				</div>
+				<!-- Thời gian đếm ngược -->
+				<div class="mt-3">
+					<h5>
+						<span>Thời gian còn lại: </span>
+						<span style="color: red;">@timeLeft</span>
+					</h5>
+				</div>
+			</div>
 		</div>		
 	</div>	
 	@if (showCreateAccountModal)
@@ -362,7 +365,7 @@
 		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
 				<EditForm Model="requestUser" OnValidSubmit="HandleSubmit">
-							<DataAnnotationsValidator />
+					<DataAnnotationsValidator />
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="createAccountLabel">Tạo Tài Khoản</h5>
@@ -371,41 +374,41 @@
 							</button>
 						</div>
 						<div class="modal-body">
-								<div class="row">
-									<div class="mb-3 col-md-6">
-										<label for="fullName" class="form-label">Họ và tên</label>
+							<div class="row">
+								<div class="mb-3 col-md-6">
+									<label for="fullName" class="form-label">Họ và tên</label>
 									<input type="text" class="form-control" placeholder="Nhập họ và tên" @bind-value=requestUser.FullName>
-										<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
-									</div>
-									<div class="mb-3 col-md-6">
-										<label for="phone" class="form-label">Số điện thoại</label>
+									<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
+								</div>
+								<div class="mb-3 col-md-6">
+									<label for="phone" class="form-label">Số điện thoại</label>
 									<input type="text" class="form-control" placeholder="Nhập số điện thoại" @bind-value=requestUser.PhoneNumber>
-										<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
-										@if (!IsShowPhoneNotification)
-										{
-											<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
-										}
-									</div>
+									<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
+									@if (!IsShowPhoneNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
+									}
 								</div>
-								<div class="row">
-									<div class="mb-3 col-md-6">
-										<label for="email" class="form-label">Email</label>
+							</div>
+							<div class="row">
+								<div class="mb-3 col-md-6">
+									<label for="email" class="form-label">Email</label>
 									<input type="email" class="form-control" placeholder="Nhập email" @bind-value=requestUser.Email>
-										<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
-										@if (!IsShowEmailNotification)
-										{
-											<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
-										}
-									</div>
-									<div class="mb-3 col-md-6">
-										<label for="date" class="form-label">Ngày sinh</label>
-									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
-										@if (!IsShowYearNotification)
-										{
-											<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
-										}
-									</div>
+									<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
+									@if (!IsShowEmailNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+									}
 								</div>
+								<div class="mb-3 col-md-6">
+									<label for="date" class="form-label">Ngày sinh</label>
+									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
+									@if (!IsShowYearNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+									}
+								</div>
+							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" @onclick="CloseCreateAccountModal">Hủy</button>
@@ -500,6 +503,7 @@
 	private decimal seatPrices = 0;
 	public string? phoneNumber;
 	public string error = "";
+	public Guid createBy;
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
@@ -529,6 +533,16 @@
 		foods = await _services.GetFoodCombo();
 		await RefreshSeatsAsync();
 		RestartTransaction();
+		var token = await _localstorage.GetItemAsync<string>("authToken");
+		if (string.IsNullOrEmpty(token))
+		{
+			//_navi.NavigateTo("/login");
+			return;
+		}
+		var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+		var jwtToken = handler.ReadJwtToken(token);
+		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+		createBy =  Guid.Parse(userIdClaim.Value);
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -764,6 +778,7 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
+					CreateBy = createBy
 				};
 		}
 		else
@@ -779,6 +794,7 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
+					CreateBy = createBy
 				};
 		}
 

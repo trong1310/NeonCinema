@@ -109,7 +109,6 @@ builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
 builder.Services.AddScoped<IHistoryService,HistoryService>();
-builder.Services.AddScoped<ISV, SV>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<FoodComboServices>();
 
