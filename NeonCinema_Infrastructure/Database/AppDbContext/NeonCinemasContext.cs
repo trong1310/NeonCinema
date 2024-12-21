@@ -32,6 +32,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         #region DbSet
         public DbSet<Bill> BillDetails { get; set; }
+        public DbSet<PendingPoint> PendingPoint { get; set; }
 		public DbSet<Cinemas> Cinema { get; set; }
 		public DbSet<Users> Users { get; set; }
 		public DbSet<Director> Directors { get; set; }
@@ -60,7 +61,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Actor> Actor { get; set; }
 		public DbSet<ActorMovies> ActorMovies { get; set; }
 		public DbSet<BillTicket> BillTickets { get; set; }
-		public DbSet<Point> Points { get; set; }
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<PromotionUsers> PromotionUsers { get; set; }
 		public DbSet<TicketPriceSetting> TicketPriceSettings { get; set; }
@@ -70,7 +70,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1219,12 +1219,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 };
 			modelBuilder.Entity<RankMember>().HasData(rankMemberData);
 			// 29. Point
-			var pointData = new List<Point>
-{
-	new Point { ID = Guid.NewGuid(), TotalPoint = 50, DateEarned = DateTime.Now, UserID = userData[0].ID },
-	new Point { ID = Guid.NewGuid(), TotalPoint = 150, DateEarned = DateTime.Now, UserID = userData[1].ID }
-};
-			modelBuilder.Entity<Point>().HasData(pointData);
 			var workShiftData = new List<WorkShift>
 {
 	new WorkShift

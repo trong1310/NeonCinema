@@ -9,7 +9,6 @@ using NeonCinema_Application.Interface.Genre;
 using NeonCinema_Application.Interface.Point;
 using NeonCinema_Application.Interface.RannkMember;
 using NeonCinema_Infrastructure.Implement.Genres;
-using NeonCinema_Infrastructure.Implement.Points;
 using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Application.Interface.Directors;
 using NeonCinema_Infrastructure.Implement.Directors;
@@ -53,7 +52,6 @@ namespace NeonCinema_Infrastructure.Extention
             });
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
             services.AddTransient<ISeatTypeRepository, SeatTypeRepository>();
-            services.AddTransient<IPointRepositories, PointRepositories>();
             services.AddTransient<IRankMemberRepository, RankMemberRepositories>();
             services.AddTransient<IGenreRepositories, GenreRepositories>();
             services.AddTransient<IDirectorRepositories, DirectorRepositories>();

@@ -130,6 +130,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
 					CreatedTime = DateTime.Now,
 					UserID = request.AccountID ?? null,
+					CreatedBy = request.CreateBy 
 				};
 				await _context.BillDetails.AddAsync(bill, cancellationToken);
 
@@ -178,10 +179,17 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				if (request.AccountID != null)
 				{
-					var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
-					accountBook.MinPoint += (double)convertPoint;
-					accountBook.ModifiedTime = DateTime.UtcNow;
-					_context.RankMembers.Update(accountBook);
+					var pendingPoint = new PendingPoint
+					{
+						ID = Guid.NewGuid(),
+						UserID = (Guid)bill.UserID,
+						Point = convertPoint,
+						ApplyDate = DateTime.UtcNow.AddDays(1),// coonjg sau 1 ngayf
+						CreatedTime = DateTime.UtcNow
+					};
+
+					// Lưu trạng thái chờ xử lý
+					await _context.PendingPoint.AddAsync(pendingPoint);
 					await _context.SaveChangesAsync();
 				}
 				var billresp = await _context.BillDetails
