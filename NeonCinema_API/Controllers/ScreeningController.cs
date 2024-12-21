@@ -70,12 +70,12 @@ namespace NeonCinema_API.Controllers
             }
         }
 
-        [HttpDelete("delete-screening/{id}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        [HttpPut("delete")]
+        public async Task<IActionResult> Delete(Guid id )
         {
             try
             {
-                var response = await _screeningRepository.DeleteScreening(id, cancellationToken);
+                var response = await _screeningRepository.DeleteScreening(id);
                 return StatusCode((int)response.StatusCode, response);
             }
             catch (Exception ex)
