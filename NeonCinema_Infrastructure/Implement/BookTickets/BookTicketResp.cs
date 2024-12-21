@@ -11,7 +11,7 @@ using NeonCinema_Infrastructure.Extention.Utili;
 using System.Net;
 
 namespace NeonCinema_Infrastructure.Implement.BookTickets
-{
+{ 
 	public class BookTicketResp
 	{
 		private readonly NeonCinemasContext _context;
