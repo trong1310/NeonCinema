@@ -225,10 +225,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				throw new Exception($"{ex.Message} : {ex.StackTrace}");
 			}
 		}
-
-
-
-
 		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showDate)
 		{
 			TimeSpan currentTime = DateTime.Now.TimeOfDay;
@@ -266,7 +262,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 			return screeningDtos;
 		}
-
 		public async Task<ScreeningMoviesDto> ChooseScreeningMovies(Guid Id)
 		{
 			var screenings = await _context!.Screening
@@ -289,14 +284,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 			var seats = seatShowTime.Select(x =>
 			{
-				// Lấy giá dựa trên SeatTypeID thay vì SeatID
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID) // Sửa: Lấy giá theo SeatTypeID
+					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID)
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
 				decimal basePrice = 0;
-
-				// Xác định giá cơ bản theo ngày trong tuần và giờ chiếu
 				if (showDate.DayOfWeek == DayOfWeek.Monday ||
 					showDate.DayOfWeek == DayOfWeek.Tuesday ||
 					showDate.DayOfWeek == DayOfWeek.Wednesday ||
