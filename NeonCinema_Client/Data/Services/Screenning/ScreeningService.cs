@@ -73,10 +73,25 @@ public class ScreeningService : IScreeningService
         }
     }
 
-    public async Task DeleteScreeningAsync(Guid id)
+    public async Task<bool> DeleteScreeningAsync(Guid id)
     {
-        var response = await _httpClient.DeleteAsync($"api/Screening/delete-screening/{id}");
-        response.EnsureSuccessStatusCode();
+        try
+        {
+			var response = await _httpClient.PutAsJsonAsync($"https://localhost:7211/api/Screening/delete?id={id}", (object)null);
+
+			if (response.IsSuccessStatusCode)
+			{
+				return true;
+			}
+			else
+			{
+				throw new Exception($"StatusCode: {response.StatusCode}, Reason: {response.ReasonPhrase}");
+			}
+		}
+        catch (Exception ex) 
+        {
+            throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
+        }
     }
     public async Task<List<ShowTimeDTO>> GetAllShowTimesAsync()
     {
