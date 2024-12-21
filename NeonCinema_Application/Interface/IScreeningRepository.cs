@@ -15,7 +15,7 @@ namespace NeonCinema_Application.Interface
     {
         Task<HttpResponseMessage> CreateScreening(ScreeningCreateRequest screening, CancellationToken cancellationToken);
         Task<HttpResponseMessage> UpdateScreening(ScreeningUpdateRequest screening, CancellationToken cancellationToken);
-        Task<HttpResponseMessage> DeleteScreening(Guid id, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> DeleteScreening(Guid id );
         Task<PaginationResponse<ScreeningDTO>> GetAllScreening(ViewScreningRequest request,CancellationToken cancellationToken);
         Task<ScreeningDTO> GetScreeningById(Guid id, CancellationToken cancellationToken);
         Task<HttpResponseMessage> CreateSSS(SeatShowTimeStatusDTO input, CancellationToken ctoken);
