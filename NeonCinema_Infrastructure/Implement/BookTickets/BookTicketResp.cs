@@ -130,7 +130,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
 					CreatedTime = DateTime.Now,
 					UserID = request.AccountID ?? null,
-					CreatedBy = request.CreateBy 
+					CreatedBy = request.CreateBy
 				};
 				await _context.BillDetails.AddAsync(bill, cancellationToken);
 
