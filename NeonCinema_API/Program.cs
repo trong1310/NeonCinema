@@ -70,10 +70,10 @@ builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepo
 builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 builder.Services.AddScoped<ISendMailService, SendMailService>();
 builder.Services.AddScoped<UserProfile>();
+builder.Services.AddScoped<ISV, SV>();
 builder.Services.AddScoped<UpdateUserProfileRequest>();
 builder.Services.AddScoped<IUserServicesss, UserService>();
 builder.Services.AddHostedService<TimerProcess>();
-
 builder.Services.AddLogging();
 builder.Services.Configure<FormOptions>(options =>
 {
