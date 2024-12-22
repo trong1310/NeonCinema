@@ -9,6 +9,7 @@ using NeonCinema_Application.DataTransferObject.Seats;
 using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 
 namespace NeonCinema_Client.Data.IServices.Seat
 {
@@ -16,14 +17,14 @@ namespace NeonCinema_Client.Data.IServices.Seat
     {
 
         public Task<PaginationResponse<SeatDTO>> GetAllSeat(ViewSeatRequest request);
-        
+
         public Task<List<SeatTypeDTO>> GetAllSeatType();
         Task<List<RoomDTO>> GetAllRooms();
         public Task<HttpResponseMessage> CreateSeat(CreateSeatDTO request);
         public Task<HttpResponseMessage> UpdateSeate(Guid id, UpdateSeatDTO request);
         public Task<SeatDTO> GetSeatById(Guid id);
         Task<List<SeatDTO>> GetAllSeats(CancellationToken cancellationToken);
-        Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId);
+        Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId, seatEnum status);
 
     }
 }
