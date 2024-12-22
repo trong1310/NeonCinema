@@ -45,7 +45,7 @@
                 </div>
                 <div class="card-body">
                     <h5 class="text-uppercase">Số phim đã dừng chiếu</h5>
-                    <h3>15</h3>
+                    <h3>@StoppedCount</h3>
                 </div>
             </div>
         </div>
@@ -136,6 +136,49 @@
             }
         </div>
     </div>
+
+    <div class="border p-4 mt-3">
+        <div class="text-center mb-3">
+            <h2 class="green-title">Phim dừng chiếu</h2>
+        </div>
+        <div class="row mb-5">
+            <div class="row mb-5">
+                <div class="col-md-4 mt-4">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchComing"  />
+                </div>
+                <div class="col-md-4">
+                    <label for="startDate">Từ ngày:</label>
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate">Đến ngày:</label>
+                    <input type="date" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in moviesStopped)
+            {
+                <div class="col-4 col-md-3 mb-4 col-custom">
+                    <div class="card movie-card">
+                        <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
+                        <div class="card-body">
+                            <div class="tags">
+                                <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                <span class="badge bg-dark">@item.Duration phút</span>
+                                <span class="badge bg-success">Ngôn ngữ: @item.LanguareName</span>
+                            </div>
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                            <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                                <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -172,6 +215,12 @@
             movie.ActorMovies = actors;
         }
         moviesComing = await _service.MoviesComing();
+        foreach (var movie in moviesComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        moviesStopped = await _service.MoviesStoping();
         foreach (var movie in moviesComing)
         {
             var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);

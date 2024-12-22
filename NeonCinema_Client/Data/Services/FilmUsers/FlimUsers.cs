@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace NeonCinema_Client.Data.Services.FilmUsers
 {
-    public class FlimUsers : IFlimUsers
+	public class FlimUsers : IFlimUsers
     {
         HttpClient _httpClient;
         public FlimUsers()
@@ -23,5 +23,11 @@ namespace NeonCinema_Client.Data.Services.FilmUsers
             var getflims = await _httpClient.GetFromJsonAsync<PaginationResponse<MovieDTO>>($"https://localhost:7211/api/UserFlims/Get-showing?PageNumber={request.PageNumber}&PageSize={request.PageSize}");
             return getflims;
         }
-    }
+
+		public async Task<List<MovieData>> GetStopShowing()
+		{
+			var getflims = await _httpClient.GetFromJsonAsync<List<MovieData>>("https://localhost:7211/api/UserFlims/GetStopShowing");
+			return getflims;
+		}
+	}
 }
