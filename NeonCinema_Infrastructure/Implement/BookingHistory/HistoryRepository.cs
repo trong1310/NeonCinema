@@ -92,6 +92,8 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 
 		public async Task<List<BillHistoryDTO>> GetAllBillHistoryAsync()
 		{
+			// Fetch all user details (staff)
+			var users = await _context.Users.ToDictionaryAsync(u => u.ID, u => u.FullName);
 			return await _context.BillDetails
 				.Select(b => new BillHistoryDTO
 				{
@@ -100,6 +102,8 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 					BillCode = b.BillCode,
 					TotalPrice = b.TotalPrice,
 					BillDate = b.CreatedTime.Value,
+					StaffID = b.CreatedBy, // Staff ID
+					StaffName = b.CreatedBy.HasValue && users.ContainsKey(b.CreatedBy.Value) ? users[b.CreatedBy.Value] : "Không xác định", // Staff name
 					Status = b.Status.ToString(),
 					Tickets = b.BillTickets.Select(bt => new BookingHistoryDTO
 					{
@@ -108,6 +112,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 						MovieName = bt.Tickets.Movies.Name,
 						ShowDate = bt.Tickets.Screenings.ShowDate,
 						StartTime = bt.Tickets.Screenings.ShowTime.StartTime,
+						EndTime = bt.Tickets.Screenings.ShowTime.EndTime,
 						SeatNumber = bt.Tickets.Seat.SeatNumber,
 						Price = bt.Tickets.Price,
 						Room = bt.Tickets.Screenings.Rooms.Name,
