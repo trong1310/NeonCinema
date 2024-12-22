@@ -70,7 +70,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -502,10 +503,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			var seatTypeData = new List<SeatType>
 			{
-				new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
-				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
-				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
-			};
+                new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
+                new SeatType { ID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1"), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
+                new SeatType { ID = Guid.Parse("587FF198-12D1-4EB4-9CE7-909DA4AF6BCB"), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
+            };
 			modelBuilder.Entity<SeatType>().HasData(seatTypeData);
 			var cinemaData = new List<Cinemas>
 			{
