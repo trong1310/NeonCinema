@@ -37,6 +37,7 @@ using NeonCinema_Client.Data.IServices.Seat;
 using NeonCinema_Client.Data.Services.Seat;
 using NeonCinema_Client.Data.IServices.Genre;
 using NeonCinema_Client.Data.Services.Genre;
+
 using NeonCinema_Client.Data.IServices.Country;
 using NeonCinema_Client.Data.Services.Country;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -79,6 +80,7 @@ builder.Services.AddTransient<IUserServices, UserServices>();
 builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<ISV, SV>();
 builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
 builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService>();
 builder.Services.AddAutoMapper(typeof(Program));

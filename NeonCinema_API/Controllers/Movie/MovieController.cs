@@ -38,7 +38,13 @@ namespace NeonCinema_API.Controllers.Movie
 			var obj = await _reps.GetFilmsComing();
 			return Ok(obj);
 		}
-        [HttpPost ("Create")]
+		[HttpGet("GetStopShowing")]
+		public async Task<IActionResult> GetStopShowing()
+		{
+			var obj = await _reps.GetFilmsStopShowing();
+			return Ok(obj);
+		}
+		[HttpPost ("Create")]
 		public async Task <IActionResult> Create([FromBody] CreateMovieRequest request, CancellationToken cancellationToken)
         {
             var obj = await _reps.Create(request,cancellationToken);

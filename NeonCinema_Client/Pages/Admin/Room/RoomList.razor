@@ -9,11 +9,38 @@
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
 <h2 class="d-flex justify-content-center align-content-center m-auto mt-5">Danh sách phòng chiếu</h2>
+
 <div class="container-fluid mt-5">
-    <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-top: 10px; margin-left:1px; " @onclick="AddRoom">
-        <i class="bi bi-plus-circle"></i> Thêm phòng chiếu
-    </button>
+    <div class="row mb-4 p-3 search-filter-container">
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @oninput="OnSearchChanged" />
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center">
+                <div class="form-check me-3">
+                    <input type="radio" name="statusFilter" value="All" @onchange="OnStatusChanged" checked />
+                    <label class="form-check-label" for="all">Tất Cả</label>
+                </div>
+                <div class="form-check me-3">
+                    <input type="radio" name="statusFilter" value="Active" @onchange="OnStatusChanged" />
+                    <label class="form-check-label" for="active">Hoạt động</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" name="statusFilter" value="Inactive" @onchange="OnStatusChanged" />
+                    <label class="form-check-label" for="inactive">Không hoạt động</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-top: 10px;" @onclick="AddRoom">
+                <i class="bi bi-plus-circle"></i> Thêm phòng chiếu
+            </button>
+        </div>
+    </div>
+
     @if (rooms == null)
     {
         <p class="text-center">Đang tải danh sách phòng chiếu...</p>
@@ -24,12 +51,6 @@
     }
     else
     {
-        @* <div class="d-flex justify-content-end ">
-            <button class="btn btn-success" @onclick="AddRoom" title="Thêm phòng chiếu">
-                <i class="bi bi-plus-circle"></i> Thêm phòng
-            </button>
-        </div> *@
-
         <div class="table-responsive">
             <table class="table table-hover room-table">
                 <thead class="">
@@ -45,14 +66,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (rooms != null)
+                    @if (filteredRooms != null)
                     {
-                        int index = 1; // Khởi tạo bên ngoài vòng lặp
-                        foreach (var room in rooms)
+                        int index = 1;
+                        foreach (var room in filteredRooms)
                         {
                             var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
                             <tr>
-                                <td>@index</td> <!-- Hiển thị số thứ tự -->
+                                <td>@index</td> 
                                 <td>@room.Name</td>
                                 <td>@(room.RowNumber * room.ColumnNumber)</td>
                                 <td>@cinema?.Name</td>
@@ -69,7 +90,7 @@
                                     </button>
                                 </td>
                             </tr>
-                            index++; // Tăng giá trị sau mỗi lần lặp
+                            index++; 
                         }
                     }
                 </tbody>
@@ -80,42 +101,72 @@
 
 @code {
     private List<RoomDTO> rooms;
+    private List<RoomDTO> filteredRooms;
     private List<CinemasDTO> cinemasdto;
+    private string searchText = string.Empty;
+    private string selectedStatus = "All"; // Giới tính mặc định là "Tất cả"
+
     protected override async Task OnInitializedAsync()
     {
         rooms = await RoomService.GetAllRooms();
         cinemasdto = await RoomService.GetAllCinemas();
+        filteredRooms = rooms; // Khởi tạo danh sách được lọc ban đầu là toàn bộ phòng
     }
-    private void ViewRoomDetails(Guid roomId)
-    {
-        Navigation.NavigateTo($"/roomdetails/{roomId}");
-    }
-    private void EditRoom(Guid roomId)
-    {
-        Navigation.NavigateTo($"/editroom/{roomId}");
-    }
+
     private void AddRoom()
     {
         Navigation.NavigateTo("/addroom");
     }
+
+    private void EditRoom(Guid roomId)
+    {
+        Navigation.NavigateTo($"/editroom/{roomId}");
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value.ToString();
+        FilterRooms();
+    }
+
+    private void OnStatusChanged(ChangeEventArgs e)
+    {
+        selectedStatus = e.Value.ToString();
+        FilterRooms();
+    }
+
+    private void FilterRooms()
+    {
+        filteredRooms = rooms
+            .Where(r => string.IsNullOrWhiteSpace(searchText) || r.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(r => selectedStatus == "All"
+                         || (selectedStatus == "Active" && r.Status == EntityStatus.Active)
+                         || (selectedStatus == "Inactive" && r.Status == EntityStatus.Inactive))
+            .ToList();
+    }
+
 }
 <style>
 
     body {
         background-color: #f8f9fa;
-        font-family: 'Roboto', sans-serif; 
+        font-family: 'Roboto', sans-serif;
     }
+
     .container {
         max-width: 1000px;
         margin: auto;
     }
+
     .table {
         margin-top: 20px;
         text-align: center;
     }
+
         .table th, .table td {
             vertical-align: middle;
         }
+
     .table-dark {
         background-color: #343a40;
         color: white;
@@ -128,26 +179,31 @@
     .btn-sm {
         padding: 5px 10px;
     }
+
     .btn-info {
         color: white;
         background-color: #17a2b8;
     }
+
     .btn-warning {
         color: white;
         background-color: #ffc107;
     }
+
     .text-center {
         font-weight: 500;
         padding: 10px;
         border-bottom: 1px solid #ddd;
     }
+
     .table-hover tbody tr:hover {
         background-color: #f1f1f1;
     }
+
     .room-table {
-        background-color: white; 
-        border-radius: 8px; 
-        overflow: hidden; 
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>

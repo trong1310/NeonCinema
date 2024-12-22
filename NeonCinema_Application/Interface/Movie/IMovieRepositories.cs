@@ -20,5 +20,6 @@ namespace NeonCinema_Application.Interface.Movie
         public Task<HttpResponseMessage> Delete (Movies request,CancellationToken cancellationToken);
         public Task<List<MovieDTO>> GetFilmsNowShowing();
         public Task<List<MovieDTO>> GetFilmsComing();
+        public Task<List<MovieDTO>> GetFilmsStopShowing();
     }
 }

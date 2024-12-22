@@ -263,6 +263,10 @@
 					<span>Tổng tiền combo</span>
 					<span>@comboPrices.ToString("N0")</span>
 				</div>
+				<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền</span>
+						<span>@totalPrices.ToString("N0") VND</span>
+					</div>
 				<hr class="dashed">
 				<div class="form-group">
 					<label for="search">Tìm kiếm khách hàng:</label>
@@ -292,7 +296,7 @@
 							</div>
 						</div>
 						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
-						<div class="row g-2" style="margin-top: -20px">
+						@* <div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
 								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
 							</div>
@@ -301,7 +305,7 @@
 								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
 							</div>
 						</div>
-						<p class="mt-2"><strong>Số tiền giảm giá:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
 					</div>
 				}
 				else if (ShowCreateButton)

@@ -9,6 +9,7 @@ using NeonCinema_Application.DataTransferObject.SeatTypes;
 using NeonCinema_Application.Interface.Seats;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Seat;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Implement.Seats;
 using System.Text.Json;
@@ -89,9 +90,9 @@ namespace NeonCinema_Client.Data.Services.Seat
         {
             var respones = await _httpClient.GetFromJsonAsync<SeatDTO>($"https://localhost:7211/api/Seat/GetById?id={id}");
             return respones;
-        } 
+        }
 
-       
+
 
         public async Task<HttpResponseMessage> UpdateSeate(Guid id, UpdateSeatDTO request)
         {
@@ -106,21 +107,34 @@ namespace NeonCinema_Client.Data.Services.Seat
             }
         }
 
-        public async Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId)
+        public async Task UpdateSeatsAsync(List<Guid> selectedSeatIds, Guid newSeatTypeId, seatEnum status)
         {
             var seatType = await _context.SeatTypes.FindAsync(newSeatTypeId);
-            if (seatType == null)
-            {
-                throw new ArgumentException("Seat type not found.", nameof(newSeatTypeId));
-            }
+            //if (seatType == null)
+            //{
+            //    throw new ArgumentException("Seat type not found.", nameof(newSeatTypeId));
+            //}
+
+            //if(status == null)
+            //{
+            //    status = seatEnum.Available;
+            //}
             var seatsToUpdate = await _context.Seat
             .Where(s => selectedSeatIds.Contains(s.ID)).ToListAsync();
             foreach (var seat in seatsToUpdate)
             {
+                if (newSeatTypeId == null && status == null)
+                {
+                    seat.SeatTypeID = Guid.Parse("8FB86C77-213F-4316-8A7A-43FEE795514E");
+                    status = seatEnum.Available;
+                }
                 seat.SeatTypeID = newSeatTypeId;
+                seat.Status = status;
             }
             _context.Seat.UpdateRange(seatsToUpdate);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

@@ -70,7 +70,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -502,10 +503,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			var seatTypeData = new List<SeatType>
 			{
-				new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
-				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
-				new SeatType { ID = Guid.NewGuid(), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
-			};
+                new SeatType { ID = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"), SeatTypeName = "Ghế thường",CreatedTime = DateTime.Now },
+                new SeatType { ID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1"), SeatTypeName = "Ghế Vip",CreatedTime = DateTime.Now },
+                new SeatType { ID = Guid.Parse("587FF198-12D1-4EB4-9CE7-909DA4AF6BCB"), SeatTypeName = "Ghế đôi",CreatedTime = DateTime.Now }
+            };
 			modelBuilder.Entity<SeatType>().HasData(seatTypeData);
 			var cinemaData = new List<Cinemas>
 			{
@@ -867,6 +868,98 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "chayngaydi.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.Comingsoon,
+		GenreID = genreData[4].ID,
+		LenguageID = languageData[0].ID,
+		CountryID = countryData[0].ID,
+		DirectorID = directorData[4].ID,
+		CreatedTime = DateTime.Now
+	},
+
+	//5 Dừng chiếu
+	new Movies
+	{
+		ID = Guid.NewGuid(),
+		Name = "AMAZON BULLSEYE: CƯỜI XUYÊN BIÊN GIỚI",
+		Duration = 113,
+		Description = "Jin Bong là cựu cung thủ quốc gia và là người đoạt huy chương trong môn thể thao của mình." +
+		" Anh hiện làm quản lý trong một công ty, nhưng công ty đang trong cuộc khủng hoảng tái cấu trúc. Vào thời điểm đó, công ty của anh đang thúc đẩy dự án Amazon.",
+		StarTime = DateTime.Parse("2024-01-25"),
+		Trailer = "https://youtu.be/JedDZeuTrzQ",
+		Images = "cuoixuyenbiengioi.jpg",
+		AgeAllowed = 13,
+		Status = MovieStatus.StopShowing,
+		GenreID = genreData[4].ID,
+		LenguageID = languageData[0].ID,
+		CountryID = countryData[0].ID,
+		DirectorID = directorData[4].ID,
+		CreatedTime = DateTime.Now
+	},
+	new Movies
+	{
+		ID = Guid.NewGuid(),
+		Name = "KÍNH VẠN HOA: BẮT ĐỀN CON MA",
+		Duration = 123,
+		Description = "Sau sự thành công của hai phim điện ảnh chuyển thể từ tác phẩm đình đám của nhà văn Nguyễn Nhật Ánh, " +
+		"một tác phẩm nổi bật khác của nhà văn hiện đại thành công nhất Việt Nam chuẩn bị được đưa lên màn ảnh rộng: “Kính Vạn Hoa”.",
+		StarTime = DateTime.Parse("2024-01-25"),
+		Trailer = "https://youtu.be/EDDbR2jINsQ",
+		Images = "kinhvanhoa.jpg",
+		AgeAllowed = 13,
+		Status = MovieStatus.StopShowing,
+		GenreID = genreData[4].ID,
+		LenguageID = languageData[0].ID,
+		CountryID = countryData[0].ID,
+		DirectorID = directorData[4].ID,
+		CreatedTime = DateTime.Now
+	},
+	new Movies
+	{
+		ID = Guid.NewGuid(),
+		Name = "MUFASA: THE LION KING: VUA SƯ TỬ",
+		Duration = 118,
+		Description = "Sau khi Simba trở thành vua của Pride Lands quyết tâm cho đứa con của mình tiếp bước vị trí đầu đàn, " +
+		"trong khi nguồn gốc của người cha quá cố – Mufasa được khám phá.",
+		StarTime = DateTime.Parse("2024-01-25"),
+		Trailer = "https://youtu.be/1KtBhnTfq8I",
+		Images = "mufasa.jpg",
+		AgeAllowed = 13,
+		Status = MovieStatus.StopShowing,
+		GenreID = genreData[4].ID,
+		LenguageID = languageData[0].ID,
+		CountryID = countryData[0].ID,
+		DirectorID = directorData[4].ID,
+		CreatedTime = DateTime.Now
+	},
+	new Movies
+	{
+		ID = Guid.NewGuid(),
+		Name = "THE LORD OF THE RINGS: THE WAR OF THE ROHIRRIM",
+		Duration = 134 ,
+		Description = "Một cuộc tấn công bất ngờ của Wulf – lãnh chúa Dunlending thông minh và tàn nhẫn muốn trả thù cho cái chết của cha mình," +
+		" buộc Helm Hammerhand, Vua của Rohan, và người dân của ông phải thực hiện một cuộc chiến đấu cuối cùng táo bạo tại pháo đài cổ Hornburg",
+		StarTime = DateTime.Parse("2024-01-25"),
+		Trailer = "https://youtu.be/4pP71_7b_Y4",
+		Images = "cuocchien.jpg",
+		AgeAllowed = 13,
+		Status = MovieStatus.StopShowing,
+		GenreID = genreData[4].ID,
+		LenguageID = languageData[0].ID,
+		CountryID = countryData[0].ID,
+		DirectorID = directorData[4].ID,
+		CreatedTime = DateTime.Now
+	},
+	new Movies
+	{
+		ID = Guid.NewGuid(),
+		Name = "KRAVEN THE HUNTER: THỢ SĂN THỦ LĨNH",
+		Duration = 127 ,
+		Description = "Mối quan hệ phức tạp giữa Kraven với người cha tàn nhẫn, Nikolai Kravinoff, " +
+		"đã đưa anh vào con đường trả thù với hậu quả tàn khốc, thúc đẩy anh không chỉ trở thành thợ săn vĩ đại nhất thế giới mà còn là một trong những thợ săn đáng sợ nhất.",
+		StarTime = DateTime.Parse("2024-01-25"),
+		Trailer = "https://youtu.be/gnj_VBjwiqU",
+		Images = "thosanthulinh.jpg",
+		AgeAllowed = 18,
+		Status = MovieStatus.StopShowing,
 		GenreID = genreData[4].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
