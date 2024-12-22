@@ -7,6 +7,7 @@ namespace NeonCinema_Client.Data.IServices.FlimsUser
     public interface IFlimUsers
     {
         public Task<List<MovieData>> GetMovieComing();
+        public Task<List<MovieData>> GetStopShowing();
         public Task<PaginationResponse<MovieDTO>> GetMovieShowing(ViewMovieRequest request);
 
     }
