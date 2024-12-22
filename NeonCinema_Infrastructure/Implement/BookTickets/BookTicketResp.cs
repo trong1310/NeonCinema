@@ -35,7 +35,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					.Include(x => x.Rooms)
 						.ThenInclude(r => r.Seats)
 							.ThenInclude(s => s.SeatTypes)
-					.Include(x => x.ShowTime)
+					.Include(x => x.ShowTime).Where(x=>x.Deleted == false)
 					.FirstOrDefaultAsync(x => x.ID == request.ScreeningID, cancellationToken);
 
 				if (screening == null)
@@ -245,6 +245,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					.ThenInclude(s => s.Seats!)
 						.ThenInclude(x => x.SeatTypes)
 				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date)
+				.Where(x=>x.Deleted == false)
 				.OrderBy(x => x.ShowDate.Date)
 				.ThenBy(x => x.ShowTime.StartTime)
 				.ToListAsync();
@@ -277,7 +278,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 							.Include(x => x.Rooms)
 								.ThenInclude(s => s.Seats!)
 									.ThenInclude(x => x.SeatTypes)
-							.Where(x => x.ID == Id)
+							.Where(x => x.ID == Id).Where(x=>x.Deleted == false)
 							.FirstOrDefaultAsync();
 			var seatShowTime = await _context.SeatShowTimeStatuss
 				.Include(x => x.ShowTime)
