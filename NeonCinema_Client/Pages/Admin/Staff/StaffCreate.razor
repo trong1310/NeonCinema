@@ -236,7 +236,7 @@
                 request.DateOrBriht.Year < 1900 ||
                 request.DateOrBriht > DateTime.Now.AddYears(-18))
             {
-                errorYearMessage = "Nhân viên phải từ 16 trở lên.";
+                errorYearMessage = "Nhân viên phải từ 18 trở lên.";
                 IsShowYearNotification = false;
                 isSubmitting = false;
                 return;

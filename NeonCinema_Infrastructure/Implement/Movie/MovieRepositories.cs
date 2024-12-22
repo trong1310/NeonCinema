@@ -340,5 +340,42 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 
 			return movieDtos;
 		}
-    }
+
+
+		public async Task<List<MovieDTO>> GetFilmsStopShowing()
+		{
+			var query = await _context.Movies
+				.Include(x => x.Genre)
+				.Include(x => x.Screening)
+				.Include(x => x.Director)
+				.Include(x => x.Lenguage)
+				.Include(x => x.Countrys)
+				.Include(x => x.TicketSeats)
+				.Where(x => x.Status == MovieStatus.StopShowing)
+				.OrderByDescending(x => x.CreatedTime)
+				.AsNoTracking()
+				.ToListAsync();
+
+			if (query == null || !query.Any()) return null;
+
+			var movieDtos = query.Select(result => new MovieDTO
+			{
+				ID = result.ID,
+				Name = result.Name,
+				AgeAllowed = result.AgeAllowed,
+				CountryName = result.Countrys.CountryName,
+				Description = result.Description,
+				DirectorName = result.Director.FullName,
+				Duration = result.Duration,
+				GenreName = result.Genre.GenreName,
+				Images = result.Images,
+				LanguareName = result.Lenguage.LanguageName,
+				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
+				Status = result.Status,
+				Trailer = result.Trailer,
+			}).ToList();
+
+			return movieDtos;
+		}
+	}
 }
