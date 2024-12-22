@@ -37,19 +37,20 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 							.ThenInclude(s => s.SeatTypes)
 					.Include(x => x.ShowTime).Where(x=>x.Deleted == false)
 					.FirstOrDefaultAsync(x => x.ID == request.ScreeningID, cancellationToken);
-
-				if (screening == null)
 					if (screening == null)
 					{
 						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
 					}
 				var seats = await _context.SeatShowTimeStatuss
-									.Include(x => x.Seat)
-										.ThenInclude(x => x.SeatTypes)
-									.Where(x => x.ShowtimeId == screening.ShowTimeID && x.RoomID == screening.RoomID)
-									.Where(x => x.ShowDate == screening.ShowDate)
-									.Where(x => request.SeatID.Contains(x.SeatID))
-									.ToListAsync(cancellationToken);
+					.Include(x => x.Seat)
+						.ThenInclude(x => x.SeatTypes)
+					.Where(x =>
+						x.ShowtimeId == screening.ShowTimeID &&
+						x.RoomID == screening.RoomID &&
+						x.ShowDate == screening.ShowDate &&
+						request.SeatID.Contains(x.SeatID))
+					.ToListAsync(cancellationToken);
+
 
 				// Kiểm tra ghế không khả dụng
 				var unavailableSeats = seats
@@ -67,9 +68,12 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Sold;
 				}
 				_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
-				await _context.SaveChangesAsync();
 				// tinhs gia ve
-				var seatTypes = screening.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);
+				var seatTypes = screening.Rooms.Seats.ToDictionary(
+								s => s.ID,
+								s => s.SeatTypes?.SeatTypeName ?? "Unknown"
+							);
+
 				var startTime = screening.ShowTime.StartTime ;
 				var showDate = screening.ShowDate;
 				var ticketPriceSetting = await _context.TicketPriceSettings
@@ -120,7 +124,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				}).ToList();
 
 				await _context.Tickets.AddRangeAsync(tickets, cancellationToken);
-				await _context.SaveChangesAsync();
 
 				// Create bill
 				var bill = new Bill
@@ -172,9 +175,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					bill.TotalPrice = tickets.Sum(t => t.Price);
 				}
-
-				await _context.SaveChangesAsync();
-				await transaction.CommitAsync();
 				double convertPoint = (double)bill.TotalPrice * 6.8 / 100;
 
 				if (request.AccountID != null)
@@ -183,16 +183,15 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						ID = Guid.NewGuid(),
 						UserID = (Guid)bill.UserID,
+						BillID = (Guid)bill.ID,
 						Point = convertPoint,
 						ApplyDate = DateTime.UtcNow.AddDays(1),// coonjg sau 1 ngayf
 						CreatedTime = DateTime.UtcNow
 					};
-
-					// Lưu trạng thái chờ xử lý
 					await _context.PendingPoint.AddAsync(pendingPoint);
-					await _context.SaveChangesAsync();
 				}
-				var billresp = await _context.BillDetails
+				await _context.SaveChangesAsync(cancellationToken);
+					var billresp = await _context.BillDetails
 						.Include(b => b.BillCombos)
 							.ThenInclude(bc => bc.FoodCombo)
 						.Include(b => b.Users)
@@ -201,12 +200,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 								.ThenInclude(t => t.Seat)
 						.Where(b => b.ID == bill.ID)
 						.FirstOrDefaultAsync();
-
 				if (billresp == null)
 				{
 					throw new Exception("Không tìm thấy hóa đơn trong cơ sở dữ liệu.");
 				}
-
+				await transaction.CommitAsync(cancellationToken);
 				return new BillResp
 				{
 					Id = billresp.ID,

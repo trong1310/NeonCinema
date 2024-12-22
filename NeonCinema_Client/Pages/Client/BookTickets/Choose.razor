@@ -219,12 +219,6 @@
 					
 					<div class="payment-method mt-3 mb-3">
 						<div class="form-check">
-							<label class="form-check-label" for="cashRadio">
-								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
-								<i class="fa-solid fa-money-bill" style=" margin-right: 5px"></i> Tiền mặt
-							</label>
-						</div>
-						<div class="form-check">
 							<label class="form-check-label" for="bankTransferRadio">
 								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
 								<i class="fa-solid fa-money-check-dollar" style=" margin-right: 5px"></i> Chuyển khoản
@@ -234,9 +228,12 @@
 							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 						</div>
 					</div>
-					<div class="button-pay d-flex justify-content-center gap-3 mt-4">
-						<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-						<button class="btn btn-primary" @onclick="ShowConfirmModal">Thanh toán</button>
+					<div class="payment-method mt-3 mb-3">
+						<div class="button-pay d-flex justify-content-center gap-3 mt-4">
+							<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
+							<button class="btn btn-primary" @onclick="ShowConfirmModal" name="flexRadioDefault" id="bankTransferRadio">Thanh toán</button>
+						</div>
+
 						@if (showConfirmModal)
 						{
 							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -246,8 +243,14 @@
 											<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
 											<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 										</div>
-										<div class="modal-body">
-											<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
+
+										<div class="payment-method mt-3 mb-3">
+											<div class="form-check">
+												<p>Bạn chắc chắn muốn thanh toán với số tiền <strong id="amount-display">@finalPrices.ToString("N0")</strong>?</p>
+											</div>
+											<div class="qr-code-container">
+												<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+											</div>
 										</div>
 										<div class="modal-footer">
 											<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -278,7 +281,6 @@
 							</div>
 						</div>
 					}
-
 					@if (paymentStatus == "failure")
 					{
 						<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentFailureLabel" aria-hidden="true">
@@ -324,54 +326,49 @@
 </div>
 <script>
 	window.onload = function () {
-	// Ẩn QR code mặc định khi tải trang
-	hienThiQR('ẩn');
+		// Ẩn QR code mặc định khi tải trang
+		hienThiQR('ẩn');
 	};
 
 	function hienThiQR(hienThi) {
-	const qrCode = document.getElementById("qrcode");
-	const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+		const qrCode = document.getElementById("qrcode");
+		const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
 
-	if (!qrCode) {
-	console.warn("QR Code element not found.");
-	return;
+		if (!qrCode) {
+			console.warn("QR Code element not found.");
+			return;
+		}
+
+		if (hienThi === 'hiện') {
+			// Kiểm tra phần tử tổng tiền
+			if (!amountDisplay) {
+				console.error("Amount display element not found.");
+				qrCode.style.display = 'none';
+				return;
+			}
+			const totalPrices = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
+			if (isNaN(totalPrices) || totalPrices <= 0) {
+				console.error("Invalid amount for QR code.");
+				qrCode.style.display = 'none';
+				return;
+			}
+			// Tạo URL QR code
+			const accountName = "NGUYEN VAN TRONG";
+			const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrices}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+
+			qrCode.src = qrUrl;
+			qrCode.style.display = 'block'; // Hiển thị QR code
+		} else {
+			qrCode.style.display = 'none'; // Ẩn QR code
+		}
 	}
 
-	if (hienThi === 'hiện') {
-	// Kiểm tra phần tử tổng tiền
-	if (!amountDisplay) {
-	console.error("Amount display element not found.");
-	qrCode.style.display = 'none';
-	return;
-	}
-	const totalPrices = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
-	if (isNaN(totalPrices) || totalPrices <= 0) {
-	console.error("Invalid amount for QR code.");
-	qrCode.style.display = 'none';
-	return;
-	}
-	// Tạo URL QR code
-	const accountName = "NGUYEN VAN TRONG";
-	const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrices}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
-
-	qrCode.src = qrUrl;
-	qrCode.style.display = 'block'; // Hiển thị QR code
-	} else {
-	qrCode.style.display = 'none'; // Ẩn QR code
-	}
-	}
-
-	// Thêm sự kiện thay đổi vào radio buttons
-	document.addEventListener('change', function (event) {
-	if (event.target.name === 'flexRadioDefault') {
-	if (event.target.id === 'bankTransferRadio' && event.target.checked) {
-	hienThiQR('hiện');
-	} else if (event.target.id === 'cashRadio' && event.target.checked) {
-	hienThiQR('ẩn');
-	}
-	}
+	// Hiển thị QR code khi nhấn nút thanh toán
+	document.addEventListener('click', function (event) {
+		if (event.target.id === 'payButton') {
+			hienThiQR('hiện');
+		}
 	});
-
 </script>
 @code {
 	#region
@@ -695,10 +692,12 @@
 			{
 				ResetUI();
 				paymentStatus = "success";
+				Console.WriteLine($"thành công");
 			}
 			else
 			{
 				paymentStatus = "failure";
+				Console.WriteLine($"failure");
 			}
 			var resetPoint = _context.RankMembers.Where(x => x.UserID == user.ID).FirstOrDefault();
 			resetPoint.MinPoint -= point;
@@ -728,15 +727,15 @@
 			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
 		}
 	}
-	private string GetPaymentMessage(string status)
-	{
-		return status switch
-		{
-			"success" => "Thanh toán thành công!",
-			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
-			_ => string.Empty,
-		};
-	}
+	// private string GetPaymentMessage(string status)
+	// {
+	// 	return status switch
+	// 	{
+	// 		"success" => "Thanh toán thành công!",
+	// 		"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+	// 		_ => string.Empty,
+	// 	};
+	// }
 
 	private string GetAlertClass(string status)
 	{
