@@ -45,7 +45,18 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("co loi xay ra : " + ex.Message);
 			}
 		}
-        
+        public async Task<List<MovieDTO>> MoviesStoping()
+        {
+            try
+            {
+                var results = await _httpClient.GetFromJsonAsync<List<MovieDTO>>($"https://localhost:7211/api/Movie/GetStopShowing");
+                return results;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("co loi xay ra : " + ex.Message);
+            }
+        }
         public async Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken)
 		{
 			var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
