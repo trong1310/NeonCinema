@@ -17,11 +17,11 @@
 <EditForm Model="request" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <div class="container-fluid mt-3">
-        <h2 class="text-center mb-4 font-weight-bold">Thêm nhân viên mới</h2>
+        <h2 class="text-center mb-4 font-weight-bold">Thêm khách hàng mới</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 text-center mb-4 mt-5">
                 <img src="@profileImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
-                <label  class="custom-file-upload">
+                <label class="custom-file-upload">
                     <span style="margin-left:-5px">
                         <i class="material-icons">cloud_upload</i>
                     </span>
@@ -234,9 +234,9 @@
             }
             if (request.DateOrBriht == null ||
                 request.DateOrBriht.Year < 1900 ||
-                request.DateOrBriht > DateTime.Now.AddYears(-16))
+                request.DateOrBriht > DateTime.Now.AddYears(-14))
             {
-                errorYearMessage = "Khách hàng phải từ 16 trở lên.";
+                errorYearMessage = "Khách hàng phải từ 14 trở lên.";
                 IsShowYearNotification = false;
                 isSubmitting = false;
                 return;
@@ -280,8 +280,8 @@
 
     private async Task NavigateToStaff()
     {
-        // _navigation.NavigateTo("/staff"); 
-        _navigation.NavigateTo("/client"); 
+        // _navigation.NavigateTo("/staff");
+        _navigation.NavigateTo("/client");
     }
     private void TogglePasswordVisibility()
     {
@@ -339,6 +339,7 @@
         .custom-file-upload:hover {
             background-color: #8f8f8f; /* Màu nền khi hover */
         }
+
     label {
         font-size: 14px;
         color: #555;
@@ -390,7 +391,7 @@
         margin-left: 0;
     }
 
-  
+
     .password-icon {
         position: absolute;
         right: 30px; /* Khoảng cách từ lề phải */
