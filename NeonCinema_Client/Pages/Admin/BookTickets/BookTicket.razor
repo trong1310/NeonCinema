@@ -170,7 +170,7 @@
                             </div>
                             <h5 class="card-title">@item.Name</h5>
                             <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
-                            <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                            <button class="btn btn-primary w-100 buy-ticket disabled" disabled @onclick="() => NagationToDetailBook(item.ID)">
                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                             </button>
                         </div>
@@ -522,6 +522,13 @@
    .buy-ticket{
        margin-bottom: 10px;
    }
-   
+
+        .buy-ticket.disabled {
+            background-color: #6c757d; /* Màu xám cho nút không khả dụng */
+            border-color: #6c757d; /* Màu viền nút */
+            cursor: not-allowed; /* Con trỏ chuột dạng "không được phép" */
+            color: white; /* Màu chữ */
+            opacity: 0.65; /* Độ mờ của nút */
+        }
 </style>
 

@@ -138,11 +138,11 @@
 						@foreach (var item in foods)
 						{
 							<div class="product-item d-flex align-items-center mb-3">
-								<img src="@GetImageUrl(item.Images)" class="product-image me-3">
+								<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
 								<div class="product-info flex-grow-1">
 									<h5>@item.Content</h5>
 									<p>
-										<span class="text-success">@item.Amount</span>
+										<span class="text-success">@item.Amount.ToString("N0") VND</span>
 									</p>
 								</div>
 								<div class="quantity-controls d-flex align-items-center">
