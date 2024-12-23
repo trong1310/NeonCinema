@@ -421,7 +421,7 @@ namespace NeonCinema_API.Controllers
                     var user = await _context.Users
             .Include(u => u.Bills)
             .Include(u => u.PromotionUsers)
-            .Include(u => u.Points)
+            .Include(u => u.PendingPoint)
             .Include(u => u.RankMembers)
             .Include(u => u.Workshifts)
             .FirstOrDefaultAsync(u => u.ID == Guid.Parse(id));

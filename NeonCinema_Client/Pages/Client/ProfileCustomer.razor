@@ -48,22 +48,22 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
-                                <input type="text" id="FullName" class="form-control" @bind="user.FullName" />
+                                <input type="text" id="FullName" class="form-control" @bind="user.FullName" readonly="@(!checkUpdate)"/>
                                
                             </div>
                             <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
-                                <input type="text" id="PhoneNumber" class="form-control" @bind="user.PhoneNumber" />
+                                <input type="text" id="PhoneNumber" class="form-control" @bind="user.PhoneNumber" readonly="@(!checkUpdate)"/>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label for="Email">Email</label>
-                                <input type="text" id="email" class="form-control" @bind="user.Email" />
+                                <input type="text" id="email" class="form-control" @bind="user.Email" readonly="@(!checkUpdate)" />
                             </div>
                             <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control" @bind="user.DateOrBriht" />
+                                <input type="date" id="DateOfBirth" class="form-control" @bind="user.DateOrBriht" readonly="@(!checkUpdate)" />
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -116,13 +116,22 @@
                         <div class="row mt-3">
                             <div class="col-md-12">
                                 <label for="Address">Địa chỉ</label>
-                                <input type="text" id="address" class="form-control address-input" @bind="user.Adderss" />
+                                <input type="text" id="address" class="form-control address-input" @bind="user.Adderss" readonly="@(!checkUpdate)" />
                             </div>
                         </div>
+                        @if(checkUpdate)
+                        {
+                            <div class=" mt-4">
+                                <button style="width: 130px; margin-left: 295px;" type="button" class="btn btn-primary">Lưu</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class=" mt-4">
+                                <button style="width: 130px; margin-left: 295px;" type="button" class="btn btn-primary">Sửa</button>
+                            </div>
+                        }
 
-                        <div class=" mt-4">
-                            <button style="width: 130px; margin-left: 295px;" type="button" class="btn btn-primary">Lưu</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -130,42 +139,48 @@
     </div>
 </div>
 
-<div class="row bg bg-secondary">
-    <div class="col-md-10">
-        <span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
+<div class="row p-5">
+    <div class="row bg bg-secondary rounded">
+        <div class="col-md-10">
+            <span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
+        </div>
+        <div class="col-md-2">
+            <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
+        </div>
     </div>
-    <div class="col-md-2">
-        <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">STT</th>
+                    <th scope="col">Thời gian giao dịch</th>
+                    <th scope="col">Mã hóa đơn</th>
+                    <th scope="col">Tên phim</th>
+                    <th scope="col">Tổng tiền</th>
+                    <th scope="col">Tổng Điểm tích lũy</th>
+                    <th scope="col">Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in _lstBill.Select((value, index) => new {value, index}))
+                {
+                    <tr>
+                        <th scope="row">@(item.index + 1)</th>
+                        <td>1</td>
+                        <td>@item.value.ID</td>
+                        <td>4</td>
+                        <td>@item.value.TotalPrice</td>
+                        <td>6</td>
+                        <td>6</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
-
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">STT</th>
-            <th scope="col">Thời gian giao dịch</th>
-            <th scope="col">Mã hóa đơn</th>
-            <th scope="col">Tên phim</th>
-            <th scope="col">Tổng tiền</th>
-            <th scope="col">Tổng Điểm tích lũy</th>
-            <th scope="col">Chi tiết</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
-            <td>6</td>
-            <td>6</td>
-        </tr>
-    </tbody>
-</table>
-
 @code {
+    private bool checkUpdate = false;
     private ClientChangerPass check = new ClientChangerPass();
     private string currenpass;
     private bool show = false;
@@ -179,6 +194,7 @@
     {
         show = !show;
     }
+
 
     private void TogglePasswordVisibility()
     {
@@ -242,11 +258,21 @@
 
     //
     private Users user = new Users();
+    private List<Bill> _lstBill = new List<Bill>();
 
 
     private async Task LoadUserDetails()
     {
-        user = await _ussv.UserDetails();
+        var token = await _localStorage.GetItemAsync<string>("authToken");
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/get-user-by-id");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
+        {
+            user = await response.Content.ReadFromJsonAsync<Users>();
+        }
+
+        _lstBill = user.Bills.ToList();
     }
 
 

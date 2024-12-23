@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Enum;
 using System.Threading;
 using System.Security.Claims;
+using NeonCinema_API.Controllers.Service;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -168,24 +169,6 @@ namespace NeonCinema_Client.Services.User
 			}
 		}
 
-		public async Task<Users> UserDetails()
-		{
-			try
-            {
-
-                var response = await _httpClient.GetFromJsonAsync<Users>("https://localhost:7211/api/User/get-user-by-id");
-
-                if (response == null)
-                {
-                    return new Users();
-                }
-                else return response;
-                
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-		}
+		
 	}
 }
