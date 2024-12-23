@@ -15,6 +15,7 @@ namespace NeonCinema_Client.Data.IServices.User
         public Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken);
         //  public Task<UserLoginDTO> UserLogin();
         public Task<UserDTO> GetByIDUser(Guid id, CancellationToken cancellationToken);
+        public Task<Users> UserDetails();
         public Task<HttpResponseMessage> CreateUser(UserCreateRequest request);
         public Task<HttpResponseMessage> CreateClient(UserCreateRequest request);
         public Task<HttpResponseMessage> ForgotPass(Forgotpass request);

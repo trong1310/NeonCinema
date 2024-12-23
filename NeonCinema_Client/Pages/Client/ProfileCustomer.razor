@@ -9,7 +9,8 @@
 @using System.Net.Http;
 @using System.Net.Http.Headers;
 @using System.IdentityModel.Tokens.Jwt
-@inject IUserServices UserServices
+@using NeonCinema_Domain.Database.Entities
+@inject IUserServices _ussv;
 @layout LayoutClient
 @inject AuthenticationStateProvider _providee
 @inject HttpClient _http
@@ -47,22 +48,22 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label for="FullName">Họ và tên</label>
-                                <input type="text" id="FullName" class="form-control" @bind="name" />
+                                <input type="text" id="FullName" class="form-control" @bind="user.FullName" />
                                
                             </div>
                             <div class="col-md-6">
                                 <label for="PhoneNumber">Số điện thoại</label>
-                                <input type="text" id="PhoneNumber" class="form-control" @bind="phone" />
+                                <input type="text" id="PhoneNumber" class="form-control" @bind="user.PhoneNumber" />
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label for="Email">Email</label>
-                                <input type="text" id="email" class="form-control" @bind="email" />
+                                <input type="text" id="email" class="form-control" @bind="user.Email" />
                             </div>
                             <div class="col-md-6">
                                 <label for="DateOfBirth">Ngày sinh</label>
-                                <input type="date" id="DateOfBirth" class="form-control" @bind="age" />
+                                <input type="date" id="DateOfBirth" class="form-control" @bind="user.DateOrBriht" />
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -100,7 +101,7 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label>Giới tính</label>
-                                <div>
+                                @* <div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" id="genderMale" value="Nam" checked="@IsMaleChecked" />
                                         <label class="form-check-label" for="genderMale">Nam</label>
@@ -109,13 +110,13 @@
                                         <input class="form-check-input" type="radio" id="genderFemale" value="Nữ" checked="@IsFemaleChecked" />
                                         <label class="form-check-label" for="genderFemale">Nữ</label>
                                     </div>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-12">
                                 <label for="Address">Địa chỉ</label>
-                                <input type="text" id="address" class="form-control address-input" @bind="address" />
+                                <input type="text" id="address" class="form-control address-input" @bind="user.Adderss" />
                             </div>
                         </div>
 
@@ -205,11 +206,11 @@
                 {
                     Currenpassword = currenpass,
                     Newpassword = newPassword,
-                    
+
                 };
 
-           
-            var checkpass = await UserServices.ChangerPass(check);
+
+            var checkpass = await _ussv.ChangerPass(check);
             if (!checkpass.IsSuccessStatusCode)
             {
                 var cr = currenpass;
@@ -239,48 +240,20 @@
         errorMessage = null;      
     }
 
+    //
+    private Users user = new Users();
 
 
+    private async Task LoadUserDetails()
+    {
+        user = await _ussv.UserDetails();
+    }
 
 
-
-
-
-
-
-
-
-    private string? name = "";
-    private string? email = "";
-    private string? phone = "";
-    private string? address = "";
-    private DateTime? age;
-    private string? gender;
-    private string? images;
-    private bool IsMaleChecked => gender == "Nam";
-    private bool IsFemaleChecked => gender == "Nữ";
 
     protected override async Task OnInitializedAsync()
     {
-        name = await _localStorage.GetItemAsync<string>("name");
-        email = await _localStorage.GetItemAsync<string>("email");
-        phone = await _localStorage.GetItemAsync<string>("mobilephone");
-        address = await _localStorage.GetItemAsync<string>("address");
-        images = await _localStorage.GetItemAsync<string>("images");
-        var token = await _localStorage.GetItemAsync<string>("authToken");
-        var birthDateString = await _localStorage.GetItemAsync<string>("dateofbirth");
-        if (DateTime.TryParse(birthDateString, out var parsedDate))
-        {
-            age = parsedDate;
-        }
-        if (!string.IsNullOrEmpty(token))
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(token);
-            currentUserId = jwt.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        }
-        gender = await _localStorage.GetItemAsync<string>("gender");
-       
+        await LoadUserDetails();
     }
     private string GetImageUrl(string imageUrl)
     {
