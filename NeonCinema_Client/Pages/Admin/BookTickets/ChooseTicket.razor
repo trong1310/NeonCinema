@@ -113,8 +113,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -267,9 +267,9 @@
 					<span>@comboPrices.ToString("N0")</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-						<span>Tổng tiền</span>
-						<span>@totalPrices.ToString("N0") VND</span>
-					</div>
+					<span>Tổng tiền</span>
+					<span>@sumPrices.ToString("N0") VND</span>
+				</div>
 				<hr class="dashed">
 				<div class="form-group">
 					<label for="search">Tìm kiếm khách hàng:</label>
@@ -291,14 +291,14 @@
 						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
 						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
-								<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng" />
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
 								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
 						@* <div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
 								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
@@ -321,7 +321,6 @@
 
 				<hr class="dashed">
 				<div class="payment-method mt-3 mb-3">
-					<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
 							<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
@@ -341,7 +340,7 @@
 				<hr class="dashed">
 				<div class="d-flex justify-content-between mt-3">
 					<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
-					<strong id="amount-display"> @finalPrices.ToString("N0") </strong>
+					<strong id="amount-display"> @totalPrices.ToString("N0") </strong>
 				</div>
 				<div class="d-flex justify-content-between mt-3">
 					<strong>Tiền khách trả</strong>
@@ -505,19 +504,27 @@
 	public string error = "";
 	public Guid createBy;
 	public decimal moneyrRceived = 0;
-	public decimal sum => moneyrRceived - finalPrices;
+	public decimal sum => moneyrRceived - totalPrices;
 	public decimal refun => sum > 0 ? sum : 0;
-	private double point = 0;
 	private double discount = 0;
-	private decimal finalPrices => totalPrices - (decimal)discount;
+	private double point = 0;
+	private decimal sumPrices;
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
 	}
 	private void ApplyPoint()
 	{
-		discount = point * 0.5;
-		totalPrices -= (decimal)discount;
+		if (request.Point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			totalPrices -= (decimal)discount;
+		}
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -547,7 +554,7 @@
 		var token = await _localstorage.GetItemAsync<string>("authToken");
 		if (string.IsNullOrEmpty(token))
 		{
-			//_navi.NavigateTo("/login");
+			_navi.NavigateTo("/login");
 			return;
 		}
 		var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -692,6 +699,7 @@
 			selectedSeats.Remove(seat.SeatNumber);
 			seatPrices -= (decimal)seat.Price;
 			totalPrices -= (decimal)seat.Price;
+			sumPrices -= (decimal)seat.Price;
 		}
 		else
 		{
@@ -700,6 +708,7 @@
 			selectedSeatsId.Add(seat.ID);
 			seatPrices += (decimal)seat.Price;
 			totalPrices += (decimal)seat.Price;
+			sumPrices += (decimal)seat.Price;
 		}
 
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
@@ -726,6 +735,7 @@
 
 		comboPrices += combo.Amount;
 		totalPrices += combo.Amount;
+		sumPrices += combo.Amount;
 		await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
@@ -736,7 +746,7 @@
 			selectedCombos[combo]--;
 			comboPrices -= combo.Amount;
 			totalPrices -= combo.Amount;
-
+			sumPrices -= combo.Amount;
 			if (selectedCombos[combo] == 0)
 			{
 				selectedCombos.Remove(combo);
@@ -770,14 +780,19 @@
 		phoneNumber = string.Empty;
 		Rank.AccountName = string.Empty;
 		Rank.Point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
+		point = 0;
+		sumPrices = 0;
 		RefreshSeatsAsync();
 	}
 
 	private async Task ProcessPayment()
 	{
+		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
 		if (!string.IsNullOrEmpty(phoneNumber))
 		{
-			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+
 			request = new CreateBookTicketRequest
 				{
 					ScreeningID = screenings.Id,
@@ -790,7 +805,7 @@
 						Quantity = combo.Value,
 					}).ToList(),
 					CreateBy = createBy,
-
+					Point = point,
 				};
 		}
 		else
@@ -806,23 +821,31 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
-					CreateBy = createBy
+					CreateBy = createBy,
+					Point = point,
 				};
 		}
 
 		try
 		{
 			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
-			billResp.TotalPrice = finalPrices;
 			if (billResp != null)
 			{
 				ResetUI();
 				paymentStatus = "success";
+				if (point > 0)
+				{
+					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+					resetPoint.MinPoint -= point;
+					_context.RankMembers.Update(resetPoint);
+					_context.SaveChanges();
+				}
 			}
 			else
 			{
 				paymentStatus = "failure";
 			}
+
 		}
 		catch (Exception ex)
 		{
@@ -833,20 +856,30 @@
 		StateHasChanged();
 	}
 	public Guid BillTicketId { get; set; }
-	public async Task ExportFile()
+
+	private async Task ExportFile()
 	{
 		try
 		{
 			BillTicketId = (Guid)billResp.Id;
-			var export = await _services.ExportFile(BillTicketId);
-			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
-			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+			var response = await _services.ExportFile(BillTicketId);
+			if (response == null || response.Length == 0)
+			{
+				Console.WriteLine("Không thể tải hóa đơn: File rỗng hoặc không tồn tại.");
+				return;
+			}
+	
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.zip";
+			var url = $"data:application/octet-stream;base64,{Convert.ToBase64String(response)}";
+			await JS.InvokeVoidAsync("downloadFile", url, fileName);
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+			// Xử lý lỗi chung
+			Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
 		}
 	}
+
 	private string GetPaymentMessage(string status)
 	{
 		return status switch

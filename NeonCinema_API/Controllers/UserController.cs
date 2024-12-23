@@ -110,15 +110,12 @@ namespace NeonCinema_API.Controllers
 				}
 				var userId = Guid.Parse(userIdClaim);
 				var bills = await _context.BillDetails
-				.Include(b => b.BillTickets)
-					.ThenInclude(bt => bt.Tickets)
+				.Include(bt => bt.Ticket)
 						.ThenInclude(t => t.Screenings)
 							.ThenInclude(s => s.ShowTime)
-				.Include(b => b.BillTickets)
-					.ThenInclude(bt => bt.Tickets)
+				.Include(bt => bt.Ticket)
 						.ThenInclude(t => t.Movies)
-				.Include(b => b.BillTickets)
-				.ThenInclude(bt => bt.Tickets)
+				.Include(bt => bt.Ticket)
 					.ThenInclude(t => t.Seat)
 			.Where(b => b.UserID == userId)
 			.ToListAsync(cancellationToken);
@@ -130,11 +127,11 @@ namespace NeonCinema_API.Controllers
 				{
 					BillCode = bill.BillCode,
 					TotalPrice = bill.TotalPrice,
-					Tickets = bill.BillTickets.Select(bt => new
+					Tickets = bill.Ticket.Select(bt => new
 					{
-						MovieName = bt.Tickets?.Movies?.Name ?? "Không có thông tin phim",
-						SeatNumber = bt.Tickets?.Seat?.SeatNumber ?? "Không có thông tin ghế",
-						ScreeningTime = bt.Tickets?.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu"
+						MovieName = bt.Movies?.Name ?? "Không có thông tin phim",
+						SeatNumber = bt.Seat?.SeatNumber ?? "Không có thông tin ghế",
+						ScreeningTime = bt.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu"
 					})
 
 				});
@@ -169,15 +166,12 @@ namespace NeonCinema_API.Controllers
 				}
 				var userId = Guid.Parse(request.ID);
 				var bills = await _context.BillDetails
-					.Include(b => b.BillTickets)
-						.ThenInclude(bt => bt.Tickets)
+					.Include(bt => bt.Ticket)
 							.ThenInclude(t => t.Screenings)
 								.ThenInclude(s => s.ShowTime)
-					.Include(b => b.BillTickets)
-						.ThenInclude(bt => bt.Tickets)
+					.Include(bt => bt.Ticket)
 							.ThenInclude(t => t.Movies)
-					.Include(b => b.BillTickets)
-						.ThenInclude(bt => bt.Tickets)
+					.Include(bt => bt.Ticket)
 							.ThenInclude(t => t.Seat)
 					.Where(b => b.UserID == userId)
 					.ToListAsync(cancellationToken);
@@ -190,16 +184,16 @@ namespace NeonCinema_API.Controllers
 					BillID = bill.ID,
 					TotalPrice = bill.TotalPrice,
 					BillCode = bill.BillCode,
-					Tickets = bill.BillTickets.Select(bt => new
+					Tickets = bill.Ticket.Select(bt => new
 					{
-						TicketID = bt.Tickets.ID,
-						MovieName = bt.Tickets.Movies?.Name ?? "Không có thông tin phim",
-						SeatNumber = bt.Tickets.Seat?.SeatNumber ?? "Không có thông tin ghế",
-						ScreeningTime = bt.Tickets.Screenings?.ShowTime != null
-							? bt.Tickets.Screenings.ShowTime.StartTime.ToString(@"hh\:mm")
+						TicketID = bt.ID,
+						MovieName = bt.Movies?.Name ?? "Không có thông tin phim",
+						SeatNumber = bt.Seat?.SeatNumber ?? "Không có thông tin ghế",
+						ScreeningTime = bt.Screenings?.ShowTime != null
+							? bt.Screenings.ShowTime.StartTime.ToString(@"hh\:mm")
 							: "Không có thông tin thời gian chiếu",
-						Price = bt.Tickets.Price,
-						TicketStatus = bt.Tickets.Status.ToString()
+						Price = bt.Price,
+						TicketStatus = bt.Status.ToString()
 					})
 				});
 				return Ok(result);

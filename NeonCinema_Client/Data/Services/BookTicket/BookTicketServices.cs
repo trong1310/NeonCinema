@@ -146,7 +146,7 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync($"https://localhost:7211/api/Resources/generate-invoice-pdf/{BillId}");
+				var response = await _httpClient.GetAsync($"https://localhost:7211/api/Resources/generate-invoice-pdf?billid={BillId}");
 				if (response.IsSuccessStatusCode)
 				{
 					return await response.Content.ReadAsByteArrayAsync();

@@ -11,7 +11,7 @@ using NeonCinema_Infrastructure.Extention.Utili;
 using System.Net;
 
 namespace NeonCinema_Infrastructure.Implement.BookTickets
-{ 
+{
 	public class BookTicketResp
 	{
 		private readonly NeonCinemasContext _context;
@@ -35,12 +35,12 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					.Include(x => x.Rooms)
 						.ThenInclude(r => r.Seats)
 							.ThenInclude(s => s.SeatTypes)
-					.Include(x => x.ShowTime).Where(x=>x.Deleted == false)
+					.Include(x => x.ShowTime).Where(x => x.Deleted == false)
 					.FirstOrDefaultAsync(x => x.ID == request.ScreeningID, cancellationToken);
-					if (screening == null)
-					{
-						throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
-					}
+				if (screening == null)
+				{
+					throw new KeyNotFoundException("Lịch chiếu không tồn tại.");
+				}
 				var seats = await _context.SeatShowTimeStatuss
 					.Include(x => x.Seat)
 						.ThenInclude(x => x.SeatTypes)
@@ -73,8 +73,19 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 								s => s.ID,
 								s => s.SeatTypes?.SeatTypeName ?? "Unknown"
 							);
+				var bill = new Bill
+				{
+					ID = Guid.NewGuid(),
+					BillCode = Uliti.GenerateBillCode(),
+					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
+					CreatedTime = DateTime.Now,
+					UserID = request.AccountID ?? null,
+					CreatedBy = request.CreateBy,
+					TotalPoint = request.Point,
+					PromotionID = request.Voucher
 
-				var startTime = screening.ShowTime.StartTime ;
+				};
+				var startTime = screening.ShowTime.StartTime;
 				var showDate = screening.ShowDate;
 				var ticketPriceSetting = await _context.TicketPriceSettings
 				.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
@@ -119,34 +130,28 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						SeatID = seatId,
 						CreatedTime = DateTime.Now,
 						MovieID = (Guid)request.MovieId,
-						Price = basePrice
+						Price = basePrice,
+						BillId = bill.ID,
 					};
 				}).ToList();
-
+				var flims = await _context.Movies.Where(x => x.ID == request.MovieId).FirstOrDefaultAsync();
+				var type = await _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefaultAsync();
+				if (type != null)
+				{
+					if (type.MovieTypeName.Contains("3D".Trim()))
+					{
+						bill.TotalPrice += ticketPriceSetting.Surcharge3D;
+					}
+					if (type.MovieTypeName.Contains("2D".Trim()))
+					{
+						bill.TotalPrice += ticketPriceSetting.Surcharge4D;
+					}
+				}
 				await _context.Tickets.AddRangeAsync(tickets, cancellationToken);
 
 				// Create bill
-				var bill = new Bill
-				{
-					ID = Guid.NewGuid(),
-					BillCode = Uliti.GenerateBillCode(),
-					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
-					CreatedTime = DateTime.Now,
-					UserID = request.AccountID ?? null,
-					CreatedBy = request.CreateBy
-				};
+
 				await _context.BillDetails.AddAsync(bill, cancellationToken);
-
-				// Add bill tickets
-				var billTickets = tickets.Select(ticket => new BillTicket
-				{
-					BillId = bill.ID,
-					TicketId = ticket.ID,
-					CreatedTime = ticket.CreatedTime
-				}).ToList();
-
-				await _context.BillTickets.AddRangeAsync(billTickets, cancellationToken);
-
 				// Add bill combos
 				if (request.BillCombos != null && request.BillCombos.Any())
 				{
@@ -168,12 +173,39 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 					await _context.BillCombos.AddRangeAsync(billCombos, cancellationToken);
 
-					bill.TotalPrice = tickets.Sum(t => t.Price) +
+					bill.TotalPrice += tickets.Sum(t => t.Price) +
 									  billCombos.Sum(bc => foodComboPrices.First(fc => fc.ID == bc.FoodComboID).TotalPrice * bc.Quantity);
 				}
 				else
 				{
-					bill.TotalPrice = tickets.Sum(t => t.Price);
+					bill.TotalPrice += tickets.Sum(t => t.Price);
+				}
+
+				bill.AfterDiscount = bill.TotalPrice;
+				double discount = 0;
+				if (request.Point > 0)
+				{
+					discount = (double)request.Point * 0.5;
+					bill.AfterDiscount -= (decimal)discount;
+					var rankMember = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
+					rankMember.MinPoint -= (double)request.Point;
+				}
+				if (request.Voucher != null)
+				{
+					var voucher = await _context.Promotions.Where(x => x.ID == request.Voucher).FirstOrDefaultAsync();
+					if (voucher != null)
+					{
+						if (voucher.DiscountAmount != null)
+						{
+							bill.AfterDiscount -= (decimal)voucher.DiscountAmount;
+						}
+						if (voucher.DiscountPercentage != null)
+						{
+							decimal discountAmount = bill.TotalPrice * ((decimal)voucher.DiscountPercentage / 100);
+							bill.AfterDiscount -= discountAmount;
+						}
+
+					}
 				}
 				double convertPoint = (double)bill.TotalPrice * 6.8 / 100;
 
@@ -183,23 +215,21 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						ID = Guid.NewGuid(),
 						UserID = (Guid)bill.UserID,
-						BillID = (Guid)bill.ID,
 						Point = convertPoint,
 						ApplyDate = DateTime.UtcNow.AddDays(1),// coonjg sau 1 ngayf
-						CreatedTime = DateTime.UtcNow
+						CreatedTime = DateTime.UtcNow,
+						BillID = bill.ID
 					};
 					await _context.PendingPoint.AddAsync(pendingPoint);
 				}
 				await _context.SaveChangesAsync(cancellationToken);
-					var billresp = await _context.BillDetails
-						.Include(b => b.BillCombos)
-							.ThenInclude(bc => bc.FoodCombo)
-						.Include(b => b.Users)
-						.Include(b => b.BillTickets)
-							.ThenInclude(bt => bt.Tickets)
-								.ThenInclude(t => t.Seat)
-						.Where(b => b.ID == bill.ID)
-						.FirstOrDefaultAsync();
+				var billresp = await _context.BillDetails
+					.Include(b => b.BillCombos)
+						.ThenInclude(bc => bc.FoodCombo)
+					.Include(b => b.Users).Include(x => x.Ticket)
+							.ThenInclude(t => t.Seat)
+					.Where(b => b.ID == bill.ID)
+					.FirstOrDefaultAsync();
 				if (billresp == null)
 				{
 					throw new Exception("Không tìm thấy hóa đơn trong cơ sở dữ liệu.");
@@ -214,11 +244,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						ComboName = cb.FoodCombo?.Content ?? "N/A",
 						Quantity = cb.Quantity,
 					}).ToList() ?? new List<BillComboResp>(),
-					BillTickets = billresp.BillTickets?.Select(tk => new BillTicketResp
+					TicketResp = billresp.Ticket?.Select(tic => new TicketResp
 					{
-						BillTicketID = tk.BillId,
-						SeatNumber = tk.Tickets?.Seat?.SeatNumber ?? "N/A",
-					}).ToList() ?? new List<BillTicketResp>(),
+						SeatNumber = tic.Seat.SeatNumber,
+						TicketID = tic.ID
+					}).ToList() ?? new List<TicketResp>(),
 					CreatedAt = billresp.CreatedTime ?? DateTime.MinValue,
 					CustomerName = billresp.Users?.FullName ?? "Khách lẻ",
 					TotalPrice = billresp.TotalPrice,
@@ -243,7 +273,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					.ThenInclude(s => s.Seats!)
 						.ThenInclude(x => x.SeatTypes)
 				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date)
-				.Where(x=>x.Deleted == false)
+				.Where(x => x.Deleted == false)
 				.OrderBy(x => x.ShowDate.Date)
 				.ThenBy(x => x.ShowTime.StartTime)
 				.ToListAsync();
@@ -276,12 +306,12 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 							.Include(x => x.Rooms)
 								.ThenInclude(s => s.Seats!)
 									.ThenInclude(x => x.SeatTypes)
-							.Where(x => x.ID == Id).Where(x=>x.Deleted == false)
+							.Where(x => x.ID == Id).Where(x => x.Deleted == false)
 							.FirstOrDefaultAsync();
 			var seatShowTime = await _context.SeatShowTimeStatuss
 				.Include(x => x.ShowTime)
 				.Include(x => x.Room)
-				.Include(x => x.Seat).ThenInclude(x=>x.SeatTypes).Where(x => x.ShowtimeId == screenings.ShowTimeID)
+				.Include(x => x.Seat).ThenInclude(x => x.SeatTypes).Where(x => x.ShowtimeId == screenings.ShowTimeID)
 				.Where(x => x.RoomID == screenings.RoomID)
 				.Where(x => x.ShowDate == screenings.ShowDate).ToListAsync();
 			var seatTypes = screenings.Rooms.Seats.ToDictionary(s => s.ID, s => s.SeatTypes.SeatTypeName);

@@ -113,8 +113,8 @@
 									@foreach (var seat in row.Value)
 									{
 										<div class="seat-box @GetSeatCssClass(seat)"
-											 id="@seat.ID"
-											 @onclick="() => SelectSeat(seat)">
+										id="@seat.ID"
+										@onclick="() => SelectSeat(seat)">
 											@seat.SeatNumber
 										</div>
 									}
@@ -185,7 +185,7 @@
 						<span>Tổng tiền combo</span>
 						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
-					
+
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền</span>
 						<span>@totalPrices.ToString("N0") VND</span>
@@ -251,8 +251,8 @@
 													</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
-																@onclick="() => SelectDiscount(discount)"
-																disabled="@(selectedDiscountCode != null)">
+														@onclick="() => SelectDiscount(discount)"
+														disabled="@(selectedDiscountCode != null)">
 															Chọn
 														</button>
 													</div>
@@ -276,7 +276,7 @@
 						<strong>Tổng tiền</strong>
 						<strong id="amount-display">@finalPrices.ToString("N0") VND</strong>
 					</div>
-					
+
 					<div class="payment-method mt-3 mb-3">
 						<div class="form-check">
 							<label class="form-check-label" for="bankTransferRadio">
@@ -386,48 +386,48 @@
 </div>
 <script>
 	window.onload = function () {
-		// Ẩn QR code mặc định khi tải trang
-		hienThiQR('ẩn');
+	// Ẩn QR code mặc định khi tải trang
+	hienThiQR('ẩn');
 	};
 
 	function hienThiQR(hienThi) {
-		const qrCode = document.getElementById("qrcode");
-		const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+	const qrCode = document.getElementById("qrcode");
+	const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
 
-		if (!qrCode) {
-			console.warn("QR Code element not found.");
-			return;
-		}
+	if (!qrCode) {
+	console.warn("QR Code element not found.");
+	return;
+	}
 
-		if (hienThi === 'hiện') {
-			// Kiểm tra phần tử tổng tiền
-			if (!amountDisplay) {
-				console.error("Amount display element not found.");
-				qrCode.style.display = 'none';
-				return;
-			}
-			const totalPrices = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
-			if (isNaN(totalPrices) || totalPrices <= 0) {
-				console.error("Invalid amount for QR code.");
-				qrCode.style.display = 'none';
-				return;
-			}
-			// Tạo URL QR code
-			const accountName = "NGUYEN VAN TRONG";
-			const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrices}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+	if (hienThi === 'hiện') {
+	// Kiểm tra phần tử tổng tiền
+	if (!amountDisplay) {
+	console.error("Amount display element not found.");
+	qrCode.style.display = 'none';
+	return;
+	}
+	const totalPrices = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
+	if (isNaN(totalPrices) || totalPrices <= 0) {
+	console.error("Invalid amount for QR code.");
+	qrCode.style.display = 'none';
+	return;
+	}
+	// Tạo URL QR code
+	const accountName = "NGUYEN VAN TRONG";
+	const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrices}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
 
-			qrCode.src = qrUrl;
-			qrCode.style.display = 'block'; // Hiển thị QR code
-		} else {
-			qrCode.style.display = 'none'; // Ẩn QR code
-		}
+	qrCode.src = qrUrl;
+	qrCode.style.display = 'block'; // Hiển thị QR code
+	} else {
+	qrCode.style.display = 'none'; // Ẩn QR code
+	}
 	}
 
 	// Hiển thị QR code khi nhấn nút thanh toán
 	document.addEventListener('click', function (event) {
-		if (event.target.id === 'payButton') {
-			hienThiQR('hiện');
-		}
+	if (event.target.id === 'payButton') {
+	hienThiQR('hiện');
+	}
 	});
 </script>
 @code {
@@ -454,15 +454,24 @@
 	public string error = "";
 	private double point = 0;
 	private double discount = 0;
-	private void ShowConfirmModal()
+	private async void ShowConfirmModal()
 	{
 		showConfirmModal = true;
+		await UpdateQRCode();
 	}
 	private UserProfile user = new UserProfile();
 	private void ApplyPoint()
 	{
-		discount = point * 0.5;
-		totalPrices -= (decimal)discount;
+		if (point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			totalPrices -= (decimal)discount;
+		}
 	}
 	protected override async Task OnInitializedAsync()
 	{
@@ -725,6 +734,8 @@
 		Rank.AccountName = string.Empty;
 		Rank.Point = 0;
 		point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
 		RefreshSeatsAsync();
 	}
 
@@ -759,10 +770,6 @@
 				paymentStatus = "failure";
 				Console.WriteLine($"failure");
 			}
-			var resetPoint = _context.RankMembers.Where(x => x.UserID == user.ID).FirstOrDefault();
-			resetPoint.MinPoint -= point;
-			_context.RankMembers.Update(resetPoint);
-			_context.SaveChanges();
 		}
 		catch (Exception ex)
 		{

@@ -66,12 +66,12 @@ namespace NeonCinema_API.Controllers.Statisticss
 			return Ok(comboStatistics);
 		}
 
-		[HttpGet("movie-statistics")]
-		public async Task<IActionResult> GetMovieStatistics(DateTime startDate, DateTime endDate)
-		{
-			var movieStatistics = await _statisticalRepo.GetMovieStatisticsAsync(startDate, endDate);
-			return Ok(movieStatistics);
-		}
+		//[HttpGet("movie-statistics")]
+		//public async Task<IActionResult> GetMovieStatistics(DateTime startDate, DateTime endDate)
+		//{
+		//	var movieStatistics = await _statisticalRepo.GetMovieStatisticsAsync(startDate, endDate);
+		//	return Ok(movieStatistics);
+		//}
 
 
 
