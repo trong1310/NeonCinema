@@ -134,36 +134,25 @@
 							<h3>Combo Đồ Ăn</h3>
 						</div>
 						<hr class="dashed">
-						<div class="concession-item">
-							@foreach (var combo in foods)
-							{
-								<div class="icon-box featured-box align-middle icon-box-left text-left">
-									<div class="icon-box-img" >
-										<div class="icon">
-											<div class="icon-inner">
-												<img src="@GetImageUrl(combo.Images)">
-											</div>
-										</div>
-									</div>
-									<div class="icon-box-text last-reset">
-										<h4 class="">@combo.Content</h4>
-										<div class="stack stack-row justify-between items-center">
-											<span>@combo.Description</span>
-											<div class="quantity">
-												<div class="quantity">
-													<span class="minus" @onclick="() => Decrease(combo)">-</span>
-													<span class="number">
-														@GetComboQuantity(combo)
-													</span>
-													<span class="plus" @onclick="() => Increase(combo)">+</span>
-												</div>
-											</div>
-											<span class="price">@combo.Amount.ToString("N0")</span>
-										</div>
-									</div>
+						<div class="product-list ">
+						@foreach (var item in foods)
+						{
+							<div class="product-item d-flex align-items-center mb-3">
+								<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
+								<div class="product-info flex-grow-1">
+									<h5>@item.Content</h5>
+									<p>
+										<span class="text-success">@item.Amount.ToString("N0") VND</span>
+									</p>
 								</div>
-							}
-						</div>
+								<div class="quantity-controls d-flex align-items-center">
+									<button class="btn control" @onclick="() => Decrease(item)">-</button>
+									<span class="mx-2">@GetComboQuantity(item)</span>
+									<button class="btn control" @onclick="() => Increase(item)">+</button>
+								</div>
+							</div>
+						}
+					</div>
 					</div>
 				</div>
 
@@ -250,18 +239,18 @@
 				<hr class="dashed">
 				<div class="d-flex justify-content-between mb-3">
 					<span>Ghế : @selectedSeatNumbers</span>
-					<span>@seatPrices.ToString("N0")</span>
+					<span>@seatPrices.ToString("N0") VND</span>
 				</div>
 				@foreach (var combo in selectedCombos)
 				{
 					<div class="d-flex justify-content-between mb-3">
 						<span>@combo.Key.Content  x @combo.Value</span>
-						<span>@combo.Key.Amount.ToString("N0")</span>
+						<span>@combo.Key.Amount.ToString("N0") VND</span>
 					</div>
 				}
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền combo</span>
-					<span>@comboPrices.ToString("N0")</span>
+					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền</span>
@@ -316,18 +305,25 @@
 					</div>
 				}
 
+				
 				<hr class="dashed">
-				<div class="payment-method mt-3 mb-3">
+				<div class="d-flex justify-content-between mt-3">
+					<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
+					@* <strong id="amount-display"> @finalPrices.ToString("N0") </strong> *@
+				</div>
+				<div class="payment-method mt-3 ">
 					<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
-							<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment" 
+								   @onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
-							<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+							<input type="radio" name="flexRadioDefault" id="bankTransferRadio" checked="!isCashPayment" 
+									@onchange="(e) => isCashPayment = false">
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -335,22 +331,18 @@
 						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 					</div>
 				</div>
-				<hr class="dashed">
-				<div class="d-flex justify-content-between mt-3">
-					<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-				</div>
-				<div class="d-flex justify-content-between mt-3">
+				@if (isCashPayment)
+				{
+					<div class="form-group">
+						<label class="form-label">Tiền khách đưa</label>
+						<input style="margin-top: -5px" class="form-control" placeholder="Nhập số tiền khách đưa" />
+					</div>
+					<div class="d-flex justify-content-between mt-1">
+						<strong>Tiền thừa</strong>
+						<strong>0</strong> <!-- Hoặc thay giá trị bằng logic tính toán -->
+					</div>
+				}
 
-					<strong>Tiền khách đưa</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-
-				</div>
-				<div class="d-flex justify-content-between mt-3">
-
-					<strong>Tiền thừa</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-				</div>
 				<div class="button-container">
 					<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
 				</div>
@@ -1078,6 +1070,8 @@
 	}
 
 	#endregion
+
+	private bool isCashPayment = true; // Mặc định là tiền mặt
 }
 <style>
 	.movie-info-card {
@@ -1315,8 +1309,14 @@
 	.available {
 		background-color: none;
 	}
+	.product-image {
+    width: 150px; /* Chiều rộng cố định */
+    height: 170px; /* Chiều cao cố định */
+    object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
+   
+}
 
-	.combo-item {
+@* 	.combo-item {
 		border: 1px solid #ccc;
 		padding: 10px;
 		margin: 10px;
@@ -1365,7 +1365,7 @@
 
 			.quantity .minus:hover, .quantity .plus:hover {
 				background-color: #aaa;
-			}
+			} *@
 
 	.button-container {
 		display: flex;
@@ -1387,6 +1387,37 @@
 		gap: 20px;
 	}
 
+	.control {
+		border-radius: 50% !important; /* Tạo viền hình tròn */ 
+		width: 40px !important; /* Đặt chiều rộng cố định */
+		height: 40px !important; /* Đặt chiều cao cố định */
+		display: flex !important;
+		align-items: center !important; /* Căn giữa nội dung theo chiều dọc */
+		justify-content: center !important; /* Căn giữa nội dung theo chiều ngang */
+		padding: 0 !important; /* Loại bỏ padding mặc định */
+		font-size: 18px !important; /* Kích thước chữ */
+		border: 2px solid #28a745 !important; /* Viền màu xanh lá */
+		background-color: white !important; /* Nền trắng */
+		color: #28a745 !important; /* Màu chữ xanh lá */
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+		cursor: pointer !important; /* Thay đổi con trỏ khi hover */
+	}
+
+		.control:hover {
+			background-color: #28a745; /* Nền xanh lá khi hover */
+			color: white; /* Màu chữ trắng khi hover */
+			transform: scale(1.1); /* Phóng to nhẹ khi hover */
+		}
+
+		.control:active {
+			transform: scale(0.9); /* Nhỏ lại nhẹ khi bấm */
+		}
+
+		.control:focus {
+			outline: none; /* Loại bỏ viền khi nút được focus */
+			box-shadow: none; /* Loại bỏ bóng xanh dương khi nhấn */
+		}
+
 	.combo-container {
 		flex: 1;
 	}
@@ -1400,7 +1431,7 @@
 	}
 
 	.icon-box-img {
-		max-width: 80px;
+		max-width: 100px;
 		width: 100%;
 	}
 

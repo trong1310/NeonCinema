@@ -82,25 +82,31 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Genre" class="font-weight-bold">Thể loại</label>
-						<select @bind="movieDto.GenreName" class="form-control">
-							<option value="" disabled selected>Chọn thể loại</option>
-							@foreach (var genre in genres)
-							{
-								<option value="@genre.GenreName">@genre.GenreName</option>
-							}
-						</select>
+						<div class="position-relative">
+							<select @bind="movieDto.GenreName" class="form-control">
+								<option value="" disabled selected>Chọn thể loại</option>
+								@foreach (var genre in genres)
+								{
+									<option value="@genre.GenreName">@genre.GenreName</option>
+								}
+							</select>
+							<i class="material-icons add-icon-genre" @onclick="OpenGenreDialog">add_circle</i>
+						</div>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Language" class="font-weight-bold">Ngôn ngữ</label>
-						<select @bind="movieDto.LanguareName" class="form-control">
-							<option value="" disabled selected>Chọn ngôn ngữ</option>
-							@foreach (var language in languages)
-							{
-								<option value="@language.LanguageName">@language.LanguageName</option>
-							}
-						</select>
+						<div class="position-relative">
+							<select @bind="movieDto.LanguareName" class="form-control">
+								<option value="" disabled selected>Chọn ngôn ngữ</option>
+								@foreach (var language in languages)
+								{
+									<option value="@language.LanguageName">@language.LanguageName</option>
+								}
+							</select>
+							<i class="material-icons add-icon-genre" @onclick="OpenLanguageDialog">add_circle</i>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -109,41 +115,66 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Country" class="font-weight-bold">Quốc gia</label>
-						<select @bind="movieDto.CountryName" class="form-control">
-							<option value="" disabled selected>Chọn quốc gia</option>
-							@foreach (var country in countries)
-							{
-								<option value="@country.CountryName">@country.CountryName</option>
-							}
-						</select>
+						<div class="position-relative">
+							<select @bind="movieDto.CountryName" class="form-control">
+								<option value="" disabled selected>Chọn quốc gia</option>
+								@foreach (var country in countries)
+								{
+									<option value="@country.CountryName">@country.CountryName</option>
+								}
+							</select>
+							<i class="material-icons add-icon-genre" @onclick="OpenCountryDialog">add_circle</i>
+						</div>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Director" class="font-weight-bold">Đạo diễn</label>
-						<select @bind="movieDto.DirectorName" class="form-control">
-							<option value="" disabled selected>Chọn đạo diễn</option>
-							@foreach (var director in directors)
-							{
-								<option value="@director.FullName">@director.FullName</option>
-							}
-						</select>
+						<div class="position-relative">
+							<select @bind="movieDto.DirectorName" class="form-control">
+								<option value="" disabled selected>Chọn đạo diễn</option>
+								@foreach (var director in directors)
+								{
+									<option value="@director.FullName">@director.FullName</option>
+								}
+							</select>
+							<i class="material-icons add-icon-genre" @onclick="OpenDirectorDialog">add_circle</i>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label>Trạng thái</label>
-					<select class="form-select" @bind="movieDto.Status">
-						<option value="" disabled selected>Chọn trạng thái</option>
-						@foreach (var status in Enum.GetValues(typeof(MovieStatus)).Cast<MovieStatus>())
-						{
-							<option value="@status">@status.ToString()</option>
-						}
-					</select>
-					@* <ValidationMessage For="@(() => request.Status)" /> *@
+
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Trạng thái</label>
+						<select class="form-select" @bind="movieDto.Status">
+							<option value="" disabled selected>Chọn trạng thái</option>
+							@foreach (var status in Enum.GetValues(typeof(MovieStatus)).Cast<MovieStatus>())
+							{
+								<option value="@status">@status.ToString()</option>
+							}
+						</select>
+						@* <ValidationMessage For="@(() => request.Status)" /> *@
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="Country" class="font-weight-bold">Phụ đề</label>
+						<div class="position-relative">
+							<select class="form-control">
+								<option value="">Chọn phụ đề</option>
+								<option value="">2D</option>
+								<option value="">3D</option>
+
+							</select>
+							<i class="material-icons add-icon-genre" @onclick="OpenSubtitlesDialog">add_circle</i>
+						</div>
+					</div>
 				</div>
 			</div>
+			
 			<div class="form-group">
 				<label for="Description" class="font-weight-bold">Mô tả</label>
 				<textarea class="form-control" rows="3" @bind="@movieDto.Description"></textarea>
@@ -215,7 +246,132 @@
 			</div>
 		</div>
 	}
-
+	@if (isGenreModalOpen)
+	{
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm thể loại</h5>
+						<button type="button" class="close" @onclick="CloseGenreDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="form-group">
+							<label for="newGenre" class="font-weight-bold">Tên thể loại</label>
+							<input type="text" id="newGenre" class="form-control" @bind="newGenreName" placeholder="Nhập tên thể loại" style="margin-left: 0px" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="CloseGenreDialog">Hủy</button>
+						<button type="button" class="btn btn-primary">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	<!-- Modals for Ngôn ngữ, Quốc gia, Đạo diễn -->
+	@if (isLanguageModalOpen)
+	{
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm ngôn ngữ</h5>
+						<button type="button" class="close" @onclick="CloseLanguageDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="form-group">
+							<label for="newLanguage" class="font-weight-bold">Tên ngôn ngữ</label>
+							<input type="text" id="newLanguage" class="form-control" @bind="newLanguageName" placeholder="Nhập tên ngôn ngữ" style="margin-left: 0px" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="CloseLanguageDialog">Hủy</button>
+						<button type="button" class="btn btn-primary">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	@if (isCountryModalOpen)
+	{
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm quốc gia</h5>
+						<button type="button" class="close" @onclick="CloseCountryDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="form-group">
+							<label for="newCountry" class="font-weight-bold">Tên quốc gia</label>
+							<input type="text" id="newCountry" class="form-control" @bind="newCountryName" placeholder="Nhập tên quốc gia" style="margin-left: 0px" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="CloseCountryDialog">Hủy</button>
+						<button type="button" class="btn btn-primary">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	@if (isDirectorModalOpen)
+	{
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm đạo diễn</h5>
+						<button type="button" class="close" @onclick="CloseDirectorDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="form-group">
+							<label for="newDirector" class="font-weight-bold">Tên đạo diễn</label>
+							<input type="text" id="newDirector" class="form-control" @bind="newDirectorName" placeholder="Nhập tên đạo diễn" style="margin-left: 0px" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="CloseDirectorDialog">Hủy</button>
+						<button type="button" class="btn btn-primary">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	@if (isSubtitlesModalOpen)
+	{
+		<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm phụ đề</h5>
+						<button type="button" class="close" @onclick="CloseSubtitlesDialog" aria-label="Close">
+							<span class="material-icons" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="modal-body" style="margin-bottom: -20px">
+						<div class="form-group">
+							<label class="font-weight-bold">Tên phụ đề</label>
+							<input type="text" class="form-control" placeholder="Nhập tên phụ đề" style="margin-left: 0px" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="CloseSubtitlesDialog">Hủy</button>
+						<button type="button" class="btn btn-primary">Thêm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 </div>
 
 
@@ -404,6 +560,127 @@
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
 	}
 	#endregion
+
+	#region Thêm nhanh
+	private bool isGenreModalOpen = false;
+	private string newGenreName = string.Empty;
+
+	private void OpenGenreDialog()
+	{
+		isGenreModalOpen = true;
+	}
+
+	private void CloseGenreDialog()
+	{
+		isGenreModalOpen = false;
+		newGenreName = string.Empty; // Xóa dữ liệu nhập sau khi đóng
+	}
+	private bool isLanguageModalOpen = false;
+	private bool isCountryModalOpen = false;
+	private bool isDirectorModalOpen = false;
+	private bool isSubtitlesModalOpen = false;
+
+	private string newLanguageName = string.Empty;
+	private string newCountryName = string.Empty;
+	private string newDirectorName = string.Empty;
+	private string newSubtitlesrName = string.Empty;
+
+	// Language
+	private void OpenLanguageDialog() => isLanguageModalOpen = true;
+	private void CloseLanguageDialog()
+	{
+		isLanguageModalOpen = false;
+		newLanguageName = string.Empty;
+	}
+	// private async Task AddNewLanguage()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(newLanguageName)) return;
+	// 	var newLanguage = new LanguageDTO { LanguageName = newLanguageName };
+	// 	var response = await _movieServices.CreateLanguage(newLanguage);
+	// 	if (response.IsSuccessStatusCode)
+	// 	{
+	// 		languages = await _movieServices.GetAllLanguage();
+	// 		CloseLanguageDialog();
+	// 	}
+	// }
+
+	// Country
+	private void OpenCountryDialog() => isCountryModalOpen = true;
+	private void CloseCountryDialog()
+	{
+		isCountryModalOpen = false;
+		newCountryName = string.Empty;
+	}
+	// private async Task AddNewCountry()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(newCountryName)) return;
+	// 	var newCountry = new CountryDTO { CountryName = newCountryName };
+	// 	var response = await _movieServices.CreateCountry(newCountry);
+	// 	if (response.IsSuccessStatusCode)
+	// 	{
+	// 		countries = await _movieServices.GetAllCountry();
+	// 		CloseCountryDialog();
+	// 	}
+	// }
+
+	// Director
+	private void OpenDirectorDialog() => isDirectorModalOpen = true;
+	private void CloseDirectorDialog()
+	{
+		isDirectorModalOpen = false;
+		newDirectorName = string.Empty;
+	}
+	// private async Task AddNewDirector()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(newDirectorName)) return;
+	// 	var newDirector = new DirectorDTO { FullName = newDirectorName };
+	// 	var response = await _movieServices.CreateDirector(newDirector);
+	// 	if (response.IsSuccessStatusCode)
+	// 	{
+	// 		directors = await _movieServices.GetAllDirector();
+	// 		CloseDirectorDialog();
+	// 	}
+	// }
+	// private async Task AddNewGenre()
+	// {
+	// 	if (string.IsNullOrWhiteSpace(newGenreName))
+	// 	{
+	// 		Console.WriteLine("Tên thể loại không được để trống.");
+	// 		return;
+	// 	}
+
+	// 	try
+	// 	{
+	// 		// Tạo yêu cầu thêm thể loại mới
+	// 		var newGenre = new GenreDTO { GenreName = newGenreName };
+
+	// 		var response = await _movieServices.CreateGenre(newGenre);
+	// 		if (response.IsSuccessStatusCode)
+	// 		{
+	// 			Console.WriteLine("Thêm thể loại thành công.");
+	// 			// Cập nhật danh sách thể loại
+	// 			genres = await _movieServices.GetAllGenre();
+	// 			CloseGenreDialog();
+	// 		}
+	// 		else
+	// 		{
+	// 			Console.WriteLine("Lỗi khi thêm thể loại.");
+	// 		}
+	// 	}
+	// 	catch (Exception ex)
+	// 	{
+	// 		Console.WriteLine($"Lỗi: {ex.Message}");
+	// 	}
+	// }
+
+	//Phụ đề
+	private void OpenSubtitlesDialog() => isSubtitlesModalOpen = true;
+	private void CloseSubtitlesDialog()
+	{
+		isSubtitlesModalOpen = false;
+		newSubtitlesrName = string.Empty;
+	}
+	#endregion
 }
 <style>
 	body {
@@ -508,15 +785,6 @@
 			background-color: #8f8f8f; /* Màu nền khi hover */
 		}
 
-	.add-icon {
-		position: absolute;
-		right: 30px; /* Khoảng cách từ icon đến bên phải */
-		top: 50%; /* Đặt icon giữa theo chiều dọc */
-		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
-		cursor: pointer;
-		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
-		font-size: 24px; /* Kích thước của icon */
-	}
 
 	.btn-success {
 		background-color: #007bff;
@@ -571,4 +839,38 @@
 		max-width: 100%; /* Đảm bảo input và select không vượt quá giới hạn cột */
 	}
 
+	.add-icon {
+		position: absolute;
+		right: 30px; /* Khoảng cách từ icon đến bên phải */
+		top: 50%; /* Đặt icon giữa theo chiều dọc */
+		transform: translateY(-50%); /* Điều chỉnh lại vị trí để icon thực sự nằm giữa */
+		cursor: pointer;
+		color: black; /* Màu của icon, có thể thay đổi nếu muốn */
+		font-size: 24px; /* Kích thước của icon */
+	}
+
+	.add-icon-genre {
+		position: absolute !important;
+		right: 30px !important; /* Đặt khoảng cách từ lề phải của select */
+		top: 50% !important; /* Đưa icon vào giữa theo chiều dọc */
+		transform: translateY(-50%) !important; /* Căn chỉnh chính xác giữa */
+		cursor: pointer !important; /* Con trỏ dạng tay khi hover */
+		color: black !important; /* Màu của icon */
+		font-size: 24px !important; /* Kích thước của icon */
+		pointer-events: auto !important; /* Đảm bảo icon có thể click được */
+		z-index: 2 !important; /* Đảm bảo icon hiển thị trên select */
+	}
+
+	.custom-select {
+		min-width: 150px; /* Đặt chiều rộng tối thiểu */
+	}
+
+	.modal-body .add-actor {
+		max-width: 100%; /* Đảm bảo input và select không vượt quá giới hạn cột */
+	}
+
+	.modal {
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 1050;
+	}
 </style>
