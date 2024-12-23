@@ -27,7 +27,7 @@ namespace NeonCinema_API.Controllers.Service
             {
                 ID = userId,
                 Address = user?.Adderss,
-                DateOfBirth = user?.DateOrBriht.ToString(),
+                DateOfBirth = user?.DateOrBriht,
                 Email = user?.Email,
                 FullName = user?.FullName,
                 Gender = user?.Gender,

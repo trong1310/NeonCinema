@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NeonCinema_API.Controllers.Service;
 using NeonCinema_API.SendMail;
+using NeonCinema_API.Timer;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Application.Interface;
 
@@ -29,12 +30,9 @@ using NeonCinema_Application.Interface.WorkShidt;
 using NeonCinema_Infrastructure.Extention;
 using NeonCinema_Infrastructure.Implement;
 using NeonCinema_Infrastructure.Implement.BookingHistory;
-
-//using NeonCinema_Infrastructure.Implement.Acotr;
 using NeonCinema_Infrastructure.Implement.Cinemas;
 using NeonCinema_Infrastructure.Implement.Countrys;
 using NeonCinema_Infrastructure.Implement.Directors;
-using NeonCinema_Infrastructure.Implement.Points;
 using NeonCinema_Infrastructure.Implement.RankMembers;
 using NeonCinema_Infrastructure.Implement.Roles;
 using NeonCinema_Infrastructure.Implement.Room;
@@ -65,7 +63,6 @@ builder.Services.AddScoped<IWorkShiftRepository, WorkShiftRepository>();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IShowTimeRepository, ShowTimeRepository>();
 builder.Services.AddScoped<IShiftChangeRepository, ShiftChangeRepository>();
-builder.Services.AddScoped<IPointRepositories, PointRepositories>();
 builder.Services.AddScoped<IRankMemberRepository, RankMemberRepositories>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
@@ -76,9 +73,11 @@ builder.Services.AddScoped<ITicketPriceSettingRepository, TicketPriceSettingRepo
 builder.Services.AddScoped<IScreeningRepository, ScreeningRepository>();
 builder.Services.AddScoped<ISendMailService, SendMailService>();
 builder.Services.AddScoped<UserProfile>();
+builder.Services.AddScoped<ISV, SV>();
 builder.Services.AddScoped<UpdateUserProfileRequest>();
 builder.Services.AddScoped<IUserServicesss, UserService>();
-
+builder.Services.AddHostedService<TimerProcess>();
+builder.Services.AddLogging();
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Giới hạn kích thước file upload (20MB)

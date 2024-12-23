@@ -41,7 +41,12 @@
 					<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
 				</div>
 				<div class="card-body">
-					<p class="card-title text-success">Phim : @movieDto.Name</p>
+					<h4 class="card-title mb-2">@movieDto.Name</h4>
+					<div class="tags">
+						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+						<span class="badge bg-secondary">Thời lượng: @movieDto.Duration phút</span>
+						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+					</div>
 
 					<p class="card-text">
 						<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
@@ -133,7 +138,7 @@
 						@foreach (var item in foods)
 						{
 							<div class="product-item d-flex align-items-center mb-3">
-								<img src="@GetImageUrl(item.Images)" alt="OL Combo1 - Sweet 22Oz" class="product-image me-3">
+								<img src="@GetImageUrl(item.Images)" class="product-image me-3">
 								<div class="product-info flex-grow-1">
 									<h5>@item.Content</h5>
 									<p>
@@ -162,59 +167,136 @@
 					<h3 class="card-title">@movieDto.Name</h3>
 					<div class="tags">
 						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-dark">Thời lượng: @movieDto.Duration</span>
+						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
 						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
 					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Ghế : @selectedSeatNumbers</span>
-						<span>@seatPrices.ToString("N0")</span>
+						<span>@seatPrices.ToString("N0") VND</span>
 					</div>
 					@foreach (var combo in selectedCombos)
 					{
 						<div class="d-flex justify-content-between mb-3">
-							<span>@combo.Key.Content</span>
-							<span>@combo.Key.Amount.ToString("N0")</span>
+							<span>@combo.Key.Content x @combo.Value</span>
+							<span>@combo.Key.Amount.ToString("N0") VND</span>
 						</div>
 					}
-					<span>@comboPrices.ToString("N0")</span>
-					<div class="dotted-line-custom"></div>
-					<div class="payment-method mt-3 mb-3">
-						<strong>Tổng tiền : @totalPrices.ToString("N0")</strong>
-						<div class="form-check">
-							<label class="form-check-label" for="cashRadio">
-								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
-								<i class="fa-solid fa-money-bill"></i> Tiền mặt
-							</label>
-						</div>
-						<div class="form-check">
-							<label class="form-check-label" for="bankTransferRadio">
-								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
-								<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
-							</label>
-						</div>
-						<img id="qrcode" style="border: 1px solid;height: 300px;width: 260px; display: none;" alt="QR Code">
+					<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền combo</span>
+						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
+					
+					<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền</span>
+						<span>@totalPrices.ToString("N0") VND</span>
+					</div>
+
 					<div class="dotted-line-custom"></div>
-					<div class="customer-points mt-3">
+					<div class="customer-points mt-2">
 						<!-- Hiển thị số điểm của khách hàng -->
 						<p class="points-display">
 							Số điểm hiện tại của bạn: <strong>@user.Ponit</strong> điểm (2000 điểm = 1k VND)
 						</p>
 
 						<!-- Nhập số điểm muốn sử dụng -->
-						<div class="d-flex align-items-center mt-3">
+						<div class="d-flex align-items-center mt-2">
 							<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
 							<button class="btn use-points-btn d-flex align-items-center justify-content-center" @onclick="ApplyPoint">Dùng điểm</button>
 						</div>
+						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						<div class="discount-container mt-3">
+							<!-- Nút mở popup -->
+							<button class="btn btn-primary w-100" @onclick="() => showDiscountPopup = true">Chọn mã giảm giá</button>
+
+							<!-- Hiển thị mã giảm giá đã chọn -->
+							@if (!string.IsNullOrEmpty(selectedDiscountCode))
+							{
+								<p class="mt-2">
+									<strong>Mã giảm giá đã chọn:</strong> @selectedDiscountCode <br />
+									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND)
+								</p>
+							}
+						</div>
+
+						<!-- Popup chọn mã giảm giá -->
+						@if (showDiscountPopup)
+						{
+							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);">
+								<div class="modal-dialog discount-dialog" style="margin-top: 150px">
+									<div class="modal-content discount-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Chọn mã giảm giá</h5>
+											<button type="button" class="btn-close" aria-label="Close" @onclick="() => showDiscountPopup = false"></button>
+										</div>
+										<div class="modal-body">
+											<!-- Tìm kiếm mã giảm giá -->
+											<div class="search-discount mt-3">
+												<div class="input-group mb-3">
+													<input type="text" class="form-control" placeholder="Nhập mã giảm giá" @bind="searchCode" />
+													<button class="btn btn-primary" @onclick="SearchDiscount">Tìm kiếm</button>
+												</div>
+											</div>
+
+											<!-- Danh sách mã giảm giá -->
+											<ul class="list-group discount-list mt-3">
+												@foreach (var discount in filteredDiscounts)
+												{
+													<div class="discount-card">
+														<div class="discount-info">
+															<h3>@discount.Name</h3>
+															<p>Giảm giá @discount.Percentage%</p>
+															<p class="text-dark">tổng tiền </p>
+															@* <div class="progress-bar" style="width:90%">
+													<div class="progress" style="width: @discount.Percentage%;"></div>
+													</div> *@
+														</div>
+														<button class="btn btn-primary btn-sm btn-discount"
+																@onclick="() => SelectDiscount(discount)"
+																disabled="@(selectedDiscountCode != null)">
+															Chọn
+														</button>
+													</div>
+												}
+												@if (isSearchPerformed && !filteredDiscounts.Any())
+												{
+													<li class="list-group-item text-center text-danger">
+														Không tìm thấy mã giảm giá phù hợp!
+													</li>
+												}
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						}
 					</div>
 					<div class="dotted-line-custom"></div>
 					<div class="d-flex justify-content-between mt-3">
-						<strong>Tổng tiền phải trả (Đã bao gồm phụ thu và giảm giá)</strong>
-						<strong id="amount-display">@finalPrices.ToString("N0")</strong>
+						<strong>Tổng tiền</strong>
+						<strong id="amount-display">@finalPrices.ToString("N0") VND</strong>
 					</div>
-					<div class="button-container">
-						<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
-						<button class="btn btn-primary" style="width: 25%" @onclick="ShowConfirmModal">Thanh toán</button>
+					
+					<div class="payment-method mt-3 mb-3">
+						<div class="form-check">
+							<label class="form-check-label" for="cashRadio">
+								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+								<i class="fa-solid fa-money-bill" style=" margin-right: 5px"></i> Tiền mặt
+							</label>
+						</div>
+						<div class="form-check">
+							<label class="form-check-label" for="bankTransferRadio">
+								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+								<i class="fa-solid fa-money-check-dollar" style=" margin-right: 5px"></i> Chuyển khoản
+							</label>
+						</div>
+						<div class="qr-code-container">
+							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+						</div>
+					</div>
+					<div class="button-pay d-flex justify-content-center gap-3 mt-4">
+						<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
+						<button class="btn btn-primary" @onclick="ShowConfirmModal">Thanh toán</button>
 						@if (showConfirmModal)
 						{
 							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -948,6 +1030,76 @@
 	#region aclog
 
 	#endregion
+	#region Mã giảm giá
+
+	private bool showDiscountPopup = false; // Trạng thái hiển thị popup
+	private string selectedDiscountCode = null; // Mã giảm giá đã chọn
+	private decimal discountAmount = 0; // Số tiền được giảm
+	private int discountPercentage = 0; // Phần trăm giảm giá
+
+	private string searchCode = string.Empty; // Mã giảm giá nhập vào ô tìm kiếm
+	private List<Discount> filteredDiscounts = new List<Discount>(); // Danh sách kết quả tìm kiếm
+	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
+
+	// Danh sách mã giảm giá cố định
+	private List<Discount> discounts = new()
+	{
+		new Discount { Name = "Khuyến mãi đầu năm", Code = "SALE10", Percentage = 10 },
+		new Discount { Name = "Ưu đãi khách hàng mới", Code = "SALE20", Percentage = 20 },
+		new Discount { Name = "Giảm giá tháng 12", Code = "SALE30", Percentage = 30 },
+	};
+
+	// Lớp đại diện cho mã giảm giá
+	public class Discount
+	{
+		public string Name { get; set; }
+		public string Code { get; set; }
+		public int Percentage { get; set; }
+	}
+
+	protected override void OnInitialized()
+	{
+		// Khởi tạo danh sách hiển thị bằng toàn bộ danh sách mã giảm giá
+		filteredDiscounts = discounts;
+	}
+
+	private void SearchDiscount()
+	{
+		if (string.IsNullOrWhiteSpace(searchCode))
+		{
+			// Nếu ô tìm kiếm trống, hiển thị tất cả mã giảm giá
+			filteredDiscounts = discounts;
+		}
+		else
+		{
+			// Lọc mã giảm giá theo Code
+			filteredDiscounts = discounts
+				.Where(d => d.Code.Contains(searchCode, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+
+		isSearchPerformed = true; // Đánh dấu đã tìm kiếm
+	}
+
+	// Xử lý khi chọn mã giảm giá
+	private void SelectDiscount(Discount discount)
+	{
+		selectedDiscountCode = discount.Code; // Lưu mã giảm giá đã chọn
+		discountPercentage = discount.Percentage; // Lưu phần trăm giảm giá
+		discountAmount = (totalPrices * discountPercentage) / 100; // Tính số tiền giảm giá
+																			// totalPrices -= discountAmount; // Cập nhật tổng tiền
+		showDiscountPopup = false; // Đóng popup
+	}
+
+	// Xử lý khi hủy mã giảm giá
+	private void CancelDiscount()
+	{
+		// totalPrices += discountAmount; // Khôi phục số tiền bị giảm
+		selectedDiscountCode = null; // Xóa trạng thái mã giảm giá đã chọn
+		discountPercentage = 0;
+		discountAmount = 0;
+	}
+	#endregion
 }
 
 
@@ -1308,8 +1460,98 @@
 		border-radius: 5px;
 	}
 
-	.modal-header .btn-close {
+	@* .modal-header .btn-close {
 		border: none;
 		background: none;
+	} *@
+
+	.qr-code-container {
+		display: flex;
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		margin-top: 10px; /* Thêm khoảng cách trên */
 	}
+
+		.qr-code-container img {
+			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+			height: auto;
+		}
+
+	.button-pay {
+		display: flex;
+		justify-content: center; /* Căn giữa các nút theo chiều ngang */
+		gap: 10px; /* Khoảng cách giữa các nút */
+		margin-top: 20px; /* Thêm khoảng cách trên */
+	}
+
+		.button-pay .btn {
+			padding: 10px 20px; /* Khoảng cách trong nút */
+			font-size: 16px; /* Kích thước chữ */
+			border-radius: 5px; /* Bo góc nút */
+			transition: transform 0.2s ease, background-color 0.3s ease;
+			width: 100%;
+		}
+
+			.button-pay .btn:hover {
+				transform: scale(1.05); /* Phóng to nhẹ khi hover */
+			}
+
+			.button-pay .btn:active {
+				transform: scale(0.95); /* Hiệu ứng nhỏ lại khi bấm */
+			}
+
+	.discount-list {
+		max-height: 300px; /* Giới hạn chiều cao */
+		overflow-y: auto; /* Hiển thị thanh cuộn dọc */
+		padding: 0; /* Xóa khoảng cách bên trong */
+		list-style: none; /* Loại bỏ ký hiệu danh sách */
+		margin: 0; /* Xóa margin */
+	}
+
+	.discount-card {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px; /* Tăng padding bên trong card */
+		margin: 10px 5px; /* Thêm khoảng cách giữa các card */
+		background-color: #fff; /* Nền trắng */
+		border: 1px solid #ddd; /* Viền nhẹ */
+		border-radius: 10px; /* Bo góc */
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+	}
+
+
+	.discount-info {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+		.discount-info h3 {
+			font-size: 18px;
+			font-weight: bold;
+			margin: 0 0 5px 0;
+			color: #333;
+		}
+
+		.discount-info p {
+			font-size: 17px;
+			margin: 0;
+			color: #red;
+		}
+
+	.progress-bar {
+		background-color: #f0f0f0;
+		border-radius: 5px;
+		height: 8px;
+		margin: 8px 0;
+		overflow: hidden;
+	}
+
+		.progress-bar .progress {
+			background-color: #FF5722;
+			height: 100%;
+			border-radius: 5px;
+		}
 </style>

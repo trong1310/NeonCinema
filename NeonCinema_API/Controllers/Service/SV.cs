@@ -14,13 +14,18 @@ namespace NeonCinema_API.Controllers.Service
         }
         public async Task<(int TotalPoints, decimal TotalSpent, string ranks)> GetUserStatsAsync(Guid userId)
         {
-            var totalPoints = await _context.Points
-             .Where(p => p.UserID == userId)
-             .SumAsync(p => p.TotalPoint);
+            var totalPoints = await _context.RankMembers
+                .Where(r => r.UserID == userId)
+                .SumAsync(r => (int)r.MinPoint);
+
+
 
             var totalSpent = await _context.BillDetails
                 .Where(b => b.UserID == userId && b.Status == ticketEnum.paid)
                 .SumAsync(b => b.TotalPrice);
+
+
+
             var rankuser = await _context.RankMembers
                  .Where(r => r.UserID == userId) 
                  .Select(r => r.Rank)

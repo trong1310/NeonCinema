@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using NeonCinema_Application.DataTransferObject.Screening;
-
+using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,8 +20,8 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
      .ForMember(dest => dest.ShowTime, opt => opt.MapFrom(src => src.ShowTime.StartTime));
             CreateMap<SeatShowTimeStatusDTO, SeatShowTimeStatus>().ReverseMap();
             CreateMap<ScreeningSupportValidate, Screening >().ReverseMap();
-
-        }
+			CreateMap<ShowTimeDTO, ScreeningSupportValidate>();
+		}
 
     }
 }

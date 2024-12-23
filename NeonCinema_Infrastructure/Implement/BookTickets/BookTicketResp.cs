@@ -11,7 +11,7 @@ using NeonCinema_Infrastructure.Extention.Utili;
 using System.Net;
 
 namespace NeonCinema_Infrastructure.Implement.BookTickets
-{
+{ 
 	public class BookTicketResp
 	{
 		private readonly NeonCinemasContext _context;
@@ -130,6 +130,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
 					CreatedTime = DateTime.Now,
 					UserID = request.AccountID ?? null,
+					CreatedBy = request.CreateBy
 				};
 				await _context.BillDetails.AddAsync(bill, cancellationToken);
 
@@ -178,10 +179,17 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 				if (request.AccountID != null)
 				{
-					var accountBook = await _context.RankMembers.Where(x => x.UserID == bill.UserID).FirstOrDefaultAsync();
-					accountBook.MinPoint += (double)convertPoint;
-					accountBook.ModifiedTime = DateTime.UtcNow;
-					_context.RankMembers.Update(accountBook);
+					var pendingPoint = new PendingPoint
+					{
+						ID = Guid.NewGuid(),
+						UserID = (Guid)bill.UserID,
+						Point = convertPoint,
+						ApplyDate = DateTime.UtcNow.AddDays(1),// coonjg sau 1 ngayf
+						CreatedTime = DateTime.UtcNow
+					};
+
+					// Lưu trạng thái chờ xử lý
+					await _context.PendingPoint.AddAsync(pendingPoint);
 					await _context.SaveChangesAsync();
 				}
 				var billresp = await _context.BillDetails
@@ -225,10 +233,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				throw new Exception($"{ex.Message} : {ex.StackTrace}");
 			}
 		}
-
-
-
-
 		public async Task<List<ScreeningMoviesDto>> GetScreeningMovies(Guid MovieId, DateTime? showDate)
 		{
 			TimeSpan currentTime = DateTime.Now.TimeOfDay;
@@ -266,7 +270,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 			return screeningDtos;
 		}
-
 		public async Task<ScreeningMoviesDto> ChooseScreeningMovies(Guid Id)
 		{
 			var screenings = await _context!.Screening
@@ -289,14 +292,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 			.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 			var seats = seatShowTime.Select(x =>
 			{
-				// Lấy giá dựa trên SeatTypeID thay vì SeatID
 				var ticketPrice = _context.TicketPrice
-					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID) // Sửa: Lấy giá theo SeatTypeID
+					.Where(tp => tp.SeatTypeID == x.Seat.SeatTypes.ID)
 					.Select(tp => tp.Price)
 					.FirstOrDefault();
 				decimal basePrice = 0;
-
-				// Xác định giá cơ bản theo ngày trong tuần và giờ chiếu
 				if (showDate.DayOfWeek == DayOfWeek.Monday ||
 					showDate.DayOfWeek == DayOfWeek.Tuesday ||
 					showDate.DayOfWeek == DayOfWeek.Wednesday ||

@@ -12,6 +12,7 @@ namespace NeonCinema_Application.DataTransferObject.BookingHistory
     public string MovieName { get; set; }
     public DateTime ShowDate { get; set; }
     public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
     public string SeatNumber { get; set; }
     public decimal Price { get; set; }
     public string Status { get; set; }
