@@ -335,7 +335,7 @@ else
 	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
-	//	await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()
@@ -477,13 +477,13 @@ else
 				roomName = item.Name;
 			}
 		}
-	//	await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
-	//	await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	//Màu trạng thái

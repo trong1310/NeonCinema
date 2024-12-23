@@ -70,8 +70,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1106,10 +1105,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<Ticket>().HasData(ticketData);
 			var foodComboData = new List<FoodCombo>
 	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 100000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "tải xuống.jfif",CreatedTime = DateTime.Now },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 150000,Content="Combo 2",Description ="2 bắp 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-1) },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 120000,Content="Combo 3",Description ="1 bắp bơ + 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-2) },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 4, TotalPrice = 200000,Content="Combo 4",Description ="2 bắp bơ 2 cola",Images = "tải xuống.jfif" ,CreatedTime = DateTime.Now.AddDays(-3) }
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 80000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "combo1.png",CreatedTime = DateTime.Now },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 100000,Content="Combo 2",Description ="1 bắp 2 cola",Images = "combo2.png" ,CreatedTime = DateTime.Now.AddDays(-1) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 75000,Content="Combo 3",Description ="1 bắp + 1 Aquafina ",Images = "combo3.png" ,CreatedTime = DateTime.Now.AddDays(-2) },
+		new FoodCombo { ID = Guid.NewGuid(), Quantity = 4, TotalPrice = 135000,Content="Combo 4",Description ="1 bắp + 1 cola + 1 khoai lắc",Images = "combo4.png" ,CreatedTime = DateTime.Now.AddDays(-3) }
 	};
 			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 

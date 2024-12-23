@@ -20,6 +20,8 @@ using static NeonCinema_Client.Pages.Client.User.Profile;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Enum;
 using System.Threading;
+using System.Security.Claims;
+using NeonCinema_API.Controllers.Service;
 
 namespace NeonCinema_Client.Services.User
 {
@@ -28,13 +30,11 @@ namespace NeonCinema_Client.Services.User
     {
         private readonly HttpClient _httpClient;
         private readonly LoginModel _loginModel;
-        private readonly NeonCinemasContext _context;
         public UserServices(NeonCinemasContext context)
         {
             _loginModel = new LoginModel();
             var handler = CreateHttpClientHandler();
             _httpClient = new HttpClient();
-            _context = context;
         }
 
         private static HttpClientHandler CreateHttpClientHandler()
@@ -168,5 +168,7 @@ namespace NeonCinema_Client.Services.User
 				throw new Exception($"Bạn chưa đặt vé nào:{ex.Message}");
 			}
 		}
+
+		
 	}
 }
