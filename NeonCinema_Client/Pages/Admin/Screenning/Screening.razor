@@ -329,13 +329,13 @@ else
 
 	private async Task LoadShowTimeFil()
 	{
-		_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
+		 //_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
 	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
-		await LoadShowTimeFil();
+		// await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()
