@@ -68,12 +68,13 @@ namespace NeonCinema_API.Controllers
 		[HttpGet("get-bill-details/{billId}")]
 		public async Task<IActionResult> GetBillDetails(Guid billId)
 		{
-			var bill = await _context.BillTickets
-				.Include(b => b.Bills).ThenInclude(b => b.Users) // Khách hàng
-				.Include(b => b.Tickets).ThenInclude(t => t.Movies) // Phim
-				.Include(b => b.Tickets).ThenInclude(t => t.Screenings).ThenInclude(s => s.Rooms) // Phòng chiếu
-				.Include(b => b.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo) // Combo
-				.FirstOrDefaultAsync(b => b.BillId == billId);
+			var bill = await _context.BillDetails.AsNoTracking()
+				.Include(x=>x.UserID)
+				.Include(x=>x.Ticket)
+				.ThenInclude(x=>x.Screenings)
+				.ThenInclude(x=>x.ShowTime)
+				.ThenInclude(a=>a.Screening).ThenInclude(x=>x.Rooms)
+				.ThenInclude(x=>x.Seats).Include(x=>x.BillCombos).Where(x=>x.ID == billId).FirstOrDefaultAsync();
 
 			if (bill == null)
 			{
@@ -82,120 +83,126 @@ namespace NeonCinema_API.Controllers
 
 			var billDetails = new
 			{
-				BillCode = bill.Bills.BillCode,
-				CustomerName = bill.Bills.Users?.FullName ?? "Khách hàng",
+				BillCode = bill.BillCode,
+				CustomerName = bill.Users?.FullName ?? "Khách hàng",
 				TheaterName = "Neon Cinemas",
 				TheaterAddress = "Số 1 Việt Nam, Hà Nội",
 				PrintedTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-				Tickets = bill.Tickets.BillTickets.Select(ticket => new
+				Tickets = bill.Ticket.Select(ticket => new
 				{
-					MovieName = ticket.Tickets.Movies.Name,
-					ShowDate = ticket.Tickets.Screenings.ShowDate,
-					StartTime = ticket.Tickets.Screenings.ShowTime.StartTime,
-					SeatNumber = $"{ticket.Tickets.Seat.Row}{ticket.Tickets.Seat.Column}",
-					Room = ticket.Tickets.Screenings.Rooms.Name,
-					Price = ticket.Tickets.Price
+					MovieName = ticket.Movies.Name,
+					ShowDate = ticket.Screenings.ShowDate,
+					StartTime = ticket.Screenings.ShowTime.StartTime,
+					SeatNumber = $"{ticket.Seat.Row}{ticket.Seat.Column}",
+					Room = ticket.Screenings.Rooms.Name,
+					Price = ticket.Price
 				}),
-				Combos = bill.Bills.BillCombos.Select(combo => new
+				Combos = bill.BillCombos.Select(combo => new
 				{
 					ComboName = combo.FoodCombo.Content,
 					Quantity = combo.Quantity,
 					Price = combo.FoodCombo.TotalPrice
 				}),
-				TotalPrice = bill.Bills.TotalPrice
+				TotalPrice = bill.TotalPrice
 			};
 
 			return Ok(billDetails);
 		}
 
 
-		[HttpGet("generate-invoice-pdf/{billTicketId}")]
-		public async Task<IActionResult> GenerateInvoicePdf(Guid billTicketId)
+		[HttpGet("generate-invoice-pdf")]
+		public async Task<IActionResult> GenerateInvoicePdf(Guid billid)
 		{
-			// 1) Lấy danh sách BillTickets
-			var billTickets = await _context.BillTickets
-				.Include(bt => bt.Bills).ThenInclude(b => b.Users)
-				.Include(bt => bt.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Seat).ThenInclude(s => s.SeatTypes)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Movies)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.ShowTime)
-				.Include(bt => bt.Tickets).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.Rooms)
-				.Where(bt => bt.BillId == billTicketId)
-				.ToListAsync();
-
-			if (billTickets == null || !billTickets.Any())
+			try
 			{
-				return NotFound("Không tìm thấy thông tin hóa đơn hoặc vé.");
-			}
+				// 1) Lấy danh sách BillTickets
+				var tickets = await _context.Tickets
+					.Include(bt => bt.Bills).ThenInclude(b => b.Users)
+					.Include(bt => bt.Bills).ThenInclude(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo)
+					.Include(t => t.Seat).ThenInclude(s => s.SeatTypes)
+					.Include(t => t.Movies)
+					.Include(t => t.Screenings).ThenInclude(sc => sc.ShowTime)
+					.Include(t => t.Screenings).ThenInclude(sc => sc.Rooms)
+					.Where(bt => bt.BillId == billid)
+					.ToListAsync();
 
-			var bill = billTickets.First().Bills;
-
-			// Tìm nhân viên tạo hóa đơn từ `UserID`
-			var staff = await _context.Users
-				.FirstOrDefaultAsync(u => u.ID == bill.CreatedBy);
-			string staffName = staff != null ? staff.FullName : "Nhân viên (không xác định)";
-
-			// 2) Tạo folder tạm
-			var tempFolder = Path.Combine("wwwroot", "tickets_temp");
-			if (!Directory.Exists(tempFolder))
-				Directory.CreateDirectory(tempFolder);
-
-			// Danh sách file PDF cần nén
-			List<string> pdfFilePaths = new List<string>();
-
-			// Tính tổng combos + tổng tiền Bill (có combos)
-			decimal totalComboPrice = bill.BillCombos.Sum(cb => cb.FoodCombo.TotalPrice * cb.Quantity);
-			decimal totalBillPrice = billTickets.Sum(bt => bt.Tickets.Price) + totalComboPrice;
-
-			// Bước A: Tạo PDF TỔNG (có combos + tổng tiền)
-			string summaryFileName = $"HoaDon_TONG_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-			var summaryPdfPath = Path.Combine(tempFolder, summaryFileName);
-			GenerateBillSummaryPdf_WithCombo(billTickets, staffName, totalComboPrice, totalBillPrice, summaryPdfPath);
-			pdfFilePaths.Add(summaryPdfPath);
-
-			// Bước B: Mỗi ghế -> 1 file PDF (chỉ giá ghế)
-			foreach (var bt in billTickets)
-			{
-				var ticket = bt.Tickets;
-				if (ticket == null) continue;
-
-				string seatName = $"{ticket.Seat.Column}{ticket.Seat.Row}";
-				string pdfFileName = $"Ticket_{seatName}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-				var pdfPath = Path.Combine(tempFolder, pdfFileName);
-
-				GenerateSingleSeatPdf_NoCombo(bt, staffName, pdfPath);
-				pdfFilePaths.Add(pdfPath);
-			}
-
-			// 4) Nén tất cả PDF (1 PDF tổng + N PDF ghế) vào .zip
-			string zipFileName = $"BillAndTickets_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.zip";
-			var zipFilePath = Path.Combine(tempFolder, zipFileName);
-
-			using (var zipArchiveStream = new FileStream(zipFilePath, FileMode.Create))
-			using (var archive = new ZipArchive(zipArchiveStream, ZipArchiveMode.Create, true))
-			{
-				foreach (var pdfFile in pdfFilePaths)
+				if (tickets == null || !tickets.Any())
 				{
-					var entryFileName = Path.GetFileName(pdfFile);
-					var entry = archive.CreateEntry(entryFileName, CompressionLevel.Fastest);
+					return NotFound("Không tìm thấy thông tin hóa đơn hoặc vé.");
+				}
 
-					using (var entryStream = entry.Open())
-					using (var fileStream = new FileStream(pdfFile, FileMode.Open))
+				var bill = tickets.First().Bills;
+
+				// Tìm nhân viên tạo hóa đơn từ `UserID`
+				var staff = await _context.Users
+					.FirstOrDefaultAsync(u => u.ID == bill.CreatedBy);
+				string staffName = staff != null ? staff.FullName : "Nhân viên (không xác định)";
+
+				// 2) Tạo folder tạm
+				var tempFolder = Path.Combine("wwwroot", "tickets_temp");
+				if (!Directory.Exists(tempFolder))
+					Directory.CreateDirectory(tempFolder);
+
+				// Danh sách file PDF cần nén
+				List<string> pdfFilePaths = new List<string>();
+
+				// Tính tổng combos + tổng tiền Bill (có combos)
+				decimal totalComboPrice = bill.BillCombos.Sum(cb => cb.FoodCombo.TotalPrice * cb.Quantity);
+				decimal totalBillPrice = tickets.Sum(bt => bt.Price) + totalComboPrice;
+
+				// Bước A: Tạo PDF TỔNG (có combos + tổng tiền)
+				string summaryFileName = $"HoaDon_TONG_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+				var summaryPdfPath = Path.Combine(tempFolder, summaryFileName);
+				GenerateBillSummaryPdf_WithCombo(tickets, staffName, totalComboPrice, totalBillPrice, summaryPdfPath);
+				pdfFilePaths.Add(summaryPdfPath);
+
+				// Bước B: Mỗi ghế -> 1 file PDF (chỉ giá ghế)
+				foreach (var ticket in tickets)
+				{
+					if (ticket == null) continue;
+
+					string seatName = $"{ticket.Seat.Column}{ticket.Seat.Row}";
+					string pdfFileName = $"Ticket_{seatName}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+					var pdfPath = Path.Combine(tempFolder, pdfFileName);
+
+					GenerateSingleSeatPdf_NoCombo(ticket, staffName, pdfPath);
+					pdfFilePaths.Add(pdfPath);
+				}
+
+				// 4) Nén tất cả PDF (1 PDF tổng + N PDF ghế) vào .zip
+				string zipFileName = $"BillAndTickets_{bill.BillCode}_{DateTime.Now:yyyyMMddHHmmss}.zip";
+				var zipFilePath = Path.Combine(tempFolder, zipFileName);
+
+				using (var zipArchiveStream = new FileStream(zipFilePath, FileMode.Create))
+				using (var archive = new ZipArchive(zipArchiveStream, ZipArchiveMode.Create, true))
+				{
+					foreach (var pdfFile in pdfFilePaths)
 					{
-						await fileStream.CopyToAsync(entryStream);
+						var entryFileName = Path.GetFileName(pdfFile);
+						var entry = archive.CreateEntry(entryFileName, CompressionLevel.Fastest);
+
+						using (var entryStream = entry.Open())
+						using (var fileStream = new FileStream(pdfFile, FileMode.Open))
+						{
+							await fileStream.CopyToAsync(entryStream);
+						}
 					}
 				}
-			}
 
-			// 5) Trả file .zip về client
-			var zipBytes = System.IO.File.ReadAllBytes(zipFilePath);
-			return File(zipBytes, "application/octet-stream", zipFileName);
+				// 5) Trả file .zip về client
+				var zipBytes = System.IO.File.ReadAllBytes(zipFilePath);
+				return File(zipBytes, "application/octet-stream", zipFileName);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
+			}
 		}
 
 
 		// ============== HÀM 1: PDF TỔNG (CÓ combos + tổng tiền) ===================
 		private void GenerateBillSummaryPdf_WithCombo(
-			List<BillTicket> billTickets,
+			List<Ticket> tickets,
 			string staffName,
 			decimal totalComboPrice,
 			decimal totalBillPrice,
@@ -212,7 +219,7 @@ namespace NeonCinema_API.Controllers
 				var normalFont = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H);
 				var boldFont = PdfFontFactory.CreateFont(boldFontPath, PdfEncodings.IDENTITY_H);
 
-				var bill = billTickets.First().Bills;
+				var bill = tickets.First().Bills;
 
 				// Tạo pdfUrl ảo
 				string pdfUrl = "NoURL"; // link ảo
@@ -254,7 +261,7 @@ namespace NeonCinema_API.Controllers
 					.SetFont(normalFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
 
 				// Lấy info screening
-				var screening = billTickets.First().Tickets.Screenings;
+				var screening = tickets.First().Screenings;
 				var showTime = screening?.ShowTime;
 
 				invoiceInfo.AddCell(new Cell().Add(new Paragraph("Suất chiếu").SetFont(boldFont).SetFontSize(10)).SetBorder(Border.NO_BORDER));
@@ -276,16 +283,16 @@ namespace NeonCinema_API.Controllers
 				detailsTable.AddHeaderCell(new Cell().Add(new Paragraph("Thành tiền").SetFont(boldFont).SetFontSize(10)));
 
 				// Vé
-				foreach (var bt in billTickets)
+				foreach (var bt in tickets)
 				{
-					var ticket = bt.Tickets;
-					if (ticket != null)
+					
+					if (bt != null)
 					{
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {ticket.Movies?.Name}")
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"Vé xem phim: {bt.Movies?.Name}")
 							.SetFont(normalFont).SetFontSize(10)));
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {ticket.Seat.Column}{ticket.Seat.Row}")
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"Ghế: {bt.Seat.Column}{bt.Seat.Row}")
 							.SetFont(normalFont).SetFontSize(10)));
-						detailsTable.AddCell(new Cell().Add(new Paragraph($"{ticket.Price:n0}đ")
+						detailsTable.AddCell(new Cell().Add(new Paragraph($"{bt.Price:n0}đ")
 							.SetFont(normalFont).SetFontSize(10)));
 					}
 				}
@@ -308,8 +315,8 @@ namespace NeonCinema_API.Controllers
 				document.Add(new Paragraph("\n"));
 
 				// Tính total
-				decimal sumTickets = billTickets.Sum(bt => bt.Tickets.Price);
-				decimal finalTotal = sumTickets + totalComboPrice;
+				decimal sumTickets = tickets.Sum(bt => bt.Price);
+				decimal finalTotal = bill.TotalPrice;
 				document.Add(new Paragraph($"Tổng tiền: {finalTotal:n0}đ")
 					.SetFont(boldFont).SetFontSize(12).SetTextAlignment(TextAlignment.RIGHT));
 
@@ -356,7 +363,7 @@ namespace NeonCinema_API.Controllers
 
 		// ============== HÀM 2: PDF CHO MỖI GHẾ (KHÔNG combo, KHÔNG tổng) ================
 		private void GenerateSingleSeatPdf_NoCombo(
-			BillTicket bt,
+			Ticket ticket,
 			string staffName,
 			string outputPath)
 		{
@@ -371,8 +378,7 @@ namespace NeonCinema_API.Controllers
 				var normalFont = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H);
 				var boldFont = PdfFontFactory.CreateFont(boldFontPath, PdfEncodings.IDENTITY_H);
 
-				var bill = bt.Bills;
-				var ticket = bt.Tickets;
+				var bill = ticket.Bills;
 				string pdfUrl = "NoURL"; // Link ảo cho QR code
 
 				// HEADER
@@ -497,9 +503,9 @@ namespace NeonCinema_API.Controllers
 		{
 			var bill = await _context.BillDetails
 				.Include(b => b.BillCombos).ThenInclude(bc => bc.FoodCombo)
-				.Include(b => b.BillTickets).ThenInclude(bt => bt.Tickets).ThenInclude(t => t.Seat).ThenInclude(s => s.SeatTypes)
-				.Include(b => b.BillTickets).ThenInclude(bt => bt.Tickets).ThenInclude(t => t.Movies)
-				.Include(b => b.BillTickets).ThenInclude(bt => bt.Tickets).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.Rooms)
+				.Include(bt => bt.Ticket).ThenInclude(t => t.Seat).ThenInclude(s => s.SeatTypes)
+				.Include(bt => bt.Ticket).ThenInclude(t => t.Movies)
+				.Include(bt => bt.Ticket).ThenInclude(t => t.Screenings).ThenInclude(sc => sc.Rooms)
 				.Include(b => b.Users)
 				.FirstOrDefaultAsync(b => b.ID == billId);
 
@@ -527,15 +533,15 @@ namespace NeonCinema_API.Controllers
 				graphics.DrawString($"Mã Hóa Đơn: {bill.BillCode}", new Font("Arial", 16), Brushes.Black, new PointF(50, 50));
 				graphics.DrawString($"Khách Hàng: {bill.Users.FullName}", new Font("Arial", 14), Brushes.Black, new PointF(50, 100));
 				graphics.DrawString($"Ngày: {bill.CreatedTime?.ToString("dd/MM/yyyy")}", new Font("Arial", 14), Brushes.Black, new PointF(50, 150));
-				graphics.DrawString($"Tổng Tiền: {bill.TotalPrice:C0}", new Font("Arial", 14), Brushes.Black, new PointF(50, 200));
+				graphics.DrawString($"Tổng Tiền: {bill.TotalPrice.ToString("N0")}", new Font("Arial", 14), Brushes.Black, new PointF(50, 200));
 
 				// Draw each ticket
 				int y = 250;
-				foreach (var ticket in bill.BillTickets)
+				foreach (var ticket in bill.Ticket)
 				{
-					graphics.DrawString($"Phim: {ticket.Tickets.Movies.Name}", new Font("Arial", 12), Brushes.Black, new PointF(50, y));
-					graphics.DrawString($"Ghế: {ticket.Tickets.Seat.SeatNumber}", new Font("Arial", 12), Brushes.Black, new PointF(50, y + 30));
-					graphics.DrawString($"Giá Vé: {ticket.Tickets.Price:C0}", new Font("Arial", 12), Brushes.Black, new PointF(50, y + 60));
+					graphics.DrawString($"Phim: {ticket.Movies.Name}", new Font("Arial", 12), Brushes.Black, new PointF(50, y));
+					graphics.DrawString($"Ghế: {ticket.Seat.SeatNumber}", new Font("Arial", 12), Brushes.Black, new PointF(50, y + 30));
+					graphics.DrawString($"Giá Vé: {ticket.Price:C0}", new Font("Arial", 12), Brushes.Black, new PointF(50, y + 60));
 					y += 100;
 				}
 

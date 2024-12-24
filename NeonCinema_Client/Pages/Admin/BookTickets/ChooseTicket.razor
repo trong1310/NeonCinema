@@ -59,10 +59,9 @@
 	<div class="col-md-6 card shadow position-relative">
 		@if (_selectedIndex == 0)
 		{
-			<h3 class="text-center mt-2">Chọn Ghế</h3>
+			<h3 class="text-center mt-2" style="margin-bottom: -5px">Chọn Ghế</h3>
 			<hr />
-			<div class="d-flex align-items-center">
-				<span>Giá vé: </span>
+			<div class="d-flex align-items-center justify-content-center">
 				<div class="seat-type">
 					<div class="seat-type-item">
 						<span class="square bg-warning"></span>
@@ -134,32 +133,21 @@
 							<h3>Combo Đồ Ăn</h3>
 						</div>
 						<hr class="dashed">
-						<div class="concession-item">
-							@foreach (var combo in foods)
+						<div class="product-list ">
+							@foreach (var item in foods)
 							{
-								<div class="icon-box featured-box align-middle icon-box-left text-left">
-									<div class="icon-box-img" >
-										<div class="icon">
-											<div class="icon-inner">
-												<img src="@GetImageUrl(combo.Images)">
-											</div>
-										</div>
+								<div class="product-item d-flex align-items-center mb-3">
+									<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
+									<div class="product-info flex-grow-1">
+										<h5>@item.Content</h5>
+										<p>
+											<span class="text-success">@item.Amount.ToString("N0") VND</span>
+										</p>
 									</div>
-									<div class="icon-box-text last-reset">
-										<h4 class="">@combo.Content</h4>
-										<div class="stack stack-row justify-between items-center">
-											<span>@combo.Description</span>
-											<div class="quantity">
-												<div class="quantity">
-													<span class="minus" @onclick="() => Decrease(combo)">-</span>
-													<span class="number">
-														@GetComboQuantity(combo)
-													</span>
-													<span class="plus" @onclick="() => Increase(combo)">+</span>
-												</div>
-											</div>
-											<span class="price">@combo.Amount.ToString("N0")</span>
-										</div>
+									<div class="quantity-controls d-flex align-items-center">
+										<button class="btn control" @onclick="() => Decrease(item)">-</button>
+										<span class="mx-2">@GetComboQuantity(item)</span>
+										<button class="btn control" @onclick="() => Increase(item)">+</button>
 									</div>
 								</div>
 							}
@@ -180,6 +168,9 @@
 							<div class="modal-header">
 								<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
 								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+							</div>
+							<div class="d-flex justify-content-between mt-3">
+								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
 							</div>
 							<div class="modal-body">
 								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
@@ -236,7 +227,7 @@
 		}
 	</div>
 	<!-- Tóm tắt đơn hàng -->
-	<div class="col-md-3" >
+	<div class="col-md-3">
 		<div class="card shadow order-summary-card" style="background-color: white">
 			<h4 class="text-center mt-3">NEON CINEMA</h4>
 			<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
@@ -250,23 +241,35 @@
 				<hr class="dashed">
 				<div class="d-flex justify-content-between mb-3">
 					<span>Ghế : @selectedSeatNumbers</span>
-					<span>@seatPrices.ToString("N0")</span>
+					<span>@seatPrices.ToString("N0") VND</span>
 				</div>
 				@foreach (var combo in selectedCombos)
 				{
 					<div class="d-flex justify-content-between mb-3">
 						<span>@combo.Key.Content  x @combo.Value</span>
-						<span>@combo.Key.Amount.ToString("N0")</span>
+						<span>@combo.Key.Amount.ToString("N0") VND</span>
 					</div>
 				}
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền combo</span>
-					<span>@comboPrices.ToString("N0")</span>
+					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-						<span>Tổng tiền</span>
-						<span>@totalPrices.ToString("N0") VND</span>
-					</div>
+					<span>Tổng tiền tạm tính</span>
+					<span id="amount-display">@sumPrices.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Phụ thu</span>
+					<span>@surcharge.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Giảm giá</span>
+					<span>@discount.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Tổng tiền (Gồm phụ thu & giảm giá)</span>
+					<strong>@totalPrices.ToString("N0") VND</strong>
+				</div>
 				<hr class="dashed">
 				<div class="form-group">
 					<label for="search">Tìm kiếm khách hàng:</label>
@@ -288,21 +291,22 @@
 						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
 						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
-								<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng"/>
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
+								<span>Lưu ý : 1000 điểm => 500 VND</span>
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng điểm</button>
+								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
 						@* <div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
 								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
+								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
 							</div>
 						</div>
 						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
@@ -316,18 +320,20 @@
 					</div>
 				}
 
+
 				<hr class="dashed">
-				<div class="payment-method mt-3 mb-3">
-					<strong>Tổng tiền : <span id="amount-display">@totalPrices.ToString("N0")</span></strong>
+				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
-							<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
+							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment" 
+							@onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
-							<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
+							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
+							@onchange="(e) => isCashPayment = false">
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -335,22 +341,18 @@
 						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 					</div>
 				</div>
-				<hr class="dashed">
-				<div class="d-flex justify-content-between mt-3">
-					<strong>Tổng tiền (Đã bao gồm phụ thu và giảm giá)</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-				</div>
-				<div class="d-flex justify-content-between mt-3">
+				@if (isCashPayment)
+				{
+					<div class="form-group">
+						<label class="form-label">Tiền khách đưa</label>
+						<input style="margin-top: -5px" class="form-control" placeholder="Nhập số tiền khách đưa" />
+					</div>
+					<div class="d-flex justify-content-between mt-1">
+						<strong>Tiền thừa</strong>
+						<strong>0</strong> <!-- Hoặc thay giá trị bằng logic tính toán -->
+					</div>
+				}
 
-					<strong>Tiền khách đưa</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-
-				</div>
-				<div class="d-flex justify-content-between mt-3">
-
-					<strong>Tiền thừa</strong>
-					<strong id="amount-display">@* @finalPrices.ToString("N0") *@</strong>
-				</div>
 				<div class="button-container">
 					<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
 				</div>
@@ -362,8 +364,8 @@
 					</h5>
 				</div>
 			</div>
-		</div>		
-	</div>	
+		</div>
+	</div>
 	@if (showCreateAccountModal)
 	{
 		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
@@ -508,9 +510,29 @@
 	public string? phoneNumber;
 	public string error = "";
 	public Guid createBy;
+	public decimal moneyrRceived = 0;
+	public decimal sum => moneyrRceived - totalPrices;
+	public decimal refun => sum > 0 ? sum : 0;
+	private double discount = 0;
+	private double point = 0;
+	private decimal sumPrices;
+	private decimal surcharge = 0;
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
+	}
+	private void ApplyPoint()
+	{
+		if (request.Point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			totalPrices -= (decimal)discount;
+		}
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -540,13 +562,31 @@
 		var token = await _localstorage.GetItemAsync<string>("authToken");
 		if (string.IsNullOrEmpty(token))
 		{
-			//_navi.NavigateTo("/login");
+			_navi.NavigateTo("/login");
 			return;
 		}
 		var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-		createBy =  Guid.Parse(userIdClaim.Value);
+		createBy = Guid.Parse(userIdClaim.Value);
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		if (type != null)
+		{
+			if (type.MovieTypeName.Contains("3D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge3D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+			if (type.MovieTypeName.Contains("2D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge4D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+		}
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -579,11 +619,27 @@
 	#region vé
 	private string GetSeatCssClass(SeatDto seat)
 	{
-		return seat.Status switch
+		// Kiểm tra trạng thái ghế trước tiên
+		if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
-			NeonCinema_Domain.Enum.seatEnum.Sold => "sold",            // Ghế đã bán
-			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
-			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
+			return "sold"; // Ghế đã bán
+		}
+		else if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance)
+		{
+			return "maintenance"; // Ghế bảo trì
+		}
+		else if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			return "selected"; // Ghế đang được chọn
+		}
+
+		// Nếu không phải các trạng thái trên, xác định màu theo kiểu ghế
+		return seat.SeatType switch
+		{
+			"Ghế thường" => "seat-normal",
+			"Ghế Vip" => "seat-vip",
+			"Ghế đôi" => "seat-couple",
+			_ => "seat-default" // Mặc định nếu không xác định loại ghế
 		};
 
 	}
@@ -685,6 +741,7 @@
 			selectedSeats.Remove(seat.SeatNumber);
 			seatPrices -= (decimal)seat.Price;
 			totalPrices -= (decimal)seat.Price;
+			sumPrices -= (decimal)seat.Price;
 		}
 		else
 		{
@@ -693,6 +750,7 @@
 			selectedSeatsId.Add(seat.ID);
 			seatPrices += (decimal)seat.Price;
 			totalPrices += (decimal)seat.Price;
+			sumPrices += (decimal)seat.Price;
 		}
 
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
@@ -719,6 +777,7 @@
 
 		comboPrices += combo.Amount;
 		totalPrices += combo.Amount;
+		sumPrices += combo.Amount;
 		await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
@@ -729,7 +788,7 @@
 			selectedCombos[combo]--;
 			comboPrices -= combo.Amount;
 			totalPrices -= combo.Amount;
-
+			sumPrices -= combo.Amount;
 			if (selectedCombos[combo] == 0)
 			{
 				selectedCombos.Remove(combo);
@@ -763,14 +822,19 @@
 		phoneNumber = string.Empty;
 		Rank.AccountName = string.Empty;
 		Rank.Point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
+		point = 0;
+		sumPrices = 0;
+		surcharge = 0;
 		RefreshSeatsAsync();
 	}
-
 	private async Task ProcessPayment()
 	{
+		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
 		if (!string.IsNullOrEmpty(phoneNumber))
 		{
-			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+
 			request = new CreateBookTicketRequest
 				{
 					ScreeningID = screenings.Id,
@@ -782,7 +846,8 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
-					CreateBy = createBy
+					CreateBy = createBy,
+					Point = point,
 				};
 		}
 		else
@@ -798,23 +863,31 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
-					CreateBy = createBy
+					CreateBy = createBy,
+					Point = point,
 				};
 		}
 
 		try
 		{
 			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
-
 			if (billResp != null)
 			{
 				ResetUI();
 				paymentStatus = "success";
+				if (point > 0)
+				{
+					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+					resetPoint.MinPoint -= point;
+					_context.RankMembers.Update(resetPoint);
+					_context.SaveChanges();
+				}
 			}
 			else
 			{
 				paymentStatus = "failure";
 			}
+
 		}
 		catch (Exception ex)
 		{
@@ -825,20 +898,30 @@
 		StateHasChanged();
 	}
 	public Guid BillTicketId { get; set; }
-	public async Task ExportFile()
+
+	private async Task ExportFile()
 	{
 		try
 		{
 			BillTicketId = (Guid)billResp.Id;
-			var export = await _services.ExportFile(BillTicketId);
-			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
-			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+			var response = await _services.ExportFile(BillTicketId);
+			if (response == null || response.Length == 0)
+			{
+				Console.WriteLine("Không thể tải hóa đơn: File rỗng hoặc không tồn tại.");
+				return;
+			}
+	
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.zip";
+			var url = $"data:application/octet-stream;base64,{Convert.ToBase64String(response)}";
+			await JS.InvokeVoidAsync("downloadFile", url, fileName);
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+			// Xử lý lỗi chung
+			Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
 		}
 	}
+
 	private string GetPaymentMessage(string status)
 	{
 		return status switch
@@ -1033,7 +1116,7 @@
 	{
 		showCreateAccountModal = false;
 	}
-	
+
 	#endregion
 
 	#region đếm ngược
@@ -1078,6 +1161,8 @@
 	}
 
 	#endregion
+
+	private bool isCashPayment = true; // Mặc định là tiền mặt
 }
 <style>
 	.movie-info-card {
@@ -1092,35 +1177,37 @@
 			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 		}
  *@
-		.movie-info-card .card-img-top {
-			object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
-			width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
-			height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
-			max-height: 700px; /* Giới hạn chiều cao tối đa */
-		}
+	.movie-info-card .card-img-top {
+		object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+		width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+		height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+		max-height: 700px; /* Giới hạn chiều cao tối đa */
+	}
 
-		.movie-info-card .card-body {
-			text-align: center;
-			background-color: #white; /* Nền tối */
-			color: black;
-			padding: 15px;
-			font-family: 'Be Vietnam Pro', sans-serif;
-		}
+	.movie-info-card .card-body {
+		text-align: center;
+		background-color: #white; /* Nền tối */
+		color: black;
+		padding: 15px;
+		font-family: 'Be Vietnam Pro', sans-serif;
+	}
 
-		.movie-info-card .card-title {
-			font-size: 1.25rem;
-			margin-bottom: 10px;
-			color: limegreen;
-		}
+	.movie-info-card .card-title {
+		font-size: 1.25rem;
+		margin-bottom: 10px;
+		color: limegreen;
+	}
 
-		.movie-info-card .card-text {
-			font-size: 1rem;
-			line-height: 1.5;
-		}
-		.order-summary-card {
-    padding-left: 10px;
-    padding-right: 10px;
-}
+	.movie-info-card .card-text {
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+
+	.order-summary-card {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
 	.card-title {
 		white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
 		overflow: hidden; /* Ẩn phần văn bản bị tràn */
@@ -1146,6 +1233,7 @@
 			.tags .badge:last-child {
 				margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
 			}
+
 	.form-group {
 		margin-bottom: 15px;
 	}
@@ -1286,6 +1374,7 @@
 		border-radius: 5px;
 		cursor: pointer;
 		font-size: 14px;
+		margin: 2px;
 	}
 
 
@@ -1301,7 +1390,35 @@
 		justify-content: center;
 		margin-bottom: 10px;
 	}
+.seat-normal {
+    background-color: #ffc107; /* Màu vàng */
+    color: #fff; /* Chữ màu trắng */
+}
 
+/* Ghế VIP */
+.seat-vip {
+    background-color: #dc3545; /* Màu đỏ */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Ghế đôi */
+.seat-couple {
+    background-color: #28a745; /* Màu xanh lá cây */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Ghế mặc định (nếu không xác định loại) */
+.seat-default {
+    background-color: #6c757d; /* Màu xám */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Hiệu ứng hover cho tất cả các ghế */
+.seat-box:hover {
+    transform: scale(1.1); /* Phóng to nhẹ khi hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Đổ bóng */
+
+}
 	.sold {
 		background-color: rgb(33 37 41);
 		cursor: not-allowed;
@@ -1315,8 +1432,14 @@
 	.available {
 		background-color: none;
 	}
+	.product-image {
+    width: 150px; /* Chiều rộng cố định */
+    height: 170px; /* Chiều cao cố định */
+    object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
+   
+}
 
-	.combo-item {
+@* 	.combo-item {
 		border: 1px solid #ccc;
 		padding: 10px;
 		margin: 10px;
@@ -1365,7 +1488,7 @@
 
 			.quantity .minus:hover, .quantity .plus:hover {
 				background-color: #aaa;
-			}
+			} *@
 
 	.button-container {
 		display: flex;
@@ -1387,6 +1510,37 @@
 		gap: 20px;
 	}
 
+	.control {
+		border-radius: 50% !important; /* Tạo viền hình tròn */ 
+		width: 40px !important; /* Đặt chiều rộng cố định */
+		height: 40px !important; /* Đặt chiều cao cố định */
+		display: flex !important;
+		align-items: center !important; /* Căn giữa nội dung theo chiều dọc */
+		justify-content: center !important; /* Căn giữa nội dung theo chiều ngang */
+		padding: 0 !important; /* Loại bỏ padding mặc định */
+		font-size: 18px !important; /* Kích thước chữ */
+		border: 2px solid #28a745 !important; /* Viền màu xanh lá */
+		background-color: white !important; /* Nền trắng */
+		color: #28a745 !important; /* Màu chữ xanh lá */
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+		cursor: pointer !important; /* Thay đổi con trỏ khi hover */
+	}
+
+		.control:hover {
+			background-color: #28a745; /* Nền xanh lá khi hover */
+			color: white; /* Màu chữ trắng khi hover */
+			transform: scale(1.1); /* Phóng to nhẹ khi hover */
+		}
+
+		.control:active {
+			transform: scale(0.9); /* Nhỏ lại nhẹ khi bấm */
+		}
+
+		.control:focus {
+			outline: none; /* Loại bỏ viền khi nút được focus */
+			box-shadow: none; /* Loại bỏ bóng xanh dương khi nhấn */
+		}
+
 	.combo-container {
 		flex: 1;
 	}
@@ -1400,7 +1554,7 @@
 	}
 
 	.icon-box-img {
-		max-width: 80px;
+		max-width: 100px;
 		width: 100%;
 	}
 
@@ -1450,16 +1604,17 @@
 		background-color: #28a745; /* Màu ghế đôi */
 		color: #fff;
 	}
-	.qr-code-container {
-    display: flex;
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center;    /* Căn giữa theo chiều dọc */
-    margin-top: 10px;       /* Thêm khoảng cách trên */
-}
 
-.qr-code-container img {
-    max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
-    height: auto;
-}
+	.qr-code-container {
+		display: flex;
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		margin-top: 10px; /* Thêm khoảng cách trên */
+	}
+
+		.qr-code-container img {
+			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+			height: auto;
+		}
 
 </style>

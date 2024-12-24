@@ -32,7 +32,7 @@ namespace NeonCinema_API.Timer
 				using (var _context = new NeonCinemasContext())
 				{
 					var pendingPoints = await _context.PendingPoint
-									.Where(pp => pp.ApplyDate <= DateTime.UtcNow)
+									.Where(pp => pp.ApplyDate <= DateTime.UtcNow).Where(x=>x.State == false)
 									.ToListAsync(cancellationToken);
 
 					foreach (var point in pendingPoints)
@@ -49,6 +49,8 @@ namespace NeonCinema_API.Timer
 						}
 						
 					}
+					_logger.LogInformation($"Có {pendingPoints.Count} trận đấu chưa cập nhật");
+
 					pendingPoints.ForEach(x =>
 					{
 						x.ModifiedTime = DateTime.UtcNow;

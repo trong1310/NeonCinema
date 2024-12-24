@@ -40,7 +40,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					StarTime = request.StarTime,
 					Images = request.Images,
 					AgeAllowed = request.AgeAllowed,
-					Status = MovieStatus.Comingsoon,
+					Status = MovieStatus.upcomingkrelease,
 					GenreID = request.GenreID,
 					LenguageID = request.LenguageID,
 					CountryID = request.CountryID,
@@ -114,9 +114,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             .Include(x => x.Lenguage)
                             .Include(x => x.Countrys)
                             .Include(x => x.TicketSeats)
-                            .AsNoTracking();
-
-
+							.AsNoTracking();
 			if (!string.IsNullOrWhiteSpace(request.SearchName))
             {
                 query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
@@ -126,8 +124,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID orderby b.CreatedTime descending
-                         
-
+                        
 							select new MovieDTO
                             {
                                 ID = b.ID,
@@ -275,7 +272,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Lenguage)
                 .Include(x => x.Countrys)
                 .Include(x => x.TicketSeats)
-                .Where(x => x.Status == MovieStatus.Active)
+                .Where(x => x.Status == MovieStatus.isreleasing)
                 .OrderByDescending(x => x.CreatedTime) 
                 .AsNoTracking()
                 .ToListAsync();
@@ -314,7 +311,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
 				.Include(x => x.TicketSeats)
-				.Where(x => x.Status == MovieStatus.Comingsoon)
+				.Where(x => x.Status == MovieStatus.upcomingkrelease)
 				.OrderByDescending(x => x.CreatedTime) 
 				.AsNoTracking()
 				.ToListAsync();

@@ -113,8 +113,8 @@
 									@foreach (var seat in row.Value)
 									{
 										<div class="seat-box @GetSeatCssClass(seat)"
-											 id="@seat.ID"
-											 @onclick="() => SelectSeat(seat)">
+										id="@seat.ID"
+										@onclick="() => SelectSeat(seat)">
 											@seat.SeatNumber
 										</div>
 									}
@@ -138,11 +138,11 @@
 						@foreach (var item in foods)
 						{
 							<div class="product-item d-flex align-items-center mb-3">
-								<img src="@GetImageUrl(item.Images)" class="product-image me-3">
+								<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
 								<div class="product-info flex-grow-1">
 									<h5>@item.Content</h5>
 									<p>
-										<span class="text-success">@item.Amount</span>
+										<span class="text-success">@item.Amount.ToString("N0") VND</span>
 									</p>
 								</div>
 								<div class="quantity-controls d-flex align-items-center">
@@ -185,7 +185,7 @@
 						<span>Tổng tiền combo</span>
 						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
-					
+
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền</span>
 						<span>@totalPrices.ToString("N0") VND</span>
@@ -251,8 +251,8 @@
 													</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
-																@onclick="() => SelectDiscount(discount)"
-																disabled="@(selectedDiscountCode != null)">
+														@onclick="() => SelectDiscount(discount)"
+														disabled="@(selectedDiscountCode != null)">
 															Chọn
 														</button>
 													</div>
@@ -276,14 +276,8 @@
 						<strong>Tổng tiền</strong>
 						<strong id="amount-display">@finalPrices.ToString("N0") VND</strong>
 					</div>
-					
+
 					<div class="payment-method mt-3 mb-3">
-						<div class="form-check">
-							<label class="form-check-label" for="cashRadio">
-								<input type="radio" name="flexRadioDefault" id="cashRadio" checked>
-								<i class="fa-solid fa-money-bill" style=" margin-right: 5px"></i> Tiền mặt
-							</label>
-						</div>
 						<div class="form-check">
 							<label class="form-check-label" for="bankTransferRadio">
 								<input type="radio" name="flexRadioDefault" id="bankTransferRadio">
@@ -294,9 +288,12 @@
 							<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 						</div>
 					</div>
-					<div class="button-pay d-flex justify-content-center gap-3 mt-4">
-						<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-						<button class="btn btn-primary" @onclick="ShowConfirmModal">Thanh toán</button>
+					<div class="payment-method mt-3 mb-3">
+						<div class="button-pay d-flex justify-content-center gap-3 mt-4">
+							<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
+							<button class="btn btn-primary" @onclick="ShowConfirmModal" name="flexRadioDefault" id="bankTransferRadio">Thanh toán</button>
+						</div>
+
 						@if (showConfirmModal)
 						{
 							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -306,8 +303,14 @@
 											<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
 											<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 										</div>
-										<div class="modal-body">
-											<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
+
+										<div class="payment-method mt-3 mb-3">
+											<div class="form-check">
+												<p>Bạn chắc chắn muốn thanh toán với số tiền <strong id="amount-display">@finalPrices.ToString("N0")</strong>?</p>
+											</div>
+											<div class="qr-code-container">
+												<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+											</div>
 										</div>
 										<div class="modal-footer">
 											<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -338,7 +341,6 @@
 							</div>
 						</div>
 					}
-
 					@if (paymentStatus == "failure")
 					{
 						<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentFailureLabel" aria-hidden="true">
@@ -421,17 +423,12 @@
 	}
 	}
 
-	// Thêm sự kiện thay đổi vào radio buttons
-	document.addEventListener('change', function (event) {
-	if (event.target.name === 'flexRadioDefault') {
-	if (event.target.id === 'bankTransferRadio' && event.target.checked) {
+	// Hiển thị QR code khi nhấn nút thanh toán
+	document.addEventListener('click', function (event) {
+	if (event.target.id === 'payButton') {
 	hienThiQR('hiện');
-	} else if (event.target.id === 'cashRadio' && event.target.checked) {
-	hienThiQR('ẩn');
-	}
 	}
 	});
-
 </script>
 @code {
 	#region
@@ -457,15 +454,24 @@
 	public string error = "";
 	private double point = 0;
 	private double discount = 0;
-	private void ShowConfirmModal()
+	private async void ShowConfirmModal()
 	{
 		showConfirmModal = true;
+		await UpdateQRCode();
 	}
 	private UserProfile user = new UserProfile();
 	private void ApplyPoint()
 	{
-		discount = point * 0.5;
-		totalPrices -= (decimal)discount;
+		if (point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			totalPrices -= (decimal)discount;
+		}
 	}
 	protected override async Task OnInitializedAsync()
 	{
@@ -545,13 +551,29 @@
 	#region vé
 	private string GetSeatCssClass(SeatDto seat)
 	{
-		return seat.Status switch
+		
+		// Kiểm tra trạng thái ghế trước tiên
+		if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
-			NeonCinema_Domain.Enum.seatEnum.Sold => "sold",            // Ghế đã bán
-			NeonCinema_Domain.Enum.seatEnum.Maintenance => "maintenance", // Ghế bảo trì
-			_ => selectedSeats.Contains(seat.SeatNumber) ? "selected" : "available"
-		};
+			return "sold"; // Ghế đã bán
+		}
+		else if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance)
+		{
+			return "maintenance"; // Ghế bảo trì
+		}
+		else if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			return "selected"; // Ghế đang được chọn
+		}
 
+		// Nếu không phải các trạng thái trên, xác định màu theo kiểu ghế
+		return seat.SeatType switch
+		{
+			"Ghế thường" => "seat-normal",
+			"Ghế Vip" => "seat-vip",
+			"Ghế đôi" => "seat-couple",
+			_ => "seat-default" // Mặc định nếu không xác định loại ghế
+		};
 	}
 	private async Task UpdateQRCode()
 	{
@@ -728,6 +750,8 @@
 		Rank.AccountName = string.Empty;
 		Rank.Point = 0;
 		point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
 		RefreshSeatsAsync();
 	}
 
@@ -755,15 +779,13 @@
 			{
 				ResetUI();
 				paymentStatus = "success";
+				Console.WriteLine($"thành công");
 			}
 			else
 			{
 				paymentStatus = "failure";
+				Console.WriteLine($"failure");
 			}
-			var resetPoint = _context.RankMembers.Where(x => x.UserID == user.ID).FirstOrDefault();
-			resetPoint.MinPoint -= point;
-			_context.RankMembers.Update(resetPoint);
-			_context.SaveChanges();
 		}
 		catch (Exception ex)
 		{
@@ -788,15 +810,15 @@
 			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
 		}
 	}
-	private string GetPaymentMessage(string status)
-	{
-		return status switch
-		{
-			"success" => "Thanh toán thành công!",
-			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
-			_ => string.Empty,
-		};
-	}
+	// private string GetPaymentMessage(string status)
+	// {
+	// 	return status switch
+	// 	{
+	// 		"success" => "Thanh toán thành công!",
+	// 		"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+	// 		_ => string.Empty,
+	// 	};
+	// }
 
 	private string GetAlertClass(string status)
 	{
@@ -1229,6 +1251,7 @@
 		border-radius: 5px;
 		cursor: pointer;
 		font-size: 14px;
+		margin: 2px;
 	}
 
 
@@ -1250,7 +1273,35 @@
 		cursor: not-allowed;
 		color: white;
 	}
+	.seat-normal {
+    background-color: #ffc107; /* Màu vàng */
+    color: #fff; /* Chữ màu trắng */
+}
 
+/* Ghế VIP */
+.seat-vip {
+    background-color: #dc3545; /* Màu đỏ */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Ghế đôi */
+.seat-couple {
+    background-color: #28a745; /* Màu xanh lá cây */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Ghế mặc định (nếu không xác định loại) */
+.seat-default {
+    background-color: #6c757d; /* Màu xám */
+    color: #fff; /* Chữ màu trắng */
+}
+
+/* Hiệu ứng hover cho tất cả các ghế */
+.seat-box:hover {
+    transform: scale(1.1); /* Phóng to nhẹ khi hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Đổ bóng */
+
+}
 	.selected {
 		background-color: rgb(13 110 253);
 		color: white;
@@ -1316,7 +1367,12 @@
 		margin: 0 auto;
 		text-align: center;
 	}
-
+	.product-image {
+    width: 150px; /* Chiều rộng cố định */
+    height: 170px; /* Chiều cao cố định */
+    object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
+   
+}
 	.screen-svg {
 		width: 100%;
 		height: auto;

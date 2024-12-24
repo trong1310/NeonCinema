@@ -13,6 +13,8 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Request
 		public Guid? MovieId { get; set; }
 		public Guid? ScreeningID { get; set; }
 		public Guid? AccountID { get; set; }
+		public double? Point { get; set; }
+		public Guid? Voucher { get; set; }
 		public List<Guid>? SeatID { get; set; }
 		public List<BillComboReuqest>? BillCombos { get; set; }
 	}

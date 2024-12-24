@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace NeonCinema_Domain.Enum
 {
-    public enum MovieStatus
-    {
-        Active = 0, 
-        Comingsoon = 1,
-        StopShowing = 2,
-    }
+	public enum MovieStatus
+	{
+
+		isreleasing = 0,
+		upcomingkrelease = 1,
+		StopShowing = 2,
+	}
 }
