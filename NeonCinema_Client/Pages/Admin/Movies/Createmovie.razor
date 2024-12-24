@@ -161,13 +161,13 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
-							<label for="Country" class="font-weight-bold">Phụ đề</label>
+							<label for="Country" class="font-weight-bold">Loại phim</label>
 							<div class="position-relative">
 								<select class="form-control">
-									<option value="">Chọn phụ đề</option>
+									<option value="">Chọn loại phim</option>
 									<option value="">2D</option>
 									<option value="">3D</option>
-									
+
 								</select>
 								<i class="material-icons add-icon-genre" @onclick="OpenSubtitlesDialog">add_circle</i>
 							</div>
@@ -176,11 +176,19 @@
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
-							<label>Trạng thái</label>
-							<input type="text" class="form-control" readonly /> 
-
-							@* <ValidationMessage For="@(() => request.Status)" /> *@
+							<label class="form-label">Phụ đề</label> <br />
+							<div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" value="true" checked />
+									<label class="form-check-label"  style="margin-left: 0.5rem; margin-top: 5px">Có</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" value="false" />
+									<label class="form-check-label" style="margin-left: 0.5rem; margin-top: 5px">Không</label>
+								</div>
+							</div>
 						</div>
+
 					</div>
 				</div>
 				<div class="form-group">
