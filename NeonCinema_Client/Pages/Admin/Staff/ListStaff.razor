@@ -257,13 +257,14 @@
 
 	private void FilterUsers()
 	{
+		string normalizedSearchTerm = NormalizeString(searchTerm);
 		filteredUsers = users.Where(u =>
 				u.RoleID == roleIdToFilter &&
 				(string.IsNullOrWhiteSpace(selectedGender) ||
 				(selectedGender == "Nam" && u.Gender == true) || // Sửa ở đây
 				(selectedGender == "Nữ" && u.Gender == false)) && // Sửa ở đây
 				(string.IsNullOrWhiteSpace(searchTerm) ||
-				RemoveDiacritics(u.FullName).Contains(RemoveDiacritics(searchTerm), StringComparison.OrdinalIgnoreCase)) &&
+			NormalizeString(u.FullName).Contains(normalizedSearchTerm)) &&
 				(string.IsNullOrWhiteSpace(searchPhone) ||
 				RemoveDiacritics(u.PhoneNumber).Contains(RemoveDiacritics(searchPhone), StringComparison.OrdinalIgnoreCase)) &&
 				(selectedStatus == "all" ||
@@ -300,6 +301,20 @@
 		}
 
 		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+	}
+
+	private string NormalizeString(string input)
+	{
+		if (string.IsNullOrWhiteSpace(input))
+			return string.Empty;
+
+		// Loại bỏ khoảng trắng đầu và cuối, chuyển về chữ thường
+		input = input.Trim().ToLower();
+
+		// Loại bỏ dấu tiếng Việt
+		input = RemoveDiacritics(input);
+
+		return input;
 	}
 	private async Task NavigateToEdit(Guid id)
 	{
