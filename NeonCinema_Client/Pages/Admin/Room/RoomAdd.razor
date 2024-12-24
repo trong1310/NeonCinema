@@ -16,22 +16,25 @@
             <div class="form-group">
                 <label for="roomName">Tên phòng</label>
                 <input id="roomName" class="form-control" @bind="request.Name" />
-                
+               
+                <ValidationMessage For="@(() => request.Name)" />
             </div>
 
             <div class="form-group">
                 <label for="rowNumber">Số hàng</label>
                 <input id="rowNumber" type="number" class="form-control" @bind="request.RowNumber" />
-                
+               
+                <ValidationMessage For="@(() => request.RowNumber)" />
             </div>
 
             <div class="form-group">
                 <label for="columnNumber">Số cột</label>
                 <input id="columnNumber" type="number" class="form-control" @bind="request.ColumnNumber" />
-                
+               
+                <ValidationMessage For="@(() => request.ColumnNumber)" />
             </div>
 
-            @* <div class="form-group">
+           @*  <div class="form-group">
                 <label for="cinema">Chọn rạp</label>
                 <select id="cinema" class="form-control" @bind="request.CinemasId" >
                     <option value="@Guid.Empty">-Chọn rạp-</option>

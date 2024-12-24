@@ -30,9 +30,9 @@ namespace NeonCinema_Application.DataTransferObject.Room
         [Range(8,15, ErrorMessage = "Số cột phải phải từ 8 đến 15")]
         public int ColumnNumber { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn rạp.")]
-        [NotEmptyGuid(ErrorMessage = "Vui lòng chọn rạp hợp lệ.")]
-        public Guid CinemasId { get; set; }
+        //[Required(ErrorMessage = "Vui lòng chọn rạp.")]
+        //[NotEmptyGuid(ErrorMessage = "Vui lòng chọn rạp hợp lệ.")]
+        public Guid CinemasId { get; set; } = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e");
     }
     public class NotEmptyGuidAttribute : ValidationAttribute
     {

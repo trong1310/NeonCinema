@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Status = request.Status,
                 RowNumber = request.RowNumber,
                 ColumnNumber = request.ColumnNumber,
-                CinemasId = request.CinemasId,
+                CinemasId = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
                 CreatedTime = DateTime.Now
             };
             _context.Room.Add(room);
