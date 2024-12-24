@@ -120,8 +120,8 @@
 						<td class="text-center align-middle">@item.GenreName</td>
 						<td class="text-center align-middle">@item.AgeAllowed</td>
 						<td class="text-center align-middle">
-							<span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-primary" : "bg-success") text-light small-badge">
-								@(item.Status == MovieStatus.Comingsoon ? "Sắp phát hành" : "Đang phát hành")
+							<span class="badge @(item.Status == MovieStatus.upcomingkrelease ? "bg-primary" : "bg-success") text-light small-badge">
+								@(item.Status == MovieStatus.upcomingkrelease ? "Sắp phát hành" : "Đang phát hành")
 							</span>
 						</td>
 						<td class="text-center align-middle">
@@ -254,8 +254,8 @@
 		(string.IsNullOrEmpty(request.SearchName) ||
 			u.Name.Contains(request.SearchName, StringComparison.OrdinalIgnoreCase)) &&
 		(selectedStatus == "all" ||
-			(selectedStatus == "Active" && u.Status == MovieStatus.Active) ||
-			(selectedStatus == "Comingsoon" && u.Status == MovieStatus.Comingsoon) ||
+			(selectedStatus == "Active" && u.Status == MovieStatus.isreleasing) ||
+			(selectedStatus == "Comingsoon" && u.Status == MovieStatus.upcomingkrelease) ||
 			(selectedStatus == "StopShowing" && u.Status == MovieStatus.StopShowing)) &&
 		(string.IsNullOrEmpty(selectedGenre) ||
 			u.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&

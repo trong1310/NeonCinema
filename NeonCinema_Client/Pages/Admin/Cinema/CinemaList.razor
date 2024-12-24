@@ -30,11 +30,11 @@
             <MudTd Class="mud-td-center">@item.Name</MudTd>
             <MudTd Class="mud-td-center">@item.AgeAllowed</MudTd>
             <MudTd Class="mud-td-center">
-                @if (item.Status == MovieStatus.Active)
+                @if (item.Status == MovieStatus.isreleasing)
                 {
                     <MudChip T="string" Color="Color.Info">Active</MudChip>
                 }
-                else if (item.Status == MovieStatus.Comingsoon)
+                else if (item.Status == MovieStatus.upcomingkrelease)
                 {
                     <MudChip T="string" Color="Color.Success">Comingsoon</MudChip>
                 }

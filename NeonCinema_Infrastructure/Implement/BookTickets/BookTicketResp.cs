@@ -140,11 +140,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					if (type.MovieTypeName.Contains("3D".Trim()))
 					{
-						bill.TotalPrice += ticketPriceSetting.Surcharge3D;
+						bill.Surcharge = ticketPriceSetting.Surcharge3D;
 					}
 					if (type.MovieTypeName.Contains("2D".Trim()))
 					{
-						bill.TotalPrice += ticketPriceSetting.Surcharge4D;
+						bill.Surcharge = ticketPriceSetting.Surcharge4D;
 					}
 				}
 				await _context.Tickets.AddRangeAsync(tickets, cancellationToken);
@@ -180,7 +180,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					bill.TotalPrice += tickets.Sum(t => t.Price);
 				}
-
+				bill.TotalPrice += (decimal)bill.Surcharge;
 				bill.AfterDiscount = bill.TotalPrice;
 				double discount = 0;
 				if (request.Point > 0)
@@ -207,7 +207,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 					}
 				}
-				double convertPoint = (double)bill.TotalPrice * 6.8 / 100;
+				double convertPoint = (double)bill.AfterDiscount * 6.8 / 100;
 
 				if (request.AccountID != null)
 				{

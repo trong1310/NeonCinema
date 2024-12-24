@@ -68,7 +68,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -715,7 +715,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/4d7xzz0cTVw",
 		Images = "ngaiquy.jpg",
 		AgeAllowed = 16,
-		Status = MovieStatus.Active,
+		Status = MovieStatus.isreleasing,
 		GenreID = genreData[0].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -734,7 +734,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://www.youtube.com/watch?v=chimuoiba-trailer",
 		Images = "xich.jpg",
 		AgeAllowed = 18,
-		Status = MovieStatus.Active,
+		Status = MovieStatus.isreleasing,
 		GenreID = genreData[2].ID,
 		LenguageID = languageData[1].ID,
 		CountryID = countryData[0].ID,
@@ -753,7 +753,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/wqJXnO_TKpY",
 		Images = "congtubaclieu.jpg",
 		AgeAllowed = 13,
-		Status = MovieStatus.Active,
+		Status = MovieStatus.isreleasing,
 		GenreID = genreData[2].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[5].ID,
@@ -772,7 +772,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/JzY-5ZtVD88",
 		Images = "yeuem.jpg",
 		AgeAllowed = 16,
-		Status = MovieStatus.Active,
+		Status = MovieStatus.isreleasing,
 		GenreID = genreData[3].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -791,7 +791,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/-Sux3ihKodI?si=bbzqRn3w7kxqDaEi",
 		Images = "tetamhon.jpg",
 		AgeAllowed = 18,
-		Status = MovieStatus.Active,
+		Status = MovieStatus.isreleasing,
 		GenreID = genreData[4].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -811,7 +811,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/2gFjV9v7QVE",
 		Images = "SONIC.jpg",
 		AgeAllowed = 16,
-		Status = MovieStatus.Comingsoon,
+		Status = MovieStatus.upcomingkrelease,
 		GenreID = genreData[0].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -830,7 +830,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/2k0jK_sWmwE",
 		Images = "botubaothu.jpg",
 		AgeAllowed = 13,
-		Status = MovieStatus.Comingsoon,
+		Status = MovieStatus.upcomingkrelease,
 		GenreID = genreData[1].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -849,7 +849,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/GKqrTQGHE3s",
 		Images = "tretraukhongduaduocdau.jpg",
 		AgeAllowed = 12,
-		Status = MovieStatus.Comingsoon,
+		Status = MovieStatus.upcomingkrelease,
 		GenreID = genreData[2].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -867,7 +867,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/X3SY9XUlQAA",
 		Images = "chuyennhabanh.png",
 		AgeAllowed = 15,
-		Status = MovieStatus.Comingsoon,
+		Status = MovieStatus.upcomingkrelease,
 		GenreID = genreData[3].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
@@ -886,7 +886,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Trailer = "https://youtu.be/jS6TZkBB0lY",
 		Images = "chayngaydi.jpg",
 		AgeAllowed = 13,
-		Status = MovieStatus.Comingsoon,
+		Status = MovieStatus.upcomingkrelease,
 		GenreID = genreData[4].ID,
 		LenguageID = languageData[0].ID,
 		CountryID = countryData[0].ID,
