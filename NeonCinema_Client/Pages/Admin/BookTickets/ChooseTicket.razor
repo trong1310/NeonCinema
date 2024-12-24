@@ -170,6 +170,9 @@
 								<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
 								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 							</div>
+							<div class="d-flex justify-content-between mt-3">
+								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
+							</div>
 							<div class="modal-body">
 								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
 							</div>
@@ -225,7 +228,7 @@
 		}
 	</div>
 	<!-- Tóm tắt đơn hàng -->
-	<div class="col-md-3" >
+	<div class="col-md-3">
 		<div class="card shadow order-summary-card" style="background-color: white">
 			<h4 class="text-center mt-3">NEON CINEMA</h4>
 			<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
@@ -253,9 +256,9 @@
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-						<span>Tổng tiền</span>
-						<span>@totalPrices.ToString("N0") VND</span>
-					</div>
+					<span>Tổng tiền</span>
+					<span>@sumPrices.ToString("N0") VND</span>
+				</div>
 				<hr class="dashed">
 				<div class="form-group">
 					<label for="search">Tìm kiếm khách hàng:</label>
@@ -277,21 +280,21 @@
 						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point</p>
 						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
-								<input type="number" class="form-control" placeholder="Nhập số điểm muốn sử dụng"/>
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng điểm</button>
+								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
+						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
 						@* <div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
 								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control" >Dùng mã</button>
+								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
 							</div>
 						</div>
 						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
@@ -354,8 +357,8 @@
 					</h5>
 				</div>
 			</div>
-		</div>		
-	</div>	
+		</div>
+	</div>
 	@if (showCreateAccountModal)
 	{
 		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
@@ -500,9 +503,28 @@
 	public string? phoneNumber;
 	public string error = "";
 	public Guid createBy;
+	public decimal moneyrRceived = 0;
+	public decimal sum => moneyrRceived - totalPrices;
+	public decimal refun => sum > 0 ? sum : 0;
+	private double discount = 0;
+	private double point = 0;
+	private decimal sumPrices;
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
+	}
+	private void ApplyPoint()
+	{
+		if (request.Point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			totalPrices -= (decimal)discount;
+		}
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -532,13 +554,13 @@
 		var token = await _localstorage.GetItemAsync<string>("authToken");
 		if (string.IsNullOrEmpty(token))
 		{
-			//_navi.NavigateTo("/login");
+			_navi.NavigateTo("/login");
 			return;
 		}
 		var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-		createBy =  Guid.Parse(userIdClaim.Value);
+		createBy = Guid.Parse(userIdClaim.Value);
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -677,6 +699,7 @@
 			selectedSeats.Remove(seat.SeatNumber);
 			seatPrices -= (decimal)seat.Price;
 			totalPrices -= (decimal)seat.Price;
+			sumPrices -= (decimal)seat.Price;
 		}
 		else
 		{
@@ -685,6 +708,7 @@
 			selectedSeatsId.Add(seat.ID);
 			seatPrices += (decimal)seat.Price;
 			totalPrices += (decimal)seat.Price;
+			sumPrices += (decimal)seat.Price;
 		}
 
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
@@ -711,6 +735,7 @@
 
 		comboPrices += combo.Amount;
 		totalPrices += combo.Amount;
+		sumPrices += combo.Amount;
 		await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
@@ -721,7 +746,7 @@
 			selectedCombos[combo]--;
 			comboPrices -= combo.Amount;
 			totalPrices -= combo.Amount;
-
+			sumPrices -= combo.Amount;
 			if (selectedCombos[combo] == 0)
 			{
 				selectedCombos.Remove(combo);
@@ -755,14 +780,19 @@
 		phoneNumber = string.Empty;
 		Rank.AccountName = string.Empty;
 		Rank.Point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
+		point = 0;
+		sumPrices = 0;
 		RefreshSeatsAsync();
 	}
 
 	private async Task ProcessPayment()
 	{
+		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
 		if (!string.IsNullOrEmpty(phoneNumber))
 		{
-			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+
 			request = new CreateBookTicketRequest
 				{
 					ScreeningID = screenings.Id,
@@ -774,7 +804,8 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
-					CreateBy = createBy
+					CreateBy = createBy,
+					Point = point,
 				};
 		}
 		else
@@ -790,23 +821,31 @@
 						FoodComboId = combo.Key.ID,
 						Quantity = combo.Value,
 					}).ToList(),
-					CreateBy = createBy
+					CreateBy = createBy,
+					Point = point,
 				};
 		}
 
 		try
 		{
 			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
-
 			if (billResp != null)
 			{
 				ResetUI();
 				paymentStatus = "success";
+				if (point > 0)
+				{
+					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+					resetPoint.MinPoint -= point;
+					_context.RankMembers.Update(resetPoint);
+					_context.SaveChanges();
+				}
 			}
 			else
 			{
 				paymentStatus = "failure";
 			}
+
 		}
 		catch (Exception ex)
 		{
@@ -817,20 +856,30 @@
 		StateHasChanged();
 	}
 	public Guid BillTicketId { get; set; }
-	public async Task ExportFile()
+
+	private async Task ExportFile()
 	{
 		try
 		{
 			BillTicketId = (Guid)billResp.Id;
-			var export = await _services.ExportFile(BillTicketId);
-			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.pdf";
-			await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(export));
+			var response = await _services.ExportFile(BillTicketId);
+			if (response == null || response.Length == 0)
+			{
+				Console.WriteLine("Không thể tải hóa đơn: File rỗng hoặc không tồn tại.");
+				return;
+			}
+	
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.zip";
+			var url = $"data:application/octet-stream;base64,{Convert.ToBase64String(response)}";
+			await JS.InvokeVoidAsync("downloadFile", url, fileName);
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Lỗi xuất hóa đơn: {ex.Message}");
+			// Xử lý lỗi chung
+			Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
 		}
 	}
+
 	private string GetPaymentMessage(string status)
 	{
 		return status switch
@@ -1025,7 +1074,7 @@
 	{
 		showCreateAccountModal = false;
 	}
-	
+
 	#endregion
 
 	#region đếm ngược
@@ -1086,35 +1135,37 @@
 			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 		}
  *@
-		.movie-info-card .card-img-top {
-			object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
-			width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
-			height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
-			max-height: 700px; /* Giới hạn chiều cao tối đa */
-		}
+	.movie-info-card .card-img-top {
+		object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+		width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+		height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+		max-height: 700px; /* Giới hạn chiều cao tối đa */
+	}
 
-		.movie-info-card .card-body {
-			text-align: center;
-			background-color: #white; /* Nền tối */
-			color: black;
-			padding: 15px;
-			font-family: 'Be Vietnam Pro', sans-serif;
-		}
+	.movie-info-card .card-body {
+		text-align: center;
+		background-color: #white; /* Nền tối */
+		color: black;
+		padding: 15px;
+		font-family: 'Be Vietnam Pro', sans-serif;
+	}
 
-		.movie-info-card .card-title {
-			font-size: 1.25rem;
-			margin-bottom: 10px;
-			color: limegreen;
-		}
+	.movie-info-card .card-title {
+		font-size: 1.25rem;
+		margin-bottom: 10px;
+		color: limegreen;
+	}
 
-		.movie-info-card .card-text {
-			font-size: 1rem;
-			line-height: 1.5;
-		}
-		.order-summary-card {
-    padding-left: 10px;
-    padding-right: 10px;
-}
+	.movie-info-card .card-text {
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+
+	.order-summary-card {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
 	.card-title {
 		white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
 		overflow: hidden; /* Ẩn phần văn bản bị tràn */
@@ -1140,6 +1191,7 @@
 			.tags .badge:last-child {
 				margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
 			}
+
 	.form-group {
 		margin-bottom: 15px;
 	}
@@ -1481,16 +1533,17 @@
 		background-color: #28a745; /* Màu ghế đôi */
 		color: #fff;
 	}
-	.qr-code-container {
-    display: flex;
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    align-items: center;    /* Căn giữa theo chiều dọc */
-    margin-top: 10px;       /* Thêm khoảng cách trên */
-}
 
-.qr-code-container img {
-    max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
-    height: auto;
-}
+	.qr-code-container {
+		display: flex;
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		margin-top: 10px; /* Thêm khoảng cách trên */
+	}
+
+		.qr-code-container img {
+			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+			height: auto;
+		}
 
 </style>
