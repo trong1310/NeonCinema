@@ -33,7 +33,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                 Status = request.Status,
                 RowNumber = request.RowNumber,
                 ColumnNumber = request.ColumnNumber,
-                CinemasId = request.CinemasId,
+                CinemasId = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e"),
                 CreatedTime = DateTime.Now
             };
             _context.Room.Add(room);
@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
             {
                 char rowLetter = (char)('A' + row - 1);
                 Guid seatTypeID;
-                if (row >= 3 && row <= 5)
+                if (row >= 4 && row <= 6)
                 {
                     seatTypeID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1");
                 }
@@ -148,7 +148,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
                     {
 
                         var seatTypeId = Guid.Parse("8FB86C77-213F-4316-8A7A-43FEE795514E");
-                        if (row >= 3 && row <= 5)
+                        if (row >= 4 && row <= 6)
                         {
                             seatTypeId = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1");
                         }
