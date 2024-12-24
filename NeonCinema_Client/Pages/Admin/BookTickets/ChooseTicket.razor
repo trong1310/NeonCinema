@@ -134,24 +134,24 @@
 						</div>
 						<hr class="dashed">
 						<div class="product-list ">
-						@foreach (var item in foods)
-						{
-							<div class="product-item d-flex align-items-center mb-3">
-								<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
-								<div class="product-info flex-grow-1">
-									<h5>@item.Content</h5>
-									<p>
-										<span class="text-success">@item.Amount.ToString("N0") VND</span>
-									</p>
+							@foreach (var item in foods)
+							{
+								<div class="product-item d-flex align-items-center mb-3">
+									<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
+									<div class="product-info flex-grow-1">
+										<h5>@item.Content</h5>
+										<p>
+											<span class="text-success">@item.Amount.ToString("N0") VND</span>
+										</p>
+									</div>
+									<div class="quantity-controls d-flex align-items-center">
+										<button class="btn control" @onclick="() => Decrease(item)">-</button>
+										<span class="mx-2">@GetComboQuantity(item)</span>
+										<button class="btn control" @onclick="() => Increase(item)">+</button>
+									</div>
 								</div>
-								<div class="quantity-controls d-flex align-items-center">
-									<button class="btn control" @onclick="() => Decrease(item)">-</button>
-									<span class="mx-2">@GetComboQuantity(item)</span>
-									<button class="btn control" @onclick="() => Increase(item)">+</button>
-								</div>
-							</div>
-						}
-					</div>
+							}
+						</div>
 					</div>
 				</div>
 
@@ -260,15 +260,15 @@
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Phụ thu</span>
-					<span>@* @sumPrices.ToString("N0") *@ VND</span>
+					<span>@surcharge.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Giảm giá</span>
-					<span>@* @sumPrices.ToString("N0") *@ VND</span>
+					<span>@discount.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền (Gồm phụ thu & giảm giá)</span>
-					<strong>@* @sumPrices.ToString("N0") *@ VND</strong>
+					<strong>@totalPrices.ToString("N0") VND</strong>
 				</div>
 				<hr class="dashed">
 				<div class="form-group">
@@ -292,6 +292,7 @@
 						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
 								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
+								<span>Lưu ý : 1000 điểm => 500 VND</span>
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
 								<!-- Button xác nhận sử dụng điểm -->
@@ -319,20 +320,20 @@
 					</div>
 				}
 
-				
+
 				<hr class="dashed">
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
 							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment" 
-								   @onchange="(e) => isCashPayment = true">
+							@onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
-							<input type="radio" name="flexRadioDefault" id="bankTransferRadio" checked="!isCashPayment" 
-									@onchange="(e) => isCashPayment = false">
+							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
+							@onchange="(e) => isCashPayment = false">
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -515,6 +516,7 @@
 	private double discount = 0;
 	private double point = 0;
 	private decimal sumPrices;
+	private decimal surcharge = 0;
 	private void ShowConfirmModal()
 	{
 		showConfirmModal = true;
@@ -567,6 +569,24 @@
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 		createBy = Guid.Parse(userIdClaim.Value);
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		if (type != null)
+		{
+			if (type.MovieTypeName.Contains("3D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge3D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+			if (type.MovieTypeName.Contains("2D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge4D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+		}
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -621,7 +641,7 @@
 			"Ghế đôi" => "seat-couple",
 			_ => "seat-default" // Mặc định nếu không xác định loại ghế
 		};
-	
+
 	}
 	private async Task UpdateQRCode()
 	{
@@ -806,9 +826,9 @@
 		comboPrices = 0;
 		point = 0;
 		sumPrices = 0;
+		surcharge = 0;
 		RefreshSeatsAsync();
 	}
-
 	private async Task ProcessPayment()
 	{
 		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
