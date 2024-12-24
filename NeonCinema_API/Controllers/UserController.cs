@@ -93,6 +93,7 @@ namespace NeonCinema_API.Controllers
 
 			return Ok(user);
 		}
+		[Authorize]
 		[HttpGet("user-check-tickets")]
 		public async Task<IActionResult> GetUserTickets(CancellationToken cancellationToken)
 		{
