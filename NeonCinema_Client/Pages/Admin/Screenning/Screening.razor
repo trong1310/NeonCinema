@@ -296,7 +296,7 @@ else
 
 	//input của Scr
 	private Guid roomId;
-	private DateTime date = DateTime.Now;
+	private DateTime date = DateTime.UtcNow;
 	private DateTime startTime;
 	private DateTime endTime;
 	//
@@ -329,13 +329,13 @@ else
 
 	private async Task LoadShowTimeFil()
 	{
-		_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
+		 //_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
 	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
-	//	await LoadShowTimeFil();
+		// await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()
@@ -477,13 +477,13 @@ else
 				roomName = item.Name;
 			}
 		}
-	//	await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
-	//	await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	//Màu trạng thái

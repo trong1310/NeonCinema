@@ -6,6 +6,8 @@
 @using NeonCinema_Application.Pagination
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Domain.Enum
+@using System.Text
+@using System.Globalization
 @inject IMovieservices _movieservices
 @inject NavigationManager Navigation
 
@@ -51,8 +53,8 @@
 					<label class="form-check-label" for="active">Đang phát hành</label>
 				</div>
 				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="status" id="active" value="Active" @onchange="StatusChanged">
-					<label class="form-check-label" for="active">Dừng phát hành</label>
+					<input class="form-check-input" type="radio" name="status" id="stopshowing" value="StopShowing" @onchange="StatusChanged">
+					<label class="form-check-label" for="stopshowing">Dừng phát hành</label>
 				</div>
 			</div>
 		</div>
@@ -65,7 +67,6 @@
 				}
 			</select>
 		</div>
-		<!-- Lọc theo ngày -->
 		<div class="col-md-8 d-flex align-items-center mt-4">
 			<label class="form-label ">Lọc từ ngày:</label>
 			<input type="date" class="form-control" @oninput="OnStartDateChanged" />
@@ -99,11 +100,11 @@
 		<tbody>
 			@if (filterFilms != null && filterFilms.Any())
 			{
-				int stt = (countPage - 1) * 10 + 1;
-				foreach (var item in filterFilms)
+				int index = (currentPage - 1) * pageSize + 1; // Tính STT bắt đầu cho trang hiện tại
+				@foreach (var item in filterFilms)
 				{
 					<tr>
-						<td class="text-center align-middle">@stt</td>
+						<td class="text-center align-middle">@index</td>
 						<td class="text-center align-middle">
 							<img src=@GetImageUrl(item.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 100px; width: 100px;" />
 						</td>
@@ -120,8 +121,10 @@
 						<td class="text-center align-middle">@item.GenreName</td>
 						<td class="text-center align-middle">@item.AgeAllowed</td>
 						<td class="text-center align-middle">
-							<span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-primary" : "bg-success") text-light small-badge">
-								@(item.Status == MovieStatus.Comingsoon ? "Sắp phát hành" : "Đang phát hành")
+
+							<span class="badge @(item.Status == MovieStatus.upcomingkrelease ? "bg-primary" : "bg-success") text-light small-badge">
+								@(item.Status == MovieStatus.upcomingkrelease ? "Sắp phát hành" : "Đang phát hành")
+
 							</span>
 						</td>
 						<td class="text-center align-middle">
@@ -130,37 +133,51 @@
 							</button>
 						</td>
 					</tr>
-					stt++; // Tăng STT cho từng dòng phim
+					index++; // Tăng giá trị STT
 				}
 			}
 			else
 			{
 				<tr>
-					<td colspan="10" class="text-center">Không có dữ liệu...</td>
+					<td colspan="12" class="text-center">Không có dữ liệu...</td>
 				</tr>
 			}
 		</tbody>
 
 	</table>
+
+	<!-- Pagination -->
+	<nav>
+		<ul class="pagination justify-content-center">
+			<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+				<a class="page-link" @onclick="() => ChangePage(currentPage - 1)">Trước</a>
+			</li>
+			@for (var i = 1; i <= totalPages; i++)
+			{
+				<li class="page-item @(currentPage == i ? "active" : "")">
+					<a class="page-link" @onclick="() => ChangePage(i)">@i</a>
+				</li>
+			}
+			<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+				<a class="page-link" @onclick="() => ChangePage(currentPage + 1)">Sau</a>
+			</li>
+		</ul>
+	</nav>
 </div>
 
-<MudBlazor.MudContainer Class="container-fluid d-flex justify-content-center mb-2">
-	<MudPagination Color="Color.Primary" Count="@countPage" SelectedChanged="@OnPaginationSelectedChanged" />
-</MudBlazor.MudContainer>
 
 @code {
+	private int totalPages;
 	private bool hover = true;
-	private int countPage = 1;
 	private int stt = 1;
 	private string errorMessage;
-	private bool isActorModalOpen = false;
 	ViewMovieRequest request = new ViewMovieRequest();
 	PaginationResponse<MovieDTO> movieDto = new PaginationResponse<MovieDTO>();
 	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
 	public Guid movieID;
-	private string selectedGenre = string.Empty; // Giá trị thể loại được chọn
-	private string selectedCountry = string.Empty; // Giá trị quốc gia được chọn
-	private string selectedAge = string.Empty; // Giá trị tuổi được chọn
+	private string selectedGenre = string.Empty;
+	private string selectedCountry = string.Empty;
+	private string selectedAge = string.Empty;
 
 	private DateTime? startDate;
 	private DateTime? endDate;
@@ -168,49 +185,31 @@
 	private List<string> genres = new List<string>();
 	private List<string> countries = new List<string>();
 	private List<string> ages = new List<string>();
+	public List<MovieDTO> filterFilms = new List<MovieDTO>();
+
+	private int currentPage = 1;
+	private const int pageSize = 5;
+
 	protected override async Task OnInitializedAsync()
 	{
 		await LoadMovies();
-
 	}
+
 	public async Task LoadMovies()
 	{
 		try
 		{
-			movieDto.Data = null;
-			request.PageNumber = countPage;
 			movieDto = await _movieservices.GetAllMovies(request);
-
-			// Load danh sách diễn viên cho từng phim
 			foreach (var movies in movieDto.Data)
 			{
 				var actors = await _movieservices.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
 				movies.ActorMovies = actors;
 			}
-			// Sắp xếp phim theo ngày phát hành từ mới đến cũ
 			movieDto.Data = movieDto.Data.OrderByDescending(m => m.StarTime).ToList();
-
-			// Cập nhật danh sách phim để hiển thị ban đầu
-			filterFilms = movieDto.Data.ToList();
-			// Lấy danh sách thể loại duy nhất
-			genres = movieDto.Data
-				.Select(m => m.GenreName)
-				.Distinct()
-				.OrderBy(g => g)
-				.ToList();
-
-			// Lấy danh sách quốc gia duy nhất
-			countries = movieDto.Data
-				.Select(m => m.CountryName)
-				.Distinct()
-				.OrderBy(c => c)
-				.ToList();
-			// Lấy danh sách tuổi duy nhất
-			ages = movieDto.Data
-				.Select(m => m.AgeAllowed.ToString())
-				.Distinct()
-				.OrderBy(a => a)
-				.ToList();
+			genres = movieDto.Data.Select(m => m.GenreName).Distinct().OrderBy(g => g).ToList();
+			countries = movieDto.Data.Select(m => m.CountryName).Distinct().OrderBy(c => c).ToList();
+			ages = movieDto.Data.Select(m => m.AgeAllowed.ToString()).Distinct().OrderBy(a => a).ToList();
+			FilterFilms();
 		}
 		catch (Exception ex)
 		{
@@ -218,44 +217,72 @@
 		}
 	}
 
-	public async Task OnPaginationSelectedChanged(int selectedPage)
-	{
-		countPage = selectedPage;
-		await LoadMovies();
-	}
-
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
 	}
-	private async Task NavigateToCreate()
-	{
-		Navigation.NavigateTo($"/create-flims");
-		await LoadMovies();
-	}
-	private async Task NavigateUpdate(Guid id)
-	{
-		Navigation.NavigateTo($"/movie-update/{id}");
-	}
-	private async Task NavigateToDetail(Guid id)
-	{
-		Navigation.NavigateTo($"/movies-dialog/{id}");
-	}
 
-	public List<MovieDTO> filterFilms = new List<MovieDTO>();
+	#region Lọc phim
 	private string selectedStatus = "all";
-	private void FilterFlims()
+	private void FilterFilms()
 	{
-		if (movieDto.Data == null) return;
+		// Chuẩn hóa chuỗi tìm kiếm
+		string normalizedSearchName = NormalizeString(request.SearchName);
 
+		if (movieDto.Data == null) return;
+		var filteredData = movieDto.Data.Where(u =>
+					(string.IsNullOrEmpty(request.SearchName) ||
+			NormalizeString(u.Name).Contains(normalizedSearchName)) &&
+			(selectedStatus == "all" ||
+				(selectedStatus == "Active" && u.Status == MovieStatus.isreleasing) ||
+				(selectedStatus == "Comingsoon" && u.Status == MovieStatus.upcomingkrelease) ||
+				(selectedStatus == "StopShowing" && u.Status == MovieStatus.StopShowing)) &&
+			(string.IsNullOrEmpty(selectedGenre) || u.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&
+			(string.IsNullOrEmpty(selectedCountry) || u.CountryName.Equals(selectedCountry, StringComparison.OrdinalIgnoreCase)) &&
+			(!startDate.HasValue || u.StarTime.Date >= startDate.Value.Date) &&
+			(!endDate.HasValue || u.StarTime.Date <= endDate.Value.Date) &&
+			(string.IsNullOrEmpty(selectedAge) || u.AgeAllowed.ToString() == selectedAge))
+			.ToList();
+
+		totalPages = (int)Math.Ceiling((double)filteredData.Count / pageSize);
+		stt = (currentPage - 1) * pageSize + 1; // Reset STT for the current page
+		filterFilms = filteredData.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+	}
+	private string RemoveDiacritics(string text)
+	{
+		if (string.IsNullOrEmpty(text))
+			return text;
+
+		var normalizedString = text.Normalize(NormalizationForm.FormD);
+		var stringBuilder = new StringBuilder();
+
+		foreach (var c in normalizedString)
+		{
+			var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+			if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+			{
+				stringBuilder.Append(c);
+			}
+		}
+
+		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+	}
+
+	private string NormalizeString(string input)
+	{
+		if (string.IsNullOrWhiteSpace(input))
+			return string.Empty;
+
+		// Loại bỏ khoảng trắng đầu và cuối, chuyển về chữ thường
+		input = input.Trim().ToLower();
 		// Thực hiện lọc dữ liệu dựa trên tên phim và trạng thái
 		filterFilms = movieDto.Data
 	.Where(u =>
 		(string.IsNullOrEmpty(request.SearchName) ||
 			u.Name.Contains(request.SearchName, StringComparison.OrdinalIgnoreCase)) &&
 		(selectedStatus == "all" ||
-			(selectedStatus == "Active" && u.Status == MovieStatus.Active) ||
-			(selectedStatus == "Comingsoon" && u.Status == MovieStatus.Comingsoon) ||
+			(selectedStatus == "Active" && u.Status == MovieStatus.isreleasing) ||
+			(selectedStatus == "Comingsoon" && u.Status == MovieStatus.upcomingkrelease) ||
 			(selectedStatus == "StopShowing" && u.Status == MovieStatus.StopShowing)) &&
 		(string.IsNullOrEmpty(selectedGenre) ||
 			u.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&
@@ -267,60 +294,104 @@
 	)
 	.ToList();
 
-	}
 
+		// Loại bỏ dấu tiếng Việt
+		input = RemoveDiacritics(input);
+
+		return input;
+	}
 	private void OnAgeChanged(ChangeEventArgs e)
 	{
 		selectedAge = e.Value?.ToString() ?? string.Empty;
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
+
 	private void OnStartDateChanged(ChangeEventArgs e)
 	{
 		if (string.IsNullOrEmpty(e.Value?.ToString()))
 		{
-			startDate = null; // Xóa giá trị ngày
+			startDate = null;
 		}
 		else if (DateTime.TryParse(e.Value?.ToString(), out var date))
 		{
-			startDate = date; // Cập nhật giá trị ngày
+			startDate = date;
 		}
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
 
 	private void OnEndDateChanged(ChangeEventArgs e)
 	{
 		if (string.IsNullOrEmpty(e.Value?.ToString()))
 		{
-			endDate = null; // Xóa giá trị ngày
+			endDate = null;
 		}
 		else if (DateTime.TryParse(e.Value?.ToString(), out var date))
 		{
-			endDate = date; // Cập nhật giá trị ngày
+			endDate = date;
 		}
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
+
 	private void OnGenreChanged(ChangeEventArgs e)
 	{
 		selectedGenre = e.Value?.ToString() ?? string.Empty;
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
 
 	private void OnCountryChanged(ChangeEventArgs e)
 	{
 		selectedCountry = e.Value?.ToString() ?? string.Empty;
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
+
 	private async void SearchName(ChangeEventArgs e)
 	{
 		request.SearchName = e.Value?.ToString() ?? string.Empty;
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
 	}
+
 	private async void StatusChanged(ChangeEventArgs e)
 	{
 		selectedStatus = e.Value?.ToString() ?? "all";
-		FilterFlims();
+		currentPage = 1;
+		FilterFilms();
+	}
+	#endregion
+
+	#region Phân trang
+	private void ChangePage(int newPage)
+	{
+		if (newPage < 1 || newPage > totalPages) return;
+		currentPage = newPage;
+		FilterFilms();
+	}
+
+	private int TotalPages => (int)Math.Ceiling((double)filterFilms.Count / pageSize);
+	#endregion
+
+	private async Task NavigateToCreate()
+	{
+		Navigation.NavigateTo($"/create-flims");
+		await LoadMovies();
+	}
+
+	private async Task NavigateUpdate(Guid id)
+	{
+		Navigation.NavigateTo($"/movie-update/{id}");
+	}
+
+	private async Task NavigateToDetail(Guid id)
+	{
+		Navigation.NavigateTo($"/movies-dialog/{id}");
 	}
 }
+
 
 <style>
 	body {

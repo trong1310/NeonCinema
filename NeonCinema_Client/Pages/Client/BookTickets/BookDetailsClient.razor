@@ -54,6 +54,23 @@
 		</div>
 	</div>
 
+	<div class="col-md-12 mt-4">
+		<h2 class="trailer-title text-center">Trailer</h2>
+		@if (!string.IsNullOrEmpty(movieDto.Trailer))
+		{
+			<div class="trailer-container">
+				<iframe src="@GetYouTubeEmbedUrl(movieDto.Trailer)"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+				</iframe>
+			</div>
+		}
+		else
+		{
+			<p>Trailer hiện không có sẵn.</p>
+		}
+	</div>
+
 	<div class="row">
 		<div class="col-md-8 show-date mt-5" style="margin-left: 15px;">
 			<h4>Giờ Chiếu</h4>
@@ -63,8 +80,9 @@
 					@foreach (var item in scrreningList)
 					{
 						<div class="col-6 col-md-3 mb-3">
-							<button class="btn btn-success btn-time" @onclick="() => ChooseSeatNavigate(item.Id)">@item.ShowTime</button>
-
+							<button class="btn btn-success btn-time" @onclick="() => ChooseSeatNavigate(item.Id)">
+								@(string.Format("{0:hh\\:mm}", item.ShowTime))
+							</button>
 						</div>
 					}
 				}
@@ -128,6 +146,30 @@
 	private async Task NavigateToBack()
 	{
 		_navi.NavigateTo("/list-movie");
+	}
+	private string GetYouTubeEmbedUrl(string youtubeUrl)
+	{
+		if (string.IsNullOrEmpty(youtubeUrl)) return string.Empty;
+
+		if (youtubeUrl.Contains("youtu.be"))
+		{
+			// Dạng rút gọn: https://youtu.be/VIDEO_ID
+			var videoId = youtubeUrl.Split('/').Last().Split('?').First();
+			return $"https://www.youtube.com/embed/{videoId}";
+		}
+		else if (youtubeUrl.Contains("youtube.com"))
+		{
+			// Dạng đầy đủ: https://www.youtube.com/watch?v=VIDEO_ID
+			var uri = new Uri(youtubeUrl);
+			var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+			var videoId = query["v"];
+			if (!string.IsNullOrEmpty(videoId))
+			{
+				return $"https://www.youtube.com/embed/{videoId}";
+			}
+		}
+
+		return string.Empty; // Trả về chuỗi rỗng nếu không phải URL hợp lệ
 	}
 }
 
@@ -242,6 +284,26 @@
 		.btn-success:hover {
 			background-color: #2C3245; /* Màu nền đậm hơn khi hover */
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+		}
+
+	.green-title {
+		color: limegreen; /* Màu chữ xanh lá */
+		border: 1px solid limegreen; /* Viền màu xanh lá */
+		padding: 10px; /* Khoảng cách trong */
+		border-radius: 8px; /* Bo góc viền */
+		display: inline-block; /* Đảm bảo tiêu đề nằm trong một khối */
+		font-weight: bold; /* Chữ đậm */
+	}
+
+	.trailer-container {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.trailer-container iframe {
+			width: 100%; /* Chiều rộng */
+			height: 600px; /* Chiều cao theo tỷ lệ 16:9 */
+			border: none;
 		}
 
 </style>

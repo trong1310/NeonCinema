@@ -157,12 +157,37 @@
 					</div>
 				</div>
 
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="Country" class="font-weight-bold">Phụ đề</label>
+							<div class="position-relative">
+								<select class="form-control">
+									<option value="">Chọn phụ đề</option>
+									<option value="">2D</option>
+									<option value="">3D</option>
+									
+								</select>
+								<i class="material-icons add-icon-genre" @onclick="OpenSubtitlesDialog">add_circle</i>
+							</div>
+							<ValidationMessage For="@(() => request.CountryID)" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Trạng thái</label>
+							<input type="text" class="form-control" readonly /> 
+
+							@* <ValidationMessage For="@(() => request.Status)" /> *@
+						</div>
+					</div>
+				</div>
 				<div class="form-group">
 					<label for="Description" class="font-weight-bold">Mô tả</label>
 					<textarea class="form-control" id="Description" @bind="request.Description" rows="3"></textarea>
 					<ValidationMessage For="@(() => request.Description)" />
 				</div>
-
 				<div class="text-center">
 					<button type="submit" class="btn btn-success btn-lg">Thêm</button>
 					<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
@@ -330,6 +355,31 @@
 				</div>
 			</div>
 		}
+		@if (isSubtitlesModalOpen)
+		{
+			<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Thêm phụ đề</h5>
+							<button type="button" class="close" @onclick="CloseSubtitlesDialog" aria-label="Close">
+								<span class="material-icons" aria-hidden="true">close</span>
+							</button>
+						</div>
+						<div class="modal-body" style="margin-bottom: -20px">
+							<div class="form-group">
+								<label  class="font-weight-bold">Tên phụ đề</label>
+								<input type="text"  class="form-control" placeholder="Nhập tên phụ đề" style="margin-left: 0px" />
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseSubtitlesDialog">Hủy</button>
+							<button type="button" class="btn btn-primary">Thêm</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
 	</div>
 </EditForm>
 @code {
@@ -488,10 +538,12 @@
 	private bool isLanguageModalOpen = false;
 	private bool isCountryModalOpen = false;
 	private bool isDirectorModalOpen = false;
+	private bool isSubtitlesModalOpen = false;
 
 	private string newLanguageName = string.Empty;
 	private string newCountryName = string.Empty;
 	private string newDirectorName = string.Empty;
+	private string newSubtitlesrName = string.Empty;
 
 	// Language
 	private void OpenLanguageDialog() => isLanguageModalOpen = true;
@@ -580,6 +632,14 @@
 	// 		Console.WriteLine($"Lỗi: {ex.Message}");
 	// 	}
 	// }
+
+	//Phụ đề
+	private void OpenSubtitlesDialog() => isSubtitlesModalOpen = true;
+	private void CloseSubtitlesDialog()
+	{
+		isSubtitlesModalOpen = false;
+		newSubtitlesrName = string.Empty;
+	}
 	#endregion
 }
 

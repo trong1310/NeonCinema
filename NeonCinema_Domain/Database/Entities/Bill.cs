@@ -14,12 +14,18 @@ namespace NeonCinema_Domain.Database.Entities
     {
 		public Guid ID { get; set; }
 		public Guid? UserID { get; set; }
+		public Guid? PromotionID { get; set; }
 		public decimal TotalPrice { get; set; }
+		public decimal? AfterDiscount { get; set; }
+		public decimal? Surcharge { get; set; }
+		public double? TotalPoint { get; set; }
+
 		public string BillCode { get; set; }
 		public ticketEnum Status { get; set; }
 		public virtual Users? Users { get; set; }
+		public virtual Promotion? Promotions { get; set; }
 		public virtual ICollection<BillCombo> BillCombos { get; set; }
-		public virtual ICollection<BillTicket>? BillTickets { get; set; }
+		public virtual ICollection<Ticket>? Ticket { get; set; }
 		public virtual ICollection<PendingPoint>? PendingPoint { get; set; }
 
 
