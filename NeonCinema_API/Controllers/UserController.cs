@@ -92,51 +92,48 @@ namespace NeonCinema_API.Controllers
             }
 
 
-            return Ok(user);
-        }
-        [HttpGet("user-check-tickets")]
-        public async Task<IActionResult> GetUserTickets(CancellationToken cancellationToken)
-        {
-            try
-            {
-                var user = HttpContext.User;
-                if (!user.Identity.IsAuthenticated)
-                {
-                    return Unauthorized("Người dùng chưa đăng nhập.");
-                }
-                var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
-                {
-                    return BadRequest("Không thể xác định người dùng.");
-                }
-                var userId = Guid.Parse(userIdClaim);
-                var bills = await _context.BillDetails
-                .Include(b => b.BillTickets)
-                    .ThenInclude(bt => bt.Tickets)
-                        .ThenInclude(t => t.Screenings)
-                            .ThenInclude(s => s.ShowTime)
-                .Include(b => b.BillTickets)
-                    .ThenInclude(bt => bt.Tickets)
-                        .ThenInclude(t => t.Movies)
-                .Include(b => b.BillTickets)
-                .ThenInclude(bt => bt.Tickets)
-                    .ThenInclude(t => t.Seat)
-            .Where(b => b.UserID == userId)
-            .ToListAsync(cancellationToken);
-                if (bills == null || bills.Count == 0)
-                {
-                    return NotFound("Người dùng chưa đặt vé nào.");
-                }
-                var result = bills.Select(bill => new
-                {
-                    BillCode = bill.BillCode,
-                    TotalPrice = bill.TotalPrice,
-                    Tickets = bill.BillTickets.Select(bt => new
-                    {
-                        MovieName = bt.Tickets?.Movies?.Name ?? "Không có thông tin phim",
-                        SeatNumber = bt.Tickets?.Seat?.SeatNumber ?? "Không có thông tin ghế",
-                        ScreeningTime = bt.Tickets?.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu"
-                    })
+			return Ok(user);
+		}
+		[HttpGet("user-check-tickets")]
+		public async Task<IActionResult> GetUserTickets(CancellationToken cancellationToken)
+		{
+			try
+			{
+				var user = HttpContext.User;
+				if (!user.Identity.IsAuthenticated)
+				{
+					return Unauthorized("Người dùng chưa đăng nhập.");
+				}
+				var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(userIdClaim))
+				{
+					return BadRequest("Không thể xác định người dùng.");
+				}
+				var userId = Guid.Parse(userIdClaim);
+				var bills = await _context.BillDetails
+				.Include(bt => bt.Ticket)
+						.ThenInclude(t => t.Screenings)
+							.ThenInclude(s => s.ShowTime)
+				.Include(bt => bt.Ticket)
+						.ThenInclude(t => t.Movies)
+				.Include(bt => bt.Ticket)
+					.ThenInclude(t => t.Seat)
+			.Where(b => b.UserID == userId)
+			.ToListAsync(cancellationToken);
+				if (bills == null || bills.Count == 0)
+				{
+					return NotFound("Người dùng chưa đặt vé nào.");
+				}
+				var result = bills.Select(bill => new
+				{
+					BillCode = bill.BillCode,
+					TotalPrice = bill.TotalPrice,
+					Tickets = bill.Ticket.Select(bt => new
+					{
+						MovieName = bt.Movies?.Name ?? "Không có thông tin phim",
+						SeatNumber = bt.Seat?.SeatNumber ?? "Không có thông tin ghế",
+						ScreeningTime = bt.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") ?? "Không có thông tin thời gian chiếu"
+					})
 
                 });
                 return Ok(result);
@@ -158,58 +155,55 @@ namespace NeonCinema_API.Controllers
                     return Unauthorized("Người dùng chưa đăng nhập.");
                 }
 
-                var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
-                {
-                    return BadRequest("Không thể xác định người dùng.");
-                }
-                var userRoleClaim = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
-                if (userRoleClaim != "25d7afcb-949b-4717-a961-b50f2e18657d")
-                {
-                    return Unauthorized("Bạn không có quyền truy cập.");
-                }
-                var userId = Guid.Parse(request.ID);
-                var bills = await _context.BillDetails
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Screenings)
-                                .ThenInclude(s => s.ShowTime)
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Movies)
-                    .Include(b => b.BillTickets)
-                        .ThenInclude(bt => bt.Tickets)
-                            .ThenInclude(t => t.Seat)
-                    .Where(b => b.UserID == userId)
-                    .ToListAsync(cancellationToken);
-                if (bills == null || bills.Count == 0)
-                {
-                    return NotFound("Không có hóa đơn nào cho người dùng này.");
-                }
-                var result = bills.Select(bill => new
-                {
-                    BillID = bill.ID,
-                    TotalPrice = bill.TotalPrice,
-                    BillCode = bill.BillCode,
-                    Tickets = bill.BillTickets.Select(bt => new
-                    {
-                        TicketID = bt.Tickets.ID,
-                        MovieName = bt.Tickets.Movies?.Name ?? "Không có thông tin phim",
-                        SeatNumber = bt.Tickets.Seat?.SeatNumber ?? "Không có thông tin ghế",
-                        ScreeningTime = bt.Tickets.Screenings?.ShowTime != null
-                            ? bt.Tickets.Screenings.ShowTime.StartTime.ToString(@"hh\:mm")
-                            : "Không có thông tin thời gian chiếu",
-                        Price = bt.Tickets.Price,
-                        TicketStatus = bt.Tickets.Status.ToString()
-                    })
-                });
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
+				var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(userIdClaim))
+				{
+					return BadRequest("Không thể xác định người dùng.");
+				}
+				var userRoleClaim = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+				if (userRoleClaim != "25d7afcb-949b-4717-a961-b50f2e18657d")
+				{
+					return Unauthorized("Bạn không có quyền truy cập.");
+				}
+				var userId = Guid.Parse(request.ID);
+				var bills = await _context.BillDetails
+					.Include(bt => bt.Ticket)
+							.ThenInclude(t => t.Screenings)
+								.ThenInclude(s => s.ShowTime)
+					.Include(bt => bt.Ticket)
+							.ThenInclude(t => t.Movies)
+					.Include(bt => bt.Ticket)
+							.ThenInclude(t => t.Seat)
+					.Where(b => b.UserID == userId)
+					.ToListAsync(cancellationToken);
+				if (bills == null || bills.Count == 0)
+				{
+					return NotFound("Không có hóa đơn nào cho người dùng này.");
+				}
+				var result = bills.Select(bill => new
+				{
+					BillID = bill.ID,
+					TotalPrice = bill.TotalPrice,
+					BillCode = bill.BillCode,
+					Tickets = bill.Ticket.Select(bt => new
+					{
+						TicketID = bt.ID,
+						MovieName = bt.Movies?.Name ?? "Không có thông tin phim",
+						SeatNumber = bt.Seat?.SeatNumber ?? "Không có thông tin ghế",
+						ScreeningTime = bt.Screenings?.ShowTime != null
+							? bt.Screenings.ShowTime.StartTime.ToString(@"hh\:mm")
+							: "Không có thông tin thời gian chiếu",
+						Price = bt.Price,
+						TicketStatus = bt.Status.ToString()
+					})
+				});
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+			}
+		}
 
         [HttpPut("Forgot-Password")]
         public async Task<ActionResult> ForgotPass([FromBody] Forgotpass request)
