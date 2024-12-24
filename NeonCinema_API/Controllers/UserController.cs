@@ -413,7 +413,9 @@ namespace NeonCinema_API.Controllers
                 if (id != null)
                 {
                     var user = await _context.Users
-            .Include(u => u.Bills)
+            .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Movies)
+            .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Seat)
+            .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Screenings).ThenInclude(u => u.Rooms)
             .Include(u => u.PromotionUsers)
             .Include(u => u.PendingPoint)
             .Include(u => u.RankMembers)
