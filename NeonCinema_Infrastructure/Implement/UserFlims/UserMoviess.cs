@@ -39,7 +39,7 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
                             join b in query on a.ID
                             equals b.ID
                             orderby b.StarTime
-                            where b.Status == MovieStatus.Comingsoon
+                            where b.Status == MovieStatus.upcomingkrelease
 
                             select new MovieDTO
                             {
@@ -79,7 +79,7 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
                             join b in query on a.ID
                             equals b.ID
                             orderby b.StarTime
-                            where b.Status == MovieStatus.Active
+                            where b.Status == MovieStatus.isreleasing
 
                             select new MovieDTO
                             {
@@ -117,7 +117,7 @@ namespace NeonCinema_Infrastructure.Implement.UserMovies
                              .Include(x => x.TicketSeats)
                              .AsNoTracking();
             int ticketCount;
-            var result = await query.Where(x=>x.Status == MovieStatus.Active).Select(movies=>new
+            var result = await query.Where(x=>x.Status == MovieStatus.isreleasing).Select(movies=>new
             {
                 Movies = movies,
                 ticketCount = movies.TicketSeats.Count(),

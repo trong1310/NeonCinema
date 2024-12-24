@@ -121,8 +121,10 @@
 						<td class="text-center align-middle">@item.GenreName</td>
 						<td class="text-center align-middle">@item.AgeAllowed</td>
 						<td class="text-center align-middle">
-							<span class="badge @(item.Status == MovieStatus.Comingsoon ? "bg-primary" : item.Status == MovieStatus.Active ? "bg-success" : "bg-secondary") text-light small-badge">
-								@(item.Status == MovieStatus.Comingsoon ? "Sắp chiếu" : item.Status == MovieStatus.Active ? "Đang chiếu" : "Dừng chiếu")
+
+							<span class="badge @(item.Status == MovieStatus.upcomingkrelease ? "bg-primary" : "bg-success") text-light small-badge">
+								@(item.Status == MovieStatus.upcomingkrelease ? "Sắp phát hành" : "Đang phát hành")
+
 							</span>
 						</td>
 						<td class="text-center align-middle">
@@ -273,6 +275,25 @@
 
 		// Loại bỏ khoảng trắng đầu và cuối, chuyển về chữ thường
 		input = input.Trim().ToLower();
+		// Thực hiện lọc dữ liệu dựa trên tên phim và trạng thái
+		filterFilms = movieDto.Data
+	.Where(u =>
+		(string.IsNullOrEmpty(request.SearchName) ||
+			u.Name.Contains(request.SearchName, StringComparison.OrdinalIgnoreCase)) &&
+		(selectedStatus == "all" ||
+			(selectedStatus == "Active" && u.Status == MovieStatus.isreleasing) ||
+			(selectedStatus == "Comingsoon" && u.Status == MovieStatus.upcomingkrelease) ||
+			(selectedStatus == "StopShowing" && u.Status == MovieStatus.StopShowing)) &&
+		(string.IsNullOrEmpty(selectedGenre) ||
+			u.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&
+		(string.IsNullOrEmpty(selectedCountry) ||
+			u.CountryName.Equals(selectedCountry, StringComparison.OrdinalIgnoreCase)) &&
+		(!startDate.HasValue || u.StarTime.Date >= startDate.Value.Date) && // Lọc từ ngày
+		(!endDate.HasValue || u.StarTime.Date <= endDate.Value.Date) &&
+		(string.IsNullOrEmpty(selectedAge) || u.AgeAllowed.ToString() == selectedAge)        // Lọc đến ngày
+	)
+	.ToList();
+
 
 		// Loại bỏ dấu tiếng Việt
 		input = RemoveDiacritics(input);
