@@ -1,8 +1,10 @@
 ﻿@using System.Text.RegularExpressions
 @using Blazored.LocalStorage
-
+@using NeonCinema_API.Controllers.Service
+@inject ILocalStorageService _localstorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
+@inject HttpClient _http
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -16,7 +18,7 @@
                 <MudImage Src="/images/Client/cam.jpg" Alt="Đặng Đức Cường" Class="rounded-circle" Style="width: 70px; height: 70px;" />
             </MudItem>
             <MudItem xs="9" Class="text-center mt-5">
-                <MudText Typo="Typo.h6" Style="font-size: 17px;">@nameUser</MudText>
+                <MudText Typo="Typo.h6" Style="font-size: 17px;"></MudText>
                 <MudText Typo="Typo.body2" Class="mud-text-secondary" Style="font-weight:bold">Admin</MudText>
             </MudItem>
         </MudGrid>
@@ -82,13 +84,47 @@
 </style>
 
 @code {
-    private string nameUser = "";
     protected override async Task OnInitializedAsync()
     {
-        var name = await _localStorage.GetItemAsStringAsync("name");
-        if (name != null)
+        var token = await _localstorage.GetItemAsync<string>("authToken");
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/getfrofile");
+        requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var response = await _http.SendAsync(requestMessage);
+        if (response.IsSuccessStatusCode)
         {
-            nameUser = Regex.Unescape(name.Trim('"'));
+            user = await response.Content.ReadFromJsonAsync<UserProfile>();
         }
+    }
+    private UserProfile user;
+    private string previewImage;
+    bool _drawerOpen = true;
+    
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await file.OpenReadStream().CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var buffer = memoryStream.ToArray();
+                previewImage = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+                user.Images = previewImage;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+    }
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
     }
 }

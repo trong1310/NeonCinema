@@ -37,10 +37,10 @@
                 <p class="profile-title">THÔNG TIN CÁ NHÂN</p>
                 <div class="row">
                     <div class="col-md-5 text-center">
-                        <img src="/images/Customer/user-icon.png" class="rounded-circle profile-img" alt="User Image" />
+                        <img src="@GetImageUrl()" class="rounded-circle profile-img" alt="User Image" />
                         <div class="mt-4 customer-movie">
                             <p><span class="font-weight-bold">Điểm:</span> 100 điểm</p>
-                            <p><span class="font-weight-bold">Tổng chi tiêu:</span> 30000000</p>
+                            <p><span class="font-weight-bold">Tổng chi tiêu:</span> @(totalMoney)đ</p>
                             <p><span class="font-weight-bold">Hoạt động:</span> aaaaaa</p>
                         </div>
                     </div>
@@ -157,21 +157,34 @@
                     <th scope="col">Mã hóa đơn</th>
                     <th scope="col">Tên phim</th>
                     <th scope="col">Tổng tiền</th>
+                    <th scope="col">Số ghế</th>
+                    <th scope="col">Phòng</th>
                     <th scope="col">Tổng Điểm tích lũy</th>
-                    <th scope="col">Chi tiết</th>
+                    
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in _lstBill.Select((value, index) => new {value, index}))
                 {
+                    if(item.value.Ticket != null)
+                    {
+                        foreach (var x in item.value.Ticket)
+                        {
+                            nameMovie = x.Movies.Name;
+                            seatNumber = seatNumber + "," + x.Seat.SeatNumber.ToString();
+                            roomName = x.Screenings.Rooms.Name;
+                        }
+                    }
+                    
                     <tr>
                         <th scope="row">@(item.index + 1)</th>
-                        <td>1</td>
+                        <td>@item.value.CreatedTime</td>
                         <td>@item.value.ID</td>
-                        <td>4</td>
-                        <td>@item.value.TotalPrice</td>
-                        <td>6</td>
-                        <td>6</td>
+                        <td>@nameMovie</td>
+                        <td>@(item.value.TotalPrice)đ</td>
+                        <td>@seatNumber</td>
+                        <td>@roomName</td>
+                        <td></td>
                     </tr>
                 }
             </tbody>
@@ -259,6 +272,10 @@
     //
     private Users user = new Users();
     private List<Bill> _lstBill = new List<Bill>();
+    private double totalMoney = 0;
+    private string nameMovie = "";
+    private string seatNumber = "";
+    private string roomName = "";
 
 
     private async Task LoadUserDetails()
@@ -272,7 +289,11 @@
             user = await response.Content.ReadFromJsonAsync<Users>();
         }
 
-        _lstBill = user.Bills.ToList();
+
+        if(user.Bills != null)
+        {
+            _lstBill = user.Bills.ToList();
+        }    
     }
 
 
@@ -280,10 +301,26 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadUserDetails();
+        await TotalMoneyUser();
+        await GetImageUrl();
     }
-    private string GetImageUrl(string imageUrl)
+    private async Task<string> GetImageUrl()
     {
-        return $"https://localhost:7211/Resources/{imageUrl}";
+        if(user.Images == null)
+        {
+            return "/images/Customer/user-icon.png";
+        }
+        return $"https://localhost:7211/Resources/{user.Images}";
+    }
+
+    private async Task<double> TotalMoneyUser()
+    {
+        foreach (var item in _lstBill)
+        {
+            totalMoney = totalMoney + Convert.ToDouble(item.TotalPrice);
+        }
+
+        return totalMoney;
     }
 
 }

@@ -71,7 +71,7 @@
 
 @code {
     private UserProfile user;
-    private string previewImage;
+    private string previewImage = "";
     bool _drawerOpen = true;
     protected override async Task OnInitializedAsync(){
         var token = await _localstorage.GetItemAsync<string>("authToken");
