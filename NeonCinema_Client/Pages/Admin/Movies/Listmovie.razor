@@ -234,8 +234,8 @@
 					(string.IsNullOrEmpty(request.SearchName) ||
 			NormalizeString(u.Name).Contains(normalizedSearchName)) &&
 			(selectedStatus == "all" ||
-				(selectedStatus == "Active" && u.Status == MovieStatus.Active) ||
-				(selectedStatus == "Comingsoon" && u.Status == MovieStatus.Comingsoon) ||
+				(selectedStatus == "Active" && u.Status == MovieStatus.isreleasing) ||
+				(selectedStatus == "Comingsoon" && u.Status == MovieStatus.upcomingkrelease) ||
 				(selectedStatus == "StopShowing" && u.Status == MovieStatus.StopShowing)) &&
 			(string.IsNullOrEmpty(selectedGenre) || u.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&
 			(string.IsNullOrEmpty(selectedCountry) || u.CountryName.Equals(selectedCountry, StringComparison.OrdinalIgnoreCase)) &&
