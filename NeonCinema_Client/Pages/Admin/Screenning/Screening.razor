@@ -296,7 +296,7 @@ else
 
 	//input của Scr
 	private Guid roomId;
-	private DateTime date = DateTime.Now;
+	private DateTime date = DateTime.UtcNow;
 	private DateTime startTime;
 	private DateTime endTime;
 	//
@@ -335,7 +335,7 @@ else
 	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
-		await LoadShowTimeFil();
+		// await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()

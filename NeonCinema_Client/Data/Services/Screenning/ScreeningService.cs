@@ -122,36 +122,39 @@ public class ScreeningService : IScreeningService
         else return false;
 	}
 
-    //validate nè
-	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid roomId, DateTime showDate)
+	//validate nè
+	public async Task<List<ShowTimeDTO>> GetShowTimebyRoomAndDate(Guid? roomId, DateTime? showDate)
 	{
-        try
-        {
-            //lấy danh sách lịch chiếu đã lọc
-            var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
-        $"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
+		try
+		{
+			if (roomId == null || showDate == null)
+			{
+				throw new ArgumentException("Room ID and Show Date must not be null.");
+			}
 
-            List<ScreeningSupportValidate> lstScr = result ?? new List<ScreeningSupportValidate>();
+			// Lấy danh sách lịch chiếu từ API
+			var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
+				$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
 
-            //lấy danh sách id showtime từ danh sách lịch chiếu trên
-            var lstIdShowtime = new List<Guid>();
+			if (result == null || !result.Any())
+			{
+				return new List<ShowTimeDTO>(); // Không có dữ liệu
+			}
 
+			// Lấy danh sách ID của showtime
+			var lstIdShowtime = result.Select(x => x.ShowTimeID).ToList();
 
-            foreach (var item in lstScr)
-            {
-                lstIdShowtime.Add(item.ShowTimeID);
-            }
+			// Lấy tất cả các showtime
+			var lstShowTime = await GetAllShowTimesAsync() ?? new List<ShowTimeDTO>();
 
-            var lstShowTime = await GetAllShowTimesAsync();
-
-
-
-            //lọc danh sách showtime theo danh sách ID và trả về
-            return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList(); // cần sửa đoạn này
-        }
-        catch (Exception ex) { throw new Exception(ex.Message); }
-		
- 	}
+			// Lọc danh sách showtime
+			return lstShowTime.Where(x => lstIdShowtime.Contains(x.ID)).ToList();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error in GetShowTimebyRoomAndDate: {ex.Message}", ex);
+		}
+	}
 
 	public Task<bool> ValidateShowTimeInRoom(Guid roomId)
 	{
