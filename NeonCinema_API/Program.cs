@@ -161,6 +161,7 @@ if (app.Environment.IsDevelopment())
 //    RequestPath = new PathString("/Resources")
 //});
 app.UseStaticFiles(); // Kích hoạt phục vụ file tĩnh
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);

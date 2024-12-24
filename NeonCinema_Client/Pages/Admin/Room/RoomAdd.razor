@@ -31,7 +31,7 @@
                 
             </div>
 
-            <div class="form-group">
+            @* <div class="form-group">
                 <label for="cinema">Chọn rạp</label>
                 <select id="cinema" class="form-control" @bind="request.CinemasId" >
                     <option value="@Guid.Empty">-Chọn rạp-</option>
@@ -44,7 +44,7 @@
                 <ValidationMessage For="@(() => request.CinemasId)" />
                
                 
-            </div>
+            </div> *@
         </div>
 
         <div class="button-group">
@@ -68,7 +68,7 @@
     private RoomCreateRequest request = new RoomCreateRequest
         {
             Status = EntityStatus.Active ,
-                CinemasId = Guid.Empty
+            CinemasId = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
         };
     private List<string> selectedSeats = new List<string>();
     

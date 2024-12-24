@@ -41,7 +41,7 @@
                         <InputNumber id="columnNumber" type="number" class="form-control" @bind-Value="request.ColumnNumber" />
                         <ValidationMessage For="@(() => request.ColumnNumber)" />
                     </div>
-                    <div class="form-group">
+                    @* <div class="form-group">
                         <label for="cinemasId"><strong>Chọn rạp</strong></label>
                         <InputSelect id="cinemasId" class="form-control" @bind-Value="request.CinemasId">
                             @foreach (var cinema in cinemas)
@@ -49,7 +49,7 @@
                                 <option value="@cinema.ID">@cinema.Name</option>
                             }
                         </InputSelect>
-                    </div>
+                    </div> *@
                     <div class="form-group">
                         <label for="status"><strong>Trạng thái</strong></label>
                         <InputSelect id="status" class="form-control" @bind-Value="request.Status">
@@ -101,35 +101,34 @@
                         {
                             @for (int row = 1; row <= request.RowNumber; row++)
                             {
-            <tr>
+                                <tr>
                                     @for (int col = 1; col <= request.ColumnNumber; col++)
                                     {
                                         var seat = seats.FirstOrDefault(s => s.Row == row.ToString() && s.Column == col.ToString());
                                         string rowLabel = GetRowLabel(row);
                                         string seatLabel = $"{rowLabel}{col}";
 
-                    <td>
+                                    <td>
                                             @if (seat != null)
                                             {
-                            <div class="seat" style="font-size: 12px;">
-                                <button style="@GetSeatColor(seat, selectedSeats.Contains(seat.ID))"
-                                        @onclick="() => ToggleSeatSelection(seat)"
-                                        @onclick:preventDefault="true">
-                                                        @seatLabel
-                                </button>
-                            </div>
+                                                <div class="seat" style="font-size: 12px;">
+                                                    <button style="@GetSeatColor(seat, selectedSeats.Contains(seat.ID))"
+                                                            @onclick="() => ToggleSeatSelection(seat)"
+                                                            @onclick:preventDefault="true">
+                                                                            @seatLabel
+                                                    </button>
+                                                </div>
 
                                             }
-
                                             else
                                             {
-                            <div class="seat empty">
-                                                    @seatLabel
-                            </div>
+                                                <div class="seat empty">
+                                                         @seatLabel
+                                                </div>
                                             }
-                    </td>
+                                    </td>
                                     }
-            </tr>
+                                </tr>
                             }
 
                         }
@@ -142,7 +141,6 @@
 
         <div class="seat-legend">
             <p><span style="background-color: #ac1a8d; color: white; padding: 5px;"></span> - Ghế đã đặt</p>
-            <p><span style="background-color: blue; color: white; padding: 5px;"></span> - Ghế đã chọn</p>
             <p><span style="background-color: gray; color: white; padding: 5px;"></span> - Ghế đang bảo trì</p>
         </div>
     </div>
@@ -174,6 +172,7 @@
 
                     <option value="@seatEnum.Available">Hoạt động</option>
                     <option value="@seatEnum.Maintenance">Bảo trì</option>
+                    
 
                 </InputSelect>
             </div>
@@ -283,7 +282,7 @@
             request = new RoomUpdateRequest()
                 {
                     ID = rs.ID,
-                    Name = rs.Name,
+                    Name = NormalizeName(rs.Name),
                     SeatingCapacity = rs.SeatingCapacity,
                     ColumnNumber = rs.ColumnNumber,
                     RowNumber = rs.RowNumber,
@@ -297,6 +296,11 @@
         Console.WriteLine($"Số ghế tải được: {seats?.Count ?? 0}");
         Console.WriteLine($"Room ID: {roomId}");
     }
+    private string NormalizeName(string name)
+    {
+        return string.Join(" ", name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).Trim();
+    }
+
     private UpdateSeatDTO ConvertToUpdateSeatDTO(SeatDTO seat)
     {
         return new UpdateSeatDTO
@@ -355,15 +359,11 @@
             return "background-color: #ffcc00";
         switch (seat.Status)
         {
-            // case seatEnum.Selected: // Trạng thái Selected
-            //     return "background-color: blue;";
-            // case seatEnum.Sold: // Trạng thái Sold
-            //     return "background-color: #ac1a8d;";
-
-            case seatEnum.Maintenance: // Trạng thái Maintenance (4)
+           
+            case seatEnum.Maintenance: 
                 return "background-color: gray;";
-            // case seatEnum.Available: // Trạng thái Available (1)
-            //     return "background-color: #ee4646;";
+            case seatEnum.Sold: 
+                return "background-color: #ac1a8d;";
             default:
                 break;
         }
@@ -385,25 +385,7 @@
             return "";
         }
     }
-    private string GetStatusColor(string seatStatus)
-    {
-        if (seatStatus == "Available")
-        {
-            return "background-color: green;";
-        }
-        else if (seatStatus == "Selected")
-        {
-            return "background-color: blue;";
-        }
-        else if (seatStatus == "Maintenance")
-        {
-            return "background-color: gray;";
-        }
-        else
-        {
-            return "";
-        }
-    }
+    
     private string GetStatusInVietnamese(string status)
     {
         return status switch
