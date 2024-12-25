@@ -155,7 +155,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 					Email = u.Email,
 					Gender = u.Gender,
 					Images = u.Images,
-					DateOrBriht = u.DateOrBriht,
+					DateOrBriht = u.DateOrBriht.Value,
 					Adderss = u.Adderss,
 					Status = u.Status,
 					RoleID = u.RoleID

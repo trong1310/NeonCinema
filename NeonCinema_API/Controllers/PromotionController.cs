@@ -169,7 +169,7 @@ namespace NeonCinema_API.Controllers
 					Email = item.User.Email,
 					Gender = item.User.Gender,
 					Images = item.User.Images,
-					DateOrBriht = item.User.DateOrBriht,
+					DateOrBriht = item.User.DateOrBriht.Value,
 					Adderss = item.User.Adderss,
 					Status = item.User.Status,
 					RoleID = item.User.RoleID

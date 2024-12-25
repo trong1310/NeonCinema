@@ -16,6 +16,7 @@
 <script src="js/Customer/MovieList.js"></script>
 <link rel="stylesheet" href="/css/Room/detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <h3 style="text-align: center; margin-top: 30px"><strong>Chỉnh sửa phòng chiếu</strong></h3>
 <EditForm Model="request" OnValidSubmit="UpdateRoom">
     <DataAnnotationsValidator />
@@ -115,8 +116,9 @@
                                                     <button style="@GetSeatColor(seat, selectedSeats.Contains(seat.ID))"
                                                             @onclick="() => ToggleSeatSelection(seat)"
                                                             @onclick:preventDefault="true">
-                                                                            @seatLabel
+                                                           @seatLabel
                                                     </button>
+                                
                                                 </div>
 
                                             }
@@ -136,11 +138,11 @@
         <div class="seat-legend">
             <p><span style="background-color: #69d685; color: white; padding: 5px;"></span> - Ghế đôi</p>
             <p><span style="background-color: #ee4646; color: white; padding: 5px;"></span> - Ghế thường</p>
-            <p><span style="background-color: #a064d6; color: white; padding: 5px;"></span> - Ghế VIP</p>
+            
         </div>
 
         <div class="seat-legend">
-            <p><span style="background-color: #ac1a8d; color: white; padding: 5px;"></span> - Ghế đã đặt</p>
+            <p><span style="background-color: #a064d6; color: white; padding: 5px;"></span> - Ghế VIP</p>
             <p><span style="background-color: gray; color: white; padding: 5px;"></span> - Ghế đang bảo trì</p>
         </div>
     </div>
@@ -362,8 +364,7 @@
            
             case seatEnum.Maintenance: 
                 return "background-color: gray;";
-            case seatEnum.Sold: 
-                return "background-color: #ac1a8d;";
+           
             default:
                 break;
         }
@@ -404,6 +405,9 @@
    
 }
 <style>
+    i.fa-solid.fa-loveseat {
+        font-size: 16px; /* Điều chỉnh kích thước nếu cần */
+    }
     .seatcolor {
         display: flex;
         justify-content: space-between;
