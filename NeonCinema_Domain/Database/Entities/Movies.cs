@@ -18,6 +18,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string? Trailer { get; set; }
         public string Images { get; set; }
         public int? AgeAllowed { get; set; }
+        public bool? Sub { get; set; }
         public MovieStatus Status { get; set; }
         public Guid GenreID { get; set; }
         public Guid LenguageID { get; set; }
