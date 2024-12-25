@@ -16,8 +16,11 @@
             <div class="form-group">
                 <label for="roomName">Tên phòng</label>
                 <input id="roomName" class="form-control" @bind="request.Name" />
-               
                 <ValidationMessage For="@(() => request.Name)" />
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <div class="text-danger">@errorMessage</div>
+                }
             </div>
 
             <div class="form-group">
@@ -85,9 +88,7 @@
         else
         {
             selectedSeats.Add(seatLabel);
-
         }
-        
     }
    
     protected override async Task OnInitializedAsync()
@@ -106,13 +107,14 @@
         var normalizedName = NormalizeName(request.Name);
         if (await IsRoomNameDuplicate(normalizedName))
         {
-            errorMessage = "Tên phòng đã tồn tại hoặc không hợp lệ.";
+            errorMessage = "Tên phòng đã tồn tại. Vui lòng chọn tên khác.";
             StateHasChanged();
             return;
         }
         errorMessage = null;
-            await RoomService.CreateRoom(request);
-            Navigation.NavigateTo("/listroom");
+        StateHasChanged();
+        await RoomService.CreateRoom(request);
+        Navigation.NavigateTo("/listroom");
     }
 
     private void Cancel()
@@ -126,12 +128,11 @@
 
     private async Task<bool> IsRoomNameDuplicate(string name)
     {
-        var normalizedName = NormalizeName(name);
+        var normalizedName = NormalizeName(name).ToLowerInvariant(); 
         var existingRooms = await RoomService.GetAllRooms();
-        return existingRooms.Any(r => NormalizeName(r.Name) == normalizedName);
+        return existingRooms.Any(r => NormalizeName(r.Name).ToLowerInvariant() == normalizedName);
     }
-
-   
+    
 }
 <style>
     .add-room-container {
@@ -150,6 +151,11 @@
         font-weight: bold;
     }
 
+    .text-danger {
+        color: #dc3545; 
+        font-size: 0.875rem; 
+        margin-top: 5px;
+    }
     .form {
         display: grid;
         gap: 15px;
