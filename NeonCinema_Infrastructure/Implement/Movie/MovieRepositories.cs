@@ -46,7 +46,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
- 
+					Sub = request.Sub,
+					MovieTypeID = request.MovieTypeID,
+
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
@@ -124,7 +126,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID orderby b.CreatedTime descending
-                        
+							where b.Deleted == false
 							select new MovieDTO
                             {
                                 ID = b.ID,

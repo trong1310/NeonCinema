@@ -28,17 +28,6 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                     Content = new StringContent("Country name is required.")
                 };
             }
-
-            // Kiểm tra CountryName có thuộc danh sách quốc gia hợp lệ không
-            if (!IsValidCountryName(request.CountryName))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Country name is not valid.")
-                };
-            }
-
-            // Kiểm tra trùng dữ liệu cũ (dựa trên CountryName)
             var existingCountry = await _context.Country
                 .FirstOrDefaultAsync(c => c.CountryName == request.CountryName, cancellationToken);
 
@@ -122,16 +111,7 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                 };
             }
 
-            // Kiểm tra CountryName có thuộc danh sách quốc gia hợp lệ không
-            if (!IsValidCountryName(request.CountryName))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Country name is not valid.")
-                };
-            }
 
-            // Cập nhật thông tin country
             existingCountry.CountryName = request.CountryName;
 
             // Lưu thay đổi vào database
@@ -142,16 +122,6 @@ namespace NeonCinema_Infrastructure.Implement.Countrys
                 Content = new StringContent("Country updated successfully.")
             };
         }
-        private bool IsValidCountryName(string countryName)
-        {
-            // Ví dụ danh sách quốc gia hợp lệ có thể được lưu trữ trong cơ sở dữ liệu hoặc một dịch vụ bên ngoài
-            // Dưới đây là một ví dụ đơn giản với danh sách quốc gia giả lập
-            var validCountryNames = new HashSet<string>
-            {
-                "Vietnam", "USA", "Canada", "Germany", "France", // Danh sách các quốc gia bạn cần
-            };
 
-            return validCountryNames.Contains(countryName);
-        }
     }
 }

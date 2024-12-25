@@ -13,4 +13,11 @@ namespace NeonCinema_Domain.Enum
 		upcomingkrelease = 1,
 		StopShowing = 2,
 	}
+	public enum eSubEnum
+	{
+
+		Caption = 0,
+		VoiceActing = 1,
+		None = 2,
+	}
 }
