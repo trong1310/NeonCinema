@@ -16,7 +16,9 @@ namespace NeonCinema_Domain.Database.Entities
 		public Guid? UserID { get; set; }
 		public Guid? PromotionID { get; set; }
 		public decimal TotalPrice { get; set; }
+		[Precision(18, 3)]
 		public decimal? AfterDiscount { get; set; }
+		[Precision(18, 3)]
 		public decimal? Surcharge { get; set; }
 		public double? TotalPoint { get; set; }
 

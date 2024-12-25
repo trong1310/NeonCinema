@@ -13,7 +13,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 	{
 		public int Duration { get; set; }
 		public string Name { get; set; }
-		public bool Sub { get; set; }
+		public eSubEnum Sub { get; set; }
 		public string Description { get; set; }
 		public DateTime StarTime { get; set; }
 		public string Trailer { get; set; }
@@ -23,6 +23,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public Guid LenguageID { get; set; }
 		public Guid CountryID { get; set; }
 		public Guid DirectorID { get; set; }
+		public Guid MovieTypeID { get; set; }
 		public List<Guid>? ActorMovies { get; set; }
 	}
 

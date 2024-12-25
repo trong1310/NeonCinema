@@ -19,11 +19,11 @@ namespace NeonCinema_API.Controllers.Movie
             _reps = repo;
         }
         [HttpGet("Get-All")]
-        public async Task<IActionResult> GetAll([FromQuery] CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var mvt = await _reps.GetAllMovieType(cancellationToken);
+                var mvt = await _reps.GetAllMovieType();
                 return Ok(mvt);
             }
             catch (Exception ex)

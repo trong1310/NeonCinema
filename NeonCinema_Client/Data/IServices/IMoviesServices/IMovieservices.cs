@@ -6,6 +6,7 @@ using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
@@ -23,7 +24,12 @@ namespace NeonCinema_Client.Data.IServices.IMoviesServices
 		public Task<HttpResponseMessage> Update(UpdateMovieRequest request);
         public Task<MovieDTO> GetMovieById(Guid id);
         public Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request);
-		public Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request);
+		public Task<HttpResponseMessage> CreateActor(CreateActorRequest request);
+		public Task<HttpResponseMessage> CreateGenre(CreateGenreRequest request);
+		public Task<HttpResponseMessage> CreateDirector(CreateDirectorRequest request);
+		public Task<HttpResponseMessage> CreateLanguage(CreateLanguageRequest request);
+		public Task<HttpResponseMessage> CreateCountry(CountrysCreateRequest request);
+		public Task<HttpResponseMessage> CreateMovieType(CreateMovieTypeRequest request);
 		public Task<List<ActorMoviesDto>> GetActorsByFilmAsync(Guid moviesId, CancellationToken cancellationToken);
 	}
 }

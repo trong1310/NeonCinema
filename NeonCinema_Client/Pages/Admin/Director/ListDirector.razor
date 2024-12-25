@@ -75,7 +75,7 @@
                         <td class="text-center align-middle">@(@filteredDirectors.IndexOf(actor) + 1)</td>
                         <td class="text-center align-middle">@actor.FullName</td>
                         <td class="text-center align-middle">
-                            @if(actor.Gender == "Men")
+                            @if(actor.Gender == EntityStatus.Nam)
                             {
                                 <span>Nam</span>
                             }
@@ -185,8 +185,8 @@
         filteredDirectors = director
             .Where(d => string.IsNullOrWhiteSpace(searchText) || d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
             .Where(d => selectedGender == "All"
-                         || (selectedGender == "Men" && d.Gender == "Men") // So sánh với chuỗi "Men"
-                         || (selectedGender == "Girl" && d.Gender == "Girl")) // So sánh với chuỗi "Girl"
+                         || (selectedGender == "Men" && d.Gender == EntityStatus.Nam) // So sánh với chuỗi "Men"
+                         || (selectedGender == "Girl" && d.Gender == EntityStatus.Nữ)) // So sánh với chuỗi "Girl"
             .ToList(); // Lọc danh sách theo tên và giới tính
     }
 

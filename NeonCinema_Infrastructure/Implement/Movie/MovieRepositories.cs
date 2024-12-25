@@ -47,6 +47,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
 					Sub = request.Sub,
+					MovieTypeID = request.MovieTypeID,
+
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
