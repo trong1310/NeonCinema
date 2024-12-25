@@ -219,7 +219,7 @@
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
-						<label for="Director" class="font-weight-bold">Hiển thị :	</label>
+						<label for="Director" class="font-weight-bold">Kiểu phim :	</label>
 						<div class="position-relative">
 							<select id="view" @bind="request.Sub" class="form-control">
 								<option value="" disabled selected>Chọn kiểu hiển thị</option>
@@ -227,7 +227,6 @@
 								<option value="@(eSubEnum.VoiceActing)">Lồng tiếng</option>
 
 							</select>
-							<i class="material-icons add-icon-genre" @onclick="OpenDirectorDialog">add_circle</i>
 						</div>
 					</div>
 				</div>
@@ -241,12 +240,16 @@
 				<button type="button" class="btn btn-warning btn-lg" @onclick="NavigateToList">Quay lại</button>
 				@if (showConfirmModal)
 				{
-					<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
-						<div class="modal-dialog">
+					<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+						<div class="modal-dialog" role="document">
 							<div class="modal-content">
-
+								<div class="modal-header">
+									<button type="button" class="close" @onclick="CloseLanguageDialog" aria-label="Close">
+										<span class="material-icons" aria-hidden="true">close</span>
+									</button>
+								</div>
 								<div class="modal-body">
-									<p>Bạn chắn chắn muốn tạo phim mới ?</p>
+									<h4>Bạn chắn chắn muốn tạo phim mới ?</h4>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -255,6 +258,7 @@
 							</div>
 						</div>
 					</div>
+
 				}
 			</div>
 		</div>
@@ -460,14 +464,14 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title">Thêm phụ đề</h5>
+						<h5 class="modal-title">Thêm loại phim</h5>
 						<button type="button" class="close" @onclick="CloseSubtitlesDialog" aria-label="Close">
 							<span class="material-icons" aria-hidden="true">close</span>
 						</button>
 					</div>
 					<div class="modal-body" style="margin-bottom: -20px">
 						<div class="form-group">
-							<label class="font-weight-bold">Tên phụ đề</label>
+							<label class="font-weight-bold">Tên loại phim</label>
 							<input type="text" class="form-control" placeholder="Nhập tên" style="margin-left: 0px" />
 						</div>
 					</div>
@@ -1142,6 +1146,16 @@
 		z-index: 1050;
 	}
 
+	.modal-header .close {
+		position: absolute;
+		top: 15px; /* Căn chỉnh từ trên */
+		right: 15px; /* Căn chỉnh từ phải */
+		background: none;
+		border: none;
+		font-size: 1.5rem;
+		color: #000;
+		cursor: pointer;
+	}
 		.modal.fade .modal-dialog {
 			transition: transform 0.3s ease-out;
 			transform: translateY(-50px);
