@@ -11,7 +11,7 @@ namespace NeonCinema_Application.Interface.Movie
 {
     public interface IMovieTypeRepositories
     {
-        public Task<List<MovieTypeDTO>> GetAllMovieType(CancellationToken cancellationToken);
+        public Task<List<MovieTypeDTO>> GetAllMovieType();
         public Task<MovieTypeDTO> GetMovieTypeById(Guid id, CancellationToken cancellationToken);
         public Task<MovieTypeDTO> CreateMovieType(CreateMovieTypeRequest request, CancellationToken cancellationToken);
         public Task<HttpResponseMessage> UpdateMovieType(Guid id, UpdateMovieTypeRequest request, CancellationToken cancellationToken);

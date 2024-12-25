@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Actors;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
 using System;
@@ -57,7 +58,8 @@ namespace NeonCinema_Infrastructure.Implement.Acotr
                     ID = Guid.NewGuid(),
                     CreatedTime = DateTime.UtcNow,
                     Name = actor.FullName,
-                    Status = actor.Status,
+                    Sex = (EntityStatus)actor.Sex,
+                    Status = NeonCinema_Domain.Enum.EntityStatus.Active,
                 };
                 await _context.Actor.AddAsync(actornew);
                 await _context.SaveChangesAsync();

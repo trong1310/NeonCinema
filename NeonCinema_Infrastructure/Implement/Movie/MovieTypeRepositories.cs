@@ -48,9 +48,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             return MVTDTO;
         }
 
-        public async Task<List<MovieTypeDTO>> GetAllMovieType(CancellationToken cancellationToken)
+        public async Task<List<MovieTypeDTO>> GetAllMovieType()
         {
-            var MVT = await _context.MoviesType.ToListAsync(cancellationToken);
+            var MVT = await _context.MoviesType.ToListAsync();
 
             // Manually map the list of Actor entities to a list of ActorDTOs
             var actorDTOs = MVT.Select(MoViE => new MovieTypeDTO
