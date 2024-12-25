@@ -14,8 +14,8 @@ namespace NeonCinema_Application.DataTransferObject.Room
         public Guid ID { get; set; }
 
         [Required(ErrorMessage = "tên phòng không được để trống.")]
-        [RegularExpression(@"^[a-zA-Z0-9\s]*$", ErrorMessage = "tên phòng không được chứa ký tự đặc biệt.")]
-        
+        [RegularExpression(@"^[\p{L}0-9\s]+$", ErrorMessage = "Tên phòng không được để trống và chứa ký tự đặc biệt.")]
+
         public string Name { get; set; }
         public int SeatingCapacity { get; set; }
 
@@ -23,16 +23,16 @@ namespace NeonCinema_Application.DataTransferObject.Room
         public EntityStatus Status { get; set; }
 
         [Required(ErrorMessage = "số hàng không được để trống.")]
-        [Range(2, int.MaxValue, ErrorMessage = "số hàng phải lớn hơn 1.")]
+        [Range(8, 15, ErrorMessage = "Số hàng phải từ 8 đến 15.")]
         public int RowNumber { get; set; }
 
         [Required(ErrorMessage = "số cột không được để trống")]
-        [Range(2, int.MaxValue, ErrorMessage = "số cột phải lớn hơn 1")]
+        [Range(8,15, ErrorMessage = "Số cột phải phải từ 8 đến 15")]
         public int ColumnNumber { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn rạp.")]
-        [NotEmptyGuid(ErrorMessage = "Vui lòng chọn rạp hợp lệ.")]
-        public Guid CinemasId { get; set; }
+        //[Required(ErrorMessage = "Vui lòng chọn rạp.")]
+        //[NotEmptyGuid(ErrorMessage = "Vui lòng chọn rạp hợp lệ.")]
+        public Guid CinemasId { get; set; } = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e");
     }
     public class NotEmptyGuidAttribute : ValidationAttribute
     {

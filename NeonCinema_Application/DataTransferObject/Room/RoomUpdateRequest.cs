@@ -15,9 +15,11 @@ namespace NeonCinema_Application.DataTransferObject.Room
         public string Name { get; set; }
         public EntityStatus Status { get; set; }
         public int SeatingCapacity { get; set; }
-        [Range(1, 50, ErrorMessage = "Số hàng phải từ 1 đến 50.")]
+        [Required(ErrorMessage = "số hàng không được để trống.")]
+        [Range(8, 15, ErrorMessage = "Số hàng phải từ 8 đến 15.")]
         public int RowNumber { get; set; }
-        [Range(1, 50, ErrorMessage = "Số cột phải từ 1 đến 50.")]
+        [Required(ErrorMessage = "số cột không được để trống")]
+        [Range(8, 15, ErrorMessage = "Số cột phải phải từ 8 đến 15")]
         public int ColumnNumber { get; set; }
         [Required(ErrorMessage = "Chọn rạp là bắt buộc.")]
         public Guid CinemasId { get; set; }
