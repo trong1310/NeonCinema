@@ -11,7 +11,7 @@ namespace NeonCinema_Domain.Database.Entities
     public class MovieType : EntityBase
     {
         public Guid ID { get; set; }
-        [Required(ErrorMessage = "Seat Type Name không được để trống.")]
+        [Required(ErrorMessage = "Tên kiểu phim không được để trống.")]
         public string MovieTypeName { get; set; }
         
         public virtual ICollection<Movies>? Movies { get; set; }
