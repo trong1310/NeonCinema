@@ -1,15 +1,21 @@
 ﻿@page "/list-movie"
 @layout LayoutClient
+@inject HttpClient _httpClient
+@using Blazored.LocalStorage
+@using NeonCinema_API.Controllers.Service
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.FlimsUser
 @using NeonCinema_Client.Data.IServices.User
+@inject ILocalStorageService _localstorage
 @using NeonCinema_Client.Data.Services.BookTicket
 @using NeonCinema_Client.DataTransferObject.MovieData
+@using System.IdentityModel.Tokens.Jwt
+@using System.Net.Http.Headers
 @inject BookTicketServices _service
 @inject NavigationManager _navi
 @inject IFlimUsers _filmsServices
 @inject NavigationManager _navi
-
+@inject IUserServicesss _userService
 <div id="carouselExample" class="carousel slide">
     <div class="carousel-inner">
         <div class="carousel-item active">
@@ -198,10 +204,10 @@
 
 <div class="container-fluid movie-nowshowing">
     <div style="text-align: center;">
-    <h2 class="mb-4 green-title">PHIM ĐANG PHÁT HÀNH</h2>
-</div>
-<div id="movieCarouselComing" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
+        <h2 class="mb-4 green-title">PHIM ĐANG PHÁT HÀNH</h2>
+    </div>
+    <div id="movieCarouselComing" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
             <div class="carousel-inner">
                 @for (int i = 0; i < moviesComing.Count; i += 5)
                 {
@@ -213,7 +219,7 @@
                                     <div class="card movie-card">
                                         <div class="image-container">
                                             <img src="@GetImageUrl(movie.Images)" class="card-img-top" loading="lazy" alt="@movie.Name">
-                                            <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID)">
+                                            <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID, movie.AgeAllowed.Value)">
                                                 <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                                             </button>
                                         </div>
@@ -233,25 +239,107 @@
                     </div>
                 }
             </div>
-    </div>
+        </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#movieCarouselComing" data-bs-slide="prev">
-        <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
+            <span class="fa-solid fa-chevron-left" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
         <button class="carousel-control-next" type="button" data-bs-target="#movieCarouselComing" data-bs-slide="next">
-        <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
+            <span class="fa-solid fa-chevron-right" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
 </div>
-</div>
+@if (showAgeRestrictionAlert)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Thông báo!</strong> @alertMessage
+        <button type="button" class="btn-close" @onclick="() => showAgeRestrictionAlert = false" aria-label="Close"></button>
+    </div>
+}
+
+
 
 @code {
+    [Parameter] public Guid userid { get; set; }
     List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
     List<MovieDTO> moviesComing = new List<MovieDTO>();
+    private int userAge = 0; // Biến lưu độ tuổi người dùng
+    private bool showAgeRestrictionAlert = false; // Biến để hiển thị cảnh báo
+    private string alertMessage = ""; // Cảnh báo lỗi
+    private UserProfile user;
+   
     protected override async Task OnInitializedAsync()
     {
-        await LoadMovies();
+        try
+        {
+            var token = await _localstorage.GetItemAsync<string>("authToken");
+            if (token is null)
+            {
+                _navi.NavigateTo("/login");
+                return;
+            }
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync("api/User/getfrofile");
+            if (response.IsSuccessStatusCode)
+            {
+                user = await response.Content.ReadFromJsonAsync<UserProfile>();
+                if (user != null)
+                {
+                    userAge = user.age;
+                    await LoadMovies();
+                    StateHasChanged();
+                }
+                else
+                {
+                    alertMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại.";
+                }
+            }
+            else
+            {
+                alertMessage = "Có lỗi xảy ra khi tải thông tin người dùng. Vui lòng thử lại.";
+            }
+            await LoadMovies();
+            StateHasChanged();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _navi.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            alertMessage = $"Có lỗi xảy ra: {ex.Message}. Vui lòng thử lại.";
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
+    private void CloseAlert()
+    {
+        showAgeRestrictionAlert = false;
+        StateHasChanged();
+    }
+    private async Task NagationToDetailBook(Guid id, int ageAllowed)
+    {
+       
+
+        if (userAge < ageAllowed)
+        {
+            showAgeRestrictionAlert = true;
+            alertMessage = $"Bạn {userAge} tuổi không đủ tuổi để xem phim này. Phim yêu cầu độ tuổi từ {ageAllowed} trở lên.";
+            StateHasChanged(); 
+        }
+        if(userAge > ageAllowed)
+        {
+            _navi.NavigateTo($"/client/book-details/{id}");
+        }
+        
+    }
+
+
+
+
 
     public async Task LoadMovies()
     {
@@ -267,6 +355,7 @@
             var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
             movie.ActorMovies = actors;
         }
+        StateHasChanged();
     }
 
     private string GetImageUrl(string imageUrl)

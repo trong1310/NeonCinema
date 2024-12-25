@@ -6,6 +6,9 @@ namespace NeonCinema_API.Controllers.Service
     {
         Task<UserProfile> GetUserProfileAsync(Guid userId);
         Task<Users> UpdateProfileAsync(Guid userId, UpdateUserProfileRequest request);
-       
+        
+        Task<UserProfile> GetUserProfilec(Guid userId);
+
+
     }
 }

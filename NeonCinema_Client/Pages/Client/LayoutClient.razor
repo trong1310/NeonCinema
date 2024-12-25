@@ -135,10 +135,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        userId = await _localStorage.GetItemAsync<string>("nameidentifier");
-        username = await _localStorage.GetItemAsync<string>("name");
-        otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
-        isLoggedIn = !string.IsNullOrEmpty(username);
+        var authToken = await _localStorage.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(authToken))
+        {
+            StateHasChanged();
+            isLoggedIn = true;
+            username = await _localStorage.GetItemAsync<string>("name");
+            userId = await _localStorage.GetItemAsync<string>("nameidentifier");
+            otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
+        }
+        else
+        {
+            isLoggedIn = false;
+        }
+        StateHasChanged();
         isLoginPage = NavigationManager.Uri.Contains("/login");
     }
 
@@ -149,6 +159,7 @@
         await _localStorage.RemoveItemAsync("mobilephone");
         await _localStorage.ClearAsync();
         isLoggedIn = false;
+        StateHasChanged();
         NavigationManager.NavigateTo("/login");
     }
 
