@@ -1,13 +1,16 @@
 ﻿using iText.StyledXmlParser.Jsoup.Parser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NeonCinema_API.Controllers.Service;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.DataTransferObject.Utilities;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention;
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -23,6 +26,7 @@ namespace NeonCinema_API.Controllers
 		private readonly IConfiguration _configuration;
 		private readonly NeonCinemasContext _context;
         private string _secretKey;
+        
         //	private readonly IReCapchaRepositories _captcha;
         public LoginController(NeonCinemasContext context ,IConfiguration configuration)
         {
@@ -86,32 +90,37 @@ namespace NeonCinema_API.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-
+        [AllowAnonymous]
         [HttpPost("Login")]
-		public async Task<IActionResult> Login([FromBody] LoginRequest request)
-		{
-			try
-			{
-				
-				if (String.IsNullOrEmpty(request.EmailOrPhone) || String.IsNullOrEmpty(request.Password))
-				{
-					return BadRequest("Vui lòng nhập Email/Số điện thoại và mật khẩu.");
-				}
-                var userLogin = await GetUser(request.EmailOrPhone,request.Password);
-				//if (userLogin == null )
-				//{
-				//	return Unauthorized();
-				//}
-				var token = GenerateJwtToken(userLogin);
-				return Ok(new { Token = token });
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.EmailOrPhone) || string.IsNullOrEmpty(request.Password))
+                {
+                    return BadRequest("Vui lòng nhập Email/Số điện thoại và mật khẩu.");
+                }
+                var userLogin = await GetUser(request.EmailOrPhone, request.Password);
+                if (userLogin == null)
+                {
+                    return Unauthorized("Thông tin đăng nhập không chính xác.");
+                }
+                var oldToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (!string.IsNullOrEmpty(oldToken))
+                {
+                    TokenValidationMiddleware.RemoveToken(oldToken);
+                }
+                var newToken = GenerateJwtToken(userLogin);
+                return Ok(new { Token = newToken });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
 
-		}
+
+
         [HttpGet("current")]
         public  IActionResult GetCurrentUser()
         {
@@ -134,5 +143,31 @@ namespace NeonCinema_API.Controllers
             }
             return Unauthorized();
         }
+
+        [Authorize]
+        [HttpPut("logout")]
+        public ActionResult LogOut()
+        {
+            try
+            {
+                // Lấy token từ header
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest("Token không hợp lệ.");
+                }
+
+                // Thu hồi token
+                TokenValidationMiddleware.RevokeToken(token);
+
+                return Ok("Đăng xuất thành công.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Có lỗi xảy ra: {ex.Message}");
+            }
+        }
+
+
     }
 }
