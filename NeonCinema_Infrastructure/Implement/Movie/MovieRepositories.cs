@@ -46,7 +46,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
- 
+					Sub = request.Sub,
+					MovieTypeID = request.MovieTypeID,
+
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
@@ -113,6 +115,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             .Include(x => x.Director)
                             .Include(x => x.Lenguage)
                             .Include(x => x.Countrys)
+                            .Include(x => x.MovieTypes)
                             .Include(x => x.TicketSeats)
 							.AsNoTracking();
 			if (!string.IsNullOrWhiteSpace(request.SearchName))
@@ -124,7 +127,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID orderby b.CreatedTime descending
-                        
+							where b.Deleted == false
 							select new MovieDTO
                             {
                                 ID = b.ID,
@@ -140,6 +143,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
+								Sub = b.Sub, 
+								MovieTypeName = b.MovieTypes.MovieTypeName
 
                             }).ToList();
 
@@ -271,6 +276,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Director)
                 .Include(x => x.Lenguage)
                 .Include(x => x.Countrys)
+                .Include(x => x.MovieTypes)
                 .Include(x => x.TicketSeats)
                 .Where(x => x.Status == MovieStatus.isreleasing)
                 .OrderByDescending(x => x.CreatedTime) 
@@ -294,6 +300,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
                 Status = result.Status,
                 Trailer = result.Trailer,
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+
                 ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
                 {
                     ActorName = act.Actor.Name,
@@ -310,7 +318,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-				.Include(x => x.TicketSeats)
+                .Include(x => x.MovieTypes)
+                .Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.upcomingkrelease)
 				.OrderByDescending(x => x.CreatedTime) 
 				.AsNoTracking()
@@ -333,7 +342,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-			}).ToList();
+                MovieTypeName = result.MovieTypes.MovieTypeName
+
+            }).ToList();
 
 			return movieDtos;
 		}
@@ -347,7 +358,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-				.Include(x => x.TicketSeats)
+                .Include(x => x.MovieTypes)
+                .Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.StopShowing)
 				.OrderByDescending(x => x.CreatedTime)
 				.AsNoTracking()
@@ -370,7 +382,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-			}).ToList();
+                MovieTypeName = result.MovieTypes.MovieTypeName
+
+            }).ToList();
 
 			return movieDtos;
 		}

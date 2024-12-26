@@ -420,7 +420,6 @@ namespace NeonCinema_API.Controllers
             .Include(u => u.PromotionUsers)
             .Include(u => u.PendingPoint)
             .Include(u => u.RankMembers)
-            .Include(u => u.Workshifts)
             .FirstOrDefaultAsync(u => u.ID == Guid.Parse(id));
 
                     return Ok(user);

@@ -1,6 +1,7 @@
 ﻿
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.EntityFrameworkCore;
+
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
@@ -10,19 +11,43 @@ namespace NeonCinema_API.Controllers.Service
     public class UserService : IUserServicesss
     {
         private readonly NeonCinemasContext _context;
-        public UserService(NeonCinemasContext context)
+        private readonly HttpClient _httpClient;
+        public UserService(NeonCinemasContext context, HttpClient httpClient)
         {
             _context = context;
+            _httpClient = httpClient;
+           
         }
         //public async Task<(int TotalPoints, decimal TotalSpent)> GetUserStatsAsync(Guid userId)
         //{
-           
+
         //}
+       
         public async Task<UserProfile> GetUserProfileAsync(Guid userId)
         {
+
             var user = await _context.Users
              .Where(u => u.ID == userId).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
             var rank = await _context.RankMembers.Where(x=>x.UserID == user.ID).Select(x=>x.MinPoint).FirstOrDefaultAsync();
+            int age = 0;
+            if (user.DateOrBriht.HasValue)
+            {
+                var birthDate = user.DateOrBriht.Value;
+                var currentDate = DateTime.Now;
+                age = currentDate.Year - birthDate.Year;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                // Kiểm tra xem đã qua sinh nhật trong năm nay chưa 
+                if (currentDate.Month < birthDate.Month ||
+                    (currentDate.Month == birthDate.Month && currentDate.Day < birthDate.Day))
+                {
+                    age--;  // Nếu chưa qua sinh nhật, giảm 1 tuổi
+                }
+            }
+
             var results = new UserProfile()
             {
                 ID = userId,
@@ -34,11 +59,17 @@ namespace NeonCinema_API.Controllers.Service
                 Images = user?.Images,
                 PhoneNumber = user?.PhoneNumber,
                 Ponit = rank,
+                age = age  // Gán giá trị tuổi vào đây
             };
-             return results;
+            return results;
         }
 
-       
+        public async Task<UserProfile> GetUserProfilec(Guid userId)
+        {
+
+            var response = await _httpClient.GetFromJsonAsync<UserProfile>($"https://localhost:7211/api/User/getfrofile");
+            return response;
+        }
 
         public async Task<Users> UpdateProfileAsync(Guid userId, UpdateUserProfileRequest request)
         {
