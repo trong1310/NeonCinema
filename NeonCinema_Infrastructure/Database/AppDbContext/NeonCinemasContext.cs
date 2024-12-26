@@ -4,6 +4,7 @@ using Bogus.Hollywood.Models;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -67,7 +68,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         {
             //optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
             //optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-            optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -710,18 +711,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Description = "Một bác sĩ chuyên khoa tim nghi ngờ cái chết của con gái mình sau một cuộc trừ tà, " +
 		"tin rằng trái tim cô bé vẫn đập. Trong đám tang cô bé, anh và một linh mục đã tranh cãi về sự thật, " +
 		"mỗi người đều cố gắng chứng minh lập trường của mình có thể cứu cô bé.",
-		StarTime = DateTime.Parse("2024-08-15"),
+		StarTime = DateTime.Parse("2024-12-01"),
 		Trailer = "https://youtu.be/4d7xzz0cTVw",
 		Images = "ngaiquy.jpg",
 		AgeAllowed = 16,
 		Status = MovieStatus.isreleasing,
-		GenreID = genreData[0].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[6].ID,
+		LenguageID = languageData[5].ID,
+		CountryID = countryData[6].ID,
 		DirectorID = directorData[0].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.VoiceActing
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -729,18 +731,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 81,
 		Description = "5 học sinh nghiên cứu hồ sơ cựu học sinh của một trường học bị chiếm đóng về những trải nghiệm siêu nhiên và các cô gái mất tích." +
 		" Người hướng dẫn của họ tạo ra những sự kiện kỳ ​​lạ đưa họ đến một cái cây cổ thụ, nơi mà hiệu trưởng vô tình đào được xương.",
-		StarTime = DateTime.Parse("2024-09-10"),
+		StarTime = DateTime.Parse("2024-12-10"),
 		Trailer = "https://www.youtube.com/watch?v=chimuoiba-trailer",
 		Images = "xich.jpg",
 		AgeAllowed = 18,
 		Status = MovieStatus.isreleasing,
-		GenreID = genreData[2].ID,
-		LenguageID = languageData[1].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[6].ID,
+		LenguageID = languageData[5].ID,
+		CountryID = countryData[6].ID,
 		DirectorID = directorData[1].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -748,18 +751,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 113,
 		Description = "Lấy cảm hứng từ giai thoại nổi tiếng của nhân vật được mệnh danh là thiên hạ đệ nhất chơi ngông," +
 		" Công Tử Bạc Liêu lấy bối cảnh Nam Kỳ Lục Tỉnh xưa của Việt Nam. Từ con trai của chủ ngân hàng đầu tiên của Việt Nam trở thành \"Công Tử Bạc Liêu\".",
-		StarTime = DateTime.Parse("2024-07-25"),
+		StarTime = DateTime.Parse("2024-12-06"),
 		Trailer = "https://youtu.be/wqJXnO_TKpY",
 		Images = "congtubaclieu.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.isreleasing,
-		GenreID = genreData[2].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[5].ID,
+		GenreID = genreData[5].ID,
+		LenguageID = languageData[4].ID,
+		CountryID = countryData[9].ID,
 		DirectorID = directorData[2].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.VoiceActing
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -767,18 +771,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 109,
 		Description = "Một cô gái khiếm thính và một anh giao hàng tìm thấy sự kết nối bất chấp rào cản giao tiếp." +
 		" Họ sử dụng ẩn dụ về những chú chim nước và cây cối kiên trì để tượng trưng cho việc vượt qua những trở ngại trong chuyện tình cảm và dẫn đến sự gắn bó.",
-		StarTime = DateTime.Parse("2024-06-20"),
+		StarTime = DateTime.Parse("2024-12-12"),
 		Trailer = "https://youtu.be/JzY-5ZtVD88",
 		Images = "yeuem.jpg",
 		AgeAllowed = 16,
 		Status = MovieStatus.isreleasing,
 		GenreID = genreData[3].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		LenguageID = languageData[5].ID,
+		CountryID = countryData[6].ID,
 		DirectorID = directorData[3].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -786,18 +791,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 99,
 		Description = "Trong văn hóa Java, Sengkolo là một thực thể tiêu cực thường ám ảnh con người, " +
 		"mang lại vận rủi và tai họa. Vào đêm đầu tiên của Suro, Sengkolo di chuyển để nhắm vào một số weton là con mồi của mình.",
-		StarTime = DateTime.Parse("2024-09-01"),
+		StarTime = DateTime.Parse("2024-12-20"),
 		Trailer = "https://youtu.be/-Sux3ihKodI?si=bbzqRn3w7kxqDaEi",
 		Images = "tetamhon.jpg",
 		AgeAllowed = 18,
 		Status = MovieStatus.isreleasing,
-		GenreID = genreData[4].ID,
-		LenguageID = languageData[0].ID,
+		GenreID = genreData[6].ID,
+		LenguageID = languageData[1].ID,
 		CountryID = countryData[0].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 
     // 5 phim sắp chiếu
     new Movies
@@ -806,18 +812,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Name = "SONIC THE HEDGEHOG: NHÍM SONIC 3",
 		Duration = 100 ,
         Description = "Phần hậu truyện của Nhím Sonic 1 và 2, đồng thời cũng là phần phim liên kết với Knuckles (2024).",
-		StarTime = DateTime.Parse("2024-12-15"),
+		StarTime = DateTime.Parse("2024-12-30"),
 		Trailer = "https://youtu.be/2gFjV9v7QVE",
 		Images = "SONIC.jpg",
 		AgeAllowed = 16,
 		Status = MovieStatus.upcomingkrelease,
-		GenreID = genreData[0].ID,
+		GenreID = genreData[2].ID,
 		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		CountryID = countryData[4].ID,
 		DirectorID = directorData[0].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -825,18 +832,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 120,
 		Description = "Bộ tứ báo thủ bao gồm Chét-Xi-Cà, Dì Bốn, Cậu Mười Một, Con Kiều chính thức xuất hiện cùng với phi vụ báo thế kỉ." +
 		" Nghe nói kế hoạch tiếp theo là ở Đà Lạt, liệu bốn báo thủ sẽ quậy Tết tung nóc cỡ nào?",
-		StarTime = DateTime.Parse("2024-11-30"),
+		StarTime = DateTime.Parse("2025-01-01"),
 		Trailer = "https://youtu.be/2k0jK_sWmwE",
 		Images = "botubaothu.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.upcomingkrelease,
-		GenreID = genreData[1].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[7].ID,
+		LenguageID = languageData[4].ID,
+		CountryID = countryData[9].ID,
 		DirectorID = directorData[1].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+       Sub = eSubEnum.VoiceActing
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -844,36 +852,38 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 110 ,
         Description = "Lần đầu tiên nhìn thấy cô gái yêu nhạc rock xinh đẹp Jinny, cậu bé Song đã yêu." +
 		" Chú Pong – một cựu Rocker giúp Song lập ban nhạc Bad Boyz Band để Song có thể mời Jinny tham gia. Tuy nhiên Jenny lại lọt vào mắt nhà sản xuất âm nhạc tên Arm.",
-		StarTime = DateTime.Parse("2024-12-01"),
+		StarTime = DateTime.Parse("2025-01-10"),
 		Trailer = "https://youtu.be/GKqrTQGHE3s",
 		Images = "tretraukhongduaduocdau.jpg",
 		AgeAllowed = 12,
 		Status = MovieStatus.upcomingkrelease,
-		GenreID = genreData[2].ID,
-		LenguageID = languageData[0].ID,
+		GenreID = genreData[7].ID,
+		LenguageID = languageData[1].ID,
 		CountryID = countryData[0].ID,
 		DirectorID = directorData[2].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
 		Name = "ABOUT FAMILY: CHUYỆN NHÀ BÁNH XẾP",
 		Duration = 110,
 		Description = "Đây là một bộ phim hài về gia đình. Phim kể câu chuyện về một người đàn ông là sinh viên y khoa ưu tú quyết định trở thành một linh mục.",
-		StarTime = DateTime.Parse("2024-12-20"),
+		StarTime = DateTime.Parse("2024-12-29"),
 		Trailer = "https://youtu.be/X3SY9XUlQAA",
 		Images = "chuyennhabanh.png",
 		AgeAllowed = 15,
 		Status = MovieStatus.upcomingkrelease,
-		GenreID = genreData[3].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[5].ID,
+		LenguageID = languageData[5].ID,
+		CountryID = countryData[6].ID,
 		DirectorID = directorData[3].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -881,18 +891,19 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Duration = 100,
 		Description = "Nakrob, một kẻ lừa đảo bất động sản trẻ tuổi, phát hiện ra một khách sạn trên sườn đồi bị bỏ hoang gần bãi biển." +
 		" Nhìn thấy cơ hội, anh ta quyết định biến nó thành một vụ lừa đảo khách sạn sang trọng.",
-		StarTime = DateTime.Parse("2024-11-25"),
+		StarTime = DateTime.Parse("2025-01-11"),
 		Trailer = "https://youtu.be/jS6TZkBB0lY",
 		Images = "chayngaydi.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.upcomingkrelease,
-		GenreID = genreData[4].ID,
-		LenguageID = languageData[0].ID,
+		GenreID = genreData[7].ID,
+		LenguageID = languageData[1].ID,
 		CountryID = countryData[0].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 
 	//5 Dừng chiếu
 	new Movies
@@ -907,13 +918,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "cuoixuyenbiengioi.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.StopShowing,
-		GenreID = genreData[4].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[7].ID,
+		LenguageID = languageData[5].ID,
+		CountryID = countryData[6].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -926,13 +938,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "kinhvanhoa.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.StopShowing,
-		GenreID = genreData[4].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[6].ID,
+		LenguageID = languageData[4].ID,
+		CountryID = countryData[9].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.VoiceActing
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -945,13 +958,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "mufasa.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.StopShowing,
-		GenreID = genreData[4].ID,
+		GenreID = genreData[8].ID,
 		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		CountryID = countryData[4].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -964,13 +978,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "cuocchien.jpg",
 		AgeAllowed = 13,
 		Status = MovieStatus.StopShowing,
-		GenreID = genreData[4].ID,
-		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		GenreID = genreData[2].ID,
+		LenguageID = languageData[2].ID,
+		CountryID = countryData[2].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	},
+		MovieTypeID = movieType[0].ID,
+        Sub = eSubEnum.Caption
+    },
 	new Movies
 	{
 		ID = Guid.NewGuid(),
@@ -983,13 +998,14 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		Images = "thosanthulinh.jpg",
 		AgeAllowed = 18,
 		Status = MovieStatus.StopShowing,
-		GenreID = genreData[4].ID,
+		GenreID = genreData[2].ID,
 		LenguageID = languageData[0].ID,
-		CountryID = countryData[0].ID,
+		CountryID = countryData[4].ID,
 		DirectorID = directorData[4].ID,
 		CreatedTime = DateTime.Now,
-		MovieTypeID = movieType[0].ID
-	}
+		MovieTypeID = movieType[1].ID,
+        Sub = eSubEnum.Caption
+    }
 };
 
 			// Thêm dữ liệu vào model
