@@ -28,7 +28,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public virtual Promotion? Promotions { get; set; }
 		public virtual ICollection<BillCombo> BillCombos { get; set; }
 		public virtual ICollection<Ticket>? Ticket { get; set; }
-		public virtual ICollection<PendingPoint>? PendingPoint { get; set; }
+		public virtual PendingPoint? PendingPoint { get; set; }
 
 
 	}
