@@ -11,5 +11,6 @@
         public string? Address { get; set; }
         public string? Images { get; set; }
         public double? Ponit { get; set; }
+        public int age { get; set; }
     }
 }

@@ -44,16 +44,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		public DbSet<Countrys> Country { get; set; }
 		public DbSet<ShowTime> ShowTimes { get; set; }
 		public DbSet<MovieType> MoviesType { get; set; }
-		public DbSet<PaymentMethod> PaymentMethods { get; set; }
 		public DbSet<Room> Room { get; set; }
 		public DbSet<Screening> Screening { get; set; }
 		public DbSet<Seat> Seat { get; set; }
 		public DbSet<SeatType> SeatTypes { get; set; }
 		public DbSet<FoodCombo> FoodCombos { get; set; }
 		public DbSet<BillCombo> BillCombos { get; set; }
-		public DbSet<ShiftChange> ShiftChange { get; set; }
 		public DbSet<TicketPrice> TicketPrice { get; set; }
-		public DbSet<WorkShift> WorkShift { get; set; }
 		public DbSet<Ticket> Tickets { get; set; }
 		public DbSet<Checkin> Checkin { get; set; }
 		public DbSet<Show_release> Show_release { get; set; }
@@ -381,7 +378,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Trấn Thành",
 		Address = "TP Hồ Chí Minh",
 		Biography = "Nghệ sĩ đa tài, nổi tiếng với các vai trò MC, diễn viên và đạo diễn. Được biết đến qua các bộ phim hài và điện ảnh như 'Bố Già'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -391,7 +388,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Lý Hải",
 		Address = "TP Hồ Chí Minh",
 		Biography = "Ca sĩ, đạo diễn nổi tiếng với loạt phim hành động 'Lật Mặt' thu hút hàng triệu khán giả.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -401,7 +398,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Victor Vũ",
 		Address = "Hà Nội",
 		Biography = "Đạo diễn nổi tiếng với các bộ phim kinh dị và ly kỳ như 'Thiên Mệnh Anh Hùng', 'Mắt Biếc'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -411,7 +408,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Charlie Nguyễn",
 		Address = "TP Hồ Chí Minh",
 		Biography = "Đạo diễn kiêm nhà sản xuất phim nổi tiếng với các bộ phim hài hành động như 'Để Mai Tính', 'Tèo Em'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -421,7 +418,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Ngô Thanh Vân",
 		Address = "Hồ Chí Minh",
 		Biography = "Diễn viên, nhà sản xuất và đạo diễn nổi tiếng với các bộ phim hành động như 'Hai Phượng'.",
-		Gender = "Nữ",
+		Gender = EntityStatus.Nữ,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -431,7 +428,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Đỗ Đức Thịnh",
 		Address = "Hà Nội",
 		Biography = "Đạo diễn và diễn viên nổi tiếng với các bộ phim hài và tình cảm như 'Siêu Sao Siêu Ngố'.",
-		Gender = "Nam",
+	Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -441,7 +438,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Phan Gia Nhật Linh",
 		Address = "Hồ Chí Minh",
 		Biography = "Đạo diễn nổi tiếng với các bộ phim như 'Em Là Bà Nội Của Anh'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -451,7 +448,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Vũ Ngọc Đãng",
 		Address = "Hà Nội",
 		Biography = "Đạo diễn nổi tiếng với các bộ phim lãng mạn và hài như 'Bỗng Dưng Muốn Khóc'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -461,7 +458,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Nguyễn Quang Dũng",
 		Address = "Hồ Chí Minh",
 		Biography = "Đạo diễn nổi tiếng với các bộ phim hài hước và tình cảm như 'Nụ Hôn Thần Chết'.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	},
@@ -471,7 +468,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		FullName = "Huỳnh Đông",
 		Address = "Cần Thơ",
 		Biography = "Đạo diễn kiêm diễn viên nổi tiếng với các bộ phim hành động và lịch sử.",
-		Gender = "Nam",
+		Gender = EntityStatus.Nam,
 		Nationality = "Việt Nam",
 		Status = EntityStatus.Active
 	}
@@ -1089,13 +1086,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			};
 			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
-			var paymentMethodData = new List<PaymentMethod>
-	{
-		new PaymentMethod { ID = Guid.NewGuid(), Name = "Credit Card", QRCode = "hh2", Status = EntityStatus.Active },
-		new PaymentMethod { ID = Guid.NewGuid(), Name = "Cash",QRCode = "mskt3", Status = EntityStatus.Active  }
-	};
-			modelBuilder.Entity<PaymentMethod>().HasData(paymentMethodData);
-
 			var ticketSeting = new List<TicketPriceSetting>
 	{
 		new TicketPriceSetting
@@ -1127,10 +1117,10 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
 			var foodComboData = new List<FoodCombo>
 	{
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 1, TotalPrice = 80000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "combo1.png",CreatedTime = DateTime.Now },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 2, TotalPrice = 100000,Content="Combo 2",Description ="1 bắp 2 cola",Images = "combo2.png" ,CreatedTime = DateTime.Now.AddDays(-1) },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 3, TotalPrice = 75000,Content="Combo 3",Description ="1 bắp + 1 Aquafina ",Images = "combo3.png" ,CreatedTime = DateTime.Now.AddDays(-2) },
-		new FoodCombo { ID = Guid.NewGuid(), Quantity = 4, TotalPrice = 135000,Content="Combo 4",Description ="1 bắp + 1 cola + 1 khoai lắc",Images = "combo4.png" ,CreatedTime = DateTime.Now.AddDays(-3) }
+		new FoodCombo { ID = Guid.NewGuid(),  TotalPrice = 80000 ,Content="Combo 1",Description ="1 bắp 1 cola" , Images = "combo1.png",CreatedTime = DateTime.Now },
+		new FoodCombo { ID = Guid.NewGuid(), TotalPrice = 100000,Content="Combo 2",Description ="1 bắp 2 cola",Images = "combo2.png" ,CreatedTime = DateTime.Now.AddDays(-1) },
+		new FoodCombo { ID = Guid.NewGuid(),  TotalPrice = 75000,Content="Combo 3",Description ="1 bắp + 1 Aquafina ",Images = "combo3.png" ,CreatedTime = DateTime.Now.AddDays(-2) },
+		new FoodCombo { ID = Guid.NewGuid(), TotalPrice = 135000,Content="Combo 4",Description ="1 bắp + 1 cola + 1 khoai lắc",Images = "combo4.png" ,CreatedTime = DateTime.Now.AddDays(-3) }
 	};
 			modelBuilder.Entity<FoodCombo>().HasData(foodComboData);
 
@@ -1306,20 +1296,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 };
 			modelBuilder.Entity<RankMember>().HasData(rankMemberData);
 			// 29. Point
-			var workShiftData = new List<WorkShift>
-{
-	new WorkShift
-	{
-		ID = Guid.NewGuid(),
-		WorkDate = DateTime.Now,
-		TimeStar = DateTime.Now.AddHours(-2),
-		TimeEnd = DateTime.Now.AddHours(2),
-		Status = EntityStatus.Active,
-		UserID = userData[0].ID
-	}
-};
-			modelBuilder.Entity<WorkShift>().HasData(workShiftData);
-
 		}
 	}
 }

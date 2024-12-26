@@ -525,11 +525,11 @@
 					{
 						requestmovies.MovieID = request.ID;
 						requestmovies.ActorID = actorId;
-						var actorMovieResponse = await _movieServices.CreateActorMovies(requestmovies);
-						if (!actorMovieResponse.IsSuccessStatusCode)
-						{
-							Console.WriteLine($"Có lỗi khi lưu diễn viên {actorId} cho phim {request.ID}");
-						}
+						// var actorMovieResponse = await _movieServices.CreateActorMovies(requestmovies);
+						// if (!actorMovieResponse.IsSuccessStatusCode)
+						// {
+						// 	Console.WriteLine($"Có lỗi khi lưu diễn viên {actorId} cho phim {request.ID}");
+						// }
 					}
 				}
 

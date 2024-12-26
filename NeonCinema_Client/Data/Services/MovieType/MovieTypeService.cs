@@ -21,7 +21,7 @@ namespace NeonCinema_Client.Data.Services.MovieType
 
         public async Task<List<MovieTypeDTO>> GetAllMovieType()
         {
-            return await _httpClient.GetFromJsonAsync<List<MovieTypeDTO>>("api/MovieType/Get-All");
+            return await _httpClient.GetFromJsonAsync<List<MovieTypeDTO>>("https://localhost:7211/api/MovieType/Get-All");
         }
 
         public async Task<MovieTypeDTO> GetByIdMovieType(Guid id)

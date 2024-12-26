@@ -17,7 +17,7 @@ namespace NeonCinema_Domain.Database.Entities
         public string Email { get; set; }
         public bool Gender { get; set; }
         public string Images { get; set; }
-        public DateTime DateOrBriht { get; set; }
+        public DateTime? DateOrBriht { get; set; }
         public string Adderss { get; set; }
         public EntityStatus Status { get; set; }
         public Guid RoleID { get; set; }
@@ -28,6 +28,5 @@ namespace NeonCinema_Domain.Database.Entities
         public virtual ICollection<PendingPoint>? PendingPoint { get; set; }
         public virtual ICollection<PromotionUsers>? PromotionUsers { get; set; }
         public virtual ICollection<RankMember>? RankMembers { get; set; }
-        public virtual ICollection<WorkShift> Workshifts { get; set; }
     }
 }
