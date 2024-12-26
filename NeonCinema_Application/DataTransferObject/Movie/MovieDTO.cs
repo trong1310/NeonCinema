@@ -19,11 +19,13 @@ namespace NeonCinema_Application.DataTransferObject.Movie
         public string? Trailer { get; set; }
         public int? AgeAllowed { get; set; }  
         public string Images { get; set; }
-        public MovieStatus? Status { get; set; }
+		public eSubEnum? Sub { get; set; }
+		public MovieStatus? Status { get; set; }
         public string? GenreName { get; set; }
         public string? LanguareName { get; set; }
         public string? CountryName { get; set; }
         public string? DirectorName { get; set; }
+        public string? MovieTypeName { get; set; }
 		public List<ActorMoviesDto>? ActorMovies { get; set; }
 	}
 }

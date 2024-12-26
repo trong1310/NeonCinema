@@ -272,6 +272,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				.Include(x => x.Rooms)
 					.ThenInclude(s => s.Seats!)
 						.ThenInclude(x => x.SeatTypes)
+						.Include(x => x.Movies) // Include Movie để truy cập MovieType
+			.ThenInclude(movie => movie.MovieTypes) // Include MovieType để lấy MovieTypeName
 				.Where(x => x.MovieID == MovieId && x.ShowDate.Date >= date.Date)
 				.Where(x => x.Deleted == false)
 				.OrderBy(x => x.ShowDate.Date)
@@ -285,16 +287,15 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				screenings = screenings.Where(x => x.ShowDate.Date == showDate.Value.Date && x.ShowDate.Month == showDate.Value.Month && x.ShowDate.Year == showDate.Value.Year).ToList();
 			}
 			// Ánh xạ từng lịch chiếu thành DTO
-			var screeningDtos = screenings.Select(screening =>
+			var screeningDtos = screenings.Select(screening => new ScreeningMoviesDto
 			{
-				return new ScreeningMoviesDto
-				{
-					Id = screening.ID,
-					RoomName = screening.Rooms.Name,
-					ShowDate = screening.ShowDate,
-					ShowTime = screening.ShowTime.StartTime,
-					MoviesID = screening.MovieID,
-				};
+				Id = screening.ID,
+				RoomName = screening.Rooms.Name,
+				ShowDate = screening.ShowDate,
+				ShowTime = screening.ShowTime.StartTime,
+				MoviesID = screening.MovieID,
+				Sub = screening.Movies?.Sub, // Lấy thông tin phụ đề từ Movie
+				MovieTypeName = screening.Movies?.MovieTypes?.MovieTypeName // Lấy thông tin loại phim từ Movie
 			}).ToList();
 
 			return screeningDtos;
