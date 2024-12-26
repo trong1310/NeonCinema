@@ -301,6 +301,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 Status = result.Status,
                 Trailer = result.Trailer,
                 MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
 
                 ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
                 {
@@ -342,7 +343,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-                MovieTypeName = result.MovieTypes.MovieTypeName
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
 
             }).ToList();
 
@@ -382,7 +384,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-                MovieTypeName = result.MovieTypes.MovieTypeName
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
 
             }).ToList();
 
