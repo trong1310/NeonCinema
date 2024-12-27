@@ -10,6 +10,7 @@
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using System.Text.Json
 @using NeonCinema_Domain.Enum
+@using NeonCinema_Infrastructure.Database.AppDbContext
 @inject IMovieservices _movieServices
 @inject HttpClient _http
 @inject NavigationManager _navigation
@@ -19,11 +20,15 @@
 	<h2 class="text-center mb-4 font-weight-bold">Sửa thông tin phim</h2>
 	<div class="row">
 		<div class="col-md-3 text-center mb-4 mt-5">
-			<img src="@GetImageUrl(movieDto.Images)" alt="Profile" class="img-fluid profile-pic" /> <br />
+			<img src="@profileFilmsImage" alt="Profile" class="img-fluid profile-pic" /> <br />
 			<label class="custom-file-upload">
 				<i class="material-icons">cloud_upload</i>
 				<InputFile OnChange="HandleSelected" class="d-none" />
 				<span>Chọn ảnh</span>
+				@if (!string.IsNullOrEmpty(errorImages))
+				{
+					<span class="text-danger">@errorImages</span>
+				}
 			</label>
 		</div>
 		<div class="col-md-9" style="margin-top:10px;">
@@ -32,12 +37,20 @@
 					<div class="form-group">
 						<label for="name" class="font-weight-bold">Tên Phim</label>
 						<input type="text" class="form-control" @bind-value="@movieDto.Name" />
+						@if (!string.IsNullOrEmpty(errorName))
+						{
+							<span class="text-danger">@errorName</span>
+						}
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Duration" class="font-weight-bold">Thời Lượng</label>
 						<input type="text" class="form-control" @bind-value="@movieDto.Duration" />
+						@if (!string.IsNullOrEmpty(errorDuration))
+						{
+							<span class="text-danger">@errorDuration</span>
+						}
 					</div>
 				</div>
 			</div>
@@ -47,14 +60,20 @@
 					<div class="form-group">
 						<label for="Trailer" class="font-weight-bold">Trailer</label>
 						<input type="text" class="form-control" @bind-value="@movieDto.Trailer" />
-
+						@if (!string.IsNullOrEmpty(errorTrailer))
+						{
+							<span class="text-danger">@errorTrailer</span>
+						}
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="StarTime" class="font-weight-bold">Ngày phát hành</label>
 						<input type="date" class="form-control" @bind-value="@movieDto.StarTime" />
-
+						@if (!string.IsNullOrEmpty(errorStarTime))
+						{
+							<span class="text-danger">@errorStarTime</span>
+						}
 					</div>
 				</div>
 			</div>
@@ -64,6 +83,10 @@
 					<div class="form-group">
 						<label for="AgeAllowed" class="font-weight-bold">Độ tuổi cho phép</label>
 						<input type="text" class="form-control" @bind-value="@movieDto.AgeAllowed" />
+						@if (!string.IsNullOrEmpty(errorAllowAge))
+						{
+							<span class="text-danger">@errorAllowAge</span>
+						}
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -73,6 +96,10 @@
 							<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên"
 								   value="@selectedActorsText" readonly />
 							<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
+							@if (!string.IsNullOrEmpty(errorActor))
+							{
+								<span class="text-danger">@errorActor</span>
+							}
 						</div>
 					</div>
 				</div>
@@ -89,6 +116,10 @@
 								{
 									<option value="@genre.GenreName">@genre.GenreName</option>
 								}
+								@if (!string.IsNullOrEmpty(errorGenres))
+								{
+									<span class="text-danger">@errorGenres</span>
+								}
 							</select>
 							<i class="material-icons add-icon-genre" @onclick="OpenGenreDialog">add_circle</i>
 						</div>
@@ -103,6 +134,10 @@
 								@foreach (var language in languages)
 								{
 									<option value="@language.LanguageName">@language.LanguageName</option>
+								}
+								@if (!string.IsNullOrEmpty(errorLanguage))
+								{
+									<span class="text-danger">@errorLanguage</span>
 								}
 							</select>
 							<i class="material-icons add-icon-genre" @onclick="OpenLanguageDialog">add_circle</i>
@@ -122,6 +157,10 @@
 								{
 									<option value="@country.CountryName">@country.CountryName</option>
 								}
+								@if (!string.IsNullOrEmpty(errorCountry))
+								{
+									<span class="text-danger">@errorCountry</span>
+								}
 							</select>
 							<i class="material-icons add-icon-genre" @onclick="OpenCountryDialog">add_circle</i>
 						</div>
@@ -136,6 +175,10 @@
 								@foreach (var director in directors)
 								{
 									<option value="@director.FullName">@director.FullName</option>
+								}
+								@if (!string.IsNullOrEmpty(errorDirector))
+								{
+									<span class="text-danger">@errorDirector</span>
 								}
 							</select>
 							<i class="material-icons add-icon-genre" @onclick="OpenDirectorDialog">add_circle</i>
@@ -174,7 +217,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="form-group">
 				<label for="Description" class="font-weight-bold">Mô tả</label>
 				<textarea class="form-control" rows="3" @bind="@movieDto.Description"></textarea>
@@ -198,17 +241,20 @@
 						</button>
 					</div>
 					<div class="modal-body" style="margin-bottom: -20px">
-							<div class="row mb-3">
-								@foreach (var actor in actors.Data)
-								{
-									<div class="col-4 d-flex align-items-center justify-content-center">
-										<input class="form-check-input me-2"
-											   type="checkbox" id="@actor.ID"
-											   @onchange="e => ToggleActorSelection(actor.ID, bool.Parse(e.Value.ToString()))" />
-										<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
-									</div>
-								}
-							</div>
+						<div class="row mb-3">
+							@foreach (var actor in actors.Data)
+							{
+								<div class="col-4 d-flex align-items-center justify-content-center">
+									<input class="form-check-input me-2"
+										   type="checkbox"
+										   id="@actor.ID"
+										   checked="@actor.IsChecked"
+										   @onchange="(e) => ToggleActorSelection(actor.ID, (bool)e.Value)" />
+									<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
+								</div>
+							}
+
+						</div>
 					</div>
 					<hr />
 					<div class="modal-header" style="margin-top: -15px">
@@ -389,6 +435,7 @@
 	private ViewActorRequest requestActor = new ViewActorRequest();
 	PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
 	private UpdateMovieRequest request = new UpdateMovieRequest();
+	private string profileFilmsImage = "";
 	protected override async Task OnInitializedAsync()
 	{
 		actors = await _movieServices.GetActor(requestActor);
@@ -397,9 +444,171 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
+		profileFilmsImage = GetImageUrl(movieDto.Images);
+		var linkedActors = await _movieServices.GetActorsByFilmAsync(movieDto.ID, CancellationToken.None);
+		foreach (var actor in actors.Data)
+		{
+			actor.IsChecked = linkedActors.Any(la => la.ActorID == actor.ID); // Đặt trạng thái checkbox
+			if (actor.IsChecked)
+			{
+				selectedActors.Add(actor.ID);
+			}
+		}
+		UpdateSelectedActorsText();
 	}
+	private void UpdateSelectedActorsText()
+	{
+		selectedActorsText = string.Join(", ", actors.Data
+			.Where(a => selectedActors.Contains(a.ID))
+			.Select(a => a.FullName));
+	}
+
 	private bool isEditing = false;
 	#region update
+	private bool showConfirmModal = false;
+	private string? errorName = null;
+	private string? errorDuration = null;
+	private string? errorTrailer = null;
+	private string? errorImages = null;
+	private string? errorStarTime = null;
+	private string? errorAllowAge = null;
+	private string? errorActor = null;
+	private string? errorDirector = null;
+	private string? errorMovieType = null;
+	private string? errorLanguage = null;
+	private string? errorCountry = null;
+	private string? errorGenres = null;
+	private string? errorDescription = null;
+	private string? errorSub = null;
+	private readonly NeonCinemasContext _context = new NeonCinemasContext();
+	private void ShowConfirmModal()
+	{
+		var flimsNameExits = _context.Movies.FirstOrDefault(x => !string.IsNullOrEmpty(request.Name) && x.Name.ToLower().Equals(request.Name.ToLower()));
+		bool isValid = true;
+		if (flimsNameExits != null)
+		{
+			errorName = "Phim đã tồn tại";
+			isValid = false;
+		}
+		else if (string.IsNullOrEmpty(request.Name))
+		{
+			errorName = "Tên phim không được để trống";
+			isValid = false;
+		}
+		else
+		{
+			errorName = null;
+		}
+		if (request.Duration < 60)
+		{
+			errorDuration = "Thời lượng phải lớn hơn 60 phút";
+			isValid = false;
+		}
+		else
+		{
+			errorDuration = null;
+		}
+		if (request.AgeAllowed < 13)
+		{
+			errorAllowAge = "Độ tuổi cho phép phải lớn hơn 13";
+			isValid = false;
+		}
+		else
+		{
+			errorAllowAge = null;
+		}
+		if (request.Sub == null)
+		{
+			errorSub = "Vui lòng chọn phụ đề";
+			isValid = false;
+		}
+		else
+		{
+			errorSub = null;
+		}
+		if (request.StarTime <= DateTime.UtcNow)
+		{
+			errorStarTime = "Ngày phát hành phải lớn hơn ngày hiện tại ít nhất 1 ngày";
+			isValid = false;
+		}
+		else
+		{
+			errorStarTime = null;
+		}
+		if (string.IsNullOrEmpty(request.Description))
+		{
+			errorDescription = "Mô tả không được để trống";
+			isValid = false;
+		}
+		else
+		{
+			errorDescription = null;
+		}
+		if (string.IsNullOrEmpty(request.Trailer))
+		{
+			errorTrailer = "Trailer không được để trống";
+			isValid = false;
+		}
+		else
+		{
+			errorTrailer = null;
+		}
+		if (string.IsNullOrEmpty(profileFilmsImage))
+		{
+			errorImages = "Ảnh không được để trống";
+			isValid = false;
+		}
+		else
+		{
+			errorImages = null;
+		}
+		if (selectedActorsText == null)
+		{
+			errorActor = "Vui lòng chọn ít nhất một diễn viên cho phim";
+			isValid = false;
+		}
+		else
+		{
+			errorActor = null;
+		}
+		if (string.IsNullOrEmpty(request.GenreID.ToString()))
+		{
+			errorGenres = "Vui lòng chọn thể loại";
+			isValid = false;
+		}
+		else
+		{
+			errorGenres = null;
+		}
+		if (string.IsNullOrEmpty(request.LenguageID.ToString()))
+		{
+			errorLanguage = "Vui lòng chọn ngôn ngữ";
+			isValid = false;
+		}
+		else
+		{
+			errorLanguage = null;
+		}
+		if (string.IsNullOrEmpty(request.DirectorID.ToString()))
+		{
+			errorDirector = "Vui lòng chọn đạo diễn";
+			isValid = false;
+		}
+		else
+		{
+			errorDirector = null;
+		}
+		if (string.IsNullOrEmpty(request.CountryID.ToString()))
+		{
+			errorCountry = "Vui lòng chọn quốc gia";
+			isValid = false;
+		}
+		else
+		{
+			errorCountry = null;
+		}
+		showConfirmModal = isValid;
+	}
 	private void ToggleEdit()
 	{
 		isEditing = !isEditing;
@@ -407,11 +616,11 @@
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
 		selectedFile = e.File;
-		var imageUrl = await GetImageUrl(selectedFile);
+		var imageUrl = await GetImageUrlUpdate(selectedFile);
 		if (imageUrl != null)
 		{
 			Console.WriteLine(imageUrl); // Kiểm tra giá trị URL
-			movieDto.Images = imageUrl;
+			profileFilmsImage = imageUrl;
 			StateHasChanged();
 		}
 		else
@@ -420,7 +629,7 @@
 		}
 	}
 
-	private async Task<string> GetImageUrl(IBrowserFile file)
+	private async Task<string> GetImageUrlUpdate(IBrowserFile file)
 	{
 		// Chỉ tạo URL cho các tệp hình ảnh
 		if (file.ContentType.StartsWith("image/"))
@@ -445,7 +654,6 @@
 	}
 	private void SelectActors()
 	{
-
 		CloseActorDialog();
 	}
 	private List<Guid> selectedActors = new List<Guid>();
@@ -461,9 +669,14 @@
 		{
 			selectedActors.Remove(actorId);
 		}
-		selectedActorsText = string.Join(", ", actors.Data
-		.Where(a => selectedActors.Contains(a.ID))
-		.Select(a => a.FullName));
+		var actor = actors.Data.FirstOrDefault(a => a.ID == actorId);
+		if (actor != null)
+		{
+			actor.IsChecked = isSelected; // Cập nhật trạng thái IsChecked
+		}
+
+		// Cập nhật chuỗi hiển thị
+		UpdateSelectedActorsText();
 	}
 	private async Task NavigateToList()
 	{
@@ -473,33 +686,13 @@
 	{
 		try
 		{
-			var content = new MultipartFormDataContent();
-			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
-			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+			// Lấy danh sách diễn viên được chọn từ giao diện hiện tại
+			var selectedActorIDs = actors.Data
+				.Where(a => a.IsChecked) // Lọc ra các diễn viên có checkbox được tích
+				.Select(a => a.ID)
+				.ToList();
 
-			content.Add(fileContent, "file", selectedFile.Name);
-			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-			string imageFilms;
-			if (response.IsSuccessStatusCode)
-			{
-				var jsonResponse = await response.Content.ReadAsStringAsync();
-				var jsonDoc = JsonDocument.Parse(jsonResponse);
-				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-				var fileName = Path.GetFileName(fileUrl);
-
-				imageFilms = fileName;
-				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
-			}
-			else
-			{
-				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-				return;
-			}
-			var countriesID = countries.Where(x => x.CountryName == (string)movieDto.CountryName).FirstOrDefault();
-			var directorID = directors.Where(x => x.FullName == (string)movieDto.DirectorName).FirstOrDefault();
-			var languageID = languages.Where(x => x.LanguageName == (string)movieDto.LanguareName).FirstOrDefault();
-			var genreID = genres.Where(x => x.GenreName == (string)movieDto.GenreName).FirstOrDefault();
-			movieDto.Images = imageFilms;
+			// Tạo đối tượng UpdateMovieRequest
 			request = new UpdateMovieRequest
 				{
 					ID = movieDto.ID,
@@ -511,40 +704,31 @@
 					AgeAllowed = (int)movieDto.AgeAllowed,
 					Name = movieDto.Name,
 					Trailer = movieDto.Trailer,
-					CountryID = countriesID.ID,
-					DirectorID = directorID.ID,
-					GenreID = genreID.ID,
-					LenguageID = languageID.ID
+					CountryID = countries.FirstOrDefault(x => x.CountryName == movieDto.CountryName)?.ID ?? Guid.Empty,
+					DirectorID = directors.FirstOrDefault(x => x.FullName == movieDto.DirectorName)?.ID ?? Guid.Empty,
+					GenreID = genres.FirstOrDefault(x => x.GenreName == movieDto.GenreName)?.ID ?? Guid.Empty,
+					LenguageID = languages.FirstOrDefault(x => x.LanguageName == movieDto.LanguareName)?.ID ?? Guid.Empty,
+					ActorMovies = selectedActorIDs // Gửi danh sách diễn viên được chọn
 				};
-			var flimsResponse = await _movieServices.Update(request);
-			if (flimsResponse.IsSuccessStatusCode)
-			{
-				if (selectedActors.Any())
-				{
-					foreach (var actorId in selectedActors)
-					{
-						requestmovies.MovieID = request.ID;
-						requestmovies.ActorID = actorId;
-						// var actorMovieResponse = await _movieServices.CreateActorMovies(requestmovies);
-						// if (!actorMovieResponse.IsSuccessStatusCode)
-						// {
-						// 	Console.WriteLine($"Có lỗi khi lưu diễn viên {actorId} cho phim {request.ID}");
-						// }
-					}
-				}
 
-				Console.WriteLine(request.GenreID);
-				Console.WriteLine(request.Images);
-				Console.WriteLine(request.Description);
-				Console.WriteLine(request.Name);
-				Console.WriteLine(request.LenguageID);
-				Console.WriteLine(request.CountryID);
-				Console.WriteLine(request.DirectorID);
+			// Kiểm tra dữ liệu hợp lệ
+			if (request.CountryID == Guid.Empty || request.DirectorID == Guid.Empty ||
+				request.GenreID == Guid.Empty || request.LenguageID == Guid.Empty)
+			{
+				Console.WriteLine("Dữ liệu không hợp lệ (Quốc gia, Đạo diễn, Thể loại, Ngôn ngữ).");
+				return;
+			}
+
+			// Gửi yêu cầu cập nhật
+			var response = await _movieServices.Update(request);
+			if (response.IsSuccessStatusCode)
+			{
+				Console.WriteLine("Cập nhật phim và diễn viên thành công.");
 				_navigation.NavigateTo("/list-movie-admin");
 			}
 			else
 			{
-				Console.WriteLine($"Có lỗi xảy ra khi tạo phim.{flimsResponse.Content}");
+				Console.WriteLine($"Có lỗi xảy ra khi cập nhật phim: {response.Content}");
 			}
 		}
 		catch (Exception ex)
@@ -553,6 +737,7 @@
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 		}
 	}
+
 	#endregion
 	#region detail
 	private string GetImageUrl(string imageUrl)

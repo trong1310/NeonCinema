@@ -70,19 +70,28 @@ namespace NeonCinema_Infrastructure.Implement.Statistics
 		.ToListAsync();
 		}
 
-		//public async Task<List<MovieStatisticsDTO>> GetMovieStatisticsAsync(DateTime startDate, DateTime endDate)
-		//{
-		//	//return await _context.BillDetails.AsNoTracking().Include(x => x.Ticket).ThenInclude(x => x.Movies)
-		//	//		.Where(b => b.CreatedTime.HasValue && b.CreatedTime.Value >= startDate && b.CreatedTime.Value <= endDate)
-		//	//	.GroupBy(bt => bt.Ticket.)
-		//	//	.Select(g => new MovieStatisticsDTO
-		//	//	{
-		//	//		MovieID = g.Key,
-		//	//		MovieName = g.FirstOrDefault().Tickets.Movies.Name,
-		//	//		Revenue = g.Sum(bt => bt.Tickets.Price),
-		//	//		TicketsSold = g.Count()
-		//	//	})
-		//	//	.ToListAsync();
-		//}
+		public async Task<List<MovieStatisticsDTO>> GetMovieStatisticsAsync(DateTime startDate, DateTime endDate)
+		{
+			return await _context.BillDetails.AsNoTracking()
+				.Include(bd => bd.Ticket!)
+				.ThenInclude(t => t.Movies)
+				.Where(bd => bd.CreatedTime.HasValue && bd.CreatedTime.Value >= startDate && bd.CreatedTime.Value <= endDate)
+				.SelectMany(bd => bd.Ticket!.Select(t => new
+				{
+					t.Movies.ID,
+					t.Movies.Name,
+					t.Price
+				}))
+				.GroupBy(t => t.ID)
+				.Select(g => new MovieStatisticsDTO
+				{
+					MovieID = g.Key,
+					MovieName = g.First().Name,
+					Revenue = g.Sum(t => t.Price),
+					TicketsSold = g.Count()
+				})
+				.ToListAsync();
+		}
+
 	}
 }
