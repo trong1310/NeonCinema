@@ -137,7 +137,7 @@
 							@foreach (var item in foods)
 							{
 								<div class="product-item d-flex align-items-center mb-3">
-									<img src="@GetImageUrl(item.Images)" class="product-image me-3" >
+									<img src="@GetImageUrl(item.Images)" class="product-image me-3">
 									<div class="product-info flex-grow-1">
 										<h5>@item.Content</h5>
 										<p>
@@ -183,7 +183,25 @@
 					</div>
 				</div>
 			}
-
+			@if (showMessage)
+			{
+				<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Thông báo</h5>
+								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+							</div>
+							<div class="d-flex justify-content-between mt-3">
+								<span>Số tiền khách đưa không đủ vui lòng nhập lại</span>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Quay lại</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
 		}
 		@if (paymentStatus == "success")
 		{
@@ -255,12 +273,12 @@
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-					<span>Tổng tiền tạm tính</span>
-					<span id="amount-display">@sumPrices.ToString("N0") VND</span>
+					<span>Phụ thu Phim @movieDto.MovieTypeName</span>
+					<span>@surcharge.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-					<span>Phụ thu</span>
-					<span>@surcharge.ToString("N0") VND</span>
+					<span>Tổng tiền tạm tính</span>
+					<span id="amount-display">@sumPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Giảm giá</span>
@@ -325,7 +343,7 @@
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
-							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment" 
+							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment"
 							@onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
@@ -345,11 +363,11 @@
 				{
 					<div class="form-group">
 						<label class="form-label">Tiền khách đưa</label>
-						<input style="margin-top: -5px" class="form-control" placeholder="Nhập số tiền khách đưa" />
+						<input style="margin-top: -5px" class="form-control" placeholder="Nhập số tiền khách đưa" min="0" @bind="moneyrRceived" @oninput="ValidateReceivedMoney" />
 					</div>
 					<div class="d-flex justify-content-between mt-1">
 						<strong>Tiền thừa</strong>
-						<strong>0</strong> <!-- Hoặc thay giá trị bằng logic tính toán -->
+						<strong>@refun.ToString("N0")</strong>
 					</div>
 				}
 
@@ -506,6 +524,7 @@
 	List<FoodComboDTO> foods = new List<FoodComboDTO>();
 	private decimal totalPrices = 0;
 	private bool showConfirmModal = false;
+	private bool showMessage = false;
 	private decimal seatPrices = 0;
 	public string? phoneNumber;
 	public string error = "";
@@ -517,9 +536,40 @@
 	private double point = 0;
 	private decimal sumPrices;
 	private decimal surcharge = 0;
+	private bool isCashPayment = false;
+	private void ValidateReceivedMoney(ChangeEventArgs e)
+	{
+		// Parse số tiền khách đưa
+		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
+		{
+			moneyrRceived = inputMoney;
+
+			// Kiểm tra nếu số tiền nhỏ hơn tổng tiền
+			if (moneyrRceived < totalPrices && isCashPayment)
+			{
+				ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
+			}
+		}
+		else
+		{
+			moneyrRceived = 0; // Nếu giá trị nhập không hợp lệ, đặt về 0
+		}
+	}
 	private void ShowConfirmModal()
 	{
-		showConfirmModal = true;
+		// Chỉ hiển thị modal nếu thanh toán bằng tiền mặt và số tiền đủ
+		if (isCashPayment && moneyrRceived >= totalPrices)
+		{
+			showConfirmModal = true;
+		}
+		else if (isCashPayment)
+		{
+			showMessage = true; // Hiển thị thông báo lỗi nếu tiền không đủ
+		}
+		else
+		{
+			showConfirmModal = true; // Không cần kiểm tra tiền cho phương thức thanh toán khác
+		}
 	}
 	private void ApplyPoint()
 	{
@@ -910,7 +960,7 @@
 				Console.WriteLine("Không thể tải hóa đơn: File rỗng hoặc không tồn tại.");
 				return;
 			}
-	
+
 			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.zip";
 			var url = $"data:application/octet-stream;base64,{Convert.ToBase64String(response)}";
 			await JS.InvokeVoidAsync("downloadFile", url, fileName);
@@ -945,6 +995,7 @@
 	private void CloseModal()
 	{
 		showConfirmModal = false;
+		showMessage = false;
 		paymentStatus = string.Empty;
 		StateHasChanged();
 	}
@@ -1161,8 +1212,7 @@
 	}
 
 	#endregion
-
-	private bool isCashPayment = true; // Mặc định là tiền mặt
+ // Mặc định là tiền mặt
 }
 <style>
 	.movie-info-card {
@@ -1390,35 +1440,36 @@
 		justify-content: center;
 		margin-bottom: 10px;
 	}
-.seat-normal {
-    background-color: #ffc107; /* Màu vàng */
-    color: #fff; /* Chữ màu trắng */
-}
 
-/* Ghế VIP */
-.seat-vip {
-    background-color: #dc3545; /* Màu đỏ */
-    color: #fff; /* Chữ màu trắng */
-}
+	.seat-normal {
+		background-color: #ffc107; /* Màu vàng */
+		color: #fff; /* Chữ màu trắng */
+	}
 
-/* Ghế đôi */
-.seat-couple {
-    background-color: #28a745; /* Màu xanh lá cây */
-    color: #fff; /* Chữ màu trắng */
-}
+	/* Ghế VIP */
+	.seat-vip {
+		background-color: #dc3545; /* Màu đỏ */
+		color: #fff; /* Chữ màu trắng */
+	}
 
-/* Ghế mặc định (nếu không xác định loại) */
-.seat-default {
-    background-color: #6c757d; /* Màu xám */
-    color: #fff; /* Chữ màu trắng */
-}
+	/* Ghế đôi */
+	.seat-couple {
+		background-color: #28a745; /* Màu xanh lá cây */
+		color: #fff; /* Chữ màu trắng */
+	}
 
-/* Hiệu ứng hover cho tất cả các ghế */
-.seat-box:hover {
-    transform: scale(1.1); /* Phóng to nhẹ khi hover */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Đổ bóng */
+	/* Ghế mặc định (nếu không xác định loại) */
+	.seat-default {
+		background-color: #6c757d; /* Màu xám */
+		color: #fff; /* Chữ màu trắng */
+	}
 
-}
+	/* Hiệu ứng hover cho tất cả các ghế */
+	.seat-box:hover {
+		transform: scale(1.1); /* Phóng to nhẹ khi hover */
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Đổ bóng */
+	}
+
 	.sold {
 		background-color: rgb(33 37 41);
 		cursor: not-allowed;
@@ -1432,39 +1483,40 @@
 	.available {
 		background-color: none;
 	}
+
 	.product-image {
-    width: 150px; /* Chiều rộng cố định */
-    height: 170px; /* Chiều cao cố định */
-    object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
+		width: 150px; /* Chiều rộng cố định */
+		height: 170px; /* Chiều cao cố định */
+		object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
 	}
 
 	.product-list {
-    max-height: 700px; /* Đặt chiều cao tối đa cho danh sách */
-    overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung vượt quá chiều cao */
-    padding-right: 10px; /* Thêm khoảng cách để tránh nội dung bị cắt */
-    margin-right: -10px; /* Giảm khoảng cách để không bị cuộn ngang */
-    scrollbar-width: thin; /* Làm mỏng thanh cuộn (Firefox) */
-    scrollbar-color: #ccc #f5f5f5; /* Màu thanh cuộn (Firefox) */
-}
-
-	/* Thanh cuộn tùy chỉnh cho trình duyệt Webkit (Chrome, Edge, Safari) */
-	.product-list::-webkit-scrollbar {
-		width: 8px; /* Độ rộng của thanh cuộn */
+		max-height: 700px; /* Đặt chiều cao tối đa cho danh sách */
+		overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung vượt quá chiều cao */
+		padding-right: 10px; /* Thêm khoảng cách để tránh nội dung bị cắt */
+		margin-right: -10px; /* Giảm khoảng cách để không bị cuộn ngang */
+		scrollbar-width: thin; /* Làm mỏng thanh cuộn (Firefox) */
+		scrollbar-color: #ccc #f5f5f5; /* Màu thanh cuộn (Firefox) */
 	}
 
-	.product-list::-webkit-scrollbar-track {
-		background: #f5f5f5; /* Màu nền của track */
-	}
+		/* Thanh cuộn tùy chỉnh cho trình duyệt Webkit (Chrome, Edge, Safari) */
+		.product-list::-webkit-scrollbar {
+			width: 8px; /* Độ rộng của thanh cuộn */
+		}
 
-	.product-list::-webkit-scrollbar-thumb {
-		background-color: #ccc; /* Màu thanh cuộn */
-		border-radius: 10px; /* Bo góc cho thanh cuộn */
-		border: 2px solid #f5f5f5; /* Viền thanh cuộn */
-	}
+		.product-list::-webkit-scrollbar-track {
+			background: #f5f5f5; /* Màu nền của track */
+		}
 
-	.product-list::-webkit-scrollbar-thumb:hover {
-		background-color: #aaa; /* Màu thanh cuộn khi hover */
-	}
+		.product-list::-webkit-scrollbar-thumb {
+			background-color: #ccc; /* Màu thanh cuộn */
+			border-radius: 10px; /* Bo góc cho thanh cuộn */
+			border: 2px solid #f5f5f5; /* Viền thanh cuộn */
+		}
+
+			.product-list::-webkit-scrollbar-thumb:hover {
+				background-color: #aaa; /* Màu thanh cuộn khi hover */
+			}
 
 	.button-container {
 		display: flex;
@@ -1487,7 +1539,7 @@
 	}
 
 	.control {
-		border-radius: 50% !important; /* Tạo viền hình tròn */ 
+		border-radius: 50% !important; /* Tạo viền hình tròn */
 		width: 40px !important; /* Đặt chiều rộng cố định */
 		height: 40px !important; /* Đặt chiều cao cố định */
 		display: flex !important;
