@@ -57,7 +57,9 @@ namespace NeonCinema_Infrastructure.Implement.ActorMovies
 											.AsNoTracking()
 											.Select(x => new ActorMoviesDto
 											{
-												ActorName = x.Actor.Name
+												ActorName = x.Actor.Name,
+												ActorID = x.ActorID,
+												IsChecked = true,												
 											})
 											.ToListAsync(cancellationToken);
 

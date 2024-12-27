@@ -196,7 +196,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 		{
 			try
 			{
-				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID, cancellationToken);
 				if (obj == null || obj.Deleted == true)
 				{
 					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
@@ -204,8 +204,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 						Content = new StringContent("Không tìm thấy phim")
 					};
 				}
-
-				// Cập nhật thông tin cơ bản của phim
 				obj.Duration = request.Duration;
 				obj.Name = request.Name;
 				obj.Status = request.Status;
@@ -219,21 +217,13 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				obj.StarTime = request.StarTime;
 				obj.ModifiedTime = DateTime.UtcNow;
 				obj.Images = request.Images;
-
-				// Cập nhật danh sách diễn viên
 				var existingActors = await _context.ActorMovies
 					.Where(am => am.MovieID == obj.ID)
 					.ToListAsync(cancellationToken);
-
-				// Lấy danh sách ActorID mới từ request
-				var newActorIDs = request.ActorMovies;
-
-				// Tìm các diễn viên cần xóa
+				var newActorIDs = request.ActorMovies ?? new List<Guid>();
 				var actorsToRemove = existingActors
 					.Where(am => !newActorIDs.Contains(am.ActorID))
 					.ToList();
-
-				// Tìm các diễn viên cần thêm mới
 				var actorsToAdd = newActorIDs
 					.Where(actorID => !existingActors.Any(am => am.ActorID == actorID))
 					.Select(actorID => new NeonCinema_Domain.Database.Entities.ActorMovies
@@ -241,17 +231,15 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 						MovieID = obj.ID,
 						ActorID = actorID
 					}).ToList();
-
-				// Xóa diễn viên cũ
-				_context.ActorMovies.RemoveRange(actorsToRemove);
-
-				// Thêm diễn viên mới
-				await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
-
-				// Cập nhật thông tin phim
+				if (actorsToRemove.Any())
+				{
+					_context.ActorMovies.RemoveRange(actorsToRemove);
+				}
+				if (actorsToAdd.Any())
+				{
+					await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
+				}
 				_context.Movies.Update(obj);
-
-				// Lưu thay đổi
 				await _context.SaveChangesAsync(cancellationToken);
 
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
