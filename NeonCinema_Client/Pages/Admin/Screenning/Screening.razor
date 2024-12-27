@@ -152,6 +152,10 @@ else
 											{
 												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị chồng lấn lên lịch khác</p>
 											}
+											@if(!checkCDate)
+											{
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu không được nhỏ hơn ngày khởi chiếu @comingDate</p>
+											}
 
 											<button type="submit" class="btn btn-primary">Tạo lịch</button>
 										</ChildContent>
@@ -293,6 +297,8 @@ else
 	private PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
 	private List<RoomDTO> rooms = new List<RoomDTO>();
 
+	private bool checkCDate = true;
+
 
 	//input của Scr
 	private Guid roomId;
@@ -303,6 +309,8 @@ else
 	private string roomName = "";
 
 	private int? duration = null;
+	//
+	private string comingDate = "";
 
 
 	protected override async Task OnInitializedAsync()
@@ -329,7 +337,7 @@ else
 
 	private async Task LoadShowTimeFil()
 	{
-		 //_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
+		//_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
 	private async Task ToggleCreateForm()
@@ -350,7 +358,7 @@ else
 		{
 			try
 			{
-				if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+				if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))) && !checkCDate)
 				{
 					messageString = "Faild";
 					return;
@@ -449,6 +457,7 @@ else
 		MovieDTO movie = movies.Data.FirstOrDefault(x => x.ID == idmovie);
 
 		duration = movie.Duration;
+		ValidateComingDate(movie.StarTime);
 	}
 
 	private async Task OnInputChangedStartTime(ChangeEventArgs e)
@@ -483,7 +492,9 @@ else
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
+		MovieDTO movie = movies.Data.FirstOrDefault(x => x.ID == newScreening.MovieID);
 		await LoadShowTimeFil();
+		ValidateComingDate(movie.StarTime);
 	}
 
 	//Màu trạng thái
@@ -514,6 +525,16 @@ else
 		return true; // Không có chồng lấn
 	}
 
+	//validate ngày phát hành
+	private void ValidateComingDate(DateTime comingdate)
+	{
+		if(newScreening.ShowDate < comingdate && newScreening.ShowDate < DateTime.Now)
+		{
+			checkCDate = false;
+			comingDate = comingdate.ToString();
+		}
+		checkCDate = true;
+	}
 
 
 	private void CloseModal()
