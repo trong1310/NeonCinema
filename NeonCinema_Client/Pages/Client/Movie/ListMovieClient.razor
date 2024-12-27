@@ -54,7 +54,7 @@
                                 <div class="card movie-card">
                                     <div class="image-container">
                                         <img src="@GetImageUrl(movie.Images)" class="card-img-top" loading="lazy" alt="@movie.Name">
-                                        <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID)">
+                                        <button class="btn buy-ticket-btn" @onclick="() => NagationToDetailBook(movie.ID, movie.AgeAllowed.Value)">
                                             <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
                                         </button>
                                     </div>
@@ -252,19 +252,19 @@
 </div>
 @if (showAgeRestrictionAlert)
 {
-    <div  class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
-        <div class="modal-dialog " role="document">
-            <div class="modal-content" >
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="custom-modal-dialog" role="document">
+            <div class="custom-modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Thông tin vé</h5>
+                    <h5 class="modal-title text-center w-100">Thông tin vé</h5>
                     <button type="button" class="btn-close" @onclick="CloseAlert" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>@alertMessage</p>
+                    <p class="modal-text">@alertMessage</p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseAlert">Hủy</button>
-                    <button type="button" class="btn btn-secondary" @onclick="ConfirmNavigation">Đồng ý</button>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary cancel-btn" @onclick="CloseAlert">Hủy</button>
+                    <button type="button" class="btn btn-danger confirm-btn" @onclick="ConfirmNavigation">Đồng ý</button>
                 </div>
             </div>
         </div>
@@ -273,14 +273,13 @@
 
 
 
-
 @code {
     [Parameter] public Guid userid { get; set; }
     List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
     List<MovieDTO> moviesComing = new List<MovieDTO>();
-    private int userAge = 0; // Biến lưu độ tuổi người dùng
-    private bool showAgeRestrictionAlert = false; // Biến để hiển thị cảnh báo
-    private string alertMessage = ""; // Cảnh báo lỗi
+    private int userAge; 
+    private bool showAgeRestrictionAlert = false; 
+    private string alertMessage = ""; 
     private UserProfile user;
     private Guid selectedMovieId;
     protected override async Task OnInitializedAsync()
@@ -342,7 +341,7 @@
         {
             selectedMovieId = id;
             showAgeRestrictionAlert = true;
-            alertMessage = $"Bộ phim giớ hạn độ tuổi yêu cầu người xem có độ tuổi từ {ageAllowed} trở lên.";
+            alertMessage = $"Tôi xác nhận mua vé cho người xem từ đủ {ageAllowed} trở lên và đồng ý cung cấp giấy tờ tùy thân để xác thực độ tuổi người xem, tham khảo quy định của Bộ Văn Hóa Thể Thao Và Du Lịch. Neon Cinemas sẽ không hoàn tiền nếu người xem không đáp ứng đủ điều kiện ";
             
             StateHasChanged(); 
         }
@@ -759,42 +758,74 @@
 
    
 
+    .custom-modal-dialog {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Căn giữa theo cả chiều ngang và chiều dọc */
+        background: white;
+        border-radius: 8px;
+        max-width: 400px; /* Chiều ngang tối đa của modal */
+        width: 90%; /* Đảm bảo modal co giãn theo màn hình */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+        overflow: hidden;
+    }
+
+    .custom-modal-content {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
     .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #dee2e6;
-        margin-bottom: 8px;
-    }
-
-    
-    
-    .modal-dialog {
-        background: white;
-        border-radius: 8px;
-        max-width: 400px; /* Chiều ngang modal */
-        height: 400px;
-        width: 90%; /* Đảm bảo co dãn theo màn hình */
-        max-height: 30vh; /* Giới hạn chiều cao modal (80% chiều cao viewport) */
-        overflow-y: auto; /* Thêm thanh cuộn nếu nội dung quá dài */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-content-custom {
-        display: flex;
-        flex-direction: column;
-        padding: 16px;
+        margin-bottom: 16px;
     }
 
     .modal-body {
         padding: 8px 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
     }
 
     .modal-footer {
         display: flex;
         justify-content: flex-end;
         gap: 8px;
+        margin-top: 16px;
     }
+
+    .modal-text {
+        color: #000;
+        font-size: 14px;
+        text-align: justify;
+    }
+
+    .cancel-btn {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+    }
+
+    .confirm-btn {
+        background-color: #dc3545;
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+    }
+
+    .btn:focus {
+        box-shadow: none;
+    }
+
 
    
 </style>
