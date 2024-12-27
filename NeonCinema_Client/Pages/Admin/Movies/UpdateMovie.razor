@@ -95,7 +95,7 @@
 						<label for="Actor" class="font-weight-bold">Diễn viên</label>
 						<div class="position-relative">
 							<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên"
-								   value="@selectedActorsText" readonly />
+							value="@selectedActorsText" readonly />
 							<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
 							@if (!string.IsNullOrEmpty(errorActor))
 							{
@@ -259,9 +259,9 @@
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
 									<button type="button" class="btn btn-primary btn-lg" disabled="@isSubmitting"
-											@onclick="HandleSubmit">
+									@onclick="HandleSubmit">
 										<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-											  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+										style="display: @(isSubmitting ? "inline-block" : "none")"></span>
 										<span>@(isSubmitting ? "Đang xử lý..." : "Xác nhận")</span>
 									</button>
 
@@ -292,12 +292,16 @@
 							{
 								<div class="col-md-4 mb-2">
 									<div class="form-check">
-										<input class="form-check-input" type="checkbox" id="@actor.ID"
-											   @onchange="e => ToggleActorSelection(actor.ID, bool.Parse(e.Value.ToString()))" />
+										<input class="form-check-input me-2"
+										type="checkbox"
+										id="@actor.ID"
+										checked="@actor.IsChecked"
+										@onchange="(e) => ToggleActorSelection(actor.ID, (bool)e.Value)" />
 										<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
 									</div>
 								</div>
 							}
+
 						</div>
 						<hr />
 						<!-- Form thêm diễn viên -->
@@ -457,7 +461,7 @@
 								<div class="form-group">
 									<label class="form-label">Tên đạo diễn:</label>
 									<input type="text" class="form-control" @bind="directorReuqest.FullName"
-										   placeholder="Nhập tên đạo diễn" />
+									placeholder="Nhập tên đạo diễn" />
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -589,11 +593,23 @@
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
 		profileFilmsImage = GetImageUrl(movieDto.Images);
-
-
-		await LoadMovieType();
+		var linkedActors = await _movieServices.GetActorsByFilmAsync(movieDto.ID, CancellationToken.None);
+		foreach (var actor in actors.Data)
+		{
+			actor.IsChecked = linkedActors.Any(la => la.ActorID == actor.ID); // Đặt trạng thái checkbox
+			if (actor.IsChecked)
+			{
+				selectedActors.Add(actor.ID);
+			}
+		}
+		UpdateSelectedActorsText();
 	}
-	
+	private void UpdateSelectedActorsText()
+	{
+		selectedActorsText = string.Join(", ", actors.Data
+			.Where(a => selectedActors.Contains(a.ID))
+			.Select(a => a.FullName));
+	}
 
 	private bool isEditing = false;
 	#region update
@@ -628,7 +644,7 @@
 		// 	isValid = false;
 		// 	isSubmitting = false;
 		// }
-		 if (string.IsNullOrEmpty(movieDto.Name))
+		if (string.IsNullOrEmpty(movieDto.Name))
 		{
 			errorName = "Tên phim không được để trống";
 			isValid = false;
@@ -678,7 +694,7 @@
 		{
 			errorTrailer = null;
 		}
-		
+
 		showConfirmModal = isValid;
 	}
 	private void ToggleEdit()
@@ -703,7 +719,6 @@
 
 	private async Task<string> GetImageUrlUpdate(IBrowserFile file)
 	{
-		// Chỉ tạo URL cho các tệp hình ảnh
 		if (file.ContentType.StartsWith("image/"))
 		{
 			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20);
@@ -712,8 +727,30 @@
 			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
 			return $"data:{file.ContentType};base64,{imageBase64}";
 		}
-
 		return null;
+	}
+
+	private List<Guid> selectedActors = new List<Guid>();
+	private string selectedActorsText = string.Empty;
+	private void ToggleActorSelection(Guid actorId, bool isSelected)
+	{
+		if (isSelected)
+		{
+			if (!selectedActors.Contains(actorId))
+				selectedActors.Add(actorId);
+		}
+		else
+		{
+			selectedActors.Remove(actorId);
+		}
+		var actor = actors.Data.FirstOrDefault(a => a.ID == actorId);
+		if (actor != null)
+		{
+			actor.IsChecked = isSelected; // Cập nhật trạng thái IsChecked
+		}
+
+		// Cập nhật chuỗi hiển thị
+		UpdateSelectedActorsText();
 	}
 	private async Task NavigateToList()
 	{
@@ -721,9 +758,30 @@
 	}
 	private async Task HandleSubmit()
 	{
-		isSubmitting = true;
 		try
 		{
+
+			var content = new MultipartFormDataContent();
+			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 30));
+			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+			content.Add(fileContent, "file", selectedFile.Name);
+			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+			string fileName="";
+			if (response.IsSuccessStatusCode)
+			{
+				var jsonResponse = await response.Content.ReadAsStringAsync();
+				var jsonDoc = JsonDocument.Parse(jsonResponse);
+				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+				 fileName = Path.GetFileName(fileUrl);
+				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			}
+			else
+			{
+				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+				return;
+			}
+
 			// Lấy danh sách diễn viên được chọn từ giao diện hiện tại
 			var selectedActorIDs = actors.Data
 				.Where(a => a.IsChecked) // Lọc ra các diễn viên có checkbox được tích
@@ -734,7 +792,7 @@
 			request = new UpdateMovieRequest
 				{
 					ID = movieDto.ID,
-					Images = movieDto.Images,
+					Images = fileName,
 					Duration = (int)movieDto.Duration,
 					Status = (MovieStatus)movieDto.Status,
 					StarTime = movieDto.StarTime,
@@ -758,17 +816,15 @@
 			}
 
 			// Gửi yêu cầu cập nhật
-			var response = await _movieServices.Update(request);
-			if (response.IsSuccessStatusCode)
+			var responseUpdate = await _movieServices.Update(request);
+			if (responseUpdate.IsSuccessStatusCode)
 			{
-				ShowSnackbar("Cập nhật phim thành công.", Severity.Success);
-				isSubmitting = false;
-				await Task.Delay(2000);
-				_navigation.NavigateTo("/list-movie-admin"); // Chuyển hướng
+				Console.WriteLine("Cập nhật phim và diễn viên thành công.");
+				_navigation.NavigateTo("/list-movie-admin");
 			}
 			else
 			{
-				Console.WriteLine($"Có lỗi xảy ra khi cập nhật phim: {response.Content}");
+				Console.WriteLine($"Có lỗi xảy ra khi cập nhật phim: {responseUpdate.Content}");
 			}
 		}
 		catch (Exception ex)
@@ -787,26 +843,9 @@
 	#endregion
 
 	#region Thêm nhanh
-	private List<Guid> selectedActors = new List<Guid>();
-	private string selectedActorsText = string.Empty;
+
 	private bool isActorModalOpen = false;
 	private CreateActorRequest createActorRequest = new CreateActorRequest();
-	private void ToggleActorSelection(Guid actorId, bool isSelected)
-	{
-		if (isSelected)
-		{
-			if (!selectedActors.Contains(actorId))
-				selectedActors.Add(actorId);
-		}
-		else
-		{
-			selectedActors.Remove(actorId);
-		}
-		selectedActorsText = string.Join(", ", actors.Data
-			.Where(a => selectedActors.Contains(a.ID))
-			.Select(a => a.FullName));
-	}
-
 	private void OpenActorDialog()
 	{
 		isActorModalOpen = true; // Mở modal
