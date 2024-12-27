@@ -10,5 +10,6 @@ namespace NeonCinema_Application.DataTransferObject.ActorMovies
 	{
 		public Guid ActorID { get; set; }
 		public string ActorName { get; set; }
+		public bool IsChecked { get; set; } = false;
 	}
 }

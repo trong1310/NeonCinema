@@ -46,7 +46,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 					CountryID = request.CountryID,
 					DirectorID = request.DirectorID,
 					CreatedTime = DateTime.Now,
- 
+					Sub = request.Sub,
+					MovieTypeID = request.MovieTypeID,
+
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
@@ -113,6 +115,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                             .Include(x => x.Director)
                             .Include(x => x.Lenguage)
                             .Include(x => x.Countrys)
+                            .Include(x => x.MovieTypes)
                             .Include(x => x.TicketSeats)
 							.AsNoTracking();
 			if (!string.IsNullOrWhiteSpace(request.SearchName))
@@ -124,7 +127,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
             var dataview = (from a in result.Data
                             join b in query on a.ID
                             equals b.ID orderby b.CreatedTime descending
-                        
+							where b.Deleted == false
 							select new MovieDTO
                             {
                                 ID = b.ID,
@@ -140,6 +143,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                                 CountryName = b.Countrys.CountryName,
                                 DirectorName = b.Director.FullName,
                                 GenreName = b.Genre.GenreName,
+								Sub = b.Sub, 
+								MovieTypeName = b.MovieTypes.MovieTypeName
 
                             }).ToList();
 
@@ -191,7 +196,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 		{
 			try
 			{
-				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID, cancellationToken);
 				if (obj == null || obj.Deleted == true)
 				{
 					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
@@ -199,8 +204,6 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 						Content = new StringContent("Không tìm thấy phim")
 					};
 				}
-
-				// Cập nhật thông tin cơ bản của phim
 				obj.Duration = request.Duration;
 				obj.Name = request.Name;
 				obj.Status = request.Status;
@@ -214,21 +217,13 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				obj.StarTime = request.StarTime;
 				obj.ModifiedTime = DateTime.UtcNow;
 				obj.Images = request.Images;
-
-				// Cập nhật danh sách diễn viên
 				var existingActors = await _context.ActorMovies
 					.Where(am => am.MovieID == obj.ID)
 					.ToListAsync(cancellationToken);
-
-				// Lấy danh sách ActorID mới từ request
-				var newActorIDs = request.ActorMovies;
-
-				// Tìm các diễn viên cần xóa
+				var newActorIDs = request.ActorMovies ?? new List<Guid>();
 				var actorsToRemove = existingActors
 					.Where(am => !newActorIDs.Contains(am.ActorID))
 					.ToList();
-
-				// Tìm các diễn viên cần thêm mới
 				var actorsToAdd = newActorIDs
 					.Where(actorID => !existingActors.Any(am => am.ActorID == actorID))
 					.Select(actorID => new NeonCinema_Domain.Database.Entities.ActorMovies
@@ -236,17 +231,15 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 						MovieID = obj.ID,
 						ActorID = actorID
 					}).ToList();
-
-				// Xóa diễn viên cũ
-				_context.ActorMovies.RemoveRange(actorsToRemove);
-
-				// Thêm diễn viên mới
-				await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
-
-				// Cập nhật thông tin phim
+				if (actorsToRemove.Any())
+				{
+					_context.ActorMovies.RemoveRange(actorsToRemove);
+				}
+				if (actorsToAdd.Any())
+				{
+					await _context.ActorMovies.AddRangeAsync(actorsToAdd, cancellationToken);
+				}
 				_context.Movies.Update(obj);
-
-				// Lưu thay đổi
 				await _context.SaveChangesAsync(cancellationToken);
 
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -271,6 +264,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Director)
                 .Include(x => x.Lenguage)
                 .Include(x => x.Countrys)
+                .Include(x => x.MovieTypes)
                 .Include(x => x.TicketSeats)
                 .Where(x => x.Status == MovieStatus.isreleasing)
                 .OrderByDescending(x => x.CreatedTime) 
@@ -294,6 +288,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
                 Status = result.Status,
                 Trailer = result.Trailer,
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
+
                 ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
                 {
                     ActorName = act.Actor.Name,
@@ -310,7 +307,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-				.Include(x => x.TicketSeats)
+                .Include(x => x.MovieTypes)
+                .Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.upcomingkrelease)
 				.OrderByDescending(x => x.CreatedTime) 
 				.AsNoTracking()
@@ -333,7 +331,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-			}).ToList();
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
+
+            }).ToList();
 
 			return movieDtos;
 		}
@@ -347,7 +348,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-				.Include(x => x.TicketSeats)
+                .Include(x => x.MovieTypes)
+                .Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.StopShowing)
 				.OrderByDescending(x => x.CreatedTime)
 				.AsNoTracking()
@@ -370,7 +372,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-			}).ToList();
+                MovieTypeName = result.MovieTypes.MovieTypeName,
+                Sub = result.Sub,
+
+            }).ToList();
 
 			return movieDtos;
 		}

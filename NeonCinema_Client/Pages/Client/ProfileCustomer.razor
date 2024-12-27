@@ -39,9 +39,9 @@
                     <div class="col-md-5 text-center">
                         <img src="@GetImageUrl()" class="rounded-circle profile-img" alt="User Image" />
                         <div class="mt-4 customer-movie">
-                            <p><span class="font-weight-bold">Điểm:</span> 100 điểm</p>
+                            <p><span class="font-weight-bold">Điểm:</span> @totalPoint</p>
                             <p><span class="font-weight-bold">Tổng chi tiêu:</span> @(totalMoney)đ</p>
-                            <p><span class="font-weight-bold">Hoạt động:</span> aaaaaa</p>
+                            @* <p><span class="font-weight-bold">Hoạt động:</span> aaaaaa</p> *@
                         </div>
                     </div>
                     <div class="col-md-6 ">
@@ -148,7 +148,7 @@
             <input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
         </div>
     </div>
-    <div class="row">
+    <div class="row border rounded">
         <table class="table">
             <thead>
                 <tr>
@@ -159,14 +159,17 @@
                     <th scope="col">Tổng tiền</th>
                     <th scope="col">Số ghế</th>
                     <th scope="col">Phòng</th>
-                    <th scope="col">Tổng Điểm tích lũy</th>
-                    
+                    <th scope="col">Tổng điểm tích lũy</th>  
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in _lstBill.Select((value, index) => new {value, index}))
+                @foreach (var item in _lstBill.Select((value, index) => new { value, index }))
                 {
-                    if(item.value.Ticket != null)
+                    string seatNumber = ""; // Reset seatNumber cho mỗi item
+                    string roomName = ""; // Reset roomName cho mỗi item
+                    string nameMovie = ""; // Cần đảm bảo nameMovie được reset
+
+                    if (item.value.Ticket != null)
                     {
                         foreach (var x in item.value.Ticket)
                         {
@@ -175,16 +178,22 @@
                             roomName = x.Screenings.Rooms.Name;
                         }
                     }
-                    
+
+                    // Loại bỏ dấu "," đầu tiên nếu có
+                    if (seatNumber.StartsWith(","))
+                    {
+                        seatNumber = seatNumber.Substring(1);
+                    }
+
                     <tr>
                         <th scope="row">@(item.index + 1)</th>
                         <td>@item.value.CreatedTime</td>
-                        <td>@item.value.ID</td>
+                        <td>@item.value.BillCode</td>
                         <td>@nameMovie</td>
                         <td>@(item.value.TotalPrice)đ</td>
                         <td>@seatNumber</td>
                         <td>@roomName</td>
-                        <td></td>
+                        <td>@item.value.PendingPoint.Point</td>
                     </tr>
                 }
             </tbody>
@@ -276,6 +285,7 @@
     private string nameMovie = "";
     private string seatNumber = "";
     private string roomName = "";
+    private int totalPoint = 0;
 
 
     private async Task LoadUserDetails()
@@ -303,6 +313,7 @@
         await LoadUserDetails();
         await TotalMoneyUser();
         await GetImageUrl();
+        await TotalPointUser();
     }
     private async Task<string> GetImageUrl()
     {
@@ -321,6 +332,17 @@
         }
 
         return totalMoney;
+    }
+
+    private async Task TotalPointUser()
+    {
+        if(user.RankMembers.Count != 0)
+        {
+            foreach (var item in user.RankMembers)
+            {
+                totalPoint = totalPoint + Convert.ToInt32(item.MinPoint);
+            }
+        }
     }
 
 }
