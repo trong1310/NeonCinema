@@ -134,7 +134,7 @@
 				<div class="bordered-column" style="margin-left: 5px; margin-right:5px">
 					<h4 class="text-center mb-3">Combo đồ ăn</h4>
 					<div class="dotted-line-custom"></div>
-					<div class="product-list ">
+					<div class="product-list">
 						@foreach (var item in foods)
 						{
 							<div class="product-item d-flex align-items-center mb-3">
@@ -1371,8 +1371,35 @@
     width: 150px; /* Chiều rộng cố định */
     height: 170px; /* Chiều cao cố định */
     object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
-   
+	}
+
+	.product-list {
+    max-height: 750px; /* Đặt chiều cao tối đa cho danh sách */
+    overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung vượt quá chiều cao */
+    padding-right: 10px; /* Thêm khoảng cách để tránh nội dung bị cắt */
+    margin-right: -10px; /* Giảm khoảng cách để không bị cuộn ngang */
+    scrollbar-width: thin; /* Làm mỏng thanh cuộn (Firefox) */
+    scrollbar-color: #ccc #f5f5f5; /* Màu thanh cuộn (Firefox) */
 }
+
+	/* Thanh cuộn tùy chỉnh cho trình duyệt Webkit (Chrome, Edge, Safari) */
+	.product-list::-webkit-scrollbar {
+		width: 8px; /* Độ rộng của thanh cuộn */
+	}
+
+	.product-list::-webkit-scrollbar-track {
+		background: #f5f5f5; /* Màu nền của track */
+	}
+
+	.product-list::-webkit-scrollbar-thumb {
+		background-color: #ccc; /* Màu thanh cuộn */
+		border-radius: 10px; /* Bo góc cho thanh cuộn */
+		border: 2px solid #f5f5f5; /* Viền thanh cuộn */
+	}
+
+	.product-list::-webkit-scrollbar-thumb:hover {
+		background-color: #aaa; /* Màu thanh cuộn khi hover */
+	}
 	.screen-svg {
 		width: 100%;
 		height: auto;
