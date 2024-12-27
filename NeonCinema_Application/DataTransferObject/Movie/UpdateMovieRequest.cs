@@ -23,6 +23,7 @@ namespace NeonCinema_Application.DataTransferObject.Movie
 		public Guid LenguageID { get; set; }
 		public Guid CountryID { get; set; }
 		public Guid DirectorID { get; set; }
+		public Guid MovieTypeID { get; set; }
 		public MovieStatus Status { get; set; }
 		public List<Guid>? ActorMovies { get; set; }
 	}
