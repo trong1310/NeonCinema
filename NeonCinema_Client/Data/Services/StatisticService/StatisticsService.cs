@@ -13,11 +13,29 @@ namespace NeonCinema_Client.Data.Services.StatisticService
             _httpClient = httpClient;
         }
 
-		public async Task<RevenueStatisticsDTO> GetRevenueStatisticsAsync(DateTime startDate, DateTime endDate)
+		public async Task<RevenueStatisticsDTO> GetRevenueStatisticsAsync(DateTime? specificDate, DateTime? startDate, DateTime? endDate)
 		{
-			var url = $"api/Statistics/revenue?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}";
+			string url;
+
+			if (specificDate.HasValue)
+			{
+				url = $"api/Statistics/revenue-statistics?specificDate={specificDate.Value:yyyy-MM-dd}";
+			}
+			else if (startDate.HasValue && endDate.HasValue)
+			{
+				url = $"api/Statistics/revenue-statistics?startDate={startDate.Value:yyyy-MM-dd}&endDate={endDate.Value:yyyy-MM-dd}";
+			}
+			else
+			{
+				throw new ArgumentException("Invalid filter parameters. Please provide specificDate or startDate and endDate.");
+			}
+
 			return await _httpClient.GetFromJsonAsync<RevenueStatisticsDTO>(url);
 		}
+
+
+
+
 		public async Task<List<ComboStatisticsDTO>> GetComboStatisticsAsync(DateTime startDate, DateTime endDate)
 		{
 			var url = $"api/Statistics/combo-statistics?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}";
