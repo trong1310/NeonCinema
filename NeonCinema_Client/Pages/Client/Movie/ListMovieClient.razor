@@ -252,11 +252,25 @@
 </div>
 @if (showAgeRestrictionAlert)
 {
-    <div class="alert alert-warning" role="alert">
-        <strong>Thông báo!</strong> @alertMessage
-        <button type="button" class="btn-close" @onclick="() => showAgeRestrictionAlert = false" aria-label="Close"></button>
+    <div  class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông tin vé</h5>
+                    <button type="button" class="btn-close" @onclick="CloseAlert" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@alertMessage</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseAlert">Hủy</button>
+                    <button type="button" class="btn btn-secondary" @onclick="ConfirmNavigation">Đồng ý</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
+
 
 
 
@@ -268,7 +282,7 @@
     private bool showAgeRestrictionAlert = false; // Biến để hiển thị cảnh báo
     private string alertMessage = ""; // Cảnh báo lỗi
     private UserProfile user;
-   
+    private Guid selectedMovieId;
     protected override async Task OnInitializedAsync()
     {
         try
@@ -318,25 +332,33 @@
     private void CloseAlert()
     {
         showAgeRestrictionAlert = false;
+        selectedMovieId = Guid.Empty;
         StateHasChanged();
     }
+    
     private async Task NagationToDetailBook(Guid id, int ageAllowed)
     {
-       
-
-        if (userAge < ageAllowed)
+        if (userAge > 0)
         {
+            selectedMovieId = id;
             showAgeRestrictionAlert = true;
-            alertMessage = $"Bạn {userAge} tuổi không đủ tuổi để xem phim này. Phim yêu cầu độ tuổi từ {ageAllowed} trở lên.";
+            alertMessage = $"Bộ phim giớ hạn độ tuổi yêu cầu người xem có độ tuổi từ {ageAllowed} trở lên.";
+            
             StateHasChanged(); 
         }
-        if(userAge > ageAllowed)
+        else
         {
             _navi.NavigateTo($"/client/book-details/{id}");
         }
         
     }
-
+    private void ConfirmNavigation()
+    {
+        if (selectedMovieId != Guid.Empty)
+        {
+            _navi.NavigateTo($"/client/book-details/{selectedMovieId}");
+        }
+    }
 
 
 
@@ -720,4 +742,59 @@
         border-radius: 50%;
     }
 
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+       
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+    }
+
+   
+
+   
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 8px;
+    }
+
+    
+    
+    .modal-dialog {
+        background: white;
+        border-radius: 8px;
+        max-width: 400px; /* Chiều ngang modal */
+        height: 400px;
+        width: 90%; /* Đảm bảo co dãn theo màn hình */
+        max-height: 30vh; /* Giới hạn chiều cao modal (80% chiều cao viewport) */
+        overflow-y: auto; /* Thêm thanh cuộn nếu nội dung quá dài */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content-custom {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    .modal-body {
+        padding: 8px 0;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+   
 </style>
