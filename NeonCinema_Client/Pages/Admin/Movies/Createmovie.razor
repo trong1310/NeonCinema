@@ -248,7 +248,7 @@
 						<div class="modal-dialog" role="document">
 							<div class="modal-content">
 								<div class="modal-header">
-									<button type="button" class="close" @onclick="CloseLanguageDialog" aria-label="Close">
+									<button type="button" class="close" @onclick="CloseModal" aria-label="Close">
 										<span class="material-icons" aria-hidden="true">close</span>
 									</button>
 								</div>
@@ -817,8 +817,9 @@
 				Console.WriteLine(request.LenguageID);
 				Console.WriteLine(request.CountryID);
 				Console.WriteLine(request.DirectorID);
-				ShowSnackbar("Thêm nhân viên thành công.", Severity.Success);
+				ShowSnackbar("Thêm phim thành công.", Severity.Success);
 				isSubmitting = false;
+				await Task.Delay(2000);
 				_navigation.NavigateTo("/list-movie-admin"); // Chuyển hướng
 			}
 			else
