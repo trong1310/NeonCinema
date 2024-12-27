@@ -8,6 +8,7 @@ using NeonCinema_Application.DataTransferObject.Directors;
 using NeonCinema_Application.DataTransferObject.Genre;
 using NeonCinema_Application.DataTransferObject.Language;
 using NeonCinema_Application.DataTransferObject.Movie;
+using NeonCinema_Application.DataTransferObject.MovieTypes;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.IMoviesServices;
@@ -44,9 +45,9 @@ namespace NeonCinema_Client.Services.MoivesService
             }
 
         }
-		public async Task<HttpResponseMessage> CreateActorMovies(CreateActorMoviesRequest request)
+		public async Task<HttpResponseMessage> CreateActor(CreateActorRequest request)
 		{
-			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActormovies", request);
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActor", request);
 			return respones;
 		}
 		public async Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
@@ -107,6 +108,36 @@ namespace NeonCinema_Client.Services.MoivesService
 		{
             var respones = await _httpClient.GetFromJsonAsync<List<ActorMoviesDto>>($"https://localhost:7211/api/Actor/get-actor-byflims?movieID={moviesId}");
             return respones;
+		}
+
+		public async Task<HttpResponseMessage> CreateGenre(CreateGenreRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Genre/create-genre", request);
+			return respones;
+		}
+
+		public async Task<HttpResponseMessage> CreateDirector(CreateDirectorRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Director/CreateDirector", request);
+			return respones;
+		}
+
+		public async Task<HttpResponseMessage> CreateLanguage(CreateLanguageRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Language/create", request);
+			return respones;
+		}
+
+		public async Task<HttpResponseMessage> CreateCountry(CountrysCreateRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Country", request);
+			return respones;
+		}
+
+		public async Task<HttpResponseMessage> CreateMovieType(CreateMovieTypeRequest request)
+		{
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/MovieType/CreateMovieType", request);
+			return respones;
 		}
 	}
 }

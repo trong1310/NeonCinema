@@ -28,7 +28,7 @@ namespace NeonCinema_Infrastructure.Implement.Directors
             {
                 ID = Guid.NewGuid(), 
                 FullName = request.FullName,
-                Gender = request.Gender,
+                Gender = (EntityStatus)request.Gender,
                 Address = request.Address,
                 Nationality = request.Nationality,
                 Biography = request.Biography,
@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement.Directors
             {
                 ID = DRT.ID,
                 FullName = DRT.FullName,
-                Gender = DRT.Gender,
+                Gender = (EntityStatus)DRT.Gender,
                 Address = DRT.Address,
                 Nationality = DRT.Nationality,
                 Biography = DRT.Biography,

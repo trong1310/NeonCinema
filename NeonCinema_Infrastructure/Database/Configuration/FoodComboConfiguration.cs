@@ -15,7 +15,6 @@ namespace NeonCinema_Infrastructure.Database.Configuration
         {
             builder.ToTable("FoodCombo");
             builder.HasKey(x=>x.ID);
-            builder.Property(x => x.Quantity).HasDefaultValue(0).IsRequired();
             builder.Property(x=>x.TotalPrice).HasDefaultValue(0).IsRequired();
         }
     }

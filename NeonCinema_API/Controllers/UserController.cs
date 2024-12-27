@@ -417,10 +417,10 @@ namespace NeonCinema_API.Controllers
             .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Movies)
             .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Seat)
             .Include(u => u.Bills).ThenInclude(u => u.Ticket).ThenInclude(u => u.Screenings).ThenInclude(u => u.Rooms)
+            .Include(u => u.Bills).ThenInclude(u => u.PendingPoint)
             .Include(u => u.PromotionUsers)
             .Include(u => u.PendingPoint)
             .Include(u => u.RankMembers)
-            .Include(u => u.Workshifts)
             .FirstOrDefaultAsync(u => u.ID == Guid.Parse(id));
 
                     return Ok(user);

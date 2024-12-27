@@ -10,8 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Actors
     public class CreateActorRequest
     {
         public Guid ID { get; set; }
-        public string FullName { get; set; }
-        
-        public EntityStatus Status { get; set; }
-    }
+        public string? FullName { get; set; }
+		public EntityStatus? Sex { get; set; }
+	}
 }

@@ -8,6 +8,7 @@
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.IMoviesServices
 @using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Domain.Enum
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @layout LayoutClient
@@ -83,6 +84,13 @@
 							<button class="btn btn-success btn-time" @onclick="() => ChooseSeatNavigate(item.Id)">
 								@(string.Format("{0:hh\\:mm}", item.ShowTime))
 							</button>
+							<div class="tags">
+								<span class="badge bg-dark">
+									@(item.Sub == eSubEnum.Caption ? "Phụ đề" :
+																item.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+								</span>
+								<span class="badge bg-success">@item.MovieTypeName</span>
+							</div>
 						</div>
 					}
 				}
@@ -261,6 +269,20 @@
 		height: 100%; /* Đảm bảo chiều cao đầy đủ */
 	}
 
+	.tags {
+		display: flex; /* Sử dụng flexbox để căn chỉnh */
+		margin-left: 75px;
+		gap: 6px; /* Khoảng cách giữa các badge */
+		margin-top: 8px; /* Khoảng cách phía trên giữa badge và button */
+	}
+
+		.tags .badge {
+			font-size: 0.85rem; /* Giảm kích thước chữ */
+			padding: 6px 10px; /* Khoảng cách trong badge */
+			border-radius: 8px; /* Bo góc mềm mại */
+			font-weight: 500; /* Giữ chữ đậm */
+			display: inline-block; /* Đảm bảo badge nằm trong khối riêng */
+		}
 	.calendar-container {
 		display: flex;
 		justify-content: center; /* Căn giữa MudDatePicker theo chiều ngang */
