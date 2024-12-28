@@ -92,6 +92,70 @@ namespace NeonCinema_Infrastructure.Implement.Statistics
 				})
 				.ToListAsync();
 		}
+		public async Task<RevenueStatisticsDTO> GetRevenueStatisticsAsync(DateTime? specificDate, DateTime? startDate, DateTime? endDate)
+		{
+			var queryBillDetails = _context.BillDetails.AsNoTracking().AsQueryable();
+			var queryUsers = _context.Users.AsNoTracking().AsQueryable();
+
+			// Lọc theo ngày cụ thể
+			if (specificDate.HasValue)
+			{
+				queryBillDetails = queryBillDetails.Where(bd => bd.CreatedTime.HasValue && bd.CreatedTime.Value.Date == specificDate.Value.Date);
+				queryUsers = queryUsers.Where(u => u.CreatedTime.HasValue && u.CreatedTime.Value.Date == specificDate.Value.Date);
+			}
+			// Lọc theo khoảng ngày
+			else if (startDate.HasValue && endDate.HasValue)
+			{
+				queryBillDetails = queryBillDetails.Where(bd => bd.CreatedTime.HasValue && bd.CreatedTime.Value.Date >= startDate.Value.Date && bd.CreatedTime.Value.Date <= endDate.Value.Date);
+				queryUsers = queryUsers.Where(u => u.CreatedTime.HasValue && u.CreatedTime.Value.Date >= startDate.Value.Date && u.CreatedTime.Value.Date <= endDate.Value.Date);
+			}
+
+			// Tính toán doanh thu
+			var totalRevenue = await queryBillDetails.SumAsync(bd => bd.TotalPrice);
+
+			// Tính tổng vé
+			var totalTickets = await queryBillDetails.CountAsync();
+
+			// Tính khách hàng mới
+			var newCustomers = await queryUsers.CountAsync();
+
+			// Tính doanh thu theo từng ngày
+			var dailyRevenue = await queryBillDetails
+				.GroupBy(bd => bd.CreatedTime.Value.Date)
+				.Select(g => new DailyRevenueDTO
+				{
+					Date = g.Key,
+					Revenue = g.Sum(bd => bd.TotalPrice)
+				})
+				.ToListAsync();
+
+			return new RevenueStatisticsDTO
+			{
+				TotalRevenue = totalRevenue,
+				TotalTickets = totalTickets,
+				NewCustomers = newCustomers,
+				RevenueChart = dailyRevenue
+			};
+		}
+		public async Task<GrowthStatisticsDTO> GetGrowthStatisticsAsync(DateTime currentStart, DateTime currentEnd, DateTime previousStart, DateTime previousEnd)
+		{
+			var currentRevenue = await _context.BillDetails
+				.Where(b => b.CreatedTime >= currentStart && b.CreatedTime <= currentEnd)
+				.SumAsync(b => (decimal?)b.TotalPrice) ?? 0;
+
+			var previousRevenue = await _context.BillDetails
+				.Where(b => b.CreatedTime >= previousStart && b.CreatedTime <= previousEnd)
+				.SumAsync(b => (decimal?)b.TotalPrice) ?? 0;
+
+			double growthPercentage = previousRevenue == 0 ? 0 : ((double)(currentRevenue - previousRevenue) / (double)previousRevenue) * 100;
+
+			return new GrowthStatisticsDTO
+			{
+				CurrentRevenue = currentRevenue,
+				PreviousRevenue = previousRevenue,
+				GrowthPercentage = growthPercentage
+			};
+		}
 
 	}
 }

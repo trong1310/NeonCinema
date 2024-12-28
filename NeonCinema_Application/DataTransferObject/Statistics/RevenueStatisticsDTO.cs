@@ -12,6 +12,8 @@ namespace NeonCinema_Application.DataTransferObject.Statistics
 		public decimal TotalRevenue { get; set; }
 		public int TotalTickets { get; set; }
 		public int NewCustomers { get; set; }
+
 		public List<DailyRevenueDTO> RevenueChart { get; set; }
+		public List<ComboStatisticsDTO> ComboStatistics { get; set; } // Thống kê combo
 	}
 }

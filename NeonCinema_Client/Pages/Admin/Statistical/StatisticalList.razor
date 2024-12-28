@@ -1,4 +1,5 @@
-﻿@page "/statistics"
+﻿Tính tốc độ tăng  trưởng ví dụ so sánh ngày hôm qua và ngày hôm nay xem tăng bao nhiêu % giảm bao nhiêu %  ví dụ 2 là lấy thời gian ngày 21/12 lúc 6h với hôm nay lúc 6h xem tăng bao nhiêu giảm bao nhiêu . Mục đích để xem so với ngày hôm trước tăng bao nhiêu % hoặc tuần trước tăng bao nhiêu, năm trước tăng bao nhiêu.
+@page "/statistics"
 @using NeonCinema_Application.DataTransferObject.Statistics
 @using NeonCinema_Client.Data.IServices.Statistics
 @using NeonCinema_Client.Data.Services.StatisticService
@@ -13,7 +14,7 @@
     <!-- Tổng quan -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center shadow">
                 <div class="card-body">
                     <h5>Doanh thu trong ngày</h5>
                     <h3>@currentDayRevenue.ToString("N0") VND</h3>
@@ -22,7 +23,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center shadow">
                 <div class="card-body">
                     <h5>Khách hàng mới</h5>
                     <h3>@statistics?.NewCustomers</h3>
@@ -31,7 +32,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center shadow">
                 <div class="card-body">
                     <h5>Tổng vé</h5>
                     <h3>@statistics?.TotalTickets</h3>
@@ -40,7 +41,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center shadow">
                 <div class="card-body">
                     <h5>Tổng doanh thu</h5>
                     <h3>@statistics?.TotalRevenue.ToString("N0") VND</h3>
@@ -50,33 +51,52 @@
         </div>
     </div>
 
+    <!-- Tăng trưởng -->
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5>Tăng trưởng</h5>
+                    <h3>@growthPercentage.ToString("F2")%</h3>
+                    <p>So với ngày hôm qua</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bộ lọc -->
-    <div class="row mb-4 filter">
-        <div class="col-md-3">
-            <label for="startDate">Ngày bắt đầu</label>
-            <input type="date" id="startDate" class="form-control" @bind="startDate" />
+    <div class="row mb-4 filter d-flex align-items-center justify-content-between">
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="specificDate" class="form-label">Ngày cụ thể</label>
+            <input type="date" id="specificDate" class="form-control" @bind="filterModel.SpecificDate" />
         </div>
-        <div class="col-md-3">
-            <label for="endDate">Ngày kết thúc</label>
-            <input type="date" id="endDate" class="form-control" @bind="endDate" />
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="startDate" class="form-label">Ngày bắt đầu</label>
+            <input type="date" id="startDate" class="form-control" @bind="filterModel.StartDate" />
         </div>
-        <div class="col-md-3">
-            <label for="filterTime">Lọc theo thời gian</label>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="endDate" class="form-label">Ngày kết thúc</label>
+            <input type="date" id="endDate" class="form-control" @bind="filterModel.EndDate" />
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="filterTime" class="form-label">Lọc theo</label>
             <select id="filterTime" class="form-control" @bind="filterTime">
-                <option value="Year">Lọc Theo Năm</option>
-                <option value="Month">Lọc Theo Tháng</option>
-                <option value="Week">Lọc Theo Tuần</option>
+                <option value="">-- Bộ lọc --</option>
+                <option value="Today">Hôm nay</option>
+                <option value="Month">Tháng này</option>
+                <option value="PreviousMonth">Tháng trước</option>
+                <option value="Year">Năm này</option>
             </select>
         </div>
-        <div class="col-md-3 d-flex align-items-end">
-            <button class="btn btn-primary w-100" @onclick="FetchStatistics">Chấp nhận</button>
+        <div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="FetchStatistics">Xác nhận</button>
         </div>
     </div>
 
     <!-- Biểu đồ doanh thu -->
     <div class="row chart-section">
         <div class="col-md-12">
-            <h5>Biểu đồ doanh thu</h5>
+            <h5 class="text-center">Biểu đồ doanh thu</h5>
             <div class="chart-container">
                 <canvas id="revenueChart"></canvas>
             </div>
@@ -86,7 +106,7 @@
     <!-- Biểu đồ doanh thu theo phim -->
     <div class="row mt-5 chart-section">
         <div class="col-md-12">
-            <h5>Biểu đồ doanh thu theo phim</h5>
+            <h5 class="text-center">Biểu đồ doanh thu theo phim</h5>
             <div class="chart-container">
                 <canvas id="movieChart"></canvas>
             </div>
@@ -96,7 +116,7 @@
     <!-- Thống kê doanh thu theo phim bằng bảng -->
     <div class="row mt-5 chart-section">
         <div class="col-md-12">
-            <h5>Doanh thu theo phim</h5>
+            <h5 class="text-center">Doanh thu theo phim</h5>
             <input type="text" @oninput="OnSearchInputChanged" placeholder="Nhập tên phim" class="form-control mb-3 search-input" />
             <table class="table table-hover movie-table">
                 <thead>
@@ -123,7 +143,7 @@
     <!-- Biểu đồ doanh thu theo combo -->
     <div class="row mt-5 chart-section">
         <div class="col-md-12">
-            <h5>Biểu đồ doanh thu theo combo</h5>
+            <h5 class="text-center">Biểu đồ doanh thu theo combo</h5>
             <div class="chart-container">
                 <canvas id="comboChart"></canvas>
             </div>
@@ -133,8 +153,10 @@
 </div>
 
 @code {
-    private DateTime startDate = new DateTime(2024, 11, 1);
-    private DateTime endDate = new DateTime(2024, 12, 30);
+    private DateTime startDate = DateTime.Now;
+    private DateTime endDate = DateTime.Now;
+
+    private FilterModel filterModel = new FilterModel();
     private RevenueStatisticsDTO statistics;
     private List<MovieStatisticsDTO> movieStatistics = new();
     private List<MovieStatisticsDTO> allMovieStatistics = new();
@@ -142,48 +164,97 @@
     private string filterTime = "Year";
     private decimal currentDayRevenue = 0;
     private string searchMovie = "";
+    private decimal growthPercentage = 0;
 
     protected override async Task OnInitializedAsync()
     {
         await FetchStatistics();
+        await CalculateGrowthPercentage();
     }
 
     private async Task FetchStatistics()
     {
-        // Xử lý bộ lọc thời gian
-        switch (filterTime)
+        try
         {
-            case "Year":
-                startDate = new DateTime(DateTime.Now.Year, 1, 1);
-                endDate = new DateTime(DateTime.Now.Year, 12, 31);
-                break;
-            case "Month":
-                startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                endDate = startDate.AddMonths(1).AddDays(-1);
-                break;
-            case "Week":
-                int diff = (7 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                startDate = DateTime.Now.AddDays(-1 * diff).Date;
-                endDate = startDate.AddDays(6);
-                break;
+            if (filterModel.SpecificDate.HasValue)
+            {
+                statistics = await StatisticsService.GetRevenueStatisticsAsync(filterModel.SpecificDate, null, null);
+            }
+            else if (filterModel.StartDate.HasValue && filterModel.EndDate.HasValue)
+            {
+                statistics = await StatisticsService.GetRevenueStatisticsAsync(null, filterModel.StartDate, filterModel.EndDate);
+            }
+            else
+            {
+                switch (filterTime)
+                {
+                    case "Year":
+                        startDate = new DateTime(DateTime.Now.Year, 1, 1);
+                        endDate = new DateTime(DateTime.Now.Year, 12, 31);
+                        break;
+                    case "Today":
+                        startDate = DateTime.Now.Date;
+                        endDate = DateTime.Now.Date;
+                        break;
+                    case "Month":
+                        startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                        endDate = startDate.AddMonths(1).AddDays(-1);
+                        break;
+                    case "PreviousMonth":
+                        startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
+                        endDate = startDate.AddMonths(1).AddDays(-1);
+                        break;
+                }
+
+                statistics = await StatisticsService.GetRevenueStatisticsAsync(null, startDate, endDate);
+            }
+
+            allMovieStatistics = await StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
+            movieStatistics = allMovieStatistics;
+            comboStatistics = await StatisticsService.GetComboStatisticsAsync(startDate, endDate);
+
+            if (statistics != null)
+            {
+                currentDayRevenue = statistics.RevenueChart
+                    .FirstOrDefault(x => x.Date.Date == DateTime.Now.Date)?.Revenue ?? 0;
+
+                await JSRuntime.InvokeVoidAsync("renderRevenueChart", statistics.RevenueChart);
+            }
+
+            await JSRuntime.InvokeVoidAsync("renderMovieChart", movieStatistics);
+            await JSRuntime.InvokeVoidAsync("renderComboChart", comboStatistics);
         }
-
-        statistics = await StatisticsService.GetRevenueStatisticsAsync(startDate, endDate);
-        allMovieStatistics = await StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
-        movieStatistics = allMovieStatistics;
-        comboStatistics = await StatisticsService.GetComboStatisticsAsync(startDate, endDate);
-
-        if (statistics != null)
+        catch (Exception ex)
         {
-            currentDayRevenue = statistics.RevenueChart
-                .FirstOrDefault(x => x.Date.Date == DateTime.Now.Date)?.Revenue ?? 0;
-
-            // Hiển thị các biểu đồ
-            await JSRuntime.InvokeVoidAsync("renderRevenueChart", statistics.RevenueChart);
+            Console.WriteLine($"Error: {ex.Message}");
         }
+    }
 
-        await JSRuntime.InvokeVoidAsync("renderMovieChart", movieStatistics);
-        await JSRuntime.InvokeVoidAsync("renderComboChart", comboStatistics);
+    private async Task CalculateGrowthPercentage()
+    {
+        try
+        {
+            var today = DateTime.Now.Date;
+            var yesterday = today.AddDays(-1);
+
+            var todayRevenue = statistics.RevenueChart
+                .FirstOrDefault(x => x.Date.Date == today)?.Revenue ?? 0;
+            var yesterdayRevenue = statistics.RevenueChart
+                .FirstOrDefault(x => x.Date.Date == yesterday)?.Revenue ?? 0;
+
+            if (yesterdayRevenue > 0)
+            {
+                growthPercentage = ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+            }
+            else
+            {
+                growthPercentage = todayRevenue > 0 ? 100 : 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error calculating growth percentage: {ex.Message}");
+        }
     }
 
     private void OnSearchInputChanged(ChangeEventArgs e)
@@ -195,6 +266,13 @@
     }
 
     private IEnumerable<MovieStatisticsDTO> FilteredMovies => movieStatistics;
+
+    public class FilterModel
+    {
+        public DateTime? SpecificDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
 }
 
 <style>
@@ -213,14 +291,31 @@
     }
 
     .filter {
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 20px;
-        background-color: white;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        margin-left: 1px;
-        margin-right: 1px;
+        gap: 10px; /* Khoảng cách giữa các phần tử */
+        padding: 15px; /* Thêm padding bên trong */
+        background-color: white; /* Màu nền trắng */
+        border-radius: 8px; /* Bo góc các trường */
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng nổi */
     }
+
+        .filter .form-label {
+            font-size: 14px; /* Giảm kích thước font cho nhãn */
+            margin-bottom: 5px; /* Khoảng cách giữa nhãn và input */
+        }
+
+        .filter .form-control {
+            font-size: 14px; /* Giảm kích thước input */
+            height: 38px; /* Chiều cao tiêu chuẩn */
+            border: 1px solid #ddd; /* Viền nhẹ */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Bóng nhẹ bên trong */
+            border-radius: 5px; /* Bo góc input */
+        }
+
+        .filter button {
+            height: 38px; /* Đồng bộ chiều cao với các input */
+            border-radius: 5px; /* Bo góc nút */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng nổi cho nút */
+        }
 
     .card-body h5 {
         font-weight: revert;
@@ -263,8 +358,8 @@
     }
 
     #comboChart {
-        width: 100%; /* Đảm bảo biểu đồ dùng toàn bộ chiều rộng của container */
-        height: auto; /* Điều chỉnh chiều cao tự động để giữ nguyên tỷ lệ */
-        max-height: 400px; /* Giới hạn chiều cao tối đa */
+        width: 100%;
+        height: auto;
+        max-height: 400px;
     }
 </style>

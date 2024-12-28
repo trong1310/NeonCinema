@@ -95,7 +95,7 @@
 						<label for="Actor" class="font-weight-bold">Diễn viên</label>
 						<div class="position-relative">
 							<input type="text" class="form-control" id="Actor" placeholder="Chọn diễn viên"
-							value="@selectedActorsText" readonly />
+								   value="@selectedActorsText" readonly />
 							<i class="material-icons add-icon" @onclick="OpenActorDialog">add_circle</i>
 							@if (!string.IsNullOrEmpty(errorActor))
 							{
@@ -186,18 +186,18 @@
 						</div>
 					</div>
 				</div>
-			</div>			
+			</div>
 
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="Country" class="font-weight-bold">Loại phim</label>
 						<div class="position-relative">
-							<select class="form-control" @onchange="(e) => request.MovieTypeID = Guid.Parse(e.Value.ToString())">
+							<select @bind="movieDto.MovieTypeName" class="form-control">
 								<option value="" disabled selected>Chọn loại phim</option>
 								@foreach (var movieType in movieType)
 								{
-									<option value="@movieType.ID">@movieType.MovieTypeName</option>
+									<option value="@movieType.MovieTypeName">@movieType.MovieTypeName</option>
 								}
 							</select>
 						</div>
@@ -207,7 +207,7 @@
 					<div class="form-group">
 						<label for="Director" class="font-weight-bold">Kiểu phim :	</label>
 						<div class="position-relative">
-							<select id="view" @bind="request.Sub" class="form-control">
+							<select @bind="movieDto.Sub" class="form-control">
 								<option value="" disabled selected>Chọn kiểu hiển thị</option>
 								<option value="@(eSubEnum.Caption)">Phụ đề</option>
 								<option value="@(eSubEnum.VoiceActing)">Lồng tiếng</option>
@@ -229,7 +229,7 @@
 								<option value="@status">@GetStatusText(status)</option>
 							}
 						</select>
-						@* <ValidationMessage For="@(() => request.Status)" /> *@
+
 					</div>
 				</div>
 			</div>
@@ -259,9 +259,9 @@
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
 									<button type="button" class="btn btn-primary btn-lg" disabled="@isSubmitting"
-									@onclick="HandleSubmit">
+											@onclick="HandleSubmit">
 										<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-										style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+											  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
 										<span>@(isSubmitting ? "Đang xử lý..." : "Xác nhận")</span>
 									</button>
 
@@ -293,10 +293,10 @@
 								<div class="col-md-4 mb-2">
 									<div class="form-check">
 										<input class="form-check-input me-2"
-										type="checkbox"
-										id="@actor.ID"
-										checked="@actor.IsChecked"
-										@onchange="(e) => ToggleActorSelection(actor.ID, (bool)e.Value)" />
+											   type="checkbox"
+											   id="@actor.ID"
+											   checked="@actor.IsChecked"
+											   @onchange="(e) => ToggleActorSelection(actor.ID, (bool)e.Value)" />
 										<label class="form-check-label" for="@actor.ID">@actor.FullName</label>
 									</div>
 								</div>
@@ -461,7 +461,7 @@
 								<div class="form-group">
 									<label class="form-label">Tên đạo diễn:</label>
 									<input type="text" class="form-control" @bind="directorReuqest.FullName"
-									placeholder="Nhập tên đạo diễn" />
+										   placeholder="Nhập tên đạo diễn" />
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -567,7 +567,7 @@
 	private ViewActorRequest requestActor = new ViewActorRequest();
 	PaginationResponse<ActorDTO> actors = new PaginationResponse<ActorDTO>();
 	private UpdateMovieRequest request = new UpdateMovieRequest();
-	private string profileFilmsImage = "";
+	private string profileFilmsImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
 
 	private bool isSubmitting = false;
 	private void ShowSnackbar(string message, Severity severity)
@@ -584,8 +584,10 @@
 			await Task.Delay(4000); // Đợi thời gian hiển thị của Snackbar
 		});
 	}
+	//List<MovieTypeDTO> movieType = new List<MovieTypeDTO>();
 	protected override async Task OnInitializedAsync()
 	{
+		movieType = await _movieType.GetAllMovieType();
 		actors = await _movieServices.GetActor(requestActor);
 		movieDto = await _movieServices.GetMovieById(id);
 		genres = await _movieServices.GetAllGenre();
@@ -602,6 +604,7 @@
 				selectedActors.Add(actor.ID);
 			}
 		}
+		StateHasChanged();
 		UpdateSelectedActorsText();
 	}
 	private void UpdateSelectedActorsText()
@@ -707,14 +710,10 @@
 		var imageUrl = await GetImageUrlUpdate(selectedFile);
 		if (imageUrl != null)
 		{
-			Console.WriteLine(imageUrl); // Kiểm tra giá trị URL
 			profileFilmsImage = imageUrl;
 			StateHasChanged();
 		}
-		else
-		{
-			Console.WriteLine("Invalid image file");
-		}
+
 	}
 
 	private async Task<string> GetImageUrlUpdate(IBrowserFile file)
@@ -760,27 +759,31 @@
 	{
 		try
 		{
-
-			var content = new MultipartFormDataContent();
-			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 30));
-			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
-
-			content.Add(fileContent, "file", selectedFile.Name);
-			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-			string fileName="";
-			if (response.IsSuccessStatusCode)
+			string fileName = "";
+			if (selectedFile != null)
 			{
-				var jsonResponse = await response.Content.ReadAsStringAsync();
-				var jsonDoc = JsonDocument.Parse(jsonResponse);
-				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-				 fileName = Path.GetFileName(fileUrl);
-				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 30));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					fileName = Path.GetFileName(fileUrl);
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
 			}
-			else
-			{
-				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-				return;
-			}
+
 
 			// Lấy danh sách diễn viên được chọn từ giao diện hiện tại
 			var selectedActorIDs = actors.Data
@@ -792,7 +795,6 @@
 			request = new UpdateMovieRequest
 				{
 					ID = movieDto.ID,
-					Images = fileName,
 					Duration = (int)movieDto.Duration,
 					Status = (MovieStatus)movieDto.Status,
 					StarTime = movieDto.StarTime,
@@ -804,7 +806,9 @@
 					DirectorID = directors.FirstOrDefault(x => x.FullName == movieDto.DirectorName)?.ID ?? Guid.Empty,
 					GenreID = genres.FirstOrDefault(x => x.GenreName == movieDto.GenreName)?.ID ?? Guid.Empty,
 					LenguageID = languages.FirstOrDefault(x => x.LanguageName == movieDto.LanguareName)?.ID ?? Guid.Empty,
-					ActorMovies = selectedActorIDs // Gửi danh sách diễn viên được chọn
+					ActorMovies = selectedActorIDs, // Gửi danh sách diễn viên được chọn
+					MovieTypeID = movieType.FirstOrDefault(x => x.MovieTypeName == movieDto.MovieTypeName)?.ID ?? Guid.Empty,
+					Sub = (eSubEnum)movieDto.Sub,
 				};
 
 			// Kiểm tra dữ liệu hợp lệ
@@ -816,6 +820,7 @@
 			}
 
 			// Gửi yêu cầu cập nhật
+			request.Images = selectedFile != null ? fileName : movieDto.Images;
 			var responseUpdate = await _movieServices.Update(request);
 			if (responseUpdate.IsSuccessStatusCode)
 			{
