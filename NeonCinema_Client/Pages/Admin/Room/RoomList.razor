@@ -125,7 +125,7 @@
 
     private void OnSearchChanged(ChangeEventArgs e)
     {
-        searchText = e.Value.ToString();
+        searchText = e.Value.ToString().TrimStart();
         FilterRooms();
     }
 
