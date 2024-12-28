@@ -29,36 +29,39 @@ namespace NeonCinema_API.Controllers.Statisticss
 			return Ok(new { StartDate = startDate, EndDate = endDate, TotalRevenue = totalRevenue });
 		}
 
-		[HttpGet("revenue")]
-		public async Task<IActionResult> GetRevenueStatistics(DateTime startDate, DateTime endDate)
+
+		[HttpGet("revenue-statistics")]
+		public async Task<IActionResult> GetRevenueStatistics(DateTime? specificDate, DateTime? startDate, DateTime? endDate)
 		{
 			try
 			{
-				var totalRevenue = await _statisticalRepo.GetTotalRevenueAsync(startDate, endDate);
-				var totalTickets = await _statisticalRepo.GetTotalTicketsAsync(startDate, endDate);
-				var newCustomers = await _statisticalRepo.GetNewCustomersAsync(startDate, endDate);
-				var dailyRevenue = await _statisticalRepo.GetDailyRevenueAsync(startDate, endDate);
+				RevenueStatisticsDTO statistics;
 
-				if (dailyRevenue == null || !dailyRevenue.Any())
+				if (specificDate.HasValue)
 				{
-					return NotFound("No data found for the selected period.");
+					statistics = await _statisticalRepo.GetRevenueStatisticsAsync(specificDate, null, null);
 				}
-
-				var statistics = new RevenueStatisticsDTO
+				else if (startDate.HasValue && endDate.HasValue)
 				{
-					TotalRevenue = totalRevenue,
-					TotalTickets = totalTickets,
-					NewCustomers = newCustomers,
-					RevenueChart = dailyRevenue
-				};
+					statistics = await _statisticalRepo.GetRevenueStatisticsAsync(null, startDate, endDate);
+				}
+				else
+				{
+					return BadRequest("Invalid parameters provided.");
+				}
 
 				return Ok(statistics);
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Error: {ex.Message}");
+				Console.WriteLine($"Error: {ex.Message}");
+				return StatusCode(500, "An error occurred while processing your request.");
 			}
 		}
+
+
+
+
 		[HttpGet("combo-statistics")]
 		public async Task<IActionResult> GetComboStatistics(DateTime startDate, DateTime endDate)
 		{
@@ -80,6 +83,12 @@ namespace NeonCinema_API.Controllers.Statisticss
 				Console.WriteLine($"Error: {ex.Message}");
 				return StatusCode(500, "An error occurred while processing your request.");
 			}
+		}
+		[HttpGet("growth")]
+		public async Task<IActionResult> GetGrowthStatistics([FromQuery] DateTime currentStart, [FromQuery] DateTime currentEnd, [FromQuery] DateTime previousStart, [FromQuery] DateTime previousEnd)
+		{
+			var result = await _statisticalRepo.GetGrowthStatisticsAsync(currentStart, currentEnd, previousStart, previousEnd);
+			return Ok(result);
 		}
 
 
