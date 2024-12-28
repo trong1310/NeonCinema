@@ -165,6 +165,7 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 .Include(x => x.Lenguage)
                 .Include(x => x.Countrys)
                 .Include(x => x.TicketSeats)
+                .Include(x=>x.MovieTypes)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
 
@@ -188,6 +189,9 @@ namespace NeonCinema_Infrastructure.Implement.Movie
                 CountryName = movie.Countrys.CountryName,
                 DirectorName = movie.Director.FullName,
                 GenreName = movie.Genre.GenreName,
+               MovieTypeName = movie.MovieTypes.MovieTypeName,
+               Sub = movie.Sub,
+                
             };
 
             return movieDTO;
@@ -217,6 +221,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				obj.StarTime = request.StarTime;
 				obj.ModifiedTime = DateTime.UtcNow;
 				obj.Images = request.Images;
+                obj.Sub = request.Sub;
+                obj.MovieTypeID = request.MovieTypeID;
 				var existingActors = await _context.ActorMovies
 					.Where(am => am.MovieID == obj.ID)
 					.ToListAsync(cancellationToken);
