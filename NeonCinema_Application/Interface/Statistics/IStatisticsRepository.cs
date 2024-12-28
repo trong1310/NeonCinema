@@ -16,5 +16,6 @@ namespace NeonCinema_Application.Interface.Statistics
 		Task<List<ComboStatisticsDTO>> GetComboStatisticsAsync(DateTime startDate, DateTime endDate);
 		Task<List<MovieStatisticsDTO>> GetMovieStatisticsAsync(DateTime startDate, DateTime endDate);
 		Task<RevenueStatisticsDTO> GetRevenueStatisticsAsync(DateTime? specificDate, DateTime? startDate, DateTime? endDate);
+		Task<GrowthStatisticsDTO> GetGrowthStatisticsAsync(DateTime currentStart, DateTime currentEnd, DateTime previousStart, DateTime previousEnd);
 	}
 }

@@ -1,4 +1,5 @@
-﻿@page "/statistics"
+﻿Tính tốc độ tăng  trưởng ví dụ so sánh ngày hôm qua và ngày hôm nay xem tăng bao nhiêu % giảm bao nhiêu %  ví dụ 2 là lấy thời gian ngày 21/12 lúc 6h với hôm nay lúc 6h xem tăng bao nhiêu giảm bao nhiêu . Mục đích để xem so với ngày hôm trước tăng bao nhiêu % hoặc tuần trước tăng bao nhiêu, năm trước tăng bao nhiêu.
+@page "/statistics"
 @using NeonCinema_Application.DataTransferObject.Statistics
 @using NeonCinema_Client.Data.IServices.Statistics
 @using NeonCinema_Client.Data.Services.StatisticService
@@ -50,36 +51,47 @@
         </div>
     </div>
 
+    <!-- Tăng trưởng -->
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5>Tăng trưởng</h5>
+                    <h3>@growthPercentage.ToString("F2")%</h3>
+                    <p>So với ngày hôm qua</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bộ lọc -->
-   <div class="row mb-4 filter d-flex align-items-center justify-content-between">
-    <div class="col-lg-2 col-md-3 col-sm-6">
-        <label for="specificDate" class="form-label">Ngày cụ thể</label>
-        <input type="date" id="specificDate" class="form-control" @bind="filterModel.SpecificDate" />
+    <div class="row mb-4 filter d-flex align-items-center justify-content-between">
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="specificDate" class="form-label">Ngày cụ thể</label>
+            <input type="date" id="specificDate" class="form-control" @bind="filterModel.SpecificDate" />
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="startDate" class="form-label">Ngày bắt đầu</label>
+            <input type="date" id="startDate" class="form-control" @bind="filterModel.StartDate" />
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="endDate" class="form-label">Ngày kết thúc</label>
+            <input type="date" id="endDate" class="form-control" @bind="filterModel.EndDate" />
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6">
+            <label for="filterTime" class="form-label">Lọc theo</label>
+            <select id="filterTime" class="form-control" @bind="filterTime">
+                <option value="">-- Bộ lọc --</option>
+                <option value="Today">Hôm nay</option>
+                <option value="Month">Tháng này</option>
+                <option value="PreviousMonth">Tháng trước</option>
+                <option value="Year">Năm này</option>
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="FetchStatistics">Xác nhận</button>
+        </div>
     </div>
-    <div class="col-lg-2 col-md-3 col-sm-6">
-        <label for="startDate" class="form-label">Ngày bắt đầu</label>
-        <input type="date" id="startDate" class="form-control" @bind="filterModel.StartDate" />
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-6">
-        <label for="endDate" class="form-label">Ngày kết thúc</label>
-        <input type="date" id="endDate" class="form-control" @bind="filterModel.EndDate" />
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-6">
-        <label for="filterTime" class="form-label">Lọc theo</label>
-        <select id="filterTime" class="form-control" @bind="filterTime">
-            <option value="">-- Bộ lọc --</option>
-            <option value="Today">Hôm nay</option>
-            <option value="Month">Tháng này</option>
-            <option value="PreviousMonth">Tháng trước</option>
-            <option value="Year">Năm này</option>
-        </select>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end">
-        <button class="btn btn-primary w-100" @onclick="FetchStatistics">Xác nhận</button>
-    </div>
-</div>
-
-
 
     <!-- Biểu đồ doanh thu -->
     <div class="row chart-section">
@@ -152,10 +164,12 @@
     private string filterTime = "Year";
     private decimal currentDayRevenue = 0;
     private string searchMovie = "";
+    private decimal growthPercentage = 0;
 
     protected override async Task OnInitializedAsync()
     {
         await FetchStatistics();
+        await CalculateGrowthPercentage();
     }
 
     private async Task FetchStatistics()
@@ -190,7 +204,6 @@
                         startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-1);
                         endDate = startDate.AddMonths(1).AddDays(-1);
                         break;
-                  
                 }
 
                 statistics = await StatisticsService.GetRevenueStatisticsAsync(null, startDate, endDate);
@@ -214,6 +227,33 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task CalculateGrowthPercentage()
+    {
+        try
+        {
+            var today = DateTime.Now.Date;
+            var yesterday = today.AddDays(-1);
+
+            var todayRevenue = statistics.RevenueChart
+                .FirstOrDefault(x => x.Date.Date == today)?.Revenue ?? 0;
+            var yesterdayRevenue = statistics.RevenueChart
+                .FirstOrDefault(x => x.Date.Date == yesterday)?.Revenue ?? 0;
+
+            if (yesterdayRevenue > 0)
+            {
+                growthPercentage = ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+            }
+            else
+            {
+                growthPercentage = todayRevenue > 0 ? 100 : 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error calculating growth percentage: {ex.Message}");
         }
     }
 
@@ -276,8 +316,6 @@
             border-radius: 5px; /* Bo góc nút */
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hiệu ứng nổi cho nút */
         }
-
-
 
     .card-body h5 {
         font-weight: revert;

@@ -47,6 +47,11 @@ namespace NeonCinema_Client.Data.Services.StatisticService
 			var url = $"api/Statistics/movie-statistics?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}";
 			return await _httpClient.GetFromJsonAsync<List<MovieStatisticsDTO>>(url);
 		}
-
+		// Phương thức tính tăng trưởng
+		public async Task<GrowthStatisticsDTO> GetGrowthStatisticsAsync(DateTime currentStart, DateTime currentEnd, DateTime previousStart, DateTime previousEnd)
+		{
+			var url = $"api/Statistics/growth?currentStart={currentStart}&currentEnd={currentEnd}&previousStart={previousStart}&previousEnd={previousEnd}";
+			return await _httpClient.GetFromJsonAsync<GrowthStatisticsDTO>(url);
+		}
 	}
 }

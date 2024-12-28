@@ -44,7 +44,7 @@ namespace NeonCinema_Infrastructure.Implement.Room
             {
                 char rowLetter = (char)('A' + row - 1);
                 Guid seatTypeID;
-                if (row >= 5 && row <= 10)
+                if (row >= 5 && row <= request.RowNumber - 1)
                 {
                     seatTypeID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1");
                 }
