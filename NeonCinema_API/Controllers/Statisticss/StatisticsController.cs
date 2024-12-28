@@ -84,6 +84,12 @@ namespace NeonCinema_API.Controllers.Statisticss
 				return StatusCode(500, "An error occurred while processing your request.");
 			}
 		}
+		[HttpGet("growth")]
+		public async Task<IActionResult> GetGrowthStatistics([FromQuery] DateTime currentStart, [FromQuery] DateTime currentEnd, [FromQuery] DateTime previousStart, [FromQuery] DateTime previousEnd)
+		{
+			var result = await _statisticalRepo.GetGrowthStatisticsAsync(currentStart, currentEnd, previousStart, previousEnd);
+			return Ok(result);
+		}
 
 
 
