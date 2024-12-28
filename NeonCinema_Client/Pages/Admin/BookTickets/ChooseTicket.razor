@@ -273,12 +273,12 @@
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-					<span>Phụ thu Phim @movieDto.MovieTypeName</span>
+					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 					<span>@surcharge.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền tạm tính</span>
-					<span id="amount-display">@sumPrices.ToString("N0") VND</span>
+					<span >@sumPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Giảm giá</span>
@@ -286,7 +286,7 @@
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền (Gồm phụ thu & giảm giá)</span>
-					<strong>@totalPrices.ToString("N0") VND</strong>
+					<strong id="amount-display">@totalPrices.ToString("N0") VND</strong>
 				</div>
 				<hr class="dashed">
 				<div class="form-group">
