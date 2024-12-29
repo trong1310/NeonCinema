@@ -10,6 +10,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionCreateRequest
     {
 		public Guid ID { get; set; }  // Khóa chính
+		[Required(ErrorMessage = "Không được để trống trường này")]
 		[RegularExpression(@"^[\p{L}0-9 /]*$", ErrorMessage = "Chỉ được chứa chữ cái, số, khoảng trắng, và dấu /")]
 		public string Name { get; set; }  // Tên khuyến mãi
 		public string Code { get; set; }  
@@ -22,11 +23,12 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public double? DiscountAmount { get; set; }
 		public double? AmountMax { get; set; }
 
-		[Required(ErrorMessage = "Start date is required.")]
+		[Required(ErrorMessage = "Không được để trống trường này")]
 		[DataType(DataType.Date)]
 		public DateTime StartDate { get; set; } = DateTime.Now;
 
-		[Required(ErrorMessage = "End date is required.")]
+
+		[Required(ErrorMessage = "Không được để trống trường này")]
 		[DataType(DataType.Date)]
 		[DateRangeValidation]  // Sử dụng thuộc tính xác thực tùy chỉnh
 		public DateTime EndDate { get; set; } = DateTime.Now;
