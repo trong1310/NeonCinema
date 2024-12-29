@@ -337,7 +337,7 @@
     
     private async Task NagationToDetailBook(Guid id, int ageAllowed)
     {
-        if (userAge > 0)
+        if (userAge < ageAllowed)
         {
             selectedMovieId = id;
             showAgeRestrictionAlert = true;

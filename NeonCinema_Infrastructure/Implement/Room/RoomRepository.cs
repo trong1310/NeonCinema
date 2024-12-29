@@ -44,13 +44,13 @@ namespace NeonCinema_Infrastructure.Implement.Room
             {
                 char rowLetter = (char)('A' + row - 1);
                 Guid seatTypeID;
-                if (row >= 5 && row <= request.RowNumber - 1)
-                {
-                    seatTypeID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1");
-                }
-                else if (row == request.RowNumber)
+                if (row == request.RowNumber)
                 {
                     seatTypeID = Guid.Parse("587FF198-12D1-4EB4-9CE7-909DA4AF6BCB");
+                }
+                else if (row >= 5 && row <= 10)
+                {
+                    seatTypeID = Guid.Parse("0CE08FD6-0D1D-4C61-8B8B-7827BAFF7FE1");
                 }
                 else
                 {
