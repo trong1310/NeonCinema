@@ -133,8 +133,9 @@ public class ScreeningService : IScreeningService
 			}
 
 			// Lấy danh sách lịch chiếu từ API
+			var formattedDate = showDate?.ToString("MM-dd-yyyy"); //đổi định dạng tránh lỗi
 			var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
-				$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
+				$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={formattedDate}");
 
 			if (result == null || !result.Any())
 			{

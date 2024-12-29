@@ -20,15 +20,12 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
 		[ConditionalRange(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; } // giảm theo gia
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
 		public double? AmountMax { get; set; }
 
 		[Required(ErrorMessage = "Không được để trống trường này")]
@@ -40,6 +37,9 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		[DateRangeUpdateValidation]  // Sử dụng thuộc tính xác thực tùy chỉnh
 		public DateTime EndDate { get; set; }
         public PromotionStatus Status { get; set; }
+
+		//không sử dụng cho update
+		public DateTime? CreatedTime { get; set; }
     }
 
 	public class DateRangeUpdateValidationAttribute : ValidationAttribute
