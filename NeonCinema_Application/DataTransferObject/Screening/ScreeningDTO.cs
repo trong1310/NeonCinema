@@ -16,5 +16,9 @@ namespace NeonCinema_Application.DataTransferObject.Screening
         public string? FlimsName { get; set; }
         public string? RoomName { get; set; }
         public ScreeningStatus Status { get; set; }
+
+
+        //
+        public DateTime? CreatedTime { get; set; }
     }
 }
