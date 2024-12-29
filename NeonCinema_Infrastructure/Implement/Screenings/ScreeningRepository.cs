@@ -134,6 +134,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 							RoomName = b.Rooms.Name,
 							ShowDate = b.ShowDate,
 							Status = b.Status,
+							CreatedTime = b.CreatedTime,
 						}).ToList();
 			return new PaginationResponse<ScreeningDTO>()
 			{

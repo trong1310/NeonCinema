@@ -129,12 +129,13 @@ public class ScreeningService : IScreeningService
 		{
 			if (roomId == null || showDate == null)
 			{
-				throw new ArgumentException("Room ID and Show Date must not be null.");
+				return new List<ShowTimeDTO>();
 			}
 
 			// Lấy danh sách lịch chiếu từ API
+			var formattedDate = showDate?.ToString("MM-dd-yyyy"); //đổi định dạng tránh lỗi
 			var result = await _httpClient.GetFromJsonAsync<List<ScreeningSupportValidate>>(
-				$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={showDate}");
+				$"https://localhost:7211/api/Screening/get-scr-by-room-and-showdate?roomId={roomId}&showDate={formattedDate}");
 
 			if (result == null || !result.Any())
 			{
@@ -152,7 +153,7 @@ public class ScreeningService : IScreeningService
 		}
 		catch (Exception ex)
 		{
-			throw new Exception($"Error in GetShowTimebyRoomAndDate: {ex.Message}", ex);
+			return new List<ShowTimeDTO>();
 		}
 	}
 
