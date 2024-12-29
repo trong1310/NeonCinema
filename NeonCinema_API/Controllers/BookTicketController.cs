@@ -96,7 +96,7 @@ namespace NeonCinema_API.Controllers
 				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
 			}
 		}
-
+       
 
 	}
 }
