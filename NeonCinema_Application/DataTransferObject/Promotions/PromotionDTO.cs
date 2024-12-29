@@ -20,7 +20,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
-		[ConditionalRange(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
+		[ConditionalRange(1, 99, ErrorMessage = "Chỉ được nhập từ 1-99")]
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
