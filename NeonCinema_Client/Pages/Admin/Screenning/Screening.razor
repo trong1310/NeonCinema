@@ -152,6 +152,14 @@ else
 											{
 												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị chồng lấn lên lịch khác</p>
 											}
+											@if(!checkCDate)
+											{
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu không là ngày quá khứ hoặc <br/>nhỏ hơn ngày khởi chiếu @comingDate</p>
+											}
+											@if (!ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+											{
+												<p style="color: red; font-size:14px; font-style: italic">Thời gian bắt đầu chỉ từ 8h30 đến 23h45</p>
+											}
 
 											<button type="submit" class="btn btn-primary">Tạo lịch</button>
 										</ChildContent>
@@ -293,6 +301,8 @@ else
 	private PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
 	private List<RoomDTO> rooms = new List<RoomDTO>();
 
+	private bool checkCDate = true;
+
 
 	//input của Scr
 	private Guid roomId;
@@ -303,6 +313,8 @@ else
 	private string roomName = "";
 
 	private int? duration = null;
+	//
+	private string comingDate = "";
 
 
 	protected override async Task OnInitializedAsync()
@@ -310,6 +322,7 @@ else
 		await LoadScreening();
 		movies = await _scrSv.GetAllMoviesAsync();
 		rooms = await _scrSv.GetAllRoomsAsync();
+		await LoadShowTimeFil();
 	}
 
 	private async Task LoadScreening()
@@ -329,13 +342,13 @@ else
 
 	private async Task LoadShowTimeFil()
 	{
-		 //_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
+		_lstSTFil = await _scrSv.GetShowTimebyRoomAndDate(roomId, date);
 	}
 
 	private async Task ToggleCreateForm()
 	{
 		isModalVisible = 1;
-		// await LoadShowTimeFil();
+		await LoadShowTimeFil();
 	}
 
 	private void OpenModalConfirm1()
@@ -350,7 +363,7 @@ else
 		{
 			try
 			{
-				if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+				if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))) || !checkCDate || !ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 				{
 					messageString = "Faild";
 					return;
@@ -449,6 +462,9 @@ else
 		MovieDTO movie = movies.Data.FirstOrDefault(x => x.ID == idmovie);
 
 		duration = movie.Duration;
+
+		endTime = startTime + TimeSpan.FromMinutes(Convert.ToDouble(duration)) + TimeSpan.FromMinutes(15);
+		ValidateComingDate(movie.StarTime);
 	}
 
 	private async Task OnInputChangedStartTime(ChangeEventArgs e)
@@ -483,7 +499,9 @@ else
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
+		MovieDTO movie = movies.Data.FirstOrDefault(x => x.ID == newScreening.MovieID);
 		await LoadShowTimeFil();
+		ValidateComingDate(movie.StarTime);
 	}
 
 	//Màu trạng thái
@@ -514,6 +532,29 @@ else
 		return true; // Không có chồng lấn
 	}
 
+	private bool ValidateST2(TimeSpan startTime, TimeSpan endTime)
+	{
+		if(startTime < TimeSpan.Parse("8:30") || startTime > TimeSpan.Parse("23:45"))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	//validate ngày phát hành
+	private void ValidateComingDate(DateTime comingdate) //cần sửa vì dữ liệu chưa kịp cập nhật đã validate
+	{
+		if(date < comingdate || date < DateTime.Now)
+		{
+			checkCDate = false;
+			comingDate = comingdate.ToShortDateString();
+		}
+		else
+		{
+			checkCDate = true;
+		}
+		
+	}
 
 
 	private void CloseModal()

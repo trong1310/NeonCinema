@@ -137,7 +137,25 @@ namespace NeonCinema_Infrastructure.Implement.Statistics
 				RevenueChart = dailyRevenue
 			};
 		}
+		public async Task<GrowthStatisticsDTO> GetGrowthStatisticsAsync(DateTime currentStart, DateTime currentEnd, DateTime previousStart, DateTime previousEnd)
+		{
+			var currentRevenue = await _context.BillDetails
+				.Where(b => b.CreatedTime >= currentStart && b.CreatedTime <= currentEnd)
+				.SumAsync(b => (decimal?)b.TotalPrice) ?? 0;
 
+			var previousRevenue = await _context.BillDetails
+				.Where(b => b.CreatedTime >= previousStart && b.CreatedTime <= previousEnd)
+				.SumAsync(b => (decimal?)b.TotalPrice) ?? 0;
+
+			double growthPercentage = previousRevenue == 0 ? 0 : ((double)(currentRevenue - previousRevenue) / (double)previousRevenue) * 100;
+
+			return new GrowthStatisticsDTO
+			{
+				CurrentRevenue = currentRevenue,
+				PreviousRevenue = previousRevenue,
+				GrowthPercentage = growthPercentage
+			};
+		}
 
 	}
 }
