@@ -185,7 +185,22 @@
 						<span>Tổng tiền combo</span>
 						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
-
+					<div class="d-flex justify-content-between mb-3">
+						<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
+						<span>@* @surcharge.ToString("N0") *@ VND</span>
+					</div>
+					<div class="d-flex justify-content-between mb-3">
+						<span>Tổng tiền tạm tính</span>
+						<span>@* @sumPrices.ToString("N0") *@ VND</span>
+					</div>
+					<div class="d-flex justify-content-between mb-3">
+						<span>Giảm giá theo điểm</span>
+						<span>@discount.ToString("N0") VND</span>
+					</div>
+					<div class="d-flex justify-content-between mb-3">
+						<span>Giảm giá theo mã</span>
+						<span>@discountAmount.ToString("N0") VND</span>
+					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền</span>
 						<span>@totalPrices.ToString("N0") VND</span>
@@ -195,14 +210,16 @@
 					<div class="customer-points mt-2">
 						<!-- Hiển thị số điểm của khách hàng -->
 						<p class="points-display">
-							Số điểm hiện tại của bạn: <strong>@user.Ponit</strong> điểm (2000 điểm = 1k VND)
+							Số điểm hiện tại của bạn: <strong>@user.Ponit</strong> điểm 
 						</p>
 
 						<!-- Nhập số điểm muốn sử dụng -->
 						<div class="d-flex align-items-center mt-2">
 							<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
 							<button class="btn use-points-btn d-flex align-items-center justify-content-center" @onclick="ApplyPoint">Dùng điểm</button>
+								
 						</div>
+						<span>Lưu ý : 1000 điểm => 500 VND</span>
 						<p class="mt-2"><strong>Số tiền quy đổi:</strong> @* @convertedAmount.ToString("N0") VNĐ *@</p>
 						<div class="discount-container mt-3">
 							<!-- Nút mở popup -->
@@ -250,11 +267,11 @@
 													<div class="progress" style="width: @discount.Percentage%;"></div>
 													</div> *@
 														</div>
-														<button class="btn btn-primary btn-sm btn-discount"
-														@onclick="() => SelectDiscount(discount)"
-														disabled="@(selectedDiscountCode != null)">
-															Chọn
-														</button>
+														  <button class="btn btn-primary btn-sm btn-discount"
+																@onclick="() => SelectDiscount(discount)"
+																disabled="@(selectedDiscountCode == discount.Code)">
+															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
+														  </button>
 													</div>
 												}
 												@if (isSearchPerformed && !filteredDiscounts.Any())
