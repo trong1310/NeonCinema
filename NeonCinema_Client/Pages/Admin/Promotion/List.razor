@@ -136,18 +136,27 @@ else
 																<div class="mb-3">
 																	<label for="" class="form-label">Số tiền giảm tối đa</label>
 																	<InputNumber @bind-Value="input.AmountMax" class="form-control" />
+																	<ValidationMessage For="@(() => input.AmountMax)" />
 																</div>
 															}
 
 															<div class="mb-3">
 																<label for="" class="form-label">Ngày bắt đầu</label>
-																<input type="datetime-local" @bind="input.StartDate" class="form-control" />
+																<input type="datetime-local" @bind="input.StartDate" class="form-control" @oninput="OnInputStartDateProChanged"/>
 																<ValidationMessage For="@(() => input.StartDate)" />
+																@if (!checkStartDate)
+																{
+																	<p style="color: red; font-size:14px; font-style: italic">Ngày bắt đầu không được là quá khứ (tính từng giây)</p>
+																}
 															</div>
 															<div class="mb-3">
 																<label for="" class="form-label">Ngày kết thúc</label>
-																<input type="datetime-local" @bind="input.EndDate" class="form-control" />
+																<input type="datetime-local" @bind="input.EndDate" class="form-control" @oninput="OnInputEndDateProChanged" />
 																<ValidationMessage For="@(() => input.EndDate)" />
+																@if(!checkEndDate)
+																{
+																	<p style="color: red; font-size:14px; font-style: italic">Ngày kết thúc phải lớn hơn ngày bắt đầu 1 ngày (tính từng giây)</p>
+																}
 															</div>
 															<div class="mb-3">
 																<label for="" class="form-label">Mô tả</label>
@@ -397,17 +406,26 @@ else
 													<div class="mb-3">
 														<label for="" class="form-label">Số tiền giảm tối đa</label>
 														<InputNumber @bind-Value="inputUpdate.AmountMax" class="form-control" />
+														<ValidationMessage For="@(() => input.AmountMax)" />
 													</div>
 												}
 												<div class="mb-3">
 													<label for="" class="form-label">Ngày bắt đầu</label>
-													<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
+													<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" @oninput="OnInputStartDateChanged" />
 													<ValidationMessage For="@(() => inputUpdate.StartDate)" />
+													@if (!checkStartDate)
+													{
+														<p style="color: red; font-size:14px; font-style: italic">Ngày bắt đầu không được là quá khứ (tính từng giây)</p>
+													}
 												</div>
 												<div class="mb-3">
 													<label for="" class="form-label">Ngày kết thúc</label>
-													<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" />
+													<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" @oninput="OnInputEndDateChanged" />
 													<ValidationMessage For="@(() => inputUpdate.EndDate)" />
+													@if (!checkEndDate)
+													{
+														<p style="color: red; font-size:14px; font-style: italic">Ngày kết thúc phải lớn hơn ngày bắt đầu 1 ngày (tính từng giây)</p>
+													}
 												</div>
 												<div class="mb-3">
 													<label for="" class="form-label">Mô tả</label>
@@ -770,6 +788,8 @@ else
 		{
 			user.IsSelected = false;
 		}
+
+		ValidateTime(input.StartDate, input.EndDate);
 	}
 
 	private void CloseModal()
@@ -802,6 +822,8 @@ else
 		idActive = id;
 		inputUpdate = await _prosv.GetPromotionByIdAsync(id);
 		isModalVisible = 4;
+
+		ValidateTime(input.StartDate, input.EndDate);
 	}
 
 	//Modal confirm
@@ -1021,6 +1043,37 @@ else
 
 		await FilterRecords();
 	}
+
+	//
+	private bool checkStartDate = true;
+	private async Task OnInputStartDateProChanged(ChangeEventArgs e)
+	{
+		ValidateTime(DateTime.Parse(e.Value.ToString()), input.EndDate);
+	}
+
+	private bool checkEndDate = true;
+	private async Task OnInputEndDateProChanged(ChangeEventArgs e)
+	{
+		ValidateTime(input.StartDate, DateTime.Parse(e.Value.ToString()));
+	}
+
+	private void ValidateTime(DateTime startDate, DateTime endDate)
+	{
+		if (startDate < DateTime.Now)
+		{
+			checkStartDate = false;
+		}
+		else checkStartDate = true;
+
+
+		if ((endDate - startDate).TotalDays < 1)
+		{
+			checkEndDate = false;
+		}
+		else checkEndDate = true;
+
+	}
+	
 
 	private async Task FilterRecords()
 	{
