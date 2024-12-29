@@ -374,9 +374,7 @@ else
 				var jsonResponse = await response.Content.ReadAsStringAsync();
 				var jsonDoc = JsonDocument.Parse(jsonResponse);
 				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-				fileName = Path.GetFileName(fileUrl);
-
-
+				fileName = Path.GetFileName(fileUrl);			
 				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
 			}
 			else
