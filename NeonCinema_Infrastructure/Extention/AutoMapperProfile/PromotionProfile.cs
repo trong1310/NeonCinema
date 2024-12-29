@@ -14,7 +14,7 @@ namespace NeonCinema_Infrastructure.Extention.AutoMapperProfile
     {
         public PromotionProfile() 
         {
-            CreateMap<PromotionDTO, Promotion>().ReverseMap();
+            CreateMap<PromotionDTO, Promotion>().ReverseMap().ForMember(x => x.CreatedTime, y => y.MapFrom(src => (DateTime?)src.CreatedTime));
             CreateMap<PromotionCreateRequest, Promotion>();
             CreateMap<PromotionDeleteRequest, Promotion>();
 
