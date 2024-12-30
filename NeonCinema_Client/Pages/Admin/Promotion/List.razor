@@ -788,8 +788,6 @@ else
 		{
 			user.IsSelected = false;
 		}
-
-		ValidateTime(input.StartDate, input.EndDate);
 	}
 
 	private void CloseModal()
@@ -841,6 +839,7 @@ else
 	//Add
 	public async Task AddPromotion()
 	{
+		ValidateTime(input.StartDate, input.EndDate);
 		IsLoadingAct = true;
 		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
