@@ -11,28 +11,35 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionDTO
     {
         public Guid ID { get; set; }  // Khóa chính
+
+		[Required(ErrorMessage = "Không được để trống trường này")]
+		[RegularExpression(@"^[\p{L}0-9 /]*$", ErrorMessage = "Chỉ được chứa chữ cái, số, khoảng trắng, và dấu /")]
 		public string Name { get; set; }
 
 		[Required(ErrorMessage = "Không được để trống trường này")]
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
-		[ConditionalRange(1, 100, ErrorMessage = "Chỉ được nhập từ 1-100")]
+		[ConditionalRange(1, 99, ErrorMessage = "Chỉ được nhập từ 1-99")]
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; } // giảm theo gia
+
 		public double? AmountMax { get; set; }
 
-		[Required(ErrorMessage = "Start date is required.")]
+		[Required(ErrorMessage = "Không được để trống trường này")]
 		[DataType(DataType.Date)]
 		public DateTime StartDate { get; set; }
 
-		[Required(ErrorMessage = "End date is required.")]
+		[Required(ErrorMessage = "Không được để trống trường này")]
 		[DataType(DataType.Date)]
 		[DateRangeUpdateValidation]  // Sử dụng thuộc tính xác thực tùy chỉnh
 		public DateTime EndDate { get; set; }
         public PromotionStatus Status { get; set; }
+
+		//không sử dụng cho update
+		public DateTime? CreatedTime { get; set; }
     }
 
 	public class DateRangeUpdateValidationAttribute : ValidationAttribute

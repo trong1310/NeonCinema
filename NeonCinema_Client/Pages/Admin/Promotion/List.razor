@@ -136,18 +136,27 @@ else
 																<div class="mb-3">
 																	<label for="" class="form-label">Số tiền giảm tối đa</label>
 																	<InputNumber @bind-Value="input.AmountMax" class="form-control" />
+																	<ValidationMessage For="@(() => input.AmountMax)" />
 																</div>
 															}
 
 															<div class="mb-3">
 																<label for="" class="form-label">Ngày bắt đầu</label>
-																<input type="datetime-local" @bind="input.StartDate" class="form-control" />
+																<input type="datetime-local" @bind="input.StartDate" class="form-control" @oninput="OnInputStartDateProChanged"/>
 																<ValidationMessage For="@(() => input.StartDate)" />
+																@if (!checkStartDate)
+																{
+																	<p style="color: red; font-size:14px; font-style: italic">Ngày bắt đầu không được là quá khứ (tính từng giây)</p>
+																}
 															</div>
 															<div class="mb-3">
 																<label for="" class="form-label">Ngày kết thúc</label>
-																<input type="datetime-local" @bind="input.EndDate" class="form-control" />
+																<input type="datetime-local" @bind="input.EndDate" class="form-control" @oninput="OnInputEndDateProChanged" />
 																<ValidationMessage For="@(() => input.EndDate)" />
+																@if(!checkEndDate)
+																{
+																	<p style="color: red; font-size:14px; font-style: italic">Ngày kết thúc phải lớn hơn ngày bắt đầu 1 ngày (tính từng giây)</p>
+																}
 															</div>
 															<div class="mb-3">
 																<label for="" class="form-label">Mô tả</label>
@@ -397,17 +406,26 @@ else
 													<div class="mb-3">
 														<label for="" class="form-label">Số tiền giảm tối đa</label>
 														<InputNumber @bind-Value="inputUpdate.AmountMax" class="form-control" />
+														<ValidationMessage For="@(() => input.AmountMax)" />
 													</div>
 												}
 												<div class="mb-3">
 													<label for="" class="form-label">Ngày bắt đầu</label>
-													<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" />
+													<InputDate @bind-Value="inputUpdate.StartDate" class="form-control" @oninput="OnInputStartDateChanged" />
 													<ValidationMessage For="@(() => inputUpdate.StartDate)" />
+													@if (!checkStartDate)
+													{
+														<p style="color: red; font-size:14px; font-style: italic">Ngày bắt đầu không được là quá khứ (tính từng giây)</p>
+													}
 												</div>
 												<div class="mb-3">
 													<label for="" class="form-label">Ngày kết thúc</label>
-													<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" />
+													<InputDate @bind-Value="inputUpdate.EndDate" class="form-control" @oninput="OnInputEndDateChanged" />
 													<ValidationMessage For="@(() => inputUpdate.EndDate)" />
+													@if (!checkEndDate)
+													{
+														<p style="color: red; font-size:14px; font-style: italic">Ngày kết thúc phải lớn hơn ngày bắt đầu 1 ngày (tính từng giây)</p>
+													}
 												</div>
 												<div class="mb-3">
 													<label for="" class="form-label">Mô tả</label>
@@ -540,7 +558,7 @@ else
 					<tbody>
 						@if (filteredPromotions.Any())
 						{
-							foreach (var item in _lstpro.Select((value, index) => new { value, index }))
+							foreach (var item in _lstpro.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
 							{
 								<tr>
 									<td>@(item.index + 1)</td>
@@ -598,7 +616,7 @@ else
 	}
 
 	.modal {
-		top: 10%;
+		top: 4.5%;
 	}
 
 	.modalConfirm {
@@ -802,6 +820,8 @@ else
 		idActive = id;
 		inputUpdate = await _prosv.GetPromotionByIdAsync(id);
 		isModalVisible = 4;
+
+		ValidateTime(input.StartDate, input.EndDate);
 	}
 
 	//Modal confirm
@@ -819,6 +839,7 @@ else
 	//Add
 	public async Task AddPromotion()
 	{
+		ValidateTime(input.StartDate, input.EndDate);
 		IsLoadingAct = true;
 		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
@@ -828,7 +849,7 @@ else
 				input.Code = codegen;
 				var check = await _prosv.CreatePromotionAsync(input);
 
-				if (check)
+				if (check && checkStartDate && checkEndDate)
 				{
 					List<PromotionUserDTO> lstPU = new List<PromotionUserDTO>();
 
@@ -937,13 +958,20 @@ else
 		IsLoadingAct = true;
 		try
 		{
-			var check = await _prosv.UpdatePromotionAsync(inputUpdate);
-
-			if (check)
+			if(checkStartDate && checkEndDate)
 			{
-				messageString = "Success";
-				await LoadPromotion();
+				var check = await _prosv.UpdatePromotionAsync(inputUpdate);
 
+				if (check)
+				{
+					messageString = "Success";
+					await LoadPromotion();
+
+				}
+				else
+				{
+					messageString = "Faild";
+				}
 			}
 			else
 			{
@@ -1021,6 +1049,37 @@ else
 
 		await FilterRecords();
 	}
+
+	//
+	private bool checkStartDate = true;
+	private async Task OnInputStartDateProChanged(ChangeEventArgs e)
+	{
+		ValidateTime(DateTime.Parse(e.Value.ToString()), input.EndDate);
+	}
+
+	private bool checkEndDate = true;
+	private async Task OnInputEndDateProChanged(ChangeEventArgs e)
+	{
+		ValidateTime(input.StartDate, DateTime.Parse(e.Value.ToString()));
+	}
+
+	private void ValidateTime(DateTime startDate, DateTime endDate)
+	{
+		if (startDate < DateTime.Now)
+		{
+			checkStartDate = false;
+		}
+		else checkStartDate = true;
+
+
+		if ((endDate - startDate).TotalDays < 1)
+		{
+			checkEndDate = false;
+		}
+		else checkEndDate = true;
+
+	}
+	
 
 	private async Task FilterRecords()
 	{

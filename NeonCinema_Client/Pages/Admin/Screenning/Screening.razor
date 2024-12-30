@@ -44,7 +44,7 @@ else
 						</tr>
 					</thead>
 					<tbody>
-						@foreach (var item in screenings.Select((value, index) => new { value, index }))
+						@foreach (var item in screenings.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
 						{
 							<tr>
 								<td>@(item.index + 1)</td>
@@ -306,7 +306,7 @@ else
 
 	//input của Scr
 	private Guid roomId;
-	private DateTime date = DateTime.UtcNow;
+	private DateTime date = DateTime.Now;
 	private DateTime startTime;
 	private DateTime endTime;
 	//
@@ -413,7 +413,8 @@ else
 							newScreening = new ScreeningCreateRequest();
 							newShowTime = new ShowTimeCreateRequest();
 
-							await LoadScreening();
+							await LoadShowTimeFil(); //load lịch validate luôn tránh trường hợp tạo 2 lần liên tiếp
+							await LoadScreening(); //load tất cả lịch
 						}
 						else
 						{
@@ -501,7 +502,10 @@ else
 		date = DateTime.Parse(e.Value.ToString());
 		MovieDTO movie = movies.Data.FirstOrDefault(x => x.ID == newScreening.MovieID);
 		await LoadShowTimeFil();
-		ValidateComingDate(movie.StarTime);
+		if(movie != null)
+		{
+			ValidateComingDate(movie.StarTime);
+		}
 	}
 
 	//Màu trạng thái
