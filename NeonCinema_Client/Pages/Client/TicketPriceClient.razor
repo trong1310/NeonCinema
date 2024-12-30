@@ -1,0 +1,159 @@
+﻿@page "/ticket-price-client"
+@layout LayoutClient
+@using NeonCinema_Application.DataTransferObject.TicketPriceSetting
+@using NeonCinema_Client.Data.IServices.TicketPriceSetting
+@inject ITicketPriceSettingService TicketPriceSettingService
+
+<div class="card-header text-center mt-3">
+    <img src=@GetImageUrl("logo-neon.png") alt="Logo rạp phim" class="logo-img mb-3">
+    <h2 class="fw-bold text-uppercase">Bảng Giá Vé</h2>
+</div>
+
+<div class="card my-4">
+    <div class="card-body">
+        <!-- Bảng giá vé -->
+        <table class="table table-bordered text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th class="align-middle"></th>
+                    <th class="align-middle">Trước 17h</th>
+                    <th class="align-middle">Sau 17h</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center align-middle fw-bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
+                    <td><span class="price-display">@ticketPriceSetting.PriceBefore17hWeekDay.ToString("N0")</span> VND</td>
+                    <td><span class="price-display">@ticketPriceSetting.PriceAfter17hWeekDay.ToString("N0")</span> VND</td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle fw-bold">Thứ 6, Thứ 7, Chủ Nhật</td>
+                    <td><span class="price-display">@ticketPriceSetting.PriceBefore17hWeekeend.ToString("N0")</span> VND</td>
+                    <td><span class="price-display">@ticketPriceSetting.PriceAfter17hWeekeend.ToString("N0")</span> VND</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Phụ thu -->
+        <table class="table table-bordered text-center mt-4">
+            <thead class="table-primary">
+                <tr>
+                    <th class="align-middle">Loại vé</th>
+                    <th class="align-middle">Phụ thu</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center align-middle fw-bold">2D</td>
+                    <td><span class="price-display">@ticketPriceSetting.Surcharge3D.ToString("N0")</span> VND</td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle fw-bold">3D</td>
+                    <td><span class="price-display">@ticketPriceSetting.Surcharge4D.ToString("N0")</span> VND</td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle fw-bold">IMAX</td>
+                    <td><span class="price-display">@ticketPriceSetting.SurchargeIMAX.ToString("N0")</span> VND</td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle fw-bold">Ghế VIP</td>
+                    <td><span class="price-display">@ticketPriceSetting.SurchargeVIP.ToString("N0")</span> VND</td>
+                </tr>
+                <tr>
+                    <td class="text-center align-middle fw-bold">Ghế Couple</td>
+                    <td><span class="price-display">@ticketPriceSetting.SurchargeCouple.ToString("N0")</span> VND</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private TicketPriceSettingDTO ticketPriceSetting = new TicketPriceSettingDTO();
+    protected override async Task OnInitializedAsync()
+    {
+        ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(Guid.Parse("F45B65A9-F32D-4F95-A211-75A7AF545F46"));
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
+    }
+}
+
+
+<style>
+    .card-header {
+        background-color: #1E3A8A; /* Màu xanh đậm */
+        color: white;
+        padding: 30px;
+        border-radius: 10px 10px 0 0;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-img {
+        max-width: 120px;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .card {
+        background-color: #F3F4F6; /* Màu nền nhẹ nhàng */
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .table {
+        margin-top: 15px;
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .table th {
+            background-color: #2563EB; /* Xanh đậm */
+            color: white;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            padding: 15px;
+        }
+
+        .table td {
+            font-size: 1rem;
+            color: #374151; /* Màu chữ xám đậm */
+            padding: 10px 15px;
+            vertical-align: middle;
+        }
+
+    .price-display {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #1E3A8A; /* Xanh đậm */
+    }
+
+    h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        text-transform: uppercase;
+        margin: 10px 0;
+    }
+
+    body {
+        background-color: #EFF6FF; /* Màu nền tổng thể */
+        font-family: 'Arial', sans-serif;
+    }
+
+    .table-primary {
+        background-color: #2563EB; /* Màu header bảng */
+        color: white;
+    }
+
+    h2 {
+        letter-spacing: 1px;
+    }
+
+</style>
