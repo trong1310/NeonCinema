@@ -39,24 +39,27 @@ namespace NeonCinema_Client.Data.Services.Promotion
 
 				foreach (var item in screenings)
 				{
-					if (item.ShowDate == now)
+					if(item.Status != ScreeningStatus.Cancelled)
 					{
-						if (item.ShowTime.StartTime <= TimeSpan.Parse(now.TimeOfDay.ToString()) && TimeSpan.Parse(now.TimeOfDay.ToString()) < item.ShowTime.EndTime)
+						if (item.ShowDate == now)
 						{
-							item.Status = ScreeningStatus.Showing;
+							if (item.ShowTime.StartTime <= TimeSpan.Parse(now.TimeOfDay.ToString()) && TimeSpan.Parse(now.TimeOfDay.ToString()) < item.ShowTime.EndTime)
+							{
+								item.Status = ScreeningStatus.Showing;
+							}
+							else if (TimeSpan.Parse(now.TimeOfDay.ToString()) >= item.ShowTime.EndTime)
+							{
+								item.Status = ScreeningStatus.Ended;
+							}
 						}
-						else if (TimeSpan.Parse(now.TimeOfDay.ToString()) >= item.ShowTime.EndTime)
+						else if (item.ShowDate < now)
 						{
 							item.Status = ScreeningStatus.Ended;
 						}
-					}
-					else if (item.ShowDate < now)
-					{
-						item.Status = ScreeningStatus.Ended;
-					}
-					else { item.Status = ScreeningStatus.InActive; }
+						else { item.Status = ScreeningStatus.InActive; }
 
-					dbContext.Screening.Update(item);
+						dbContext.Screening.Update(item);
+					}
 				}
 
 				foreach (var promo in promotions)
