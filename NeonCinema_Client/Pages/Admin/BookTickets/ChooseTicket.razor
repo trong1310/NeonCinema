@@ -28,6 +28,7 @@
 @inject NavigationManager _navigation
 @inject HttpClient _http
 @inject NavigationManager _navi
+@layout LayoutAdmin
 @inject ILocalStorageService _localstorage
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -637,6 +638,7 @@
 				totalPrices += surcharge;
 			}
 		}
+		StateHasChanged(); // Cập nhật giao diện
 	}
 	private async Task RefreshSeatsAsync()
 	{
@@ -1211,6 +1213,59 @@
 		_navi.NavigateTo("/book_ticket");
 	}
 
+	#endregion
+	#region SSE
+	private List<SeatShowTimeDTO> UpdatedSeats = new List<SeatShowTimeDTO>();
+	private object? eventSource;
+
+	[JSInvokable]
+	public Task OnSeatsUpdated(List<SeatShowTimeDTO> updatedSeats)
+	{
+		// Cập nhật danh sách ghế với trạng thái mới nhất
+		foreach (var updatedSeat in updatedSeats)
+		{
+			var seatToUpdate = seats.FirstOrDefault(s => s.ID == updatedSeat.ID);
+			if (seatToUpdate != null)
+			{
+				seatToUpdate.Status = updatedSeat.Status;
+			}
+		}
+
+		// Cập nhật lại groupedSeats
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+		return Task.CompletedTask;
+	}
+
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			eventSource = await JS.InvokeAsync<object>(
+				"sseHandler.startSSE",
+				"https://localhost:7211/stream-seat-status",
+				DotNetObjectReference.Create(this)
+			);
+			StateHasChanged();
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (eventSource != null)
+		{
+			await JS.InvokeVoidAsync("sseHandler.stopSSE", eventSource);
+		}
+	}
 	#endregion
  // Mặc định là tiền mặt
 }

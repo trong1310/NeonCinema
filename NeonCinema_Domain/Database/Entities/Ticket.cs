@@ -17,7 +17,7 @@ namespace NeonCinema_Domain.Database.Entities
         public Guid ScreningID { get; set; }
 		public decimal Price { get; set; }
 		public ticketEnum Status { get; set; }
-
+		public long Code { get; set; }
 		public Guid BillId { get; set; }
 		public virtual Screening? Screenings { get; set; }
 		public virtual Movies? Movies { get; set; }
