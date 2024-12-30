@@ -11,6 +11,7 @@ using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using System.Net.Http.Json;
 using System.Threading;
+using static NeonCinema_API.Controllers.PromotionController;
 
 namespace NeonCinema_Client.Data.Services.BookTicket
 {
@@ -99,6 +100,27 @@ namespace NeonCinema_Client.Data.Services.BookTicket
                 throw new Exception("co loi xay ra : " + ex.Message);
             }
 		}
+		public async Task<List<VoucherDTO>> GetVoucher(Guid ID)
+		{
+			try
+			{
+				var response = await _httpClient.PostAsJsonAsync($"https://localhost:7211/api/Promotion/voucher-account", ID);
+
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadFromJsonAsync<List<VoucherDTO>>() ?? new List<VoucherDTO>();
+				}
+				else
+				{
+					throw new Exception($"lỗi: {response.StatusCode}");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Có lỗi xảy ra: " + ex.Message);
+			}
+		}
+
 		public async Task<BillResp?> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
 			var response = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/BookTicket/book-ticket", request, cancellationToken);

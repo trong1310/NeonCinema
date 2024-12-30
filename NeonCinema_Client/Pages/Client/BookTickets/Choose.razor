@@ -20,6 +20,8 @@
 @using NeonCinema_Domain.Database.Entities
 @using System.Text.Json
 @using System.Security.Claims
+@using System.Diagnostics.Tracing
+@using static NeonCinema_API.Controllers.PromotionController
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
@@ -256,16 +258,16 @@
 
 											<!-- Danh sách mã giảm giá -->
 											<ul class="list-group discount-list mt-3">
-												@foreach (var discount in filteredDiscounts)
+												@foreach (var discount in voucher)
 												{
 													<div class="discount-card">
 														<div class="discount-info">
 															<h3>@discount.Name</h3>
-															<p>Giảm giá @discount.Percentage%</p>
+															<p >Giảm giá @discount.DiscountPercentage %</p>
 															<p class="text-dark">tổng tiền </p>
 															@* <div class="progress-bar" style="width:90%">
-													<div class="progress" style="width: @discount.Percentage%;"></div>
-													</div> *@
+															<div class="progress" style="width: @discount.Percentage%;"></div>
+															</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
 														@onclick="() => SelectDiscount(discount)"
@@ -274,12 +276,12 @@
 														</button>
 													</div>
 												}
-												@if (isSearchPerformed && !filteredDiscounts.Any())
+												@* 	@if (isSearchPerformed && !filteredDiscounts.Any())
 												{
 													<li class="list-group-item text-center text-danger">
 														Không tìm thấy mã giảm giá phù hợp!
 													</li>
-												}
+												} *@
 											</ul>
 										</div>
 									</div>
@@ -411,7 +413,6 @@
 	}
 
 </script>
-
 @code {
 	#region
 	[Parameter]
@@ -427,6 +428,7 @@
 	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
 	List<SeatDto> seats = new List<SeatDto>();
 	List<FoodComboDTO> foods = new List<FoodComboDTO>();
+	List<VoucherDTO> voucher = new List<VoucherDTO>();
 	private RankMemberResp Rank = new RankMemberResp();
 	private decimal totalPrices = 0;
 	private decimal finalPrices => totalPrices - (decimal)discount;
@@ -439,6 +441,7 @@
 	private double discount = 0;
 	private decimal surcharge = 0;
 	private decimal sumPrices;
+	private Guid? selectedVoucherId;
 	private async void ShowConfirmModal()
 	{
 		showConfirmModal = true;
@@ -507,6 +510,7 @@
 			_navi.NavigateTo("/login");
 		}
 		Rank = await _services.SeachAccount(user.PhoneNumber);
+		voucher = await _services.GetVoucher(user.ID);
 		#endregion
 		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
 		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
@@ -527,7 +531,10 @@
 			}
 		}
 
+		StateHasChanged(); // Cập nhật giao diện
 	}
+
+
 	private async Task RefreshSeatsAsync()
 	{
 		// Lấy dữ liệu ghế mới từ server
@@ -696,7 +703,7 @@
 		}
 		selectedSeatNumbers = string.Join(", ", selectedSeats);
 		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
-	//	OnClickToEditAmount();
+		//	OnClickToEditAmount();
 		StateHasChanged();
 	}
 	#endregion
@@ -718,7 +725,7 @@
 		comboPrices += combo.Amount;
 		sumPrices += combo.Amount;
 		totalPrices += combo.Amount;
-	//	await OnClickToEditAmount();
+		//	await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
 	private async void Decrease(FoodComboDTO combo)
@@ -736,10 +743,9 @@
 			}
 		}
 
-	///	await OnClickToEditAmount();
+		///	await OnClickToEditAmount();
 		StateHasChanged(); // Làm mới giao diện
 	}
-
 	private int GetComboQuantity(FoodComboDTO combo)
 	{
 		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
@@ -768,6 +774,7 @@
 		comboPrices = 0;
 		sumPrices = 0;
 		surcharge = 0;
+		discountAmount = 0;
 		RefreshSeatsAsync();
 	}
 
@@ -788,7 +795,7 @@
 				}).ToList(),
 				Point = point,
 				CreateBy = null,
-
+				Voucher = selectedVoucherId,
 			};
 		try
 		{
@@ -799,6 +806,13 @@
 				ResetUI();
 				paymentStatus = "success";
 				Console.WriteLine($"thành công");
+				if (point > 0)
+				{
+					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+					resetPoint.MinPoint -= point;
+					_context.RankMembers.Update(resetPoint);
+					_context.SaveChanges();
+				}
 			}
 			else
 			{
@@ -1044,59 +1058,37 @@
 	private bool showDiscountPopup = false; // Trạng thái hiển thị popup
 	private string selectedDiscountCode = null; // Mã giảm giá đã chọn
 	private decimal discountAmount = 0; // Số tiền được giảm
-	private int discountPercentage = 0; // Phần trăm giảm giá
+	private double? discountPercentage = 0; // Phần trăm giảm giá
 
-	private string searchCode = string.Empty; // Mã giảm giá nhập vào ô tìm kiếm
-	private List<Discount> filteredDiscounts = new List<Discount>(); // Danh sách kết quả tìm kiếm
+	private string searchCode = string.Empty; 
 	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
 
-	// Danh sách mã giảm giá cố định
-	private List<Discount> discounts = new()
-	{
-		new Discount { Name = "Khuyến mãi đầu năm", Code = "SALE10", Percentage = 10 },
-		new Discount { Name = "Ưu đãi khách hàng mới", Code = "SALE20", Percentage = 20 },
-		new Discount { Name = "Giảm giá tháng 12", Code = "SALE30", Percentage = 30 },
-	};
-
-	// Lớp đại diện cho mã giảm giá
-	public class Discount
-	{
-		public string Name { get; set; }
-		public string Code { get; set; }
-		public int Percentage { get; set; }
-	}
 
 	protected override void OnInitialized()
 	{
-		// Khởi tạo danh sách hiển thị bằng toàn bộ danh sách mã giảm giá
-		filteredDiscounts = discounts;
+
 	}
 
 	private void SearchDiscount()
 	{
 		if (string.IsNullOrWhiteSpace(searchCode))
 		{
-			// Nếu ô tìm kiếm trống, hiển thị tất cả mã giảm giá
-			filteredDiscounts = discounts;
+
 		}
 		else
 		{
-			// Lọc mã giảm giá theo Code
-			filteredDiscounts = discounts
-				.Where(d => d.Code.Contains(searchCode, StringComparison.OrdinalIgnoreCase))
-				.ToList();
 		}
 
 		isSearchPerformed = true; // Đánh dấu đã tìm kiếm
 	}
 
 	// Xử lý khi chọn mã giảm giá
-	private void SelectDiscount(Discount discount)
+	private void SelectDiscount(VoucherDTO discount)
 	{
-		selectedDiscountCode = discount.Code; // Lưu mã giảm giá đã chọn
-		discountPercentage = discount.Percentage; // Lưu phần trăm giảm giá
-		discountAmount = (totalPrices * discountPercentage) / 100; // Tính số tiền giảm giá
-																			// totalPrices -= discountAmount; // Cập nhật tổng tiền
+		selectedDiscountCode = discount.Code;
+		selectedVoucherId = discount.ID;
+		discountPercentage = discount.DiscountPercentage; // Lưu phần trăm giảm giá
+		discountAmount = (totalPrices * (decimal)(discountPercentage ?? 0)) / 100;
 		showDiscountPopup = false; // Đóng popup
 		totalPrices -= discountAmount;
 	}
@@ -1109,6 +1101,59 @@
 		discountPercentage = 0;
 		discountAmount = 0;
 		totalPrices += discountAmount;
+	}
+	#endregion
+	#region SSE
+	private List<SeatShowTimeDTO> UpdatedSeats = new List<SeatShowTimeDTO>();
+	private object? eventSource;
+
+	[JSInvokable]
+	public Task OnSeatsUpdated(List<SeatShowTimeDTO> updatedSeats)
+	{
+		// Cập nhật danh sách ghế với trạng thái mới nhất
+		foreach (var updatedSeat in updatedSeats)
+		{
+			var seatToUpdate = seats.FirstOrDefault(s => s.ID == updatedSeat.ID);
+			if (seatToUpdate != null)
+			{
+				seatToUpdate.Status = updatedSeat.Status;
+			}
+		}
+
+		// Cập nhật lại groupedSeats
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+		return Task.CompletedTask;
+	}
+
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			eventSource = await JS.InvokeAsync<object>(
+				"sseHandler.startSSE",
+				"https://localhost:7211/stream-seat-status",
+				DotNetObjectReference.Create(this)
+			);
+			StateHasChanged();
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (eventSource != null)
+		{
+			await JS.InvokeVoidAsync("sseHandler.stopSSE", eventSource);
+		}
 	}
 	#endregion
 }

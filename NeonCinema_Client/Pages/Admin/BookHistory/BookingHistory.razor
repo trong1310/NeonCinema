@@ -176,7 +176,7 @@
     private IEnumerable<BillHistoryDTO> FilteredBills =>
         billHistory.Where(b =>
             (string.IsNullOrEmpty(searchUserName) || b.UserName?.Contains(searchUserName, StringComparison.OrdinalIgnoreCase) == true) &&
-            (string.IsNullOrEmpty(filterBillCode) || b.BillCode?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true) &&
+            (string.IsNullOrEmpty(filterBillCode) || b.BillCode.ToString()?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true) &&
             (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
         );
 }

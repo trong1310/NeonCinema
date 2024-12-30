@@ -11,6 +11,6 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Resp
 		public Guid TicketID { get; set; }
 		public string? SeatNumber { get; set; }
 		public string? ShowTime { get; set; }
-		public string? Prices { get; set; }
+		public decimal? Prices { get; set; }
 	}
 }

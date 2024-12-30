@@ -15,4 +15,9 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket
 		public seatEnum Status { get; set; }
 		public Decimal? Price { get; set; }
 	}
+	public class SeatShowTimeDTO
+	{
+		public Guid ID { get; set; }
+		public seatEnum Status { get; set; }
+	}
 }
