@@ -8,6 +8,7 @@ using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using NeonCinema_Infrastructure.Extention.Utili;
+using NeonCinema_Infrastructure.Services;
 using System.Net;
 
 namespace NeonCinema_Infrastructure.Implement.BookTickets
@@ -15,9 +16,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 	public class BookTicketResp
 	{
 		private readonly NeonCinemasContext _context;
-		public BookTicketResp(NeonCinemasContext context)
+		private readonly EmailServices _emailServices;
+		public BookTicketResp(NeonCinemasContext context, EmailServices emailServices)
 		{
 			_context = context;
+			_emailServices = emailServices;
 		}
 
 		public async Task<BillResp> BookTicketCounter(CreateBookTicketRequest request, CancellationToken cancellationToken)
@@ -50,8 +53,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						x.ShowDate == screening.ShowDate &&
 						request.SeatID.Contains(x.SeatID))
 					.ToListAsync(cancellationToken);
-
-
 				// Kiểm tra ghế không khả dụng
 				var unavailableSeats = seats
 					.Where(x => request.SeatID.Contains(x.SeatID) && x.seatEnum != NeonCinema_Domain.Enum.seatEnum.Available)
@@ -63,9 +64,11 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
 				}
 				var selectedSeats = seats.Where(x => request.SeatID.Contains(x.SeatID)).ToList();
+
 				foreach (var seat in selectedSeats)
 				{
 					seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Sold;
+
 				}
 				_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
 				// tinhs gia ve
@@ -82,8 +85,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					UserID = request.AccountID ?? null,
 					CreatedBy = request.CreateBy,
 					TotalPoint = request.Point,
-					PromotionID = request.Voucher
-
+					PromotionID = request.Voucher,
+					AfterDiscount = 0,
 				};
 				var startTime = screening.ShowTime.StartTime;
 				var showDate = screening.ShowDate;
@@ -127,11 +130,13 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						ID = Guid.NewGuid(),
 						ScreningID = (Guid)request.ScreeningID,
+						Code =Uliti.GenerateBillCode(),
 						SeatID = seatId,
 						CreatedTime = DateTime.Now,
 						MovieID = (Guid)request.MovieId,
 						Price = basePrice,
 						BillId = bill.ID,
+
 					};
 				}).ToList();
 				var flims = await _context.Movies.Where(x => x.ID == request.MovieId).FirstOrDefaultAsync();
@@ -173,15 +178,16 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 					await _context.BillCombos.AddRangeAsync(billCombos, cancellationToken);
 
-					bill.TotalPrice += tickets.Sum(t => t.Price) +
-									  billCombos.Sum(bc => foodComboPrices.First(fc => fc.ID == bc.FoodComboID).TotalPrice * bc.Quantity);
+					bill.TotalPrice += tickets.Sum(t => t.Price) + billCombos.Sum(bc => foodComboPrices.First(fc => fc.ID == bc.FoodComboID).TotalPrice * bc.Quantity);
+					bill.AfterDiscount += bill.TotalPrice;
 				}
 				else
 				{
 					bill.TotalPrice += tickets.Sum(t => t.Price);
+					bill.AfterDiscount += bill.TotalPrice;
 				}
 				bill.TotalPrice += (decimal)bill.Surcharge;
-				bill.AfterDiscount = bill.TotalPrice;
+				bill.AfterDiscount += (decimal)bill.Surcharge;
 				double discount = 0;
 				if (request.Point > 0)
 				{
@@ -193,18 +199,22 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				if (request.Voucher != null)
 				{
 					var voucher = await _context.Promotions.Where(x => x.ID == request.Voucher).FirstOrDefaultAsync();
+
 					if (voucher != null)
 					{
+						var accountVoucher = await _context.PromotionUsers.Where(x => x.PromotionID == voucher.ID).FirstOrDefaultAsync();
 						if (voucher.DiscountAmount != null)
 						{
 							bill.AfterDiscount -= (decimal)voucher.DiscountAmount;
+
 						}
 						if (voucher.DiscountPercentage != null)
 						{
 							decimal discountAmount = bill.TotalPrice * ((decimal)voucher.DiscountPercentage / 100);
 							bill.AfterDiscount -= discountAmount;
 						}
-
+						accountVoucher.Status = NeonCinema_Domain.Enum.PromotionStatus.Used;
+						_context.PromotionUsers.Update(accountVoucher);
 					}
 				}
 				double convertPoint = (double)bill.AfterDiscount * 6.8 / 100;
@@ -224,18 +234,22 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				}
 				await _context.SaveChangesAsync(cancellationToken);
 				var billresp = await _context.BillDetails
-					.Include(b => b.BillCombos)
-						.ThenInclude(bc => bc.FoodCombo)
-					.Include(b => b.Users).Include(x => x.Ticket)
-							.ThenInclude(t => t.Seat)
-					.Where(b => b.ID == bill.ID)
-					.FirstOrDefaultAsync();
+				.Include(x => x.Promotions)
+				.Include(b => b.BillCombos)
+					.ThenInclude(bc => bc.FoodCombo)
+				.Include(b => b.Users)
+				.Include(x => x.Ticket)
+						.ThenInclude(t => t.Seat)
+				.Where(b => b.ID == bill.ID)
+				.FirstOrDefaultAsync();
+
 				if (billresp == null)
 				{
 					throw new Exception("Không tìm thấy hóa đơn trong cơ sở dữ liệu.");
 				}
+				var acc = await _context.Users.Where(x => x.ID == bill.CreatedBy).Select(x=>x.FullName).FirstOrDefaultAsync();
 				await transaction.CommitAsync(cancellationToken);
-				return new BillResp
+				var resp = new BillResp
 				{
 					Id = billresp.ID,
 					BillCode = billresp.BillCode,
@@ -243,17 +257,31 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						ComboName = cb.FoodCombo?.Content ?? "N/A",
 						Quantity = cb.Quantity,
+						Prices = cb.FoodCombo.TotalPrice
 					}).ToList() ?? new List<BillComboResp>(),
 					TicketResp = billresp.Ticket?.Select(tic => new TicketResp
 					{
 						SeatNumber = tic.Seat.SeatNumber,
-						TicketID = tic.ID
+						TicketID = tic.ID,
+						Prices = tic.Price,
+						ShowTime = tic.Screenings?.ShowTime?.StartTime.ToString(),
 					}).ToList() ?? new List<TicketResp>(),
 					CreatedAt = billresp.CreatedTime ?? DateTime.MinValue,
-					CustomerName = billresp.Users?.FullName ?? "Khách lẻ",
+					CustomerName = billresp.Users?.FullName,
+					Email = billresp.Users?.Email,
 					TotalPrice = billresp.TotalPrice,
+					AfterPrice = billresp.AfterDiscount,
+					Voucher =billresp.TotalPrice-billresp.AfterDiscount,
+					Films = flims?.Name,
+					FilmsType = type.MovieTypeName,
+					CreatedBy = acc ?? "NhanVien1",
+					Surcharge = billresp.Surcharge
 				};
-
+				if (resp.Email != null)
+				{
+					await _emailServices.GenerateBillEmail(resp);
+				}
+				return resp;
 			}
 			catch (Exception ex)
 			{

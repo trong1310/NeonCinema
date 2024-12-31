@@ -3,11 +3,14 @@ using Com.CloudRail.SI.Interfaces;
 using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 using NeonCinema_Application.DataTransferObject.Promotions;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace NeonCinema_API.Controllers
@@ -19,14 +22,18 @@ namespace NeonCinema_API.Controllers
 		private readonly IConfiguration _config;
 		private readonly IEntityRepository<Promotion> _repos;
 		private readonly IEntityRepository<PromotionUsers> _reposPU;
+		public readonly NeonCinemasContext _context;
+
 		private readonly IMapper _mapper;
 		//private static Dictionary<string, DateTime> emailSendLog = new Dictionary<string, DateTime>();
-		public PromotionController(IEntityRepository<Promotion> repos, IMapper mapper, IEntityRepository<PromotionUsers> reposPU, IConfiguration config)
+		public PromotionController(IEntityRepository<Promotion> repos, IMapper mapper,
+			IEntityRepository<PromotionUsers> reposPU, IConfiguration config, NeonCinemasContext context)
 		{
 			_mapper = mapper;
 			_repos = repos;
 			_reposPU = reposPU;
 			_config = config;
+			_context = context;
 		}
 
 		[HttpGet("get-all")]
@@ -151,7 +158,7 @@ namespace NeonCinema_API.Controllers
 		}
 
 		[HttpGet("get-user-by-promotionid")]
-		public async Task<IActionResult> GetUserByPid([FromQuery]Guid id, CancellationToken cancellationToken)
+		public async Task<IActionResult> GetUserByPid([FromQuery] Guid id, CancellationToken cancellationToken)
 		{
 			var lstPU = await _reposPU.GetAll(cancellationToken);
 			List<PromotionUsers> lstPUbyId = lstPU.Where(x => x.PromotionID == id).ToList();
@@ -182,7 +189,7 @@ namespace NeonCinema_API.Controllers
 		}
 
 		[HttpPost("send-mail")]
-		public async Task<HttpResponseMessage> SendMail([FromBody]List<MailPromotionRequest> lstMail)
+		public async Task<HttpResponseMessage> SendMail([FromBody] List<MailPromotionRequest> lstMail)
 		{
 			try
 			{
@@ -220,7 +227,7 @@ namespace NeonCinema_API.Controllers
 				{
 					var emailMessage = new MimeMessage();
 					string discounttext = "";
-					if(item.DiscountPercentage != null)
+					if (item.DiscountPercentage != null)
 					{
 						discounttext = $"Giảm {item.DiscountPercentage}%";
 					}
@@ -272,5 +279,39 @@ namespace NeonCinema_API.Controllers
 				};
 			}
 		}
+		[HttpPost("voucher-account")]
+		public async Task<IActionResult> GetVoucherAccount([FromBody] Guid Id)
+		{
+			var voucher = await _context.PromotionUsers.Where(x => x.UserID == Id&& x.Status == PromotionStatus.Unused).ToListAsync();
+			var voucherAccount = await _context.Promotions.Where(x => voucher.Select(a => a.PromotionID).Contains(x.ID)).ToListAsync();
+			var voucherDto = voucherAccount.Select(v => new VoucherDTO
+			{
+				ID = v.ID,
+				Code = v.Code,
+				AmountMax = v.AmountMax,
+				Description = v.Description,
+				DiscountAmount = v.DiscountAmount ?? 0,
+				DiscountPercentage = v.DiscountPercentage ?? 0,
+				EndDate = v.EndDate,
+				Name = v.Name,
+				StartDate = v.StartDate,
+				Status = v.Status
+			}).ToList();
+			return Ok(voucherDto);
+		}
+		public class VoucherDTO
+		{
+			public Guid ID { get; set; }
+			public string Name { get; set; }
+			public string Code { get; set; }  // Tên khuyến mãi
+			public string Description { get; set; }  // Mô tả khuyến mãi
+			public double? DiscountAmount { get; set; } //giảm theo giá
+			public double? DiscountPercentage { get; set; } //giảm theo %
+			public double? AmountMax { get; set; }
+			public DateTime StartDate { get; set; }
+			public DateTime EndDate { get; set; }
+			public PromotionStatus Status { get; set; }
+		}
+
 	}
 }

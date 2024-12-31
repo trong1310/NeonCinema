@@ -10,5 +10,6 @@ namespace NeonCinema_Application.DataTransferObject.BookTicket.Resp
 	{
 		public string? ComboName { get; set; }
 		public int? Quantity { get; set; }
+		public decimal? Prices { get; set; }
 	}
 }

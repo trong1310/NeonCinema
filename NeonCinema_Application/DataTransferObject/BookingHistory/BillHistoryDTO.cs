@@ -12,7 +12,7 @@ namespace NeonCinema_Application.DataTransferObject.BookingHistory
 		public string UserName { get; set; }
 		public Guid? StaffID { get; set; } // ID nhân viên phụ trách
 		public string StaffName { get; set; } // Tên nhân viên phụ trách
-		public string BillCode { get; set; }
+		public long BillCode { get; set; }
 		public decimal TotalPrice { get; set; }
 		public DateTime BillDate { get; set; }
 
