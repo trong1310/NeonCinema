@@ -11,12 +11,12 @@
 	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
 	<div class="row justify-content-center">
 		<div class="col-md-3 text-center mb-4 mt-5">
-			<img src="@profileFilmsImage" alt="Profile" class="img-fluid profile-pic" /> <br />
+			<img src="@profileFilmsImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
 			<label class="custom-file-upload">
 				<span style="margin-left:-5px">
 					<i class="material-icons">cloud_upload</i>
 				</span>
-				<InputFile OnChange="HandleSelected" class="d-none" />
+				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
 				<span>Chọn ảnh</span>
 			</label>
 		</div>
@@ -216,8 +216,11 @@
 		height: 200px;
 		object-fit: cover;
 		border: 3px solid #eaeaea;
-		margin-left: -15px; /* Shift image slightly left */
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
 	}
+
 
 	label {
 		font-size: 14px;
