@@ -85,7 +85,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					UserID = request.AccountID ?? null,
 					CreatedBy = request.CreateBy,
 					TotalPoint = request.Point,
-					PromotionID = request.Voucher,
+					PromotionID = request.Voucher?? null,
 					AfterDiscount = 0,
 				};
 				var startTime = screening.ShowTime.StartTime;
