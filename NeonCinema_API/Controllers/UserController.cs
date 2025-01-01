@@ -329,7 +329,10 @@ namespace NeonCinema_API.Controllers
         [HttpGet("getfrofile")]
         public async Task<ActionResult> GetFrofile()
         {
-            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+			Response.Headers.Add("Pragma", "no-cache");
+			Response.Headers.Add("Expires", "0");
+			var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdString))
             {
                 return Unauthorized("Không tìm thấy người dùng.");
