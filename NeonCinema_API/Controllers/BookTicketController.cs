@@ -14,6 +14,7 @@ using NeonCinema_Infrastructure.Database.Configuration;
 using NeonCinema_Infrastructure.Implement.BookTickets;
 using System.Net;
 using System.Text.Json;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace NeonCinema_API.Controllers
 {
@@ -32,7 +33,7 @@ namespace NeonCinema_API.Controllers
 		}
 		// Đặt vé cho khách hàng
 		[HttpPost("book-ticket")]
-		[Authorize]
+	//	[Authorize]
 		public async Task<IActionResult> BookTicket([FromBody] CreateBookTicketRequest request, CancellationToken cancellationToken)
 		{
 			try
@@ -103,7 +104,9 @@ namespace NeonCinema_API.Controllers
 		}
 
 		[HttpGet("/stream-seat-status")] // Đặt đường dẫn API
-		public async Task UpdateStatusSeat()
+		//[Authorize]		
+		
+		public async Task UpdateStatusSeat(Guid id)
 		{
 			Response.ContentType = "text/event-stream"; // Định nghĩa kiểu trả về
 			Response.Headers["Cache-Control"] = "no-cache";
@@ -116,7 +119,7 @@ namespace NeonCinema_API.Controllers
 				while (!cancellationToken.IsCancellationRequested)
 				{
 					// Lấy danh sách ghế mới được bán
-					var soldSeats = await GetRecentlySoldSeatsAsync();
+					var soldSeats = await GetRecentlySoldSeatsAsync(id);
 
 					if (soldSeats.Any())
 					{
@@ -144,17 +147,26 @@ namespace NeonCinema_API.Controllers
 			}
 		}
 
-		private async Task<List<SeatShowTimeDTO>> GetRecentlySoldSeatsAsync()
+		private async Task<List<SeatShowTimeDTO>> GetRecentlySoldSeatsAsync(Guid Id)
 		{
-			// Truy vấn danh sách ghế mới được bán từ cơ sở dữ liệu
-			return await _context.SeatShowTimeStatuss
-				.Where(x => x.seatEnum == seatEnum.Sold)
-				.Select(x => new SeatShowTimeDTO
+			var screenings = await _context!.Screening
+							.Include(x => x.ShowTime)
+							.Include(x => x.Rooms)
+								.ThenInclude(s => s.Seats!)
+			.ThenInclude(x => x.SeatTypes)
+							.Where(x => x.ID == Id).Where(x => x.Deleted == false)
+							.FirstOrDefaultAsync();
+			var seatShowTime = await _context.SeatShowTimeStatuss
+				.Include(x => x.ShowTime)
+				.Include(x => x.Room)
+				.Include(x => x.Seat).ThenInclude(x => x.SeatTypes).Where(x => x.ShowtimeId == screenings.ShowTimeID)
+				.Where(x => x.RoomID == screenings.RoomID).Where(x => x.seatEnum == seatEnum.Sold)
+				.Where(x => x.ShowDate == screenings.ShowDate).Select(x => new SeatShowTimeDTO
 				{
 					ID = x.SeatID,
 					Status = x.seatEnum
-				})
-				.ToListAsync();
+				}).ToListAsync();
+			return seatShowTime;
 		}
 
 	}
