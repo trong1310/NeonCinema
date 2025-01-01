@@ -5,8 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
+	<ItemGroup>
     <Compile Remove="Implement\Utilities\**" />
     <EmbeddedResource Remove="Implement\Utilities\**" />
     <None Remove="Implement\Utilities\**" />
@@ -18,6 +17,7 @@
     <PackageReference Include="Bogus" Version="35.6.0" />
     <PackageReference Include="Bogus.Hollywood" Version="35.6.0" />
     <PackageReference Include="itext7" Version="9.0.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
@@ -29,9 +29,14 @@
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <PackageReference Include="SkiaSharp.Views" Version="3.116.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     <PackageReference Include="Twilio" Version="7.3.0" />
     <PackageReference Include="Twilio.Api" Version="1.0.6" />
+    <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
+    <PackageReference Include="ZXing.Net" Version="0.16.9" />
+    <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.20" />
   </ItemGroup>
 
   <ItemGroup>
