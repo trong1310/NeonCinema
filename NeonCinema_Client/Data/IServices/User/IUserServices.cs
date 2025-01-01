@@ -23,6 +23,6 @@ namespace NeonCinema_Client.Data.IServices.User
         public Task<List<Bill>> ClientCheckTicket(CancellationToken cancellationToken);
         
         public Task UpdateState(UpdateStateAccountRequestModels request);
-		public Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request);
+		public Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request,CancellationToken cancellationToken);
 	}
 }
