@@ -41,6 +41,7 @@ using NeonCinema_Infrastructure.Implement.Seats;
 using NeonCinema_Infrastructure.Implement.Statistics;
 using NeonCinema_Infrastructure.Implement.TicketPriceSetting;
 using NeonCinema_Infrastructure.Implement.Users;
+using NeonCinema_Infrastructure.Services;
 using System.Text;
 using Twilio;
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,8 @@ builder.Services.AddScoped<UpdateUserProfileRequest>();
 builder.Services.AddScoped<IUserServicesss, UserService>();
 builder.Services.AddHostedService<TimerProcess>();
 builder.Services.AddLogging();
+builder.Services.AddTransient<EmailServices>();
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Giới hạn kích thước file upload (20MB)

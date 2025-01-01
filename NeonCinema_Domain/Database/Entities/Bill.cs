@@ -22,7 +22,7 @@ namespace NeonCinema_Domain.Database.Entities
 		public decimal? Surcharge { get; set; }
 		public double? TotalPoint { get; set; }
 
-		public string BillCode { get; set; }
+		public long BillCode { get; set; }
 		public ticketEnum Status { get; set; }
 		public virtual Users? Users { get; set; }
 		public virtual Promotion? Promotions { get; set; }
