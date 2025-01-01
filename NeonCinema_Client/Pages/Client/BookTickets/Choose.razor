@@ -276,13 +276,12 @@
 														</button>
 													</div>
 												}
-												@* 	@if (isSearchPerformed && !filteredDiscounts.Any())
-												{
-													<li class="list-group-item text-center text-danger">
-														Không tìm thấy mã giảm giá phù hợp!
-													</li>
-												} *@
 											</ul>
+										</div>
+										<!-- Footer với nút hủy chọn -->
+										<div class="modal-footer">
+											<button class="btn btn-secondary" @onclick="CancelDiscount">Hủy chọn</button>
+											<button class="btn btn-primary" @onclick="ConfirmDiscountSelection">Xác nhận</button>
 										</div>
 									</div>
 								</div>
@@ -1092,10 +1091,9 @@
 		selectedVoucherId = discount.ID;
 		discountPercentage = discount.DiscountPercentage; // Lưu phần trăm giảm giá
 		discountAmount = (totalPrices * (decimal)(discountPercentage ?? 0)) / 100;
-		showDiscountPopup = false; // Đóng popup
+		// showDiscountPopup = false; // Đóng popup
 		totalPrices -= discountAmount;
 	}
-
 	// Xử lý khi hủy mã giảm giá
 	private void CancelDiscount()
 	{
@@ -1105,6 +1103,11 @@
 		discountAmount = 0;
 		totalPrices += discountAmount;
 	}
+	//nút xác nhận để đóng form
+	 private void ConfirmDiscountSelection()
+    {
+        showDiscountPopup = false; // Đóng popup
+    }
 	#endregion
 	#region SSE
 	private List<SeatShowTimeDTO> UpdatedSeats = new List<SeatShowTimeDTO>();
