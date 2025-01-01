@@ -33,6 +33,9 @@
 @layout LayoutClient
 @inject ILocalStorageService _localstorage
 
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
+
 <div class="container-fluid py-5">
 	<div class="row">
 		<!-- Thông tin phim -->
@@ -212,12 +215,12 @@
 					<div class="customer-points mt-2">
 						<!-- Hiển thị số điểm của khách hàng -->
 						<p class="points-display">
-							Số điểm hiện tại của bạn: <strong>@user.Ponit</strong> điểm
+							Số điểm hiện tại của bạn: <strong>@user?.Ponit?.ToString("N0")</strong> điểm
 						</p>
-
+						<span>Số điểm bạn đang sử dụng: @pointApply.ToString("N0")</span>
 						<!-- Nhập số điểm muốn sử dụng -->
 						<div class="d-flex align-items-center mt-2">
-							<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
+							<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
 							<button class="btn use-points-btn d-flex align-items-center justify-content-center" @onclick="ApplyPoint">Dùng điểm</button>
 
 						</div>
@@ -263,7 +266,7 @@
 													<div class="discount-card">
 														<div class="discount-info">
 															<h3>@discount.Name</h3>
-															<p >Giảm giá @discount.DiscountPercentage %</p>
+															<p>Giảm giá @discount.DiscountPercentage %</p>
 															<p class="text-dark">tổng tiền </p>
 															@* <div class="progress-bar" style="width:90%">
 															<div class="progress" style="width: @discount.Percentage%;"></div>
@@ -332,8 +335,9 @@
 										<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 									</div>
 									<div class="modal-body">
-										<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hóa đơn của bạn đã được xác nhận thành công,
-											thông tin về hóa đơn đã được gửi về email đăng ký tài khoản của bạn 
+										<p>
+											Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hóa đơn của bạn đã được xác nhận thành công,
+											thông tin về hóa đơn đã được gửi về email đăng ký tài khoản của bạn
 											vui lòng email để biết thêm thông tin chi tiết
 										</p>
 									</div>
@@ -440,6 +444,7 @@
 	private double discount = 0;
 	private decimal surcharge = 0;
 	private decimal sumPrices;
+	private double pointApply = 0;
 	private Guid? selectedVoucherId;
 	private async void ShowConfirmModal()
 	{
@@ -454,13 +459,29 @@
 	{
 		if (point > Rank.Point)
 		{
-			ShowSnackbar("Điểm quy đổi không hợp lệ vui lòng thử lại", Severity.Warning);
+			ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
 			return;
 		}
 		else
 		{
 			discount = point * 0.5;
-			totalPrices -= (decimal)discount;
+			if ((decimal)discount >= totalPrices)
+			{
+				ShowSnackbar("Không được quy đổi điểm quá với số tiền hóa đơn !", Severity.Warning);
+			}
+			else
+			{
+
+				if ((pointApply += point) >= Rank.Point)
+				{
+					ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
+				}
+				else
+				{
+					pointApply += point;
+					totalPrices -= (decimal)discount;
+				}
+			}
 		}
 	}
 	protected override async Task OnInitializedAsync()
@@ -640,70 +661,73 @@
 			return;
 		}
 
-		// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
-		if (!selectedSeats.Contains(seat.SeatNumber))
+		if (seat.Status != NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
-			char currentRow = seat.SeatNumber[0];
-			int currentCol = int.Parse(seat.SeatNumber.Substring(1));
-
-			foreach (var selectedSeat in selectedSeats)
+			// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
+			if (!selectedSeats.Contains(seat.SeatNumber))
 			{
-				char selectedRow = selectedSeat[0];
-				int selectedCol = int.Parse(selectedSeat.Substring(1));
+				char currentRow = seat.SeatNumber[0];
+				int currentCol = int.Parse(seat.SeatNumber.Substring(1));
 
-				// Kiểm tra ghế giữa trong cùng một hàng
-				if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
+				foreach (var selectedSeat in selectedSeats)
 				{
-					int middleCol = (currentCol + selectedCol) / 2;
-					string middleSeat = $"{currentRow}{middleCol}";
+					char selectedRow = selectedSeat[0];
+					int selectedCol = int.Parse(selectedSeat.Substring(1));
 
-					if (!selectedSeats.Contains(middleSeat))
+					// Kiểm tra ghế giữa trong cùng một hàng
+					if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
 					{
-						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
-						return;
+						int middleCol = (currentCol + selectedCol) / 2;
+						string middleSeat = $"{currentRow}{middleCol}";
+
+						if (!selectedSeats.Contains(middleSeat))
+						{
+							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+							return;
+						}
 					}
-				}
 
-				// Kiểm tra ghế giữa trong cùng một cột
-				if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
-				{
-					char middleRow = (char)((currentRow + selectedRow) / 2);
-					string middleSeat = $"{middleRow}{currentCol}";
-
-					if (!selectedSeats.Contains(middleSeat))
+					// Kiểm tra ghế giữa trong cùng một cột
+					if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
 					{
-						ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
-						return;
+						char middleRow = (char)((currentRow + selectedRow) / 2);
+						string middleSeat = $"{middleRow}{currentCol}";
+
+						if (!selectedSeats.Contains(middleSeat))
+						{
+							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+							return;
+						}
 					}
 				}
 			}
-		}
 
-		// Xử lý chọn/bỏ ghế
-		if (selectedSeats.Contains(seat.SeatNumber))
-		{
-			Console.WriteLine($"Removing seat: {seat.SeatNumber}");
-			selectedSeatsId.Remove(seat.ID);
-			selectedSeats.Remove(seat.SeatNumber);
-			seatPrices -= (decimal)seat.Price;
-			sumPrices -= (decimal)seat.Price;
-			// Cập nhật tổng tiền
-			totalPrices -= (decimal)seat.Price;
+			// Xử lý chọn/bỏ ghế
+			if (selectedSeats.Contains(seat.SeatNumber))
+			{
+				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+				selectedSeatsId.Remove(seat.ID);
+				selectedSeats.Remove(seat.SeatNumber);
+				seatPrices -= (decimal)seat.Price;
+				sumPrices -= (decimal)seat.Price;
+				// Cập nhật tổng tiền
+				totalPrices -= (decimal)seat.Price;
 
+			}
+			else
+			{
+				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
+				selectedSeats.Add(seat.SeatNumber);
+				selectedSeatsId.Add(seat.ID);
+				seatPrices += (decimal)seat.Price;
+				sumPrices += (decimal)seat.Price;
+				totalPrices += (decimal)seat.Price;
+			}
+			selectedSeatNumbers = string.Join(", ", selectedSeats);
+			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+			//	OnClickToEditAmount();
+			StateHasChanged();
 		}
-		else
-		{
-			Console.WriteLine($"Adding seat: {seat.SeatNumber}");
-			selectedSeats.Add(seat.SeatNumber);
-			selectedSeatsId.Add(seat.ID);
-			seatPrices += (decimal)seat.Price;
-			sumPrices += (decimal)seat.Price;
-			totalPrices += (decimal)seat.Price;
-		}
-		selectedSeatNumbers = string.Join(", ", selectedSeats);
-		Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
-		//	OnClickToEditAmount();
-		StateHasChanged();
 	}
 	#endregion
 	#region combo
@@ -1059,7 +1083,7 @@
 	private decimal discountAmount = 0; // Số tiền được giảm
 	private double? discountPercentage = 0; // Phần trăm giảm giá
 
-	private string searchCode = string.Empty; 
+	private string searchCode = string.Empty;
 	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
 
 
@@ -1101,10 +1125,10 @@
 		totalPrices += discountAmount;
 	}
 	//nút xác nhận để đóng form
-	 private void ConfirmDiscountSelection()
-    {
-        showDiscountPopup = false; // Đóng popup
-    }
+	private void ConfirmDiscountSelection()
+	{
+		showDiscountPopup = false; // Đóng popup
+	}
 	#endregion
 	#region SSE
 	private List<SeatShowTimeDTO> UpdatedSeats = new List<SeatShowTimeDTO>();
@@ -1144,7 +1168,7 @@
 		{
 			eventSource = await JS.InvokeAsync<object>(
 				"sseHandler.startSSE",
-				"https://localhost:7211/stream-seat-status",
+				$"https://localhost:7211/stream-seat-status?id={id}",
 				DotNetObjectReference.Create(this)
 			);
 			StateHasChanged();
