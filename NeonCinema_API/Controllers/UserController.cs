@@ -70,7 +70,7 @@ namespace NeonCinema_API.Controllers
             return Ok(result);
         }
 
-		[HttpPost("update")]
+		[HttpPut("update")]
 		public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request, CancellationToken cancellationToken)
 		{
 			var result = await _userRepository.UpdateUser(request, cancellationToken);
