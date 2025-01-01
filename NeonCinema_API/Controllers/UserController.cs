@@ -70,7 +70,15 @@ namespace NeonCinema_API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("get-all")]
+		[HttpPost("update")]
+		public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request, CancellationToken cancellationToken)
+		{
+			var result = await _userRepository.UpdateUser(request, cancellationToken);
+			return Ok(result);
+		}
+
+
+		[HttpGet("get-all")]
 
         public async Task<IActionResult> GetAllUser(CancellationToken cancellationToken)
         {

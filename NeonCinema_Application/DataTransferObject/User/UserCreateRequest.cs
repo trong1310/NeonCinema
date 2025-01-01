@@ -15,7 +15,7 @@ namespace NeonCinema_Application.DataTransferObject.User
 	{
 		public Guid Id { get; set; }
 		[Required(ErrorMessage = "Họ và tên không được để trống")]
-		[RegularExpression(@"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂẮẰẲẴẶắằẳẵặÂẦẤẨẪẬâầấẩẫậÊẾỀỂỄỆêếềểễệÔỐỒỔỖỘôốồổỗộƠỚỜỞỠỢơớờởỡợỲÝỴỶỸỳýỵỷỹ\s]+$",
+		[RegularExpression(@"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂẮẰẲẴẶắằẳẵặÂẦẤẨẪẬâầấẩẫậÊẾỀỂỄỆêếềểễệÔỐỒỔỖỘôốồổỗộƠỚỜỞỠỢơớờởỡợỲÝỴỶỸỳýỵỷỹĐđ\s]+$",
 		ErrorMessage = "Họ và tên không được chứa số và kí tự đặc biệt.")]
 		public string FullName { get; set; }
 

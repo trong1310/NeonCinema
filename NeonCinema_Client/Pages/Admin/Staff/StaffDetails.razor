@@ -10,6 +10,13 @@
 	<div class="row justify-content-center">
 		<div class="col-md-3 text-center mb-4 mt-5">
 			<img src=@GetImageUrl(user.Images) alt="Profile" class="rounded-circle img-fluid profile-pic">
+			<label class="custom-file-upload">
+				<span style="margin-left:-5px">
+					<i class="material-icons">cloud_upload</i>
+				</span>
+				<InputFile  class="d-none" style="width: 200px" />
+				<span>Chọn ảnh</span>
+			</label>
 		</div>
 		<div class="col-md-9" style="margin-top:10px;">
 			<form>
@@ -170,6 +177,29 @@
 		color: #555;
 	}
 
+	.custom-file-upload {
+		display: flex;
+		align-items: center; /* Căn giữa theo chiều dọc */
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		padding: 10px 20px;
+		cursor: pointer;
+		border-radius: 10px;
+		background-color: #a9a9a9; /* Màu nền của nút */
+		color: white; /* Màu chữ */
+		border: none; /* Bỏ viền */
+		text-align: center;
+		width: 150px;
+		margin-left: auto; /* Thêm */
+		margin-right: auto;
+	}
+
+		.custom-file-upload span {
+			margin-left: 8px; /* Khoảng cách giữa biểu tượng và văn bản */
+		}
+
+		.custom-file-upload:hover {
+			background-color: #8f8f8f; /* Màu nền khi hover */
+		}
 	input, select, textarea {
 		border-radius: 5px;
 		border: 1px solid #ccc;
