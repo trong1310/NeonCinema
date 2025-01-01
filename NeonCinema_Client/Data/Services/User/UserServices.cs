@@ -100,11 +100,12 @@ namespace NeonCinema_Client.Services.User
             }
         }
 
-		public async Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request)
+		public async Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request, CancellationToken cancellationToken)
 		{
 			try
 			{
-				var obj = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/User/update", request);
+				var obj = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/User/update", request, cancellationToken);
+
 				return obj;
 			}
 			catch (Exception ex)

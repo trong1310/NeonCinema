@@ -1,7 +1,12 @@
 @page "/client-dashboard"
 @inherits LayoutComponentBase
+@using NeonCinema_API.Controllers.Service
 @using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.User
+@using Newtonsoft.Json.Linq
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+@inject HttpClient _http
 @inject IUserServices Service
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @inject NavigationManager NavigationManager
@@ -11,213 +16,252 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeonCinema</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>NeonCinema</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<!-- Material Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="layout-body">
-    <!-- Header -->
-    <header class="bg-dark text-white py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <!-- Logo -->
-            <div class="logo">
-                <img src="/images/Client/logo-neon-removebg-preview (1).png" alt="Neon Cinema" class="img-fluid" style="width: 300px;">
-            </div>
-            <!-- Navigation -->
-            <nav>
-                <ul class="nav">
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Phim</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Rạp</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Thành viên</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Khuyến mãi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Tin tức</a></li>
-                </ul>
-            </nav>
-            <!-- User Actions -->
-            <div class="user-actions d-flex align-items-center">
-                @if (isLoggedIn)
-                {
-                    <div class="d-flex align-items-center">
-                        <img src="@otherphone" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                        <span class="ms-2 text-white">@username</span>
-                        <button class="btn btn-outline-light ms-2" @onclick="Logout">Đăng xuất</button>
-                    </div>
-                }
-                else
-                {
-                    <button class="btn btn-outline-light ms-2" style="width:150px" @onclick="NavigateToLogin">Đăng nhập</button>
-                }
-            </div>
-        </div>
-    </header>
+	<!-- Header -->
+	<header class="bg-dark text-white py-3">
+		<div class="container d-flex justify-content-between align-items-center">
+			<!-- Logo -->
+			<div class="logo">
+				<img src="/images/Client/logo-neon-removebg-preview (1).png" alt="Neon Cinema" class="img-fluid" style="width: 300px;">
+			</div>
+			<!-- Navigation -->
+			<nav>
+				<ul class="nav">
+					<li class="nav-item"><a href="#" class="nav-link text-white">Phim</a></li>
+					<li class="nav-item"><a href="#" class="nav-link text-white">Rạp</a></li>
+					<li class="nav-item"><a href="#" class="nav-link text-white">Thành viên</a></li>
+					<li class="nav-item"><a href="#" class="nav-link text-white">Khuyến mãi</a></li>
+					<li class="nav-item"><a href="#" class="nav-link text-white">Tin tức</a></li>
+				</ul>
+			</nav>
+			<!-- User Actions -->
+			<div class="user-actions d-flex align-items-center">
+				@if (isLoggedIn && user != null)
+				{
+					<div class="d-flex align-items-center">
+						@if (string.IsNullOrEmpty(user.Images))
+						{
+							<img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						}
+						else
+						{
+							<img src="@GetImageUrl(user.Images)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						}
+						<span class="ms-2 text-white">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : "Người dùng")</span>
+						<button class="btn btn-outline-light ms-2" @onclick="Logout">Đăng xuất</button>
+					</div>
+				}
+				else if (isLoggedIn && user == null)
+				{
+					<span class="text-white">Đang tải...</span>
+				}
+				else
+				{
+					<button class="btn btn-outline-light ms-2" style="width:150px" @onclick="NavigateToLogin">Đăng nhập</button>
+				}
+			</div>
 
-    <!-- Content -->
-    <main>
-        @Body
-    </main>
+		</div>
+	</header>
 
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white py-5">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Về BHD Star -->
-                <div class="col-md-3">
-                    @* <img src="/images/Client/Logo-removebg-preview.png" style="height: 220px; margin-left: 120px"  > *@
-                </div>
-                <div class="col-md-2">
-                    <h5 class="footer-title">VỀ NEON CINEMA</h5>
-                    <div class="footer-line"></div>
-                    <ul class="list-unstyled mt-3">
-                        <li><a href="#" class="footer-link">Hệ thống rạp</a></li>
-                        <li><a href="#" class="footer-link">Cụm rạp</a></li>
-                        <li><a href="#" class="footer-link">Liên hệ</a></li>
-                    </ul>
-                </div>
-                <!-- Quy định & Điều khoản -->
-                <div class="col-md-3">
-                    <h5 class="footer-title">QUY ĐỊNH & ĐIỀU KHOẢN</h5>
-                    <div class="footer-line"></div>
-                    <ul class="list-unstyled mt-3">
-                        <li><a href="#" class="footer-link">Quy định thành viên</a></li>
-                        <li><a href="#" class="footer-link">Điều khoản</a></li>
-                        <li><a href="#" class="footer-link">Hướng dẫn đặt vé trực tuyến</a></li>
-                        <li><a href="#" class="footer-link">Quy định và chính sách chung</a></li>
-                        <li><a href="#" class="footer-link">Chính sách bảo vệ thông tin cá nhân của người tiêu dùng</a></li>
-                    </ul>
-                </div>
-                <!-- Chăm sóc khách hàng -->
-                <div class="col-md-3">
-                    <h5 class="footer-title">CHĂM SÓC KHÁCH HÀNG</h5>
-                    <div class="footer-line"></div>
-                    <ul class="list-unstyled mt-3">
-                        <li><strong>Hotline:</strong> 19002099</li>
-                        <li><strong>Giờ làm việc:</strong> 9:00 - 22:00 (Tất cả các ngày bao gồm cả Lễ, Tết)</li>
-                        <li>
-                            <strong>Email hỗ trợ:</strong> neoncinema24@gmail.com
-                        </li>
-                    </ul>
-                    <h6 class="mt-4">MẠNG XÃ HỘI</h6>
-                    <div class="social-icons">
-                        <a href="#" class="footer-icon me-2"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="footer-icon me-2"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="footer-icon me-2"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" class="footer-icon"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr class="bg-white">
-            <p class="text-center text-white-50" style="margin-bottom: -30px">© 2024 Neon Cinema. All Rights Reserved.</p>
-        </div>
-    </footer>
-    <!-- Tải jQuery trước Owl Carousel -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Content -->
+	<main>
+		@Body
+	</main>
+
+	<!-- Footer -->
+	<footer class="footer bg-dark text-white py-5">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Về BHD Star -->
+				<div class="col-md-3">
+					@* <img src="/images/Client/Logo-removebg-preview.png" style="height: 220px; margin-left: 120px"  > *@
+				</div>
+				<div class="col-md-2">
+					<h5 class="footer-title">VỀ NEON CINEMA</h5>
+					<div class="footer-line"></div>
+					<ul class="list-unstyled mt-3">
+						<li><a href="#" class="footer-link">Hệ thống rạp</a></li>
+						<li><a href="#" class="footer-link">Cụm rạp</a></li>
+						<li><a href="#" class="footer-link">Liên hệ</a></li>
+					</ul>
+				</div>
+				<!-- Quy định & Điều khoản -->
+				<div class="col-md-3">
+					<h5 class="footer-title">QUY ĐỊNH & ĐIỀU KHOẢN</h5>
+					<div class="footer-line"></div>
+					<ul class="list-unstyled mt-3">
+						<li><a href="#" class="footer-link">Quy định thành viên</a></li>
+						<li><a href="#" class="footer-link">Điều khoản</a></li>
+						<li><a href="#" class="footer-link">Hướng dẫn đặt vé trực tuyến</a></li>
+						<li><a href="#" class="footer-link">Quy định và chính sách chung</a></li>
+						<li><a href="#" class="footer-link">Chính sách bảo vệ thông tin cá nhân của người tiêu dùng</a></li>
+					</ul>
+				</div>
+				<!-- Chăm sóc khách hàng -->
+				<div class="col-md-3">
+					<h5 class="footer-title">CHĂM SÓC KHÁCH HÀNG</h5>
+					<div class="footer-line"></div>
+					<ul class="list-unstyled mt-3">
+						<li><strong>Hotline:</strong> 19002099</li>
+						<li><strong>Giờ làm việc:</strong> 9:00 - 22:00 (Tất cả các ngày bao gồm cả Lễ, Tết)</li>
+						<li>
+							<strong>Email hỗ trợ:</strong> neoncinema24@gmail.com
+						</li>
+					</ul>
+					<h6 class="mt-4">MẠNG XÃ HỘI</h6>
+					<div class="social-icons">
+						<a href="#" class="footer-icon me-2"><i class="fab fa-facebook-f"></i></a>
+						<a href="#" class="footer-icon me-2"><i class="fab fa-instagram"></i></a>
+						<a href="#" class="footer-icon me-2"><i class="fab fa-tiktok"></i></a>
+						<a href="#" class="footer-icon"><i class="fab fa-youtube"></i></a>
+					</div>
+				</div>
+			</div>
+			<hr class="bg-white">
+			<p class="text-center text-white-50" style="margin-bottom: -30px">© 2024 Neon Cinema. All Rights Reserved.</p>
+		</div>
+	</footer>
+	<!-- Tải jQuery trước Owl Carousel -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
 </body>
 </html>
 
 @code {
-    private string username;
-    private string userId;
-    private string otherphone;
-    private bool isLoggedIn;
-    private bool isLoginPage;
+	private bool isLoggedIn;
+	private bool isLoginPage;
+	private UserProfile user = new UserProfile();
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	protected override async Task OnInitializedAsync()
+	{
+		await GetProfileNav();
+		// Gọi StateHasChanged sau khi hoàn tất xử lý
+		StateHasChanged();
+	}
+	public async Task GetProfileNav(){
+		// Lấy token từ LocalStorage
+		var authToken = await _localStorage.GetItemAsync<string>("authToken");
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authToken = await _localStorage.GetItemAsync<string>("authToken");
-        if (!string.IsNullOrEmpty(authToken))
-        {
-            StateHasChanged();
-            isLoggedIn = true;
-            username = await _localStorage.GetItemAsync<string>("name");
-            userId = await _localStorage.GetItemAsync<string>("nameidentifier");
-            otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
-        }
-        else
-        {
-            isLoggedIn = false;
-        }
-        StateHasChanged();
-        isLoginPage = NavigationManager.Uri.Contains("/login");
-    }
+		// Kiểm tra token có tồn tại hay không
+		if (!string.IsNullOrEmpty(authToken))
+		{
+			try
+			{
+				// Phân tích token
+				var handler = new JwtSecurityTokenHandler();
+				var jwtToken = handler.ReadJwtToken(authToken);
+				var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+				var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
 
-    private async Task Logout()
-    {
-        await _localStorage.RemoveItemAsync("nameidentifier");
-        await _localStorage.RemoveItemAsync("name");
-        await _localStorage.RemoveItemAsync("mobilephone");
-        await _localStorage.ClearAsync();
-        isLoggedIn = false;
-        StateHasChanged();
-        NavigationManager.NavigateTo("/login");
-    }
+				user = new UserProfile
+					{
+						FullName = fullName,
+						Images = imageUrl
+					};
 
-    private async Task Profile()
-    {
-        NavigationManager.NavigateTo("/customer-profile");
-    }
+				isLoggedIn = true;
+				StateHasChanged();
+			}
+			catch (Exception ex)
+			{
+				// Xử lý trường hợp token không hợp lệ
+				isLoggedIn = false;
+				await _localStorage.RemoveItemAsync("authToken");
+				Console.WriteLine($"Token không hợp lệ: {ex.Message}");
+			}
+		}
+		else
+		{
+			// Token không tồn tại, chuyển trạng thái sang chưa đăng nhập
+			isLoggedIn = false;
+		}
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private async Task Logout()
+	{
+		await _localStorage.RemoveItemAsync("nameidentifier");
+		await _localStorage.RemoveItemAsync("name");
+		await _localStorage.RemoveItemAsync("mobilephone");
+		await _localStorage.ClearAsync();
+		isLoggedIn = false;
+		StateHasChanged();
+		NavigationManager.NavigateTo("/login");
+	}
 
-    private void NavigateToLogin()
-    {
-        NavigationManager.NavigateTo("/login");
-    }
+	private async Task Profile()
+	{
+		NavigationManager.NavigateTo("/customer-profile");
+	}
+
+	private void NavigateToLogin()
+	{
+		NavigationManager.NavigateTo("/login");
+	}
 }
 
 <style>
-    .footer {
-        background-color: #000;
-        color: #fff;
-        font-family: 'Be Vietnam Pro', sans-serif;
-    }
+	.footer {
+		background-color: #000;
+		color: #fff;
+		font-family: 'Be Vietnam Pro', sans-serif;
+	}
 
-    .footer-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
+	.footer-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 0.5rem;
+	}
 
-    .footer-line {
-        width: 100px;
-        height: 7px;
-        background-color: limegreen;
-        margin-bottom: 1rem;
-        border-radius: 8px;
-    }
+	.footer-line {
+		width: 100px;
+		height: 7px;
+		background-color: limegreen;
+		margin-bottom: 1rem;
+		border-radius: 8px;
+	}
 
-    .footer-link {
-        text-decoration: none;
-        color: #fff;
-        font-size: 1.25rem;
-        transition: color 0.3s;
-    }
+	.footer-link {
+		text-decoration: none;
+		color: #fff;
+		font-size: 1.25rem;
+		transition: color 0.3s;
+	}
 
-        .footer-link:hover {
-            color: limegreen;
-        }
+		.footer-link:hover {
+			color: limegreen;
+		}
 
-    .footer-icon {
-        font-size: 1.5rem;
-        color: #fff;
-        transition: color 0.3s;
-    }
+	.footer-icon {
+		font-size: 1.5rem;
+		color: #fff;
+		transition: color 0.3s;
+	}
 
-        .footer-icon:hover {
-            color: limegreen;
-        }
+		.footer-icon:hover {
+			color: limegreen;
+		}
 
-    .social-icons a {
-        text-decoration: none;
-    }
+	.social-icons a {
+		text-decoration: none;
+	}
 
 </style>

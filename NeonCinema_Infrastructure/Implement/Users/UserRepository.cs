@@ -184,15 +184,11 @@ namespace NeonCinema_Infrastructure.Implement.Users
 				existingUser.FullName = request.FullName;
 				existingUser.PhoneNumber = request.PhoneNumber;
 				existingUser.Email = request.Email;
-				existingUser.Gender = request.Gender ?? existingUser.Gender;
-				existingUser.Images = request.Images ?? existingUser.Images;
+				existingUser.Gender = (bool)request.Gender;
+				existingUser.Images = request.Images;
 				existingUser.DateOrBriht = request.DateOrBriht;
-				existingUser.Adderss = request.Adderss ?? existingUser.Adderss;
-				// Cập nhật mật khẩu mới nếu được cung cấp, nếu không giữ nguyên
-				existingUser.PassWord = Hash.Encrypt(request.PassWord ?? existingUser.PassWord);
+				existingUser.Adderss = request.Adderss ;
 				
-
-				// Lưu thay đổi
 				_context.Users.Update(existingUser);
 				await _context.SaveChangesAsync(cancellationToken);
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
