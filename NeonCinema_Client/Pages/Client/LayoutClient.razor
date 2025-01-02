@@ -5,6 +5,11 @@
 @inject IUserServices Service
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @inject NavigationManager NavigationManager
+@using NeonCinema_API.Controllers.Service
+@using Newtonsoft.Json.Linq
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+@inject HttpClient _http
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <MudThemeProvider />
@@ -45,13 +50,24 @@
             </nav>
             <!-- User Actions -->
             <div class="user-actions d-flex align-items-center">
-                @if (isLoggedIn)
+                @if (isLoggedIn && user != null)
                 {
                     <div class="d-flex align-items-center">
-                        <img src="@otherphone" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                        <span class="ms-2 text-white">@username</span>
+                        @if (string.IsNullOrEmpty(user.Images))
+                        {
+                            <img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <img src="@GetImageUrl(user.Images)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                        }
+                        <span class="ms-2 text-white">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : "Người dùng")</span>
                         <button class="btn btn-outline-light ms-2" @onclick="Logout">Đăng xuất</button>
                     </div>
+                }
+                else if (isLoggedIn && user == null)
+                {
+                    <span class="text-white">Đang tải...</span>
                 }
                 else
                 {
@@ -134,26 +150,53 @@
     private string otherphone;
     private bool isLoggedIn;
     private bool isLoginPage;
-
+    private UserProfile user = new UserProfile();
+    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
     protected override async Task OnInitializedAsync()
     {
+        await GetProfileNav();
+        // Gọi StateHasChanged sau khi hoàn tất xử lý
+        StateHasChanged();
+    }
+    public async Task GetProfileNav()
+    {
+        // Lấy token từ LocalStorage
         var authToken = await _localStorage.GetItemAsync<string>("authToken");
+
+        // Kiểm tra token có tồn tại hay không
         if (!string.IsNullOrEmpty(authToken))
         {
-            StateHasChanged();
-            isLoggedIn = true;
-            username = await _localStorage.GetItemAsync<string>("name");
-            userId = await _localStorage.GetItemAsync<string>("nameidentifier");
-            otherphone = await _localStorage.GetItemAsync<string>("mobilephone");
+            try
+            {
+                // Phân tích token
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(authToken);
+                var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
+
+                user = new UserProfile
+                    {
+                        FullName = fullName,
+                        Images = imageUrl
+                    };
+
+                isLoggedIn = true;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Xử lý trường hợp token không hợp lệ
+                isLoggedIn = false;
+                await _localStorage.RemoveItemAsync("authToken");
+                Console.WriteLine($"Token không hợp lệ: {ex.Message}");
+            }
         }
         else
         {
+            // Token không tồn tại, chuyển trạng thái sang chưa đăng nhập
             isLoggedIn = false;
         }
-        StateHasChanged();
-        isLoginPage = NavigationManager.Uri.Contains("/login");
     }
-
     private async Task Logout()
     {
         await _localStorage.RemoveItemAsync("nameidentifier");
@@ -164,7 +207,10 @@
         StateHasChanged();
         NavigationManager.NavigateTo("/login");
     }
-
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
+    }
     private async Task Profile()
     {
         NavigationManager.NavigateTo("/customer-profile");

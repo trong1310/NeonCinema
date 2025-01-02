@@ -113,8 +113,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -311,7 +311,7 @@
 						<span>Số điểm bạn đang sử dụng: @pointApply.ToString("N0")</span>
 						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
-								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
 								<span>Lưu ý : 1000 điểm => 500 VND</span>
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
@@ -346,14 +346,14 @@
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
 							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment"
-								   @onchange="(e) => isCashPayment = true">
+							@onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
 							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
-								   @onchange="(e) => isCashPayment = false">
+							@onchange="(e) => isCashPayment = false">
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -576,33 +576,39 @@
 	}
 	private void ApplyPoint()
 	{
+		decimal maxDiscount = sumPrices * 0.5m;
+
 		if (point > Rank.Point)
 		{
-			ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
+			ShowSnackbar("Điểm quy đổi không đủ, vui lòng thử lại", Severity.Warning);
 			return;
 		}
-		else
-		{
-			discount = point * 0.5;
-			if ((decimal)discount >= totalPrices)
-			{
-				ShowSnackbar("Không được quy đổi điểm quá với số tiền hóa đơn !", Severity.Warning);
-			}
-			else
-			{
+		double tempPointApply = pointApply + point;
 
-				if ((pointApply += point) >= Rank.Point)
-				{
-					ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
-				}
-				else
-				{
-					pointApply += point;
-					totalPrices -= (decimal)discount;
-				}
+		if (tempPointApply > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không đủ, vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		double tempDiscount = (double)(tempPointApply * 0.5);
+
+		if ((decimal)tempDiscount > maxDiscount)
+		{
+			int maxPoints = (int)(maxDiscount * 2); 
+			tempPointApply = Math.Min(tempPointApply, maxPoints); 
+			tempDiscount = (double)(tempPointApply * 0.5);
+			if ((decimal)tempDiscount >= maxDiscount)
+			{
+				ShowSnackbar("Không thể dùng quá 50% tổng hóa đơn để giảm giá!", Severity.Warning);
+				return;
 			}
 		}
+		pointApply = tempPointApply;
+		discount = tempDiscount;
+		totalPrices = sumPrices - (decimal)discount;
+		ShowSnackbar($"Đã sử dụng {pointApply} điểm, giảm giá {discount:N0} VND", Severity.Success);
 	}
+
 	protected override async Task OnInitializedAsync()
 	{
 		screenings = await _services.ChooseScrening(id);
@@ -939,7 +945,7 @@
 					CreateBy = createBy,
 					Point = point,
 					Voucher = null,
-					
+
 				};
 		}
 
@@ -1254,28 +1260,17 @@
 			}
 		}
 
-		// Cập nhật lại groupedSeats
-		groupedSeats = seats
-			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
-			.OrderBy(g => g.Key)
-			.ToDictionary(
-				g => g.Key,
-				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
-						.ToList()
-			);
-
+		RefreshSeatsAsync();
 		StateHasChanged(); // Cập nhật giao diện
 		return Task.CompletedTask;
 	}
-
-
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
 		{
 			eventSource = await JS.InvokeAsync<object>(
 				"sseHandler.startSSE",
-				"https://localhost:7211/stream-seat-status",
+				$"https://localhost:7211/stream-seat-status?id={id}",
 				DotNetObjectReference.Create(this)
 			);
 			StateHasChanged();

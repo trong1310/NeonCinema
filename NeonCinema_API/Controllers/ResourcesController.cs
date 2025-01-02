@@ -287,7 +287,7 @@ namespace NeonCinema_API.Controllers
 				document.Add(new Paragraph("\n"));
 
 				// Total Price Section
-				document.Add(new Paragraph($"Tạm tính: {totalComboPrice + tickets.Sum(t => t.Price):n0}đ")
+				document.Add(new Paragraph($"Tạm tính: {bill.TotalPrice.ToString("N0")}đ")
 					.SetFont(normalFont)
 					.SetFontSize(12)
 					.SetTextAlignment(TextAlignment.LEFT));
@@ -295,11 +295,11 @@ namespace NeonCinema_API.Controllers
 					.SetFont(normalFont)
 					.SetFontSize(12)
 					.SetTextAlignment(TextAlignment.LEFT));
-				document.Add(new Paragraph($"Tiền được giảm: -{bill.TotalPoint:n0}đ")
+				document.Add(new Paragraph($"Giảm giá: {bill.TotalPoint ?? 0:n0}đ")
 		   .SetFont(normalFont)
 		   .SetFontSize(12)
 		   .SetTextAlignment(TextAlignment.LEFT));
-				document.Add(new Paragraph($"Thành tiền: {totalBillPrice:n0}đ")
+				document.Add(new Paragraph($"Thành tiền: {bill.AfterDiscount:n0}đ")
 					.SetFont(boldFont)
 					.SetFontSize(14)
 					.SetTextAlignment(TextAlignment.LEFT));
