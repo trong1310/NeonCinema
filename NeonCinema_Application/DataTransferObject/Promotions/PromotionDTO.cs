@@ -12,7 +12,7 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     {
         public Guid ID { get; set; }  // Khóa chính
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
+		[Required(ErrorMessage = "Không được để trống tên khuyến mại")]
 		[RegularExpression(@"^[\p{L}0-9 /]*$", ErrorMessage = "Chỉ được chứa chữ cái, số, khoảng trắng, và dấu /")]
 		public string Name { get; set; }
 
@@ -20,20 +20,22 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 		public string Code { get; set; }  // Tên khuyến mãi
         public string Description { get; set; }  // Mô tả khuyến mãi
 
+		[Required(ErrorMessage = "Không được để trống phần trăm khuyến mại")]
 		[ConditionalRange(1, 99, ErrorMessage = "Chỉ được nhập từ 1-99")]
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; } // giảm theo gia
 
+		[Required(ErrorMessage = "Không được để trống số tiền giảm tối đa")]
 		[ConditionalRange(5000, 1000000, ErrorMessage = "Chỉ được nhập từ 5 nghìn đến 1 triệu")]
 		public double? AmountMax { get; set; }
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
+		[Required(ErrorMessage = "Vui lòng chọn ngày-giờ bắt đầu")]
 		[DataType(DataType.Date)]
 		public DateTime StartDate { get; set; }
 
-		[Required(ErrorMessage = "Không được để trống trường này")]
+		[Required(ErrorMessage = "Vui lòng chọn ngày-giờ kết thúc")]
 		[DataType(DataType.Date)]
 		[DateRangeUpdateValidation]  // Sử dụng thuộc tính xác thực tùy chỉnh
 		public DateTime EndDate { get; set; }
