@@ -9,6 +9,7 @@
    
 
 <EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
     <div class="container-fluid mt-5">
         <h2 class="text-center mb-4 font-weight-bold">Thêm đạo diễn mới</h2>
         <div class="row director justify-content-center">
@@ -16,66 +17,64 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">Full Name:</label>
+                            <label class="form-label">Họ và tên:</label>
                             <InputText @bind-Value="newdirector.FullName" class="form-control" />
+                            <ValidationMessage For="@(() => newdirector.FullName)" />
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">Gender:</label>
+                            <label class="form-label">Giới tính:</label>
                             <InputSelect id="gender" class="form-select" @bind-Value="newdirector.Gender" required>
-                                <option value="">-- Select Gender --</option>
+                                <option value="">-- Chọn giới tính --</option>
                                 <option value="@(EntityStatus.Nam)">Nam</option>
                                 <option value="@(EntityStatus.Nữ)">Nữ</option>
                             </InputSelect>
                             <ValidationMessage For="@(() => newdirector.Gender)" />
                         </div>
                     </div>
+
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="form-label">Địa chỉ:</label>
+                                <InputText @bind-Value="newdirector.Address" class="form-control" />
+                                <ValidationMessage For="@(() => newdirector.Address)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Tiểu sử:</label>
+                                <InputTextArea @bind-Value="newdirector.Biography" class="form-control" rows="3" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">Nationality:</label>
+                            <label class="form-label">Quốc tịch:</label>
                             <InputText @bind-Value="newdirector.Nationality" class="form-control" />
+                            <ValidationMessage For="@(() => newdirector.Nationality)" />
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Status:</label>
-                            <InputSelect id="status" class="form-select" @bind-Value="newdirector.Status">
-                                <option value="@(EntityStatus.Active)">Active</option>
-                                <option value="@(EntityStatus.Locked)">Inactive</option>
-                            </InputSelect>
-                            <ValidationMessage For="@(() => newdirector.Status)" />
-                        </div>
-                    </div>
+
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label class="form-label">Biography:</label>
-                            <InputTextArea @bind-Value="newdirector.Biography" class="form-control" rows="3" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label class="form-label">Address:</label>
-                            <InputText @bind-Value="newdirector.Address" class="form-control" />
-                        </div>
-                    </div>
-                </div>
+
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-success btn-lg">Thêm</button>
                     <button type="button" class="btn btn-warning btn-lg" @onclick="NavigateBack">Quay lại</button>
                 </div>
-            </div>   
+            </div>
         </div>
     </div>
 </EditForm>
+
 
 
 

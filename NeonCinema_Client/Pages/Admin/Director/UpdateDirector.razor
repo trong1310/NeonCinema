@@ -8,6 +8,9 @@
 
 
 <EditForm Model="DRT" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+
     <div class="container-fluid mt-5">
         <h2 class="text-center mb-4 font-weight-bold">Sửa đạo diễn</h2>
         <div class="row director justify-content-center">
@@ -17,6 +20,7 @@
                         <div class="form-group">
                             <label class="form-label">Họ và tên:</label>
                             <InputText @bind-Value="DRT.FullName" class="form-control" />
+                            <ValidationMessage For="@(() => DRT.FullName)" />
                         </div>
                     </div>
 
@@ -37,16 +41,16 @@
                         <div class="form-group">
                             <label class="form-label">Quốc tịch:</label>
                             <InputText @bind-Value="DRT.Nationality" class="form-control" />
+                            <ValidationMessage For="@(() => DRT.Nationality)" />
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="form-label">Trạng thái:</label>
                                 <InputSelect id="status" class="form-select" @bind-Value="DRT.Status">
                                     <option value="@(EntityStatus.Active)">Hoạt động</option>
-                                    <option value="@(EntityStatus.Locked)">Không hoạt động</option>
+                                    <option value="@(EntityStatus.Inactive)">Không hoạt động</option>
                                 </InputSelect>
                                 <ValidationMessage For="@(() => DRT.Status)" />
                             </div>
@@ -57,12 +61,14 @@
                     <div class="form-group">
                         <label class="form-label">Tiểu sử:</label>
                         <InputTextArea @bind-Value="DRT.Biography" class="form-control" rows="3" />
+                        <ValidationMessage For="@(() => DRT.Biography)" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
                         <label class="form-label">Địa chỉ:</label>
                         <InputText @bind-Value="DRT.Address" class="form-control" />
+                        <ValidationMessage For="@(() => DRT.Address)" />
                     </div>
                 </div>
                 <div class="text-center mt-5">
@@ -77,15 +83,15 @@
 @code {
     [Parameter] public Guid DRTId { get; set; }
     private DirectorDTO DRT = new DirectorDTO();
-   
+
 
     protected override async Task OnInitializedAsync()
     {
         DRT = await SV.GetByIdDirector(DRTId);
-        
+
     }
 
-    
+
 
     private async Task HandleValidSubmit()
     {
@@ -93,10 +99,10 @@
             {
                 ID = DRT.ID,
                 FullName = DRT.FullName,
-                Gender = DRT.Gender,               
+                Gender = DRT.Gender,
                 Address = DRT.Address,
                 Nationality = DRT.Nationality,
-                Biography = DRT.Biography,              
+                Biography = DRT.Biography,
                 Status = DRT.Status
             };
 
