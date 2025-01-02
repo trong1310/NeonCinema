@@ -69,11 +69,9 @@ namespace NeonCinema_Infrastructure.Services
         <body>
             <h1>Hóa đơn đặt vé xem phim</h1>
             <p>Xin chào: {bill.CustomerName}</p>
-            <p>Cảm ơn quý khách đã đặt vé xem phim tại hệ thống của chúng tôi.</p>
             <p>Mã hóa đơn: {bill.BillCode}</p>
             <p>Ngày đặt vé: {bill.CreatedAt.ToString("dd/MM/yyyy HH:mm")}</p>
             <p>Phim: {bill.Films}</p>
-        <img src=""cid:{imageContentId}"" alt=""Barcode"" />
             <br>
 <table>
     <thead>
@@ -127,7 +125,9 @@ namespace NeonCinema_Infrastructure.Services
         </tr>
     </tbody>
 </table>
+  <img src=""cid:{imageContentId}"" alt=""Barcode"" />
             <br>
+  <p>Cảm ơn quý khách đã đặt vé xem phim tại hệ thống của chúng tôi.</p>
             <p>Xin vui lòng mang mã hóa đơn này đến rạp để nhận vé.</p>
             <p>Trân trọng,</p>
             <p>NeonCinemas</p>
@@ -145,89 +145,89 @@ namespace NeonCinema_Infrastructure.Services
 				client.Disconnect(true);
 			}
 		}
-			public string GenerateBarcodeToFile(long number)
+		public string GenerateBarcodeToFile(long number)
+		{
+			// Nội dung mã vạch
+			string barcodeContent = number.ToString();
+
+			// Cấu hình BarcodeWriter
+			var writer = new BarcodeWriterPixelData
 			{
-				// Nội dung mã vạch
-				string barcodeContent = number.ToString();
-
-				// Cấu hình BarcodeWriter
-				var writer = new BarcodeWriterPixelData
+				Format = BarcodeFormat.CODE_128, // Định dạng mã vạch
+				Options = new EncodingOptions
 				{
-					Format = BarcodeFormat.CODE_128, // Định dạng mã vạch
-					Options = new EncodingOptions
-					{
-						Height = 100, // Chiều cao mã vạch
-						Width = 300,  // Chiều rộng mã vạch
-						Margin = 10   // Lề
-					}
-				};
-
-				// Tạo dữ liệu pixel từ mã vạch
-				var pixelData = writer.Write(barcodeContent);
-
-				// Chuyển dữ liệu pixel thành Bitmap
-				using var barcodeBitmap = new Bitmap(pixelData.Width, pixelData.Height, PixelFormat.Format32bppRgb);
-				var bitmapData = barcodeBitmap.LockBits(
-					new Rectangle(0, 0, barcodeBitmap.Width, barcodeBitmap.Height),
-					ImageLockMode.WriteOnly,
-					PixelFormat.Format32bppRgb);
-
-				try
-				{
-					System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+					Height = 100, // Chiều cao mã vạch
+					Width = 300,  // Chiều rộng mã vạch
+					Margin = 10   // Lề
 				}
-				finally
-				{
-					barcodeBitmap.UnlockBits(bitmapData);
-				}
+			};
 
-				// Kích thước ảnh cuối cùng (thêm không gian cho số và viền)
-				int finalWidth = barcodeBitmap.Width + 40;  // Thêm 20px mỗi bên cho viền
-				int finalHeight = barcodeBitmap.Height + 70; // Thêm không gian cho số và viền
+			// Tạo dữ liệu pixel từ mã vạch
+			var pixelData = writer.Write(barcodeContent);
 
-				using var finalImage = new Bitmap(finalWidth, finalHeight);
-				using (var graphics = Graphics.FromImage(finalImage))
-				{
-					// Đặt màu nền trắng
-					graphics.Clear(Color.White);
+			// Chuyển dữ liệu pixel thành Bitmap
+			using var barcodeBitmap = new Bitmap(pixelData.Width, pixelData.Height, PixelFormat.Format32bppRgb);
+			var bitmapData = barcodeBitmap.LockBits(
+				new Rectangle(0, 0, barcodeBitmap.Width, barcodeBitmap.Height),
+				ImageLockMode.WriteOnly,
+				PixelFormat.Format32bppRgb);
 
-					// Tăng chất lượng vẽ
-					graphics.SmoothingMode = SmoothingMode.AntiAlias;
-
-					// Tạo hình chữ nhật bo góc
-					int borderRadius = 20; // Bán kính góc bo
-					using var borderPen = new Pen(Color.Black, 3); // Viền đen, dày 3px
-
-					// Vẽ hình chữ nhật bo góc
-					using var path = new GraphicsPath();
-					path.AddArc(5, 5, borderRadius, borderRadius, 180, 90); // Góc trên trái
-					path.AddArc(finalWidth - borderRadius - 5, 5, borderRadius, borderRadius, 270, 90); // Góc trên phải
-					path.AddArc(finalWidth - borderRadius - 5, finalHeight - borderRadius - 5, borderRadius, borderRadius, 0, 90); // Góc dưới phải
-					path.AddArc(5, finalHeight - borderRadius - 5, borderRadius, borderRadius, 90, 90); // Góc dưới trái
-					path.CloseFigure();
-
-					graphics.DrawPath(borderPen, path);
-
-					// Vẽ mã vạch ở giữa ảnh
-					graphics.DrawImage(barcodeBitmap, 20, 20);
-					// Vẽ số bên dưới mã vạch
-					using var font = new Font("Arial", 16, FontStyle.Regular);
-					using var brush = new SolidBrush(Color.Black);
-					var stringSize = graphics.MeasureString(barcodeContent, font);
-					graphics.DrawString(
-						barcodeContent,
-						font,
-						brush,
-						(finalWidth - stringSize.Width) / 2, // Căn giữa theo chiều ngang
-						barcodeBitmap.Height + 30           // Vị trí bên dưới mã vạch
-					);
-				}
-
-				// Lưu ảnh thành tệp
-				string filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
-				finalImage.Save(filePath, ImageFormat.Png);
-
-				return filePath;
+			try
+			{
+				System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
 			}
+			finally
+			{
+				barcodeBitmap.UnlockBits(bitmapData);
+			}
+
+			// Kích thước ảnh cuối cùng (thêm không gian cho số và viền)
+			int finalWidth = barcodeBitmap.Width + 40;  // Thêm 20px mỗi bên cho viền
+			int finalHeight = barcodeBitmap.Height + 70; // Thêm không gian cho số và viền
+
+			using var finalImage = new Bitmap(finalWidth, finalHeight);
+			using (var graphics = Graphics.FromImage(finalImage))
+			{
+				// Đặt màu nền trắng
+				graphics.Clear(Color.White);
+
+				// Tăng chất lượng vẽ
+				graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+				// Tạo hình chữ nhật bo góc
+				int borderRadius = 20; // Bán kính góc bo
+				using var borderPen = new Pen(Color.Black, 3); // Viền đen, dày 3px
+
+				// Vẽ hình chữ nhật bo góc
+				using var path = new GraphicsPath();
+				path.AddArc(5, 5, borderRadius, borderRadius, 180, 90); // Góc trên trái
+				path.AddArc(finalWidth - borderRadius - 5, 5, borderRadius, borderRadius, 270, 90); // Góc trên phải
+				path.AddArc(finalWidth - borderRadius - 5, finalHeight - borderRadius - 5, borderRadius, borderRadius, 0, 90); // Góc dưới phải
+				path.AddArc(5, finalHeight - borderRadius - 5, borderRadius, borderRadius, 90, 90); // Góc dưới trái
+				path.CloseFigure();
+
+				graphics.DrawPath(borderPen, path);
+
+				// Vẽ mã vạch ở giữa ảnh
+				graphics.DrawImage(barcodeBitmap, 20, 20);
+				// Vẽ số bên dưới mã vạch
+				using var font = new Font("Arial", 16, FontStyle.Regular);
+				using var brush = new SolidBrush(Color.Black);
+				var stringSize = graphics.MeasureString(barcodeContent, font);
+				graphics.DrawString(
+					barcodeContent,
+					font,
+					brush,
+					(finalWidth - stringSize.Width) / 2, // Căn giữa theo chiều ngang
+					barcodeBitmap.Height + 30           // Vị trí bên dưới mã vạch
+				);
+			}
+
+			// Lưu ảnh thành tệp
+			string filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
+			finalImage.Save(filePath, ImageFormat.Png);
+
+			return filePath;
+		}
 	}
 }
