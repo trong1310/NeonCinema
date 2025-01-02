@@ -99,7 +99,25 @@ namespace NeonCinema_Client.Services.User
 
             }
         }
-        public async Task<HttpResponseMessage> ForgotPass(Forgotpass request)
+
+		public async Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var obj = await _httpClient.PutAsJsonAsync("https://localhost:7211/api/User/update", request, cancellationToken);
+
+				return obj;
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+				{
+					Content = new StringContent("Có lỗi : " + ex.Message)
+				};
+
+			}
+		}
+		public async Task<HttpResponseMessage> ForgotPass(Forgotpass request)
         {
             try
             {

@@ -73,10 +73,9 @@ namespace NeonCinema_API.Controllers
                 new Claim(ClaimTypes.Email, user.Email),
                 //new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth),
                 new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)   ,
-				//ew Claim(ClaimTypes.Gender, user.Gender ? "Nam" : "Nữ") ,
-                //new Claim("profile_image_url", user.Images),
+				new Claim("Images", user.Images),
 
-            };
+			};
 
             // Tạo token với các thông tin trên
             var token = new JwtSecurityToken(

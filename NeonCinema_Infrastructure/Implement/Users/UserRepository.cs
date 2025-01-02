@@ -169,6 +169,45 @@ namespace NeonCinema_Infrastructure.Implement.Users
 			return _map.Map<UserDTO>(obj);
 		}
 
+		public async Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.ID == request.Id, cancellationToken);
+
+				if (existingUser == null)
+				{
+					throw new Exception("Người dùng không tồn tại.");
+				}
+
+				// Cập nhật thông tin
+				existingUser.FullName = request.FullName;
+				existingUser.PhoneNumber = request.PhoneNumber;
+				existingUser.Email = request.Email;
+				existingUser.Gender = (bool)request.Gender;
+				existingUser.Images = request.Images;
+				existingUser.DateOrBriht = request.DateOrBriht;
+				existingUser.Adderss = request.Adderss ;
+				
+				_context.Users.Update(existingUser);
+				await _context.SaveChangesAsync(cancellationToken);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+				{
+					Content = new StringContent("Cập nhật người dùng thành công")
+				};
+
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Có lỗi xảy ra: " + ex.Message)
+				};
+			}
+		}
+
+
+
 		//Create Client
 		private string GenerateRandomPassword()
 		{

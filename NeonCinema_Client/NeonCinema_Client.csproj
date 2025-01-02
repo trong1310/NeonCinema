@@ -60,11 +60,6 @@
 
   <ItemGroup>
 
-    <Content Remove="Pages\Users.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-
     <Folder Include="wwwroot\imageFlims\" />
 
     <Folder Include="wwwroot\json\" />
@@ -101,11 +96,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\Users.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Pages\Users.razor" />
     <_ContentIncludedByDefault Remove="wwwroot\css\Room\detail.css" />
     <_ContentIncludedByDefault Remove="wwwroot\css\User\LISTuser.css" />
   </ItemGroup>
@@ -115,7 +105,6 @@
     <None Include="Pages\Client\Movie\ListMovieClient.razor" />
 
     <None Include="Pages\Client\User\ClientForgotPassword.razor" />
-    <None Include="Pages\Users.razor" />
     <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />
     <None Include="wwwroot\images\Director\3acdf00f-7296-458e-969d-1e07f1281f99.webp" />
     <None Include="wwwroot\images\Director\5084231f-b6bd-4d72-834c-7e2d51f3c1be.webp" />
