@@ -42,10 +42,10 @@
             <nav>
                 <ul class="nav">
                     <li class="nav-item"><a href="/list-movie" class="nav-link text-white">Phim</a></li>
-                    <li class="nav-item"><a href="/ticket-price-client" class="nav-link text-white">Giá vé/Combo</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Thành viên</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Khuyến mãi</a></li>
-                    <li class="nav-item"><a href="introduce" class="nav-link text-white">Về NEON CINEMA</a></li>
+                    <li class="nav-item"><a href="/ticket-price-client" class="nav-link text-white">Giá vé</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link text-white">Ưu đãi</a></li>    
+                    <li class="nav-item"><a href="introduce" class="nav-link text-white">Thông tin rạp</a></li>
+                    <li class="nav-item"><a href="introduce" class="nav-link text-white">Điều khoản</a></li>
                 </ul>
             </nav>
             <!-- User Actions -->
@@ -117,7 +117,7 @@
                     <div class="footer-line"></div>
                     <ul class="list-unstyled mt-3">
                         <li><strong>Hotline:</strong> 19002099</li>
-                        <li><strong>Giờ làm việc:</strong> 9:00 - 22:00 (Tất cả các ngày bao gồm cả Lễ, Tết)</li>
+                        <li><strong>Giờ làm việc:</strong> 8:00 - 24:00 (Tất cả các ngày bao gồm cả Lễ, Tết)</li>
                         <li>
                             <strong>Email hỗ trợ:</strong> neoncinema24@gmail.com
                         </li>
@@ -172,6 +172,7 @@
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(authToken);
                 var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                 var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
 
                 user = new UserProfile
@@ -213,7 +214,7 @@
     }
     private async Task Profile()
     {
-        NavigationManager.NavigateTo("/customer-profile");
+        NavigationManager.NavigateTo($"/customer-profile");
     }
 
     private void NavigateToLogin()

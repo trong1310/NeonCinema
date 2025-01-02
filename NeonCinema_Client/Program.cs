@@ -60,6 +60,7 @@ using NeonCinema_Client.Data.IServices.BookHistory;
 using NeonCinema_Client.Data.Services.BookHistory;
 using NeonCinema_API.Controllers.Service;
 using NeonCinema_Client.Data.Services;
+using Blazored.SessionStorage;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -104,6 +105,7 @@ builder.Services.AddScoped<IScreeningService, ScreeningService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
