@@ -4,8 +4,8 @@
 @inject IHistoryService HistoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@inject HttpClient HttpClient
-
+@inject HttpClient _HttpClient
+<script src="~/js/History.js"></script>
 @if (isLoading)
 {
     <div class="loading-overlay">
@@ -173,14 +173,38 @@ else
     {
         if (selectedBill != null)
         {
-            var response = await HttpClient.GetAsync($"api/Resources/generate-invoice-pdf/{selectedBill.BillID}");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var fileBytes = await response.Content.ReadAsByteArrayAsync();
-                await JSRuntime.InvokeVoidAsync("downloadFile", $"Invoice_{selectedBill.BillCode}.zip", fileBytes, "application/zip");
+                // Ensure proper API URL
+                var response = await _HttpClient.GetAsync($"api/Resources/generate-invoice-pdf?billId={selectedBill.BillID}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read file bytes from response
+                    var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                    // Trigger download using JavaScript
+                    await JSRuntime.InvokeVoidAsync("downloadFile", $"Invoice_{selectedBill.BillCode}.zip", fileBytes, "application/zip");
+                }
+                else
+                {
+                    Console.WriteLine($"API Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    await JSRuntime.InvokeVoidAsync("alert", $"Unable to download invoice: {response.ReasonPhrase}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                await JSRuntime.InvokeVoidAsync("alert", $"An error occurred while downloading the invoice. Please try again later.");
             }
         }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "No bill selected.");
+        }
     }
+
+
 
     private string GenerateQRCodeData(BillHistoryDTO bill)
     {

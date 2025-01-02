@@ -21,6 +21,8 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; }
+
+		[ConditionalRange(5000, 1000000, ErrorMessage = "Chỉ được nhập từ 5 nghìn đến 1 triệu")]
 		public double? AmountMax { get; set; }
 
 		[Required(ErrorMessage = "Không được để trống trường này")]
