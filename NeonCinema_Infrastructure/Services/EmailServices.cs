@@ -68,7 +68,7 @@ namespace NeonCinema_Infrastructure.Services
         </head>
         <body>
             <h1>Hóa đơn đặt vé xem phim</h1>
-            <p>Kính gửi: {bill.CustomerName}</p>
+            <p>Xin chào: {bill.CustomerName}</p>
             <p>Cảm ơn quý khách đã đặt vé xem phim tại hệ thống của chúng tôi.</p>
             <p>Mã hóa đơn: {bill.BillCode}</p>
             <p>Ngày đặt vé: {bill.CreatedAt.ToString("dd/MM/yyyy HH:mm")}</p>

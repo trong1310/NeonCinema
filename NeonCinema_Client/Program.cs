@@ -77,7 +77,7 @@ builder.Services.AddTransient<IMovieservices, MoviesServices>();
 builder.Services.AddScoped<IMovieTypeService, MovieTypeService>();
 builder.Services.AddTransient<IPromotionServices, PromotionServices>();
 builder.Services.AddTransient<IUserServices, UserServices>();
-builder.Services.AddScoped<ISeatTypeRepository , SeatTypeRepository>();
+builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ISV, SV>();
@@ -86,11 +86,11 @@ builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.AllowAnyOrigin();
-                      });
+	options.AddPolicy(name: MyAllowSpecificOrigins,
+					  policy =>
+					  {
+						  policy.AllowAnyOrigin();
+					  });
 });
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7211/") });
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
@@ -110,7 +110,7 @@ builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddHttpClient<ISeatService, SeatService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<BookTicketServices>();
-builder.Services.AddScoped<IHistoryService,HistoryService>();
+builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<IUserServicesss, UserService>();
 //builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<FoodComboServices>();
@@ -129,20 +129,20 @@ builder.Services.AddAuthentication("Bearer")
 	});
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
-    options.AddPolicy("StaffPolicy", policy => policy.RequireRole("Staff"));
+	options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+	options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
+	options.AddPolicy("StaffPolicy", policy => policy.RequireRole("Staff"));
 });
 
 builder.Services.AddBlazorise(options => options.Immediate = true)
-    .AddBootstrapProviders()
-    .AddFontAwesomeIcons();
+	.AddBootstrapProviders()
+	.AddFontAwesomeIcons();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Error");
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -154,7 +154,7 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
 	endpoints.MapHub<PromoHub>("/promohub");
-	endpoints.MapFallbackToPage("/_Host"); 
+	endpoints.MapFallbackToPage("/_Host");
 });
 
 

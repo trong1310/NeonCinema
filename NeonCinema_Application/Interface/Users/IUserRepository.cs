@@ -18,6 +18,7 @@ namespace NeonCinema_Application.Interface.Users
         public Task<UserDTO> GetByIDUser(Guid id, CancellationToken cancellationToken);
         public Task<CreateClientResponse> CreateUser(UserCreateRequest request, CancellationToken cancellationToken);
         public Task<CreateClientResponse> CreateClient(UserCreateRequest request, CancellationToken cancellationToken);
+        public Task<HttpResponseMessage> UpdateUser(UserUpdateRequest request, CancellationToken cancellationToken);
 
     }
 }

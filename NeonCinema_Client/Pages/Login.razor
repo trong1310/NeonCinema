@@ -178,7 +178,7 @@
                                                 <label for="pass" class="font-weight-bold">Mật khẩu</label>
                                                 <div class="password-container">
                                                     <input type="@(showPassword ? "text" : "password")" id="password" class="form-control" @bind-value="request.PassWord"
-                                                           style="color:black; background-color: #f7f7f7" />
+                                                    style="color:black; background-color: #f7f7f7" />
                                                     <span class="material-icons password-icon" @onclick="TogglePasswordVisibility">
                                                         @((showPassword) ? "visibility_off" : "visibility")
                                                     </span>
@@ -198,7 +198,7 @@
                                                 <label for="confirmPass" class="font-weight-bold">Nhập lại mật khẩu</label>
                                                 <div class="password-container">
                                                     <input type="@(showConfirmPassword ? "text" : "password")" id="confirmPassword" class="form-control" @bind-value="confirmPassword"
-                                                           style="color:black; background-color: #f7f7f7" />
+                                                    style="color:black; background-color: #f7f7f7" />
                                                     <span class="material-icons password-icon" @onclick="ToggleConfirmPasswordVisibility">
                                                         @((showConfirmPassword) ? "visibility_off" : "visibility")
                                                     </span>
@@ -279,10 +279,8 @@
     private string account;
     private string pass;
     HttpClient _http = new HttpClient();
-
     public async Task LoginAccount()
     {
-        _localstorage.ClearAsync();
         isProcessing = true;
         errorMessage = null;
 
@@ -296,26 +294,27 @@
 
                 if (response != null && !string.IsNullOrEmpty(response.Token))
                 {
+                    // Lưu token vào LocalStorage
                     await _localstorage.SetItemAsync("authToken", response.Token);
+
+                    // Phân tích token
                     var handler = new JwtSecurityTokenHandler();
                     var jwtToken = handler.ReadJwtToken(response.Token);
                     var roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-                    StateHasChanged();
+                    var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                    var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
+
+                // Điều hướng dựa trên vai trò
                     if (roleName == "Client")
                     {
-                        StateHasChanged();
-                        _navi.NavigateTo("/list-movie");
+                        _navi.NavigateTo("/list-movie", forceLoad: true);
                         StateHasChanged();
                     }
-                    if (roleName == "Admin")
+                    else if (roleName == "Admin" || roleName == "Staff" )
                     {
                         _navi.NavigateTo("/list-movie-admin");
+                        StateHasChanged();
                     }
-                    if (roleName == "Staff")
-                    {
-                        _navi.NavigateTo("/list-movie-admin");
-                    }
-
                 }
                 else
                 {
@@ -331,9 +330,10 @@
         {
             errorMessage = $"Có lỗi xảy ra: {ex.Message}";
         }
-        isProcessing = false;
-    }
 
+        isProcessing = false;
+        StateHasChanged();
+    }
     public class LoginResponse
     {
         public string Token { get; set; }

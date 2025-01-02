@@ -1,0 +1,199 @@
+﻿@page "/introduce"
+@layout LayoutClient
+
+<div class="container-fluid mt-3">
+    <div class="row align-items-center intro-section">
+        <!-- Phần logo -->
+        <div class="col-md-4 d-flex justify-content-center align-items-center logo-container">
+            <img src="/images/Client/logo-neon.png" class="img-fluid rounded" alt="NeonCinema">
+        </div>
+        <!-- Phần nội dung giới thiệu -->
+        <div class="col-md-8 content-container">
+            <h2>Chào mừng đến với NEON CINEMA</h2>
+            <p>
+                NeonCinema là hệ thống rạp chiếu phim hiện đại bậc nhất, nơi hội tụ đỉnh cao của nghệ thuật giải trí và công nghệ tiên tiến.
+                Chúng tôi không chỉ mang đến những bộ phim chất lượng, mà còn tạo ra một không gian hoàn hảo để bạn có thể thư giãn
+                và tận hưởng những khoảnh khắc ý nghĩa bên gia đình và bạn bè.
+            </p>
+            <p>
+                Với đội ngũ nhân viên chuyên nghiệp, dịch vụ tận tâm, và không gian rạp được thiết kế sang trọng, NeonCinema
+                cam kết mang lại cho bạn những trải nghiệm điện ảnh đẳng cấp. Từ các bộ phim bom tấn quốc tế đến những tác phẩm điện ảnh Việt Nam
+                đầy cảm xúc, NeonCinema là điểm đến lý tưởng cho mọi khán giả yêu thích điện ảnh.
+            </p>
+            <p>
+                Hãy đặt vé ngay hôm nay để khám phá thế giới điện ảnh tuyệt vời tại NeonCinema – nơi bạn không chỉ xem phim,
+                mà còn trải nghiệm nghệ thuật trong từng khung hình!
+            </p>
+            <a href="/list-movie" class="btn btn-primary">Mua vé ngay</a>
+        </div>
+    </div>
+    <div style="text-align: center; ">
+        <h2 class="green-title">HỆ THỐNG PHÒNG CHIẾU</h2>
+    </div>
+    <div class="row align-items-center justify-content-center">
+        <div class="custom-col text-center">
+            <img src="/images/Client/movie.jpg" alt="Màn hình hiện đại" class="img-icon">
+            <h3>MÀN HÌNH HIỆN ĐẠI</h3>
+            <p>
+                NeonCinema tự hào sở hữu hệ thống màn hình lớn, sắc nét và hiện đại nhất hiện nay. Được trang bị công nghệ chiếu phim tiên tiến,
+                màn hình tại NeonCinema mang đến hình ảnh sống động, màu sắc chân thực và chất lượng vượt trội.
+                Bạn sẽ hoàn toàn chìm đắm vào từng khung hình, từng câu chuyện mà bộ phim mang lại.
+            </p>
+        </div>
+        <div class="custom-col text-center">
+            <img src="/images/Client/sound.jpg" alt="Âm thanh vòm" class="img-icon">
+            <h3>ÂM THANH VÒM</h3>
+            <p>
+                Hệ thống âm thanh vòm Dolby Atmos tại NeonCinema đưa bạn vào thế giới âm thanh chân thực và sống động.
+                Từ những tiếng động nhỏ nhất đến những bản nhạc hoành tráng, mọi thứ đều được tái hiện một cách hoàn hảo.
+                Bạn sẽ cảm nhận được từng tiếng bước chân, từng nhịp tim, và những cao trào cảm xúc của từng bộ phim.
+            </p>
+        </div>
+        <div class="custom-col text-center">
+            <img src="/images/Client/popcorn.jpg" alt="Combo ăn uống" class="img-icon">
+            <h3>COMBO ĂN UỐNG</h3>
+            <p>
+                NeonCinema không chỉ mang lại trải nghiệm điện ảnh, mà còn chăm sóc vị giác của bạn với các combo ăn uống hấp dẫn.
+                Từ bỏng ngô thơm lừng, nước giải khát mát lạnh đến các món ăn nhẹ phong phú, chúng tôi luôn đảm bảo rằng bạn sẽ không bỏ lỡ
+                bất kỳ khoảnh khắc nào của bộ phim trong khi thưởng thức các món ăn ngon miệng.
+            </p>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: -25px">
+        <h2 class="green-title">VỊ TRÍ</h2>
+    </div>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59581.88940659078!2d105.67688895820311!3d21.037963500000014!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313455305afd834b%3A0x17268e09af37081e!2sT%C3%B2a%20nh%C3%A0%20FPT%20Polytechnic.!5e0!3m2!1svi!2s!4v1735761969635!5m2!1svi!2s"
+            style="border:0; height: 500px; margin-bottom: 25px" allowfullscreen="" loading="lazy"></iframe>
+
+</div>
+
+<style>
+    /* Cài đặt chung cho font chữ và màu sắc */
+    body {
+        font-family: 'Poppins', 'Roboto', sans-serif; /* Sử dụng font chữ hiện đại */
+        background-color: #f8f9fa; /* Màu nền nhẹ nhàng */
+        color: #212529; /* Màu chữ chính */
+    }
+
+    /* Viền và kiểu dáng cho phần logo và giới thiệu */
+    .intro-section {
+        border-radius: 10px; /* Bo góc viền */
+        background-color: #ffffff; /* Nền trắng */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+        margin-bottom: 20px; /* Khoảng cách với phần dưới */
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+        /* Phần nội dung giới thiệu */
+        .intro-section .content-container {
+            padding-left: 20px; /* Khoảng cách giữa nội dung và logo */
+        }
+    /* Phần logo */
+    .img-fluid {
+        max-height: 500px;
+        object-fit: cover;
+    }
+
+    .green-title {
+        color: limegreen; /* Màu chữ xanh lá cây */
+        border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
+        padding: 10px; /* Thêm khoảng cách giữa chữ và viền */
+        border-radius: 8px; /* Bo góc cho đường viền */
+        display: inline-block; /* Để viền chỉ bao quanh chữ */
+        font-weight: bold;
+    }
+    /* Thẻ tiêu đề */
+    h2 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: limegreen; /* Màu xanh nổi bật */
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        color: limegreen;
+    }
+
+    /* Định dạng đoạn văn */
+    p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    /* Nút mua vé */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-radius: 50px; /* Bo tròn nút */
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05); /* Phóng to nhẹ khi hover */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+        }
+
+    /* Phần card hiển thị thông tin */
+    .custom-col {
+        flex: 0 0 calc((100% / 12) * 3.8); /* Tỷ lệ 3.7 trên 12 cột */
+        max-width: calc((100% / 12) * 3.8);
+        padding: 20px;
+        margin: 15px;
+        background-color: #ffffff; /* Nền trắng */
+        border: 1px solid #ddd; /* Viền nhẹ */
+        border-radius: 15px; /* Bo góc */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .custom-col:hover {
+            transform: translateY(-10px); /* Hiệu ứng nâng lên khi hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Đổ bóng đậm hơn khi hover */
+        }
+
+    .img-icon {
+        max-width: 500px;
+        margin-bottom: 15px;
+        margin-top: 10px;
+        transition: transform 0.3s ease;
+        border-radius: 10px;
+    }
+
+
+    /* Định dạng khoảng cách */
+    .row {
+        margin-bottom: 40px;
+    }
+
+    /* Tiêu đề nổi bật */
+    .custom-title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .custom-title h2 {
+            font-size: 3rem;
+            color: #0056b3;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .custom-title p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+</style>
+
