@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
+
 @if (isLoading)
 {
     <div class="loading-overlay">
@@ -109,6 +110,7 @@ else
                                     </label>
                                 </div>
                             </td>
+
                             <td class="text-center align-middle">
                                 <button class="btn btn-outline-primary btn-sm " style="border: none;" @onclick="() => EditDirector(actor.ID)">
                                     <i class="fas fa-edit"></i>
@@ -150,29 +152,23 @@ else
 
     private async void ToggleRoomStatus(DirectorDTO drt, ChangeEventArgs e)
     {
-        drt.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
+        drt.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Inactive;
 
         var DirecUpdateRequest = new UpdateDirectorRequest
             {
                 ID = drt.ID,
                 FullName = drt.FullName,
                 Gender = drt.Gender,
-                
                 Address = drt.Address,
                 Nationality = drt.Nationality,
                 Biography = drt.Biography,
-                
                 Status = drt.Status
             };
 
-         await SV.UpdateDirector(DirecUpdateRequest.ID, DirecUpdateRequest);
+        await SV.UpdateDirector(DirecUpdateRequest.ID, DirecUpdateRequest);
+        director = await SV.GetAllDirector();
+        FilterDirectors(); // Cập nhật lại danh sách được lọc
 
-        
-            director = await SV.GetAllDirector();
-            filteredDirectors = director; // Cập nhật lại danh sách được lọc
-       
-            
-        
     }
 
     private void OnSearchChanged(ChangeEventArgs e)

@@ -1,78 +1,115 @@
 ﻿@page "/ticket-price-client"
 @layout LayoutClient
+@using NeonCinema_Application.DataTransferObject.FoodCombos
 @using NeonCinema_Application.DataTransferObject.TicketPriceSetting
 @using NeonCinema_Client.Data.IServices.TicketPriceSetting
+@using NeonCinema_Client.Data.Services
 @inject ITicketPriceSettingService TicketPriceSettingService
+@inject FoodComboServices _services
 
-<div class="card-header text-center mt-3">
-    <img src=@GetImageUrl("logo-neon.png") alt="Logo rạp phim" class="logo-img mb-3">
-    <h2 class="fw-bold text-uppercase">Bảng Giá Vé</h2>
-</div>
+<div class="container-fluid ">
+    <div class="row bg-container">
+        <!-- Bảng giá vé và bảng phụ thu -->
+        <div class="col-md-9 table-container">
+            <div style="text-align: center;">
+                <h2 class="mt-4 mb-4 green-title">Bảng Giá Vé</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th></th>
+                            <th>Trước 17h</th>
+                            <th>Sau 17h</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-4">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
+                            <td class="col-4">@ticketPriceSetting.PriceBefore17hWeekDay.ToString("N0") VND</td>
+                            <td class="col-4">@ticketPriceSetting.PriceAfter17hWeekDay.ToString("N0") VND</td>
+                        </tr>
+                        <tr>
+                            <td class="col-4">Thứ 6, Thứ 7, Chủ Nhật</td>
+                            <td class="col-4">@ticketPriceSetting.PriceBefore17hWeekeend.ToString("N0") VND</td>
+                            <td class="col-4">@ticketPriceSetting.PriceAfter17hWeekeend.ToString("N0") VND</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-<div class="card my-4">
-    <div class="card-body">
-        <!-- Bảng giá vé -->
-        <table class="table table-bordered text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th class="align-middle"></th>
-                    <th class="align-middle">Trước 17h</th>
-                    <th class="align-middle">Sau 17h</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center align-middle fw-bold">Thứ 2, Thứ 3, Thứ 4, Thứ 5</td>
-                    <td><span class="price-display">@ticketPriceSetting.PriceBefore17hWeekDay.ToString("N0")</span> VND</td>
-                    <td><span class="price-display">@ticketPriceSetting.PriceAfter17hWeekDay.ToString("N0")</span> VND</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle fw-bold">Thứ 6, Thứ 7, Chủ Nhật</td>
-                    <td><span class="price-display">@ticketPriceSetting.PriceBefore17hWeekeend.ToString("N0")</span> VND</td>
-                    <td><span class="price-display">@ticketPriceSetting.PriceAfter17hWeekeend.ToString("N0")</span> VND</td>
-                </tr>
-            </tbody>
-        </table>
+            <div style="text-align: center;">
+                <h2 class="mt-4 mb-4 green-title">BẢNG PHỤ THU</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Loại phụ thu</th>
+                            <th>Giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-4">2D</td>
+                            <td class="col-8">@ticketPriceSetting.Surcharge3D.ToString("N0") VND</td>
+                        </tr>
+                        <tr>
+                            <td class="col-4">3D</td>
+                            <td class="col-8">@ticketPriceSetting.Surcharge4D.ToString("N0") VND</td>
+                        </tr>
+                        <tr>
+                            <td class="col-4">Ghế VIP</td>
+                            <td class="col-8">@ticketPriceSetting.SurchargeVIP.ToString("N0") VND</td>
+                        </tr>
+                        <tr>
+                            <td class="col-4">Ghế couple</td>
+                            <td class="col-8">@ticketPriceSetting.SurchargeCouple.ToString("N0") VND</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        <!-- Phụ thu -->
-        <table class="table table-bordered text-center mt-4">
-            <thead class="table-primary">
-                <tr>
-                    <th class="align-middle">Loại vé</th>
-                    <th class="align-middle">Phụ thu</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center align-middle fw-bold">2D</td>
-                    <td><span class="price-display">@ticketPriceSetting.Surcharge3D.ToString("N0")</span> VND</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle fw-bold">3D</td>
-                    <td><span class="price-display">@ticketPriceSetting.Surcharge4D.ToString("N0")</span> VND</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle fw-bold">IMAX</td>
-                    <td><span class="price-display">@ticketPriceSetting.SurchargeIMAX.ToString("N0")</span> VND</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle fw-bold">Ghế VIP</td>
-                    <td><span class="price-display">@ticketPriceSetting.SurchargeVIP.ToString("N0")</span> VND</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle fw-bold">Ghế Couple</td>
-                    <td><span class="price-display">@ticketPriceSetting.SurchargeCouple.ToString("N0")</span> VND</td>
-                </tr>
-            </tbody>
-        </table>
+
+        <!-- Giá vé combo đồ ăn -->
+        <div class="col-md-3">
+            <div style="text-align: center;">
+                <h2 class="mt-4 mb-4 green-title">COMBO ĐỒ ĂN</h2>
+            </div>
+            <div class="combo-scroll-container">
+                @if (foodsDto != null && foodsDto.Any())
+                {
+                    foreach (var combo in foodsDto)
+                    {
+                        <div class="card mb-3 p-2 d-flex flex-row ">
+                            <img src="@GetImageUrl(combo.Images)" class="combo-image me-3" alt="@combo.Content" />
+                            <div style="margin-left: 15px">
+                                <p class="card-title mt-2 ml-3">@combo.Content</p>
+                                <p class="card-text mt-2 ml-3 mb-2">@combo.Description</p>
+                                <p class="fw-bold mt-4 ml-3">@combo.Amount.ToString("N0") VND</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Không có dữ liệu combo đồ ăn.</p>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
+
 @code {
     private TicketPriceSettingDTO ticketPriceSetting = new TicketPriceSettingDTO();
+    List<FoodComboDTO> foodsDto = new List<FoodComboDTO>();
     protected override async Task OnInitializedAsync()
     {
         ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(Guid.Parse("F45B65A9-F32D-4F95-A211-75A7AF545F46"));
+        var allFoodCombos = await _services.GetAllFoodCombo();
+        foodsDto = allFoodCombos.OrderBy(combo => combo.Content).ToList(); // Sắp xếp theo tên combo
     }
     private string GetImageUrl(string imageUrl)
     {
@@ -82,14 +119,6 @@
 
 
 <style>
-    .card-header {
-        background-color: #1E3A8A; /* Màu xanh đậm */
-        color: white;
-        padding: 30px;
-        border-radius: 10px 10px 0 0;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
 
     .logo-img {
         max-width: 120px;
@@ -99,35 +128,75 @@
         border: 2px solid white;
     }
 
+    .green-title {
+        color: limegreen; /* Màu chữ xanh lá cây */
+        border: 1px solid limegreen; /* Đường viền màu xanh lá cây */
+        padding: 10px; /* Thêm khoảng cách giữa chữ và viền */
+        border-radius: 8px; /* Bo góc cho đường viền */
+        display: inline-block; /* Để viền chỉ bao quanh chữ */
+        font-weight: bold;
+    }
+
     .card {
-        background-color: #F3F4F6; /* Màu nền nhẹ nhàng */
+        background-color: rgba(255, 255, 255, 0.8); /* Nền trắng trong suốt */
         border-radius: 10px;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-        padding: 20px;
+        display: flex; /* Căn chỉnh các phần tử theo chiều ngang */
+        flex-direction: column; /* Căn chỉnh theo cột */
+    }
+
+    .card-title {
+        color: limegreen;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 1.2rem;
+    }
+
+    .fw-bold {
+        font-size: 1.2rem;
+        color: red;
+    }
+
+    .combo-image {
+        width: 150px; /* Chiều rộng của ảnh combo */
+        height: auto; /* Giữ tỷ lệ ảnh */
+        border-radius: 5px; /* Góc bo tròn nhẹ */
+        object-fit: cover; /* Cắt ảnh nếu cần nhưng giữ tỷ lệ */
+    }
+
+    .combo-scroll-container {
+        max-height: 670px; /* Chiều cao tối đa */
+        overflow-y: auto; /* Hiển thị thanh cuộn dọc nếu nội dung vượt quá */
     }
 
     .table {
-        margin-top: 15px;
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.8); /* Nền trắng trong suốt */
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
         .table th {
-            background-color: #2563EB; /* Xanh đậm */
+            background-color: rgba(0, 0, 0, 0.5); /* Màu xanh đậm */
             color: white;
-            font-size: 1.1rem;
+            font-size: 1.7rem; /* Tăng kích thước chữ */
             text-transform: uppercase;
             padding: 15px;
+            text-align: center;
         }
 
         .table td {
-            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-size: 1.6rem; /* Tăng kích thước chữ */
             color: #374151; /* Màu chữ xám đậm */
-            padding: 10px 15px;
+            padding: 12px 15px; /* Tăng khoảng cách */
             vertical-align: middle;
+            text-align: center;
         }
+
 
     .price-display {
         font-size: 1.3rem;
@@ -154,6 +223,16 @@
 
     h2 {
         letter-spacing: 1px;
+    }
+
+
+
+    .bg-container {
+        position: relative;
+        background-image: url("/images/Client/bg7.webp");
+        background-size: cover; /* Tự động điều chỉnh kích thước để phủ kín */
+        background-position: center; /* Canh giữa ảnh nền */
+        background-repeat: no-repeat; /* Không lặp lại ảnh */
     }
 
 </style>

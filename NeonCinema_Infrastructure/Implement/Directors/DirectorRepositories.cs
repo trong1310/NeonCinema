@@ -56,7 +56,7 @@ namespace NeonCinema_Infrastructure.Implement.Directors
 
         public async Task<List<DirectorDTO>> GetAllDirector(CancellationToken cancellationToken)
         {
-            var drt = await _context.Directors.Where(x=>x.Status == EntityStatus.Active).ToListAsync(cancellationToken);
+            var drt = await _context.Directors.Where(x => x.Status == EntityStatus.Active || x.Status == EntityStatus.Inactive).ToListAsync(cancellationToken);
             var direcDTOs = drt.Select(drtt => new DirectorDTO
             {
                 ID = drtt.ID,
