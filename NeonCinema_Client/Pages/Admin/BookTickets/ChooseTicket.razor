@@ -113,8 +113,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-							id="@seat.ID"
-							@onclick="() => SelectSeat(seat)">
+								 id="@seat.ID"
+								 @onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -174,7 +174,7 @@
 								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
 							</div>
 							<div class="modal-body">
-								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
+								<p>Xác nhận thanh toán.</p>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -338,22 +338,20 @@
 						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
 						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
 					</div>
-				}
-
-
+				} 
 				<hr class="dashed">
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
 							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment"
-							@onchange="(e) => isCashPayment = true">
+								   @onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
 							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
-							@onchange="(e) => isCashPayment = false">
+								   @onchange="(e) => isCashPayment = false">
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -361,7 +359,7 @@
 						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 					</div>
 				</div>
-				@if (isCashPayment)
+				@if (isCashPayment == true)
 				{
 					<div class="form-group">
 						<label class="form-label">Tiền khách đưa</label>
@@ -542,20 +540,13 @@
 	private double pointApply = 0;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
 	{
-		// Parse số tiền khách đưa
 		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
 		{
 			moneyrRceived = inputMoney;
-
-			// Kiểm tra nếu số tiền nhỏ hơn tổng tiền
-			if (moneyrRceived < totalPrices && isCashPayment)
-			{
-				ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
-			}
 		}
 		else
 		{
-			moneyrRceived = 0; // Nếu giá trị nhập không hợp lệ, đặt về 0
+			moneyrRceived = 0;
 		}
 	}
 	private void ShowConfirmModal()
@@ -594,8 +585,8 @@
 
 		if ((decimal)tempDiscount > maxDiscount)
 		{
-			int maxPoints = (int)(maxDiscount * 2); 
-			tempPointApply = Math.Min(tempPointApply, maxPoints); 
+			int maxPoints = (int)(maxDiscount * 2);
+			tempPointApply = Math.Min(tempPointApply, maxPoints);
 			tempDiscount = (double)(tempPointApply * 0.5);
 			if ((decimal)tempDiscount >= maxDiscount)
 			{
@@ -948,7 +939,10 @@
 
 				};
 		}
-
+		if (moneyrRceived < totalPrices)
+		{
+			ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
+		}
 		try
 		{
 			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
