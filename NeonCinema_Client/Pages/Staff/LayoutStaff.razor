@@ -45,7 +45,7 @@
                     }
                     else if (user != null && !string.IsNullOrEmpty(user.Images))
                     {
-                        <img src="@GetImageUrl(user.Images)" alt="Hình ảnh đã tải lên" style="width: 100%; height: 100%; border-radius: 50%;" />
+                        <img src="@GetImageUrl(string.IsNullOrEmpty(user?.Images) ? "avt-default.jpg" : user.Images)" alt="Hình ảnh đã tải lên" style="width: 100%; height: 100%; border-radius: 50%;" />
                     }
                 </MudAvatar>
 
