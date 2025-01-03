@@ -1,11 +1,11 @@
-﻿@page "/booking-history"
+﻿@page "/booking-history-staff"
 @using NeonCinema_Application.DataTransferObject.BookingHistory
 @using NeonCinema_Client.Data.IServices.BookHistory
 @inject IHistoryService HistoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@layout LayoutAdmin
 @inject HttpClient _HttpClient
+@layout LayoutStaff
 <script src="~/js/History.js"></script>
 @if (isLoading)
 {
@@ -229,7 +229,7 @@ else
         link.click();
     }
 </script>
-    
+
 <style>
     .btn-detail {
         display: flex;

@@ -1,4 +1,4 @@
-﻿@page "/select-seat/{id:guid}"
+﻿@page "/select-seat-staff/{id:guid}"
 @using Blazored.LocalStorage
 @using NeonCinema_Application.DataTransferObject.BookTicket
 @using NeonCinema_Application.DataTransferObject.BookTicket.Request
@@ -19,7 +19,7 @@
 @using NeonCinema_Domain.Database.Entities
 @using System.Text.Json
 @using System.Security.Claims
-@layout LayoutAdmin
+@layout LayoutStaff
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
 @inject IDialogService DialogService
@@ -174,7 +174,7 @@
 								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
 							</div>
 							<div class="modal-body">
-								<p>Xác nhận thanh toán.</p>
+								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
@@ -309,9 +309,9 @@
 						<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
 						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point.ToString("N0")</p>
 						<span>Số điểm bạn đang sử dụng: @pointApply.ToString("N0")</span>
-						<div class="row g-2" style="margin-top: -10px">
+						<div class="row g-2" style="margin-top: -20px">
 							<div class="col-md-8">
-								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="@point">
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
 								<span>Lưu ý : 1000 điểm => 500 VND</span>
 							</div>
 							<div class="col-md-4" style="margin-top: 14px">
@@ -338,7 +338,9 @@
 						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
 						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
 					</div>
-				} 
+				}
+
+
 				<hr class="dashed">
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
@@ -359,7 +361,7 @@
 						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 					</div>
 				</div>
-				@if (isCashPayment == true)
+				@if (isCashPayment)
 				{
 					<div class="form-group">
 						<label class="form-label">Tiền khách đưa</label>
@@ -540,13 +542,20 @@
 	private double pointApply = 0;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
 	{
+		// Parse số tiền khách đưa
 		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
 		{
 			moneyrRceived = inputMoney;
+
+			// Kiểm tra nếu số tiền nhỏ hơn tổng tiền
+			if (moneyrRceived < totalPrices && isCashPayment)
+			{
+				ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
+			}
 		}
 		else
 		{
-			moneyrRceived = 0;
+			moneyrRceived = 0; // Nếu giá trị nhập không hợp lệ, đặt về 0
 		}
 	}
 	private void ShowConfirmModal()
@@ -567,39 +576,33 @@
 	}
 	private void ApplyPoint()
 	{
-		decimal maxDiscount = sumPrices * 0.5m;
-
 		if (point > Rank.Point)
 		{
-			ShowSnackbar("Điểm quy đổi không đủ, vui lòng thử lại", Severity.Warning);
+			ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
 			return;
 		}
-		double tempPointApply = pointApply + point;
-
-		if (tempPointApply > Rank.Point)
+		else
 		{
-			ShowSnackbar("Điểm quy đổi không đủ, vui lòng thử lại", Severity.Warning);
-			return;
-		}
-		double tempDiscount = (double)(tempPointApply * 0.5);
-
-		if ((decimal)tempDiscount > maxDiscount)
-		{
-			int maxPoints = (int)(maxDiscount * 2);
-			tempPointApply = Math.Min(tempPointApply, maxPoints);
-			tempDiscount = (double)(tempPointApply * 0.5);
-			if ((decimal)tempDiscount >= maxDiscount)
+			discount = point * 0.5;
+			if ((decimal)discount >= totalPrices)
 			{
-				ShowSnackbar("Không thể dùng quá 50% tổng hóa đơn để giảm giá!", Severity.Warning);
-				return;
+				ShowSnackbar("Không được quy đổi điểm quá với số tiền hóa đơn !", Severity.Warning);
+			}
+			else
+			{
+
+				if ((pointApply += point) >= Rank.Point)
+				{
+					ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
+				}
+				else
+				{
+					pointApply += point;
+					totalPrices -= (decimal)discount;
+				}
 			}
 		}
-		pointApply = tempPointApply;
-		discount = tempDiscount;
-		totalPrices = sumPrices - (decimal)discount;
-		ShowSnackbar($"Đã sử dụng {pointApply} điểm, giảm giá {discount:N0} VND", Severity.Success);
 	}
-
 	protected override async Task OnInitializedAsync()
 	{
 		screenings = await _services.ChooseScrening(id);
@@ -936,13 +939,10 @@
 					CreateBy = createBy,
 					Point = point,
 					Voucher = null,
-
+					
 				};
 		}
-		if (moneyrRceived < totalPrices)
-		{
-			ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
-		}
+
 		try
 		{
 			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
@@ -1254,17 +1254,28 @@
 			}
 		}
 
-		RefreshSeatsAsync();
+		// Cập nhật lại groupedSeats
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
 		StateHasChanged(); // Cập nhật giao diện
 		return Task.CompletedTask;
 	}
+
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
 		{
 			eventSource = await JS.InvokeAsync<object>(
 				"sseHandler.startSSE",
-				$"https://localhost:7211/stream-seat-status?id={id}",
+				"https://localhost:7211/stream-seat-status",
 				DotNetObjectReference.Create(this)
 			);
 			StateHasChanged();

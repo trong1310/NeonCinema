@@ -147,6 +147,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 		public async Task<List<UserDTO>> GetAllUser(CancellationToken cancellationToken)
 		{
 			var users = await _context.Users
+				.OrderByDescending(u => u.CreatedTime)
 				.Select(u => new UserDTO
 				{
 					ID = u.ID,

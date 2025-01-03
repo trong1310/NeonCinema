@@ -17,14 +17,11 @@
 
     <Compile Remove="Pages\Img\**" />
 
-    <Compile Remove="Pages\Staff\**" />
-
     <Content Remove="Dialog\**" />
 
     <Content Remove="Pages\Admin\AddMovies\**" />
     <Content Remove="Pages\Employees\**" />
     <Content Remove="Pages\Img\**" />
-    <Content Remove="Pages\Staff\**" />
     <EmbeddedResource Remove="Dialog\**" />
     <EmbeddedResource Remove="Pages\Admin\AddMovies\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
@@ -37,7 +34,6 @@
     <EmbeddedResource Remove="Pages\abc\**" />
     <EmbeddedResource Remove="Pages\Employees\**" />
     <EmbeddedResource Remove="Pages\Img\**" />
-    <EmbeddedResource Remove="Pages\Staff\**" />
     <None Remove="Dialog\**" />
     <None Remove="Pages\abc\**" />
     <Compile Remove="Pages\Employees\**" />
@@ -53,9 +49,6 @@
 
 
     <None Remove="Pages\Img\**" />
-
-
-    <None Remove="Pages\Staff\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -106,6 +99,22 @@
     <None Include="Pages\Client\Movie\ListMovieClient.razor" />
 
     <None Include="Pages\Client\User\ClientForgotPassword.razor" />
+
+    <None Include="Pages\Staff\BookTicket\BookDetailStaff.razor" />
+
+    <None Include="Pages\Staff\BookTicket\BookTicketStaff.razor" />
+
+    <None Include="Pages\Staff\BookTicket\ChooseTicketStaff.razor" />
+
+    <None Include="Pages\Staff\CheckIn\BookHistoryStaff.razor" />
+
+    <None Include="Pages\Staff\LayoutStaff.razor" />
+
+    <None Include="Pages\Staff\NavMenuStaff.razor" />
+
+    <None Include="Pages\Staff\ProfileStaff\Profile.razor" />
+
+    <None Include="Pages\Staff\TicketPrice\ListTicketPrice.razor" />
     <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />
     <None Include="wwwroot\images\Director\3acdf00f-7296-458e-969d-1e07f1281f99.webp" />
     <None Include="wwwroot\images\Director\5084231f-b6bd-4d72-834c-7e2d51f3c1be.webp" />
