@@ -118,6 +118,7 @@ builder.Services.AddScoped<IUserServicesss, UserService>();
 builder.Services.AddScoped<FoodComboServices>();
 
 builder.Services.AddHostedService<AppBackgroundServices>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication("Bearer")
@@ -126,9 +127,9 @@ builder.Services.AddAuthentication("Bearer")
 		options.Authority = "https://localhost:7211"; // Địa chỉ máy chủ xác thực (auth server) của bạn
 		options.TokenValidationParameters = new TokenValidationParameters
 		{
-			ValidateAudience = false
+			ValidateAudience = false,
 		};
-	});
+    });
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
