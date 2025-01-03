@@ -11,6 +11,7 @@
 @using NeonCinema_Client.DataTransferObject.MovieData
 @using System.IdentityModel.Tokens.Jwt
 @using System.Net.Http.Headers
+@using NeonCinema_Domain.Enum
 @inject BookTicketServices _service
 @inject NavigationManager _navi
 @inject IFlimUsers _filmsServices
@@ -61,8 +62,11 @@
                                     <div class="card-body">
                                         <div class="tags">
                                             <span class="badge bg-danger">T @movie.AgeAllowed</span>
-                                            <span class="badge bg-dark">@movie.Duration phút</span>
-                                            <span class="badge bg-success">Ngôn ngữ: @movie.LanguareName</span>
+                                            <span class="badge bg-dark">
+                                                @(movie.Sub == eSubEnum.Caption ? "Phụ đề" :
+                                                    movie.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+                                            </span>
+                                            <span class="badge bg-success">@movie.MovieTypeName</span>
                                         </div>
                                         <h3 class="card-title">@movie.Name</h3>
                                         <p class="card-text">Thể loại phim: <span class="genre">@movie.GenreName</span></p>
@@ -370,7 +374,7 @@
 
 <div class="container-fluid movie-nowshowing">
     <div style="text-align: center;">
-        <h2 class="mb-4 green-title">PHIM ĐANG PHÁT HÀNH</h2>
+        <h2 class="mb-4 green-title">PHIM SẮP PHÁT HÀNH</h2>
     </div>
     <div id="movieCarouselComing" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -392,8 +396,11 @@
                                         <div class="card-body">
                                             <div class="tags">
                                                 <span class="badge bg-danger">T @movie.AgeAllowed</span>
-                                                <span class="badge bg-dark">@movie.Duration phút</span>
-                                                <span class="badge bg-success">Ngôn ngữ: @movie.LanguareName</span>
+                                                <span class="badge bg-dark">
+                                                    @(movie.Sub == eSubEnum.Caption ? "Phụ đề" :
+                                                        movie.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+                                                </span>
+                                                <span class="badge bg-success">@movie.MovieTypeName</span>
                                             </div>
                                             <h3 class="card-title">@movie.Name</h3>
                                             <p class="card-text">Thể loại phim: <span class="genre">@movie.GenreName</span></p>
