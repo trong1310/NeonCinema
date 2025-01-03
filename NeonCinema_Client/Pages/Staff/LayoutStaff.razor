@@ -1,4 +1,4 @@
-﻿@page "/admin-dashboard"
+﻿@page "/staff-dashboard"
 @inherits LayoutComponentBase
 @inject ILocalStorageService _localstorage
 @using Blazored.LocalStorage
@@ -55,7 +55,7 @@
         </MudBadge>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NeonCinema_Client.Pages.Admin.Users.NavMenuAdmin />
+        <NavMenuStaff />
     </MudDrawer>
     <MudMainContent>
         @Body

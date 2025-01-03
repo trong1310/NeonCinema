@@ -92,7 +92,8 @@ else
 
 
 							<td class="text-center align-middle">
-								<img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+								<img src="@GetImageUrl(string.IsNullOrEmpty(user?.Images) ? "avt-default.jpg" : user.Images)"
+									 class="rounded-circle" style="height: 70px; width: 70px;" />
 							</td>
 							<td class="text-center align-middle">@user.FullName</td>
 							<td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>
@@ -247,7 +248,7 @@ else
 	private void SearchUsers(ChangeEventArgs e)
 	{
 		searchTerm = e.Value?.ToString() ?? string.Empty;
-		
+
 		FilterUsers();
 	}
 	private void SearchPhones(ChangeEventArgs e)
@@ -365,6 +366,7 @@ else
 		.employee-table tbody tr {
 			position: relative; /* Đảm bảo các thành phần bên trong dòng không bị che */
 		}
+
 	.pagination .page-item.active .page-link {
 		background-color: #007bff; /* Màu nền cho trang hiện tại */
 		border-color: #007bff; /* Màu viền cho trang hiện tại */
@@ -415,7 +417,6 @@ else
 			border-radius: 6px; /* Bo góc cho badge */
 			transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng hover */
 			cursor: pointer; /* Đổi con trỏ chuột thành pointer khi hover */
-			
 		}
 
 			.dropdown-menu .badge:hover {
