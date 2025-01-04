@@ -1,121 +1,261 @@
-﻿@* @page "/listactor"
-@using NeonCinema_Application.DataTransferObject.Actors
+﻿@page "/actor-manager"
+@using NeonCinema_API.Controllers.Service
 @using NeonCinema_Client.Data.IServices.Actor
 @using NeonCinema_Domain.Enum
-@inject NavigationManager Navi
 @inject IActorService ActorService
-@layout LayoutAdmin
 <link rel="stylesheet" href="/css/Actor/listactor.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<h2 class="text-center mt-4">DANH SÁCH DIỄN VIÊN</h2>
 
 
-        <div class="container">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <input type="text" placeholder="Search by Full Name" @bind="searchText" @oninput="OnSearchChanged" class="form-control" />
+<div class="actor-list-container">
+    <h4 style="text-align: center">Danh Sách Diễn Viên</h4>
+    <button class="btn btn-success" @onclick="ShowCreateDialog">Thêm Diễn Viên</button>
+    <div class="filter-container">
+        <div class="filter-item">
+            <label for="SearchName">Tên:</label>
+            <InputText id="SearchName" class="form-control" @bind-Value="SearchName" @oninput="FilterActorsByName" />
         </div>
-        <div class="col-md-4 text-end">
-            <a class="btn btn-success" href="/addactor">
-                <i class="fa-solid fa-plus" style="color: #ffffff;"></i> Thêm diễn viên
-            </a>
+        <div class="filter-item">
+            <label for="FilterSex">Giới tính:</label>
+            <select id="FilterSex" class="form-control" @onchange="FilterActorsBySex">
+                <option value="">Tất cả</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
         </div>
+
+        <div class="filter-item">
+            <label for="FilterStatus">Trạng thái:</label>
+            <select id="FilterStatus" class="form-control" @onchange="FilterActorsByStatus">
+                <option value="">Tất cả</option>
+                <option value="Active">Hoạt động</option>
+                <option value="Inactive">Không hoạt động</option>
+            </select>
+        </div>
+
+       
     </div>
 
-    @if (filteredActors == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else if (filteredActors.Count == 0)
-    {
-        <p>No actors found.</p>
-    }
-    else
-    {
-        <table class="table table-hover shadow-sm">
-            <thead class="table-light">
-                <tr>
-                    <th>Tên</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var actor in filteredActors)
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Giới Tính</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (FilteredActors != null && FilteredActors.Any())
+            {
+                @foreach (var actor in FilteredActors)
                 {
                     <tr>
-                        <td>@actor.FullName</td>
-                        <td class="text-center">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       role="switch"
-                                       id="flexSwitchCheckDefault_@(actor.Status)"
-                                       checked="@(actor.Status == EntityStatus.Active)"
-                                       @onchange="(e) => ToggleRoomStatus(actor, e)" />
-                            </div>
-                        </td>
+                        <td>@actor.name</td>
+                        <td>@actor.sex</td>
+                        <td>@(actor.status.ToString() == "Active" ? "Hoạt động" : "Không hoạt động")</td>
                         <td>
-                            <button class="btn btn-warning" @onclick="() => EditActor(actor.ID)">
-                                <i class="fa-regular fa-pen-to-square" style="color: black;"></i>
-                            </button>
+                            <button @onclick="() => EditActor(actor)" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i></button>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">Không có dữ liệu.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+   
+</div>
+
+@if (IsCreateDialogVisible || IsEditDialogVisible)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <h4>@(IsEditDialogVisible ? "Sửa Diễn Viên" : "Thêm Diễn Viên")</h4>
+            <EditForm Model="@ActorFormModel" OnValidSubmit="@HandleFormSubmit">
+                <DataAnnotationsValidator />
+                
+                <div class="form-group">
+                    <label for="Name">Tên:</label>
+                    <InputText id="Name" @bind-Value="ActorFormModel.Name" class="form-control" />
+                    <ValidationMessage For="@(() => ActorFormModel.Name)" />
+                </div>
+                <div class="form-group">
+                    <label for="Sex">Giới tính:</label>
+                    <InputSelect id="Sex" @bind-Value="ActorFormModel.Sex" class="form-control">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </InputSelect>
+                </div>
+                <div class="form-group" style="display: @(IsEditDialogVisible ? "block" : "none")">
+                    <label for="Status">Trạng thái:</label>
+                    <InputSelect id="Status" @bind-Value="ActorFormModel.Status" class="form-control">
+                        <option value="Active">Hoạt động</option>
+                        <option value="Inactive">Không hoạt động</option>
+                    </InputSelect>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="button" class="btn btn-secondary" @onclick="CloseDialog">Hủy</button>
+            </EditForm>
         </div>
-  
+    </div>
+}
 
 @code {
-    private List<ActorDTO> actors;
-    private List<ActorDTO> filteredActors;
-    private string searchText = string.Empty;
+    private List<ActorResponse> Actors = new();
+    private ActorCreateRequest ActorFormModel = new();
+    private bool IsCreateDialogVisible = false;
+    private bool IsEditDialogVisible = false;
+    private List<ActorResponse> FilteredActors = new();
+    private string SelectedSex = string.Empty;
+    private string SelectedStatus = string.Empty;
+    private string SearchName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        actors = await ActorService.GetAllActor();
-        filteredActors = actors;
+        await LoadActors();
+        FilteredActors = Actors;
     }
 
-    private void EditActor(Guid actorId)
+    private async Task LoadActors()
     {
-        Navi.NavigateTo($"/updateactor/{actorId}");
+        try
+        {
+            Actors = await ActorService.GetAllActor();
+            FilterActors();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi lấy danh sách diễn viên: {ex.Message}");
+        }
     }
-
-    private async void ToggleRoomStatus(ActorDTO actor, ChangeEventArgs e)
+    private void FilterActorsBySex(ChangeEventArgs e)
     {
-        actor.Status = (bool)e.Value ? EntityStatus.Active : EntityStatus.Locked;
-
-        var ActorUpdateRequest = new UpdateActorRequest
-            {
-                ID = actor.ID,
-                FullName = actor.FullName,
-                Status = actor.Status
-            };
-
-        await ActorService.UpdateActor(ActorUpdateRequest.ID, ActorUpdateRequest);
-        actors = await ActorService.GetAllActor();
+        SelectedSex = e.Value?.ToString() ?? string.Empty;
+        FilterActors();
     }
-
-    private void OnSearchChanged(ChangeEventArgs e)
+    private void FilterActorsByStatus(ChangeEventArgs e)
     {
-        searchText = e.Value.ToString();
+        SelectedStatus = e.Value?.ToString() ?? string.Empty;
+        FilterActors();
+    }
+    private void FilterActorsByName(ChangeEventArgs e)
+    {
+        SearchName = e.Value?.ToString() ?? string.Empty;
         FilterActors();
     }
 
     private void FilterActors()
     {
-        if (string.IsNullOrWhiteSpace(searchText))
+        FilteredActors = Actors.Where(actor =>
+            (string.IsNullOrEmpty(SelectedSex) || actor.sex.ToString() == SelectedSex) &&
+            (string.IsNullOrEmpty(SelectedStatus) || actor.status.ToString() == SelectedStatus) &&
+            (string.IsNullOrEmpty(SearchName) || actor.name.Contains(SearchName, StringComparison.OrdinalIgnoreCase))
+        ).ToList();
+    }
+    private void ShowCreateDialog()
+    {
+        ActorFormModel = new ActorCreateRequest
+            {
+                Sex = EntityStatus.Nam // Gán giá trị mặc định là "Nam"
+            };
+        IsCreateDialogVisible = true;
+    }
+
+
+    private void EditActor(ActorResponse actor)
+    {
+        ActorFormModel = new ActorCreateRequest
+            {
+                id = actor.id,
+                Name = actor.name,
+                Sex = actor.sex,
+                Status = actor.status
+            };
+        IsEditDialogVisible = true;
+    }
+
+    private async Task HandleFormSubmit()
+    {
+        try
         {
-            filteredActors = actors;
+            ActorFormModel.Name = NormalizeString(ActorFormModel.Name);
+            if (IsCreateDialogVisible)
+            {
+                await ActorService.CreateActor(ActorFormModel);
+            }
+            else if (IsEditDialogVisible)
+            {
+                var updateRequest = new UpdateActorRequests
+                    {
+                        id = ActorFormModel.id,
+                        name = NormalizeString(ActorFormModel.Name),
+                        sex = ActorFormModel.Sex,
+                        status = ActorFormModel.Status
+                    };
+                await ActorService.UpdateActor(updateRequest);
+            }
+
+            CloseDialog();
+            await LoadActors();
         }
-        else
+        catch (Exception ex)
         {
-            filteredActors = actors.Where(a => a.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+            Console.WriteLine($"Lỗi khi xử lý biểu mẫu: {ex.Message}");
         }
     }
+    private string NormalizeString(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+        return string.Join(" ", input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private void CloseDialog()
+    {
+        IsCreateDialogVisible = false;
+        IsEditDialogVisible = false;
+    }
 }
- *@
+<style>
+    .modal {
+        display: block; /* Hoặc none nếu không hiển thị */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 30%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Khoảng cách giữa các mục */
+        margin-bottom: 20px;
+    }
+
+    .filter-item {
+        flex: 1; /* Tự động co giãn theo kích thước */
+        min-width: 200px; /* Chiều rộng tối thiểu để không bị quá hẹp */
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px; /* Khoảng cách giữa nhãn và trường nhập liệu */
+    }
+</style>
