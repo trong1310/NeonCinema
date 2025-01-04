@@ -1,0 +1,331 @@
+﻿@page "/book-details-staff/{id:guid}"
+@using NeonCinema_Application.DataTransferObject.ActorMovies
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Domain.Enum
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
+@layout LayoutStaff
+@inject NavigationManager _navi
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+
+<div class="container-fluid py-5">
+	<div class="movie-details-container">
+		<div class="row">
+			<!-- Phần ảnh -->
+			<div class=" col-md-3">
+				<img src="@GetImageUrl(movieDto.Images)" alt="Movie Poster" class="img-fluid movie-poster">
+			</div>
+			<!-- Phần thông tin phim -->
+			<div class="col-md-9 movie-info">
+				<h2 class="movie-title" style="color: limegreen; font-weight: revert">Tên phim: @movieDto.Name</h2>
+				<p class="movie-description">@movieDto.Description</p>
+				<p>
+					<strong>Đạo diễn:</strong>
+					<span style="color: limegreen;">@movieDto.DirectorName</span>
+				</p>
+				<p>
+					<strong>Diễn viên:</strong>
+					<span style="color: limegreen;">
+						@(movieDto.ActorMovies != null && movieDto.ActorMovies.Any()
+													? string.Join(", ", movieDto.ActorMovies.Select(x => x.ActorName))
+													: "Không có diễn viên")
+					</span>
+				</p>
+				<p>
+					<strong>Thể loại:</strong>
+					<span style="color: limegreen;">@movieDto.GenreName</span>
+				</p>
+				<p>
+					<strong>Khởi chiếu:</strong>@movieDto.StarTime | <strong>Thời lượng:</strong> @movieDto.Duration
+				</p>
+				<button class="btn btn-outline-success limegreen-button" @onclick="NavigateToBack">
+					<span class="material-icons">arrow_back</span> Chọn phim khác
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12 mt-4">
+		<h2 class="trailer-title text-center">Trailer</h2>
+		@if (!string.IsNullOrEmpty(movieDto.Trailer))
+		{
+			<div class="trailer-container">
+				<iframe src="@GetYouTubeEmbedUrl(movieDto.Trailer)"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+				</iframe>
+			</div>
+		}
+		else
+		{
+			<p>Trailer hiện không có sẵn.</p>
+		}
+	</div>
+
+	<div class="row">
+		<div class="col-md-8 show-date mt-5" style="margin-left: 15px;">
+			<h4>Giờ Chiếu</h4>
+			<div class="row">
+				@if (scrreningList != null && scrreningList.Any())
+				{
+					@foreach (var item in scrreningList)
+					{
+						<div class="col-6 col-md-3 mb-3">
+							<button class="btn btn-success btn-time" @onclick="() => ChooseSeatNavigate(item.Id)">
+								@(string.Format("{0:hh\\:mm}", item.ShowTime))
+							</button>
+							<div class="tags">
+								<span class="badge bg-dark">
+									@(item.Sub == eSubEnum.Caption ? "Phụ đề" :
+																item.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+								</span>
+								<span class="badge bg-success">@item.MovieTypeName</span>
+							</div>
+						</div>
+					}
+				}
+				else
+				{
+					<span>Không có lịch chiếu nào trong ngày hôm nay.</span>
+				}
+			</div>
+		</div>
+		<div class="col-md-3 show-date mt-5" style="margin-left: auto; margin-right: 15px">
+			<h4>Lịch Chiếu</h4>
+			<div class="calendar-container">
+				<MudDatePicker PickerVariant="PickerVariant.Static" Color="Color.Success"
+							   Rounded="true" Date="@(selectedDate)"
+							   Class="custom-datepicker"
+							   DateChanged="OnDateChanged" />
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	List<ScreeningMoviesDto> scrreningList = new List<ScreeningMoviesDto>();
+	List<ActorMoviesDto> actorMovies = new List<ActorMoviesDto>();
+	public DateTime? selectedDate = DateTime.UtcNow;
+	protected override async Task OnInitializedAsync()
+	{
+		movieDto = await _movieServices.GetMovieById(id);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		movieDto.ActorMovies = await _movieServices.GetActorsByFilmAsync(movieDto.ID, CancellationToken.None);
+		await LoadShowTimes(DateTime.Now);
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+
+	private async Task LoadShowTimes(DateTime date)
+	{
+		scrreningList = await _services.GetScreeningMovies(movieDto.ID, date);
+	}
+	private async Task OnDateChanged(DateTime? date)
+	{
+		selectedDate = date;
+		await LoadShowTimes(date.Value);
+	}
+	private async Task ChooseSeatNavigate(Guid id)
+	{
+		_navi.NavigateTo($"/select-seat-staff/{id}");
+	}
+	private async Task NavigateToBack()
+	{
+		_navi.NavigateTo("/book_ticket-staff");
+	}
+	private string GetYouTubeEmbedUrl(string youtubeUrl)
+	{
+		if (string.IsNullOrEmpty(youtubeUrl)) return string.Empty;
+
+		if (youtubeUrl.Contains("youtu.be"))
+		{
+			// Dạng rút gọn: https://youtu.be/VIDEO_ID
+			var videoId = youtubeUrl.Split('/').Last().Split('?').First();
+			return $"https://www.youtube.com/embed/{videoId}";
+		}
+		else if (youtubeUrl.Contains("youtube.com"))
+		{
+			// Dạng đầy đủ: https://www.youtube.com/watch?v=VIDEO_ID
+			var uri = new Uri(youtubeUrl);
+			var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+			var videoId = query["v"];
+			if (!string.IsNullOrEmpty(videoId))
+			{
+				return $"https://www.youtube.com/embed/{videoId}";
+			}
+		}
+
+		return string.Empty; // Trả về chuỗi rỗng nếu không phải URL hợp lệ
+	}
+}
+
+<style>
+	body {
+		background-color: #f8f9fa; /* Màu nền của trang */
+	}
+
+	.show-date {
+		border-radius: 15px;
+		background-color: white;
+		padding: 20px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.movie-details-container {
+		display: flex;
+		flex-direction: row;
+		gap: 40px; /* Khoảng cách giữa ảnh và thông tin phim */
+		border-radius: 15px;
+		padding: 20px;
+		background-color: white;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+		.movie-details-container .row {
+			align-items: flex-start; /* Không căn giữa dọc */
+			width: 100%; /* Đảm bảo hàng chiếm toàn bộ chiều ngang container */
+			margin: 0; /* Loại bỏ khoảng cách thừa */
+		}
+
+	.movie-poster {
+		width: 350px; /* Ảnh tự điều chỉnh kích thước */
+		height: auto;
+		padding-left: 100px;
+	}
+
+	.movie-info {
+		text-align: left;
+		padding-left: 100px;
+		font-size: 1.3rem;
+		align-items: center;
+	}
+
+	.movie-title {
+		color: limegreen;
+		font-weight: bold;
+		margin-bottom: 15px;
+		font-size: 1.9rem;
+	}
+
+	.movie-description {
+		margin-bottom: 15px;
+		font-size: 1rem;
+		color: #333;
+		font-size: 1.3rem;
+	}
+
+	.movie-info p {
+		font-size: 1.1rem; /* Tăng kích thước chữ cho các thông tin chi tiết */
+	}
+
+	.highlight {
+		color: limegreen;
+	}
+
+	.limegreen-button {
+		color: limegreen;
+		border-color: limegreen;
+		display: flex;
+		align-items: center; /* Căn giữa icon và chữ theo chiều dọc */
+		justify-content: center; /* Căn giữa icon và chữ theo chiều ngang */
+		border-radius: 12px; /* Bo góc cho nút */
+		padding: 10px 20px; /* Tăng khoảng cách bên trong nút */
+		font-size: 1rem; /* Cỡ chữ */
+		gap: 8px; /* Khoảng cách giữa icon và chữ */
+		font-weight: bold;
+	}
+
+		.limegreen-button:hover {
+			background-color: limegreen;
+			color: white;
+		}
+
+	.col-md-3 {
+		display: flex;
+		flex-direction: column; /* Sắp xếp các phần tử theo cột */
+		justify-content: flex-start; /* Không căn giữa chữ "Lịch Chiếu" */
+		height: 100%; /* Đảm bảo chiều cao đầy đủ */
+	}
+
+	.tags {
+		display: flex; /* Sử dụng flexbox để căn chỉnh */
+		margin-left: 60px;
+		gap: 6px; /* Khoảng cách giữa các badge */
+		margin-top: 8px; /* Khoảng cách phía trên giữa badge và button */
+	}
+
+		.tags .badge {
+			font-size: 0.85rem; /* Giảm kích thước chữ */
+			padding: 6px 10px; /* Khoảng cách trong badge */
+			border-radius: 8px; /* Bo góc mềm mại */
+			font-weight: 500; /* Giữ chữ đậm */
+			display: inline-block; /* Đảm bảo badge nằm trong khối riêng */
+		}
+
+	.calendar-container {
+		display: flex;
+		justify-content: center; /* Căn giữa MudDatePicker theo chiều ngang */
+		align-items: center; /* Căn giữa MudDatePicker theo chiều dọc */
+		flex: 1; /* Đẩy phần lịch chiếu chiếm hết không gian còn lại */
+	}
+
+	.btn-success {
+		background-color: #3F475A; /* Màu nền giống hình */
+		color: white; /* Chữ màu trắng */
+		border: none; /* Loại bỏ viền */
+		border-radius: 8px; /* Bo góc mềm mại */
+		padding: 15px 25px; /* Tăng kích thước nút */
+		font-size: 1.4rem; /* Kích thước chữ */
+		font-weight: revert; /* Làm đậm chữ */
+		transition: all 0.3s ease; /* Hiệu ứng mượt mà khi hover */
+		width: 80%;
+	}
+
+		/* Hiệu ứng hover */
+		.btn-success:hover {
+			background-color: #2C3245; /* Màu nền đậm hơn khi hover */
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+		}
+
+	.green-title {
+		color: limegreen; /* Màu chữ xanh lá */
+		border: 1px solid limegreen; /* Viền màu xanh lá */
+		padding: 10px; /* Khoảng cách trong */
+		border-radius: 8px; /* Bo góc viền */
+		display: inline-block; /* Đảm bảo tiêu đề nằm trong một khối */
+		font-weight: bold; /* Chữ đậm */
+	}
+
+	.trailer-container {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.trailer-container iframe {
+			width: 100%; /* Chiều rộng */
+			height: 600px; /* Chiều cao theo tỷ lệ 16:9 */
+			border: none;
+		}
+
+</style>

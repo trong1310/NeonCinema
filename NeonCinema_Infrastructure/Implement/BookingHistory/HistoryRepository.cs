@@ -61,7 +61,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 					{
 						ComboName = bc.FoodCombo.Content,
 						Quantity = bc.Quantity,
-						Price = bc.FoodCombo.TotalPrice
+						Price = (decimal)bc.FoodCombo.TotalPrice
 					}).ToList()
 				})
 				.ToListAsync();
@@ -123,7 +123,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 					{
 						ComboName = bc.FoodCombo.Content,
 						Quantity = bc.Quantity,
-						Price = bc.FoodCombo.TotalPrice
+						Price = (decimal)bc.FoodCombo.TotalPrice
 					}).ToList()
 				})
 				.ToListAsync();

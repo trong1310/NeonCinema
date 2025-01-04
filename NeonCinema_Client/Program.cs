@@ -60,6 +60,7 @@ using NeonCinema_Client.Data.IServices.BookHistory;
 using NeonCinema_Client.Data.Services.BookHistory;
 using NeonCinema_API.Controllers.Service;
 using NeonCinema_Client.Data.Services;
+using Blazored.SessionStorage;
 using NeonCinema_Client.Data.IServices.Actor;
 using NeonCinema_Client.Data.Services.Actor;
 
@@ -107,6 +108,7 @@ builder.Services.AddScoped<IScreeningService, ScreeningService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
@@ -119,6 +121,7 @@ builder.Services.AddScoped<IUserServicesss, UserService>();
 builder.Services.AddScoped<FoodComboServices>();
 
 builder.Services.AddHostedService<AppBackgroundServices>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication("Bearer")
@@ -127,9 +130,9 @@ builder.Services.AddAuthentication("Bearer")
 		options.Authority = "https://localhost:7211"; // Địa chỉ máy chủ xác thực (auth server) của bạn
 		options.TokenValidationParameters = new TokenValidationParameters
 		{
-			ValidateAudience = false
+			ValidateAudience = false,
 		};
-	});
+    });
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
