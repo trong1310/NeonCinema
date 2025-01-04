@@ -92,7 +92,8 @@ else
 
 
 							<td class="text-center align-middle">
-								<img src=@GetImageUrl(user.Images) alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+								<img src="@GetImageUrl(string.IsNullOrEmpty(user?.Images) ? "avt-default.jpg" : user.Images)"
+									 class="rounded-circle" style="height: 70px; width: 70px;" />
 							</td>
 							<td class="text-center align-middle">@user.FullName</td>
 							<td class="text-center align-middle">@user.DateOrBriht.ToString("dd/MM/yyyy")</td>

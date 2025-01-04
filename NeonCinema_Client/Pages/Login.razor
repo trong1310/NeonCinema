@@ -312,7 +312,7 @@
                     }
                     else if (roleName == "Admin" || roleName == "Staff" )
                     {
-                        _navi.NavigateTo("/list-movie-admin");
+                        _navi.NavigateTo("/book_ticket");
                         StateHasChanged();
                     }
                 }
@@ -468,7 +468,7 @@
             // Nếu không có file được chọn, sử dụng ảnh mặc định
             if (selectedFile == null)
             {
-                request.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+                request.Images = "avt-default.jpg"; // Tên ảnh mặc định trong hệ thống
             }
             else
             {

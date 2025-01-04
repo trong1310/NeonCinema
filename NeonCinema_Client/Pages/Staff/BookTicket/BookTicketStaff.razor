@@ -1,0 +1,1098 @@
+﻿@page "/book_ticket-staff"
+@using NeonCinema_Application.DataTransferObject.ActorMovies
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Application.Pagination
+@using NeonCinema_Client.Data.Services.BookTicket
+@using System.Text
+@using System.Globalization
+@using NeonCinema_Domain.Enum
+@layout LayoutStaff
+@inject BookTicketServices _service
+@inject NavigationManager _navi
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+
+
+<div class="container-fluid mt-3" style="max-width: 98%;">
+
+    @if (isLoading)
+    {
+        <div class="loading-overlay">
+            <p align="center"><LottieAnimation Path="/json/Loading_Animation.json" Style="width: 100px; height: 100px;" Loop="true" /></p>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
+            <h3 class="text-center text-secondary-emphasis">Bán vé</h3>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center overview">
+                    <div class="icon-top-right icon-now-showing">
+                        <span class="material-icons">movie</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-uppercase">Số phim đang chiếu</h5>
+                        <h3>@NowShowingCount</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center overview">
+                    <div class="icon-top-right icon-coming-soon">
+                        <span class="material-icons">event</span> <!-- Icon lịch sự kiện -->
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-uppercase">Số phim sắp chiếu</h5>
+                        <h3>@ComingSoonCount</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center overview">
+                    <div class="icon-top-right icon-stopped">
+                        <span class="material-icons">do_not_disturb</span> <!-- Icon dừng -->
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-uppercase">Số phim đã dừng chiếu</h5>
+                        <h3>@StoppedCount</h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="border p-4 mt-3">
+            <div class="text-center mb-3">
+                <h2 class="green-title">Phim đang chiếu</h2>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-4 mt-4">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchNowShowing" @oninput="SearchNameShowing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="startDate">Từ ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnStartDateShowingChanged" />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate">Đến ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnEndDateShowingChanged" />
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnGenreChanged">
+                        <option value="">Chọn thể loại</option>
+                        @foreach (var genre in genres)
+                        {
+                            <option value="@genre">@genre</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnAgeChanged">
+                        <option value="">Chọn tuổi</option>
+                        @foreach (var age in ages)
+                        {
+                            <option value="@age">@age</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnLanguageChanged">
+                        <option value="">Chọn ngôn ngữ</option>
+                        @foreach (var language in languages)
+                        {
+                            <option value="@language">@language</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnDirectorChanged">
+                        <option value="">Chọn đạo diễn</option>
+                        @foreach (var director in directors)
+                        {
+                            <option value="@director">@director</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnMovieTypeChanged">
+                        <option value="">Chọn kiểu phim</option>
+                        @foreach (var type in movieTypes)
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnMovieSubChanged">
+                        <option value="">Chọn loại phim</option>
+                        <option value="Caption">Phụ đề</option>
+                        <option value="VoiceActing">Lồng tiếng</option>
+                    </select>
+                </div>
+
+
+
+            </div>
+            <div class="row">
+                @if (FillterShowing.Any())
+                {
+                    @foreach (var item in FillterShowing)
+                    {
+                        <div class="col-4 col-md-3 mb-4 col-custom">
+                            <div class="card movie-card">
+                                <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
+                                <div class="card-body">
+                                    <div class="tags">
+                                        <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                        <span class="badge bg-dark">
+                                            @(item.Sub == eSubEnum.Caption ? "Phụ đề" :
+                                                item.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+                                        </span>
+                                        <span class="badge bg-success">@item.MovieTypeName</span>
+                                    </div>
+                                    <h5 class="card-title">@item.Name</h5>
+                                    <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                                    <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                                        <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center">
+                        <h5 class="text-danger">Không có phim nào phù hợp với tiêu chí lọc.</h5>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        <div class="border p-4 mt-3">
+            <div class="text-center mb-3">
+                <h2 class="green-title">Phim sắp chiếu</h2>
+            </div>
+            <div class="row mb-5">
+                <div class="row mb-5">
+                    <div class="col-md-4 mt-4">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchComing" @oninput="SearchNameComing" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="startDate">Từ ngày:</label>
+                        <input type="date" class="form-control" @oninput="OnStartDateComingChanged" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="endDate">Đến ngày:</label>
+                        <input type="date" class="form-control" @oninput="OnEndDateComingChanged" />
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnGenreComingChanged">
+                            <option value="">Chọn thể loại</option>
+                            @foreach (var genre in genres)
+                            {
+                                <option value="@genre">@genre</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnAgeComingChanged">
+                            <option value="">Chọn tuổi</option>
+                            @foreach (var age in ages)
+                            {
+                                <option value="@age">@age</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnLanguageComingChanged">
+                            <option value="">Chọn ngôn ngữ</option>
+                            @foreach (var language in languages)
+                            {
+                                <option value="@language">@language</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnDirectorComingChanged">
+                            <option value="">Chọn đạo diễn</option>
+                            @foreach (var director in directors)
+                            {
+                                <option value="@director">@director</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnMovieTypeComingChanged">
+                            <option value="">Chọn kiểu phim</option>
+                            @foreach (var type in movieTypes)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 mt-3">
+                        <select class="form-select" @onchange="OnMovieSubComingChanged">
+                            <option value="">Chọn loại phim</option>
+                            <option value="Caption">Phụ đề</option>
+                            <option value="VoiceActing">Lồng tiếng</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                @if (FillterComing.Any())
+                {
+                    @foreach (var item in FillterComing)
+                    {
+                        <div class="col-4 col-md-3 mb-4 col-custom">
+                            <div class="card movie-card">
+                                <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
+                                <div class="card-body">
+                                    <div class="tags">
+                                        <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                        <span class="badge bg-dark">
+                                            @(item.Sub == eSubEnum.Caption ? "Phụ đề" :
+                                                item.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+                                        </span>
+                                        <span class="badge bg-success">@item.MovieTypeName</span>
+                                    </div>
+                                    <h5 class="card-title">@item.Name</h5>
+                                    <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                                    <button class="btn btn-primary w-100 buy-ticket" @onclick="() => NagationToDetailBook(item.ID)">
+                                        <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center">
+                        <h5 class="text-danger">Không có phim nào phù hợp với tiêu chí lọc.</h5>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="border p-4 mt-3">
+            <div class="text-center mb-3">
+                <h2 class="green-title">Phim dừng chiếu</h2>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-4 mt-4">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind-value="searchStopped" @oninput="SearchNameStopped" />
+                </div>
+                <div class="col-md-4">
+                    <label for="startDate">Từ ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnStartDateStoppedChanged" />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate">Đến ngày:</label>
+                    <input type="date" class="form-control" @oninput="OnEndDateStoppedChanged" />
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnGenreStoppedChanged">
+                        <option value="">Chọn thể loại</option>
+                        @foreach (var genre in genres)
+                        {
+                            <option value="@genre">@genre</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnAgeStoppedChanged">
+                        <option value="">Chọn tuổi</option>
+                        @foreach (var age in ages)
+                        {
+                            <option value="@age">@age</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnLanguageStoppedChanged">
+                        <option value="">Chọn ngôn ngữ</option>
+                        @foreach (var language in languages)
+                        {
+                            <option value="@language">@language</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnDirectorStoppedChanged">
+                        <option value="">Chọn đạo diễn</option>
+                        @foreach (var director in directors)
+                        {
+                            <option value="@director">@director</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnMovieTypeStoppedChanged">
+                        <option value="">Chọn kiểu phim</option>
+                        @foreach (var type in movieTypes)
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <select class="form-select" @onchange="OnMovieSubStoppedChanged">
+                        <option value="">Chọn loại phim</option>
+                        <option value="Caption">Phụ đề</option>
+                        <option value="VoiceActing">Lồng tiếng</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row">
+                @if (FillterStopped.Any())
+                {
+                    @foreach (var item in FillterStopped)
+                    {
+                        <div class="col-4 col-md-3 mb-4 col-custom">
+                            <div class="card movie-card">
+                                <img src="@GetImageUrl(item.Images)" class="card-img-top" alt="@item.Name" loading="lazy">
+                                <div class="card-body">
+                                    <div class="tags">
+                                        <span class="badge bg-danger">T @item.AgeAllowed</span>
+                                        <span class="badge bg-dark">
+                                            @(item.Sub == eSubEnum.Caption ? "Phụ đề" :
+                                                item.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+                                        </span>
+                                        <span class="badge bg-success">@item.MovieTypeName</span>
+                                    </div>
+                                    <h5 class="card-title">@item.Name</h5>
+                                    <p class="card-text">Thể loại phim: <span class="genre">@item.GenreName</span></p>
+                                    <button class="btn btn-primary w-100 buy-ticket disabled" disabled>
+                                        <i class="fa-solid fa-ticket"></i> MUA VÉ NGAY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center">
+                        <h5 class="text-danger">Không có phim nào phù hợp với tiêu chí lọc.</h5>
+                    </div>
+                }
+            </div>
+
+        </div>
+    }
+</div>
+
+
+@code {
+    List<MovieDTO> moviesNowShowing = new List<MovieDTO>();
+    List<MovieDTO> moviesComing = new List<MovieDTO>();
+    List<MovieDTO> moviesStopped = new List<MovieDTO>();
+    List<MovieDTO> FillterShowing = new List<MovieDTO>();
+    List<MovieDTO> FillterComing = new List<MovieDTO>();
+    List<MovieDTO> FillterStopped = new List<MovieDTO>();
+
+
+    string searchNowShowing = "";
+    DateTime? startDateNowShowing = null;
+    DateTime? endDateNowShowing = null;
+
+    string searchComing = "";
+    DateTime? startDateComing = null;
+    DateTime? endDateComing = null;
+    string searchStopped = "";
+    DateTime? startDateStopped = null;
+    DateTime? endDateStopped = null;
+
+    private string selectedGenreStopped = string.Empty;
+    private string selectedAgeStopped = string.Empty;
+    private string selectedLanguageStopped = string.Empty;
+    private string selectedDirector = string.Empty;
+    private string selectedMovieType = string.Empty;
+    private string selectedMovieCategory = string.Empty;
+
+    List<string> genres = new List<string>();
+    List<string> ages = new List<string>();
+    List<string> languages = new List<string>();
+    List<string> directors = new List<string>();
+    List<string> movieTypes = new List<string>();
+
+    private string selectedGenre = string.Empty;
+    private string selectedAge = string.Empty;
+    private string selectedLanguage = string.Empty;
+
+    private string selectedGenreComing = string.Empty;
+    private string selectedAgeComing = string.Empty;
+    private string selectedLanguageComing = string.Empty;
+
+    private string selectedDirectorComing = string.Empty;
+    private string selectedMovieTypeComing = string.Empty;
+    private eSubEnum? selectedSubComing = null;
+
+    private string selectedDirectorStopped = string.Empty;
+    private string selectedMovieTypeStopped = string.Empty;
+    private eSubEnum? selectedSubStopped = null;
+
+
+
+    int NowShowingCount => moviesNowShowing.Count;
+    int ComingSoonCount => moviesComing.Count;
+    int StoppedCount => moviesStopped.Count;
+
+    private bool isLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true; // Bắt đầu trạng thái đang tải
+        StateHasChanged(); // Cập nhật giao diện để hiển thị loading
+        await Task.Delay(2000); // Tạm dừng trong 2 giây
+        await LoadMovies(); // Thực hiện tải dữ liệu
+        isLoading = false; // Kết thúc trạng thái đang tải
+    }
+
+    public async Task LoadMovies()
+    {
+        moviesNowShowing = await _service.MoviesNowShowing();
+        foreach (var movie in moviesNowShowing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        moviesComing = await _service.MoviesComing();
+        foreach (var movie in moviesComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        moviesStopped = await _service.MoviesStoping();
+        foreach (var movie in moviesComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        FillterShowing = await _service.MoviesNowShowing();
+        foreach (var movie in FillterShowing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        FillterComing = await _service.MoviesComing();
+        foreach (var movie in FillterComing)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+        FillterStopped = await _service.MoviesStoping();
+        foreach (var movie in FillterStopped)
+        {
+            var actors = await _service.GetActorsByFilmAsync(movie.ID, CancellationToken.None);
+            movie.ActorMovies = actors;
+        }
+
+        languages = moviesNowShowing.Select(m => m.LanguareName)
+    .Union(moviesComing.Select(m => m.LanguareName))
+    .Union(moviesStopped.Select(m => m.LanguareName))
+    .Distinct()
+    .OrderBy(l => l)
+    .ToList();
+
+        genres = moviesNowShowing.Select(m => m.GenreName)
+    .Union(moviesComing.Select(m => m.GenreName))
+    .Union(moviesStopped.Select(m => m.GenreName))
+    .Distinct()
+    .OrderBy(g => g)
+    .ToList();
+
+
+        ages = moviesNowShowing.Select(m => m.AgeAllowed.ToString())
+    .Union(moviesComing.Select(m => m.AgeAllowed.ToString()))
+    .Union(moviesStopped.Select(m => m.AgeAllowed.ToString()))
+    .Distinct()
+    .OrderBy(a => a)
+    .ToList();
+
+        directors = moviesNowShowing.Select(m => m.DirectorName.ToString())
+       .Union(moviesComing.Select(m => m.DirectorName.ToString()))
+       .Union(moviesStopped.Select(m => m.DirectorName.ToString()))
+       .Distinct()
+       .OrderBy(a => a)
+       .ToList();
+
+        movieTypes = moviesNowShowing.Select(m => m.MovieTypeName.ToString())
+       .Union(moviesComing.Select(m => m.MovieTypeName.ToString()))
+       .Union(moviesStopped.Select(m => m.MovieTypeName.ToString()))
+       .Distinct()
+       .OrderBy(a => a)
+       .ToList();
+
+
+    }
+
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
+    }
+
+    private async Task NagationToDetailBook(Guid id)
+    {
+        _navi.NavigateTo($"/book-details-staff/{id}");
+    }
+    // Lọc phim đang chiếu
+    public void ApplyNowShowingFilter()
+    {
+        if (!startDateNowShowing.HasValue && !endDateNowShowing.HasValue && string.IsNullOrEmpty(searchNowShowing)
+            && string.IsNullOrEmpty(selectedGenre) && string.IsNullOrEmpty(selectedAge)
+            && string.IsNullOrEmpty(selectedLanguage) && string.IsNullOrEmpty(selectedDirector)
+            && string.IsNullOrEmpty(selectedMovieType) && !selectedSub.HasValue)
+        {
+            FillterShowing = new List<MovieDTO>(moviesNowShowing);
+        }
+        else
+        {
+            string normalizedSearchName = NormalizeString(searchNowShowing);
+
+            FillterShowing = moviesNowShowing
+                .Where(movie =>
+                    (string.IsNullOrEmpty(searchNowShowing) || NormalizeString(movie.Name).Contains(normalizedSearchName)) &&
+                    (!startDateNowShowing.HasValue || movie.StarTime >= startDateNowShowing.Value) &&
+                    (!endDateNowShowing.HasValue || movie.StarTime <= endDateNowShowing.Value) &&
+                    (string.IsNullOrEmpty(selectedGenre) || movie.GenreName.Equals(selectedGenre, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedAge) || movie.AgeAllowed.ToString() == selectedAge) &&
+                    (string.IsNullOrEmpty(selectedLanguage) || movie.LanguareName.Equals(selectedLanguage, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedDirector) || movie.DirectorName.Equals(selectedDirector, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedMovieType) || movie.MovieTypeName.Equals(selectedMovieType, StringComparison.OrdinalIgnoreCase)) &&
+                    (!selectedSub.HasValue || movie.Sub == selectedSub)) // Lọc theo Sub
+                .ToList();
+        }
+    }
+    private eSubEnum? selectedSub = null;
+
+    private void OnMovieSubChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<eSubEnum>(e.Value?.ToString(), out var sub))
+        {
+            selectedSub = sub; // Gán giá trị đã chọn
+        }
+        else
+        {
+            selectedSub = null; // Nếu không chọn gì, đặt giá trị null
+        }
+        ApplyNowShowingFilter(); // Áp dụng bộ lọc
+    }
+
+    private void OnDirectorChanged(ChangeEventArgs e)
+    {
+        selectedDirector = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    private void OnMovieTypeChanged(ChangeEventArgs e)
+    {
+        selectedMovieType = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+
+    // Xử lý sự kiện thay đổi thể loại
+    private void OnGenreChanged(ChangeEventArgs e)
+    {
+        selectedGenre = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    // Xử lý sự kiện thay đổi tuổi
+    private void OnAgeChanged(ChangeEventArgs e)
+    {
+        selectedAge = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    // Xử lý sự kiện thay đổi ngôn ngữ
+    private void OnLanguageChanged(ChangeEventArgs e)
+    {
+        selectedLanguage = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    private void OnStartDateShowingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            startDateNowShowing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            startDateNowShowing = date; // Cập nhật giá trị ngày
+        }
+        ApplyNowShowingFilter();
+    }
+
+    private void OnEndDateShowingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            endDateNowShowing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            endDateNowShowing = date; // Cập nhật giá trị ngày
+        }
+        ApplyNowShowingFilter();
+    }
+
+    private async void SearchNameShowing(ChangeEventArgs e)
+    {
+        searchNowShowing = e.Value?.ToString() ?? string.Empty;
+        ApplyNowShowingFilter();
+    }
+
+    public void ApplyComingFilter()
+    {
+        if (!startDateComing.HasValue && !endDateComing.HasValue && string.IsNullOrEmpty(searchComing)
+            && string.IsNullOrEmpty(selectedGenreComing) && string.IsNullOrEmpty(selectedAgeComing) && string.IsNullOrEmpty(selectedLanguageComing)
+            && string.IsNullOrEmpty(selectedDirectorComing) && string.IsNullOrEmpty(selectedMovieTypeComing) && !selectedSubComing.HasValue)
+        {
+            FillterComing = new List<MovieDTO>(moviesComing);
+        }
+        else
+        {
+            string normalizedSearchName = NormalizeString(searchComing);
+
+            FillterComing = moviesComing
+                .Where(movie =>
+                    (string.IsNullOrEmpty(searchComing) || NormalizeString(movie.Name).Contains(normalizedSearchName)) &&
+                    (!startDateComing.HasValue || movie.StarTime >= startDateComing.Value) &&
+                    (!endDateComing.HasValue || movie.StarTime <= endDateComing.Value) &&
+                    (string.IsNullOrEmpty(selectedGenreComing) || movie.GenreName.Equals(selectedGenreComing, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedAgeComing) || movie.AgeAllowed.ToString() == selectedAgeComing) &&
+                    (string.IsNullOrEmpty(selectedLanguageComing) || movie.LanguareName.Equals(selectedLanguageComing, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedDirectorComing) || movie.DirectorName.Equals(selectedDirectorComing, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedMovieTypeComing) || movie.MovieTypeName.Equals(selectedMovieTypeComing, StringComparison.OrdinalIgnoreCase)) &&
+                    (!selectedSubComing.HasValue || movie.Sub == selectedSubComing))
+                .ToList();
+        }
+    }
+
+
+    private void OnDirectorComingChanged(ChangeEventArgs e)
+    {
+        selectedDirectorComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+    private void OnMovieTypeComingChanged(ChangeEventArgs e)
+    {
+        selectedMovieTypeComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+    private void OnMovieSubComingChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<eSubEnum>(e.Value?.ToString(), out var sub))
+        {
+            selectedSubComing = sub;
+        }
+        else
+        {
+            selectedSubComing = null;
+        }
+        ApplyComingFilter();
+    }
+
+    private string RemoveDiacritics(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        // Thay thế các ký tự đặc biệt
+        string result = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        result = result.Replace("đ", "d").Replace("Đ", "d");
+        return result;
+    }
+
+
+
+    private string NormalizeString(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        // Loại bỏ khoảng trắng đầu và cuối, chuyển về chữ thường
+        input = input.Trim().ToLower();
+
+        // Loại bỏ dấu tiếng Việt và thay thế các ký tự đặc biệt
+        return RemoveDiacritics(input);
+    }
+
+    private void OnGenreComingChanged(ChangeEventArgs e)
+    {
+        selectedGenreComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+    private void OnAgeComingChanged(ChangeEventArgs e)
+    {
+        selectedAgeComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+    private void OnLanguageComingChanged(ChangeEventArgs e)
+    {
+        selectedLanguageComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+    private void OnStartDateComingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            startDateComing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            startDateComing = date; // Cập nhật giá trị ngày
+        }
+        ApplyComingFilter();
+    }
+
+    private void OnEndDateComingChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            endDateComing = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            endDateComing = date; // Cập nhật giá trị ngày
+        }
+        ApplyComingFilter();
+    }
+
+    private async void SearchNameComing(ChangeEventArgs e)
+    {
+        searchComing = e.Value?.ToString() ?? string.Empty;
+        ApplyComingFilter();
+    }
+
+
+    public void ApplyStoppedFilter()
+    {
+        if (!startDateStopped.HasValue && !endDateStopped.HasValue && string.IsNullOrEmpty(searchStopped)
+            && string.IsNullOrEmpty(selectedGenreStopped) && string.IsNullOrEmpty(selectedAgeStopped) && string.IsNullOrEmpty(selectedLanguageStopped)
+            && string.IsNullOrEmpty(selectedDirectorStopped) && string.IsNullOrEmpty(selectedMovieTypeStopped) && !selectedSubStopped.HasValue)
+        {
+            FillterStopped = new List<MovieDTO>(moviesStopped);
+        }
+        else
+        {
+            string normalizedSearchName = NormalizeString(searchStopped);
+
+            FillterStopped = moviesStopped
+                .Where(movie =>
+                    (string.IsNullOrEmpty(searchStopped) || NormalizeString(movie.Name).Contains(normalizedSearchName)) &&
+                    (!startDateStopped.HasValue || movie.StarTime >= startDateStopped.Value) &&
+                    (!endDateStopped.HasValue || movie.StarTime <= endDateStopped.Value) &&
+                    (string.IsNullOrEmpty(selectedGenreStopped) || movie.GenreName.Equals(selectedGenreStopped, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedAgeStopped) || movie.AgeAllowed.ToString() == selectedAgeStopped) &&
+                    (string.IsNullOrEmpty(selectedLanguageStopped) || movie.LanguareName.Equals(selectedLanguageStopped, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedDirectorStopped) || movie.DirectorName.Equals(selectedDirectorStopped, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(selectedMovieTypeStopped) || movie.MovieTypeName.Equals(selectedMovieTypeStopped, StringComparison.OrdinalIgnoreCase)) &&
+                    (!selectedSubStopped.HasValue || movie.Sub == selectedSubStopped))
+                .ToList();
+        }
+    }
+
+    private void OnDirectorStoppedChanged(ChangeEventArgs e)
+    {
+        selectedDirectorStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+    private void OnMovieTypeStoppedChanged(ChangeEventArgs e)
+    {
+        selectedMovieTypeStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+    private void OnMovieSubStoppedChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<eSubEnum>(e.Value?.ToString(), out var sub))
+        {
+            selectedSubStopped = sub;
+        }
+        else
+        {
+            selectedSubStopped = null;
+        }
+        ApplyStoppedFilter();
+    }
+
+    private void OnGenreStoppedChanged(ChangeEventArgs e)
+    {
+        selectedGenreStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+    private void OnAgeStoppedChanged(ChangeEventArgs e)
+    {
+        selectedAgeStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+    private void OnLanguageStoppedChanged(ChangeEventArgs e)
+    {
+        selectedLanguageStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+    private void OnStartDateStoppedChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            startDateStopped = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            startDateStopped = date; // Cập nhật giá trị ngày
+        }
+        ApplyStoppedFilter();
+    }
+
+    private void OnEndDateStoppedChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            endDateStopped = null; // Xóa giá trị ngày
+        }
+        else if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            endDateStopped = date; // Cập nhật giá trị ngày
+        }
+        ApplyStoppedFilter();
+    }
+
+    private async void SearchNameStopped(ChangeEventArgs e)
+    {
+        searchStopped = e.Value?.ToString() ?? string.Empty;
+        ApplyStoppedFilter();
+    }
+
+}
+
+<style>
+    body {
+        background-color: #f8f9fa; /* Màu nền của trang */
+    }
+
+    .border {
+        border-radius: 10px;
+        background-color: white;
+    }
+
+    .icon-top-right {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+        color: white; /* Màu mặc định */
+    }
+
+        .icon-top-right .material-icons {
+            font-size: 30px; /* Kích thước icon */
+        }
+
+    /* Phim đang chiếu */
+    .icon-now-showing {
+        background: linear-gradient(135deg, #28a745, #85e085); /* Gradient xanh lá cây */
+        color: white;
+    }
+
+    /* Phim sắp chiếu */
+    .icon-coming-soon {
+        background: linear-gradient(135deg, #ffc107, #ffdd57); /* Gradient vàng cam */
+        color: white;
+    }
+
+    /* Phim đã dừng chiếu */
+    .icon-stopped {
+        background: linear-gradient(135deg, #dc3545, #ff6f71); /* Gradient đỏ */
+        color: white;
+    }
+
+
+
+    .overview {
+        position: relative; /* Để đặt biểu tượng tuyệt đối */
+        border: 1px solid #ddd;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: #ffffff;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 120px; /* Tăng chiều cao cho cân đối */
+    }
+
+        .overview h5 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        .overview h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+        }
+
+    .icon-container {
+        font-size: 3rem; /* Tăng kích thước biểu tượng */
+        color: #007bff; /* Màu nổi bật */
+        margin-bottom: 10px; /* Thêm khoảng cách dưới */
+    }
+
+    .col-custom {
+        flex: 0 0 20%; /* Chiếm 20% chiều rộng */
+        max-width: 20%; /* Đảm bảo không vượt quá 20% */
+    }
+
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .card-img-top {
+        object-fit: cover; /* Đảm bảo ảnh trong card không bị méo và phủ kín vùng chứa */
+        height: 200px; /* Chiều cao cố định cho ảnh */
+    }
+
+    .green-title {
+        color: limegreen; /* Màu chữ xanh lá */
+        border: 1px solid limegreen; /* Viền màu xanh lá */
+        padding: 10px; /* Khoảng cách trong */
+        border-radius: 8px; /* Bo góc viền */
+        display: inline-block; /* Đảm bảo tiêu đề nằm trong một khối */
+        font-weight: bold; /* Chữ đậm */
+    }
+
+    .movie-card {
+        background-color: white; /* Màu nền của thẻ card */
+        border-radius: 10px; /* Bo góc thẻ card */
+        overflow: hidden; /* Ẩn phần nội dung bị tràn */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho thẻ card */
+        transition: transform 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển động mượt mà khi hover */
+        width: 90%;
+        height: auto; /* Đảm bảo thẻ card chiếm hết chiều cao */
+        display: flex; /* Sử dụng flexbox cho layout */
+        flex-direction: column; /* Sắp xếp các phần tử con theo chiều dọc */
+    }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ đổ bóng khi hover */
+        }
+
+        .movie-card img {
+            width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
+            height: 80%; /* Giữ tỷ lệ của ảnh */
+            object-fit: contain; /* Đảm bảo ảnh không bị biến dạng */
+        }
+
+    .card-body {
+        display: flex; /* Sử dụng flexbox cho layout */
+        flex-direction: column; /* Các phần tử con sẽ xếp theo chiều dọc */
+        justify-content: flex-start; /* Đảm bảo các phần tử không có khoảng cách giữa chúng */
+        margin: 0; /* Xóa bỏ margin ngoài */
+        padding: 0;
+        height: auto;
+        padding-left: 15px; /* Thêm khoảng cách lề trái */
+        padding-right: 15px;
+    }
+
+    .card-title {
+        white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+        overflow: hidden; /* Ẩn phần văn bản bị tràn */
+        text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+        width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+        display: block; /* Hiển thị tiêu đề dưới dạng khối */
+        margin-bottom: 10px; /* Xóa margin dưới */
+        color: limegreen;
+    }
+
+    .card-text {
+        margin-bottom: 10px; /* Xóa margin dưới */
+    }
+
+    .tags {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+        .tags .badge {
+            font-size: 12px; /* Cỡ chữ của các nhãn */
+            padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+            border-radius: 7px; /* Bo góc cho nhãn */
+            margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+        }
+
+            .tags .badge:last-child {
+                margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+            }
+
+    .buy-ticket {
+        margin-bottom: 10px;
+    }
+
+        .buy-ticket.disabled {
+            background-color: #6c757d; /* Màu xám cho nút không khả dụng */
+            border-color: #6c757d; /* Màu viền nút */
+            cursor: not-allowed; /* Con trỏ chuột dạng "không được phép" */
+            color: white; /* Màu chữ */
+            opacity: 0.65; /* Độ mờ của nút */
+        }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+

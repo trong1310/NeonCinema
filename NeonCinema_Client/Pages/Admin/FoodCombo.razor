@@ -35,9 +35,11 @@ else
 				</tr>
 			</thead>
 			<tbody>
+				@{
+					stt = 1; // Đặt lại giá trị của stt
+				}
 				@foreach (var item in foodsDto)
 				{
-					stt++;
 					<tr>
 						<td class="text-center align-middle">@stt</td>
 						<td class="text-center align-middle">
@@ -52,8 +54,10 @@ else
 							</button>
 						</td>
 					</tr>
+					stt++; // Tăng giá trị sau mỗi lần hiển thị
 				}
 			</tbody>
+
 		</table>
 		<div class="modal fade" id="addCombo" tabindex="-1" aria-labelledby="addComboLabel" aria-hidden="true">
 			<div class="modal-dialog" style="max-width: 800px; margin-top: 90px; ">
@@ -191,6 +195,7 @@ else
 	{
 		try
 		{
+			foodsDto.Clear(); // Xóa dữ liệu cũ
 			foodsDto = await _services.GetAllFoodCombo();
 			await Task.Delay(2000);
 			IsLoading = false;
@@ -199,8 +204,8 @@ else
 		{
 			throw new Exception(ex.Message);
 		}
-
 	}
+
 	private async Task HandleSelectedUpdate(InputFileChangeEventArgs e)
 	{
 		UpdateImage = e.File;
@@ -215,6 +220,7 @@ else
 	}
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
+
 		selectedFile = e.File;
 
 		// Tạo URL tạm thời cho hình ảnh đã chọn
@@ -224,6 +230,7 @@ else
 			profileImage = imageUrl;
 			StateHasChanged(); // Cập nhật giao diện
 		}
+
 	}
 	private FoodComboDTO selectedCombo = new FoodComboDTO();
 
@@ -274,14 +281,16 @@ else
 		contentMessage = "";
 		descipMessage = "";
 		priceMessage = "";
+
 		try
 		{
+			// Kiểm tra và hiển thị thông báo lỗi cho các trường
 			if (string.IsNullOrEmpty(request.Content))
 			{
 				contentMessage = "Không được để trống tên";
 				isSubmitting = false;
 			}
-			if (request.TotalPrice == null && request.TotalPrice <= 0)
+			if (request.TotalPrice == null || request.TotalPrice <= 0)
 			{
 				priceMessage = "Giá bán phải lớn hơn 0";
 				isSubmitting = false;
@@ -291,33 +300,56 @@ else
 				descipMessage = "Không được để trống mô tả";
 				isSubmitting = false;
 			}
-			var content = new MultipartFormDataContent();
-			var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
-			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
 
-			content.Add(fileContent, "file", selectedFile.Name);
-			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-
-			if (response.IsSuccessStatusCode)
+			// Dừng nếu có lỗi trong dữ liệu
+			if (!isSubmitting)
 			{
-				var jsonResponse = await response.Content.ReadAsStringAsync();
-				var jsonDoc = JsonDocument.Parse(jsonResponse);
-				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-				var fileName = Path.GetFileName(fileUrl);
-				request.Images = fileName;
+				return;
+			}
 
-				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+			// Kiểm tra xem file có được chọn không
+			if (selectedFile != null)
+			{
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					var fileName = Path.GetFileName(fileUrl);
+					request.Images = fileName;
+
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
 			}
 			else
 			{
-				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-				return;
+				// Nếu không có file được chọn, thông báo lỗi hoặc bỏ qua
+				Console.WriteLine("Không có tệp nào được chọn.");
+			}
+
+			// Tiến hành tạo Food Combo
+			if (request.Images == null)
+			{
+				request.Images = "3ada90ce-6f05-47a2-8c65-5747d4790518.png";
 			}
 			var foodCombos = await _services.CreateFood(request);
 			if (foodCombos != null)
 			{
+				await LoadFoodCombo();
 				StateHasChanged();
-				Console.WriteLine($"Successfully");
+				Console.WriteLine("Successfully");
 			}
 			else
 			{
@@ -340,7 +372,7 @@ else
 		foods = await _services.DetailCombo(id);
 		profileImageUpdate = GetImageUrl(foods.Images);
 	}
-	   
+
 	public async Task UpdateSumbit()
 	{
 		isSubmitting = true;
@@ -364,35 +396,40 @@ else
 		}
 		try
 		{
-			var content = new MultipartFormDataContent();
-			var fileContent = new StreamContent(UpdateImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
-			fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(UpdateImage.ContentType);
+			string fileName="";
+			if (UpdateImage != null)
+			{
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(UpdateImage.OpenReadStream(maxAllowedSize: 1024 * 1024 * 20));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(UpdateImage.ContentType);
 
-			content.Add(fileContent, "file", UpdateImage.Name);
-			var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
-			string fileName;
-			if (response.IsSuccessStatusCode)
-			{
-				var jsonResponse = await response.Content.ReadAsStringAsync();
-				var jsonDoc = JsonDocument.Parse(jsonResponse);
-				var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
-				fileName = Path.GetFileName(fileUrl);			
-				Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				content.Add(fileContent, "file", UpdateImage.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					fileName = Path.GetFileName(fileUrl);
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
 			}
-			else
-			{
-				Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
-				return;
-			}
+
 			updateRequest = new FoodComboUpdateRequest()
 				{
 					ID = foods.ID,
 					Amount = foods.Amount,
 					Content = foods.Content,
 					Description = foods.Description,
-					
+
 				};
-				updateRequest.Images = fileName;
+			updateRequest.Images = selectedFile!=null? fileName: foods.Images;
 			Console.WriteLine($"Image file path sent to API: {updateRequest.Images}");
 
 			var updateFood = await _services.UpdateFood(updateRequest);
