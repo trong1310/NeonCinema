@@ -2,13 +2,20 @@
 @using NeonCinema_Application.DataTransferObject.FoodCombos
 @using NeonCinema_Client.Data.Services
 @using System.Text.Json
+@using System.Text
+@using System.Globalization
+@using NeonCinema_Infrastructure.Database.AppDbContext
 @layout LayoutAdmin
 @inject FoodComboServices _services
 @inject HttpClient _http
 @inject NavigationManager _navigation
+@inject ISnackbar Snackbar
+@inject IJSRuntime _jsRuntime
+
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 @if (IsLoading == true)
 {
 	<div class="loading-overlay">
@@ -19,7 +26,18 @@ else
 {
 	<div class="container-fluid mt-4">
 		<h3 class="text-center text-secondary-emphasis">Danh sách combo</h3>
-
+		<!-- Search and Filter Section -->
+		<div class="row mb-4 p-3 search-filter-container">
+			<div class="col-md-4">
+				<input type="text" class="form-control" placeholder="Tìm kiếm theo tên..." @bind="searchTerm" @oninput="SearchFood" />
+			</div>
+			<div class="col-md-8 d-flex align-items-center ">
+				<label class="form-label ">Lọc từ giá:</label>
+				<input type="text" class="form-control" @oninput="OnStartAmountChanged" />
+				<label class="form-label ">Đến giá:</label>
+				<input type="text" class="form-control" @oninput="OnEndAmountChanged" />
+			</div>
+		</div>
 		<button type="button" class="btn btn-success bg-opacity-50" style="border-radius: 6px; margin-left:1px; margin-bottom:15px" data-bs-toggle="modal" data-bs-target="#addCombo">
 			<i class="fas fa-plus"></i> Thêm combo
 		</button>
@@ -35,26 +53,27 @@ else
 				</tr>
 			</thead>
 			<tbody>
-				@{
-					stt = 1; // Đặt lại giá trị của stt
-				}
-				@foreach (var item in foodsDto)
+				@if (foodsFilter != null && foodsFilter.Any())
 				{
-					<tr>
-						<td class="text-center align-middle">@stt</td>
-						<td class="text-center align-middle">
-							<img src="@GetImageUrl(item.Images)" alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
-						</td>
-						<td class="text-center align-middle">@item.Content</td>
-						<td class="text-center align-middle">@item.Description</td>
-						<td class="text-center align-middle">@item.Amount.ToString("N0") VNĐ</td>
-						<td class="text-center align-middle">
-							<button class="btn btn-outline-primary btn-sm" style="border: none;" data-bs-toggle="modal" data-bs-target="#editCombo" @onclick="() => GetComboUpdate(item.ID)">
-								<i class="fas fa-edit"></i>
-							</button>
-						</td>
-					</tr>
-					stt++; // Tăng giá trị sau mỗi lần hiển thị
+					var foodsToDisplay = foodsFilter.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+					@foreach (var item in foodsToDisplay)
+					{
+						<tr>
+							<td class="text-center align-middle">@(@foodsDto.IndexOf(item) + 1)</td>
+							<td class="text-center align-middle">
+								<img src="@GetImageUrl(item.Images)" alt="Hình Ảnh" class="rounded-circle" style="height: 70px; width: 70px;" />
+							</td>
+							<td class="text-center align-middle">@item.Content</td>
+							<td class="text-center align-middle">@item.Description</td>
+							<td class="text-center align-middle">@item.Amount.ToString("N0") VNĐ</td>
+							<td class="text-center align-middle">
+								<button class="btn btn-outline-primary btn-sm" style="border: none;" data-bs-toggle="modal" data-bs-target="#editCombo" @onclick="() => GetComboUpdate(item.ID)">
+									<i class="fas fa-edit"></i>
+								</button>
+							</td>
+						</tr>
+						stt++; // Tăng giá trị sau mỗi lần hiển thị
+					}
 				}
 			</tbody>
 
@@ -84,9 +103,9 @@ else
 										<div class="form-group">
 											<label class="form-label">Tên combo</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.Content" />
-											@if (!string.IsNullOrEmpty(contentMessage))
+											@if (!string.IsNullOrEmpty(errorName))
 											{
-												<span class="text-danger">@contentMessage</span>
+												<span class="text-danger">@errorName</span>
 											}
 										</div>
 									</div>
@@ -94,9 +113,9 @@ else
 										<div class="form-group">
 											<label class="form-label">Mô tả</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.Description">
-											@if (!string.IsNullOrEmpty(descipMessage))
+											@if (!string.IsNullOrEmpty(errorDes))
 											{
-												<span class="text-danger">@descipMessage</span>
+												<span class="text-danger">@errorDes</span>
 											}
 										</div>
 									</div>
@@ -104,9 +123,9 @@ else
 										<div class="form-group">
 											<label class="form-label">Giá</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="request.TotalPrice">
-											@if (!string.IsNullOrEmpty(priceMessage))
+											@if (!string.IsNullOrEmpty(errorAmount))
 											{
-												<span class="text-danger">@priceMessage</span>
+												<span class="text-danger">@errorAmount</span>
 											}
 										</div>
 									</div>
@@ -116,7 +135,35 @@ else
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
-						<button @onclick="HandleSubmit" class="btn btn-success btn-lg" style="font-size: 1rem">Thêm</button>
+					 <button @onclick="ShowConfirmModal" class="btn btn-success" style="font-size: 1rem">Thêm</button> 
+						
+						@if (showConfirmModal)
+						{
+							<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close-btn mb-3" @onclick="CloseModal" aria-label="Close">
+												<span class="material-icons" aria-hidden="true">close</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<h5 class="text-center">Bạn chắn chắn muốn thêm combo mới ?</h5>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
+											<button type="button" @onclick="HandleSubmit" class="btn btn-success" disabled="@isSubmitting"
+													style="width: 15%; min-width: 200px;">
+												<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+													  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+												<span>@(isSubmitting ? "Đang xử lý..." : "Thêm")</span>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						}
 					</div>
 				</div>
 			</div>
@@ -146,12 +193,20 @@ else
 										<div class="form-group">
 											<label class="form-label">Tên combo</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="@foods.Content" />
+											@if (!string.IsNullOrEmpty(errorName))
+											{
+												<span class="text-danger">@errorName</span>
+											}
 										</div>
 									</div>
 									<div class="row mb-1">
 										<div class="form-group">
 											<label class="form-label">Mô tả</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7" @bind-value="@foods.Description" />
+											@if (!string.IsNullOrEmpty(errorDes))
+											{
+												<span class="text-danger">@errorDes</span>
+											}
 										</div>
 									</div>
 									<div class="row mb-1">
@@ -159,7 +214,10 @@ else
 											<label class="form-label">Giá</label>
 											<input type="text" class="form-control" style="color:black; background-color: #f7f7f7"
 												   @bind="foods.FormattedAmount" placeholder="VNĐ" />
-
+											@if (!string.IsNullOrEmpty(errorAmount))
+											{
+												<span class="text-danger">@errorAmount</span>
+											}
 										</div>
 									</div>
 								</div>
@@ -168,11 +226,55 @@ else
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
-						<button type="button" class="btn btn-success btn-lg" style="font-size: 1rem" @onclick="UpdateSumbit">Cập nhật</button>
+						<button type="button" class="btn btn-success btn-lg" style="font-size: 1rem" @onclick="ShowConfirmEditModal">Cập nhật</button>
+
+						@if (showConfirmModal)
+						{
+							<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close-btn mb-3" @onclick="CloseModal" aria-label="Close">
+												<span class="material-icons" aria-hidden="true">close</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<h5 class="text-center">Bạn chắn chắn sửa combo này ?</h5>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
+											<button type="button" @onclick="UpdateSumbit" class="btn btn-success" disabled="@isSubmitting">
+												<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+													  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+												<span>@(isSubmitting ? "Đang xử lý..." : "Sửa")</span>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						}
 					</div>
 				</div>
 			</div>
 		</div>
+		<!-- Pagination -->
+		<nav>
+			<ul class="pagination justify-content-center">
+				<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+					<a class="page-link" @onclick="() => ChangePage(currentPage - 1)">Trước</a>
+				</li>
+				@for (var i = 1; i <= totalPages; i++)
+				{
+					<li class="page-item @(currentPage == i ? "active" : "")">
+						<a class="page-link" @onclick="() => ChangePage(i)">@i</a>
+					</li>
+				}
+				<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+					<a class="page-link" @onclick="() => ChangePage(currentPage + 1)">Sau</a>
+				</li>
+			</ul>
+		</nav>
 	</div>
 }
 
@@ -180,10 +282,46 @@ else
 	private bool IsLoading = true;
 	int stt = 1;
 	List<FoodComboDTO> foodsDto = new List<FoodComboDTO>();
+	List<FoodComboDTO> foodsFilter = new List<FoodComboDTO>();
 	private IBrowserFile selectedFile;
 	private IBrowserFile UpdateImage;
+	private string searchTerm = string.Empty;
+	private decimal? priceFrom = null;
+	private decimal? priceTo = null;
+
 	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
 	private string profileImageUpdate = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+
+	private string? errorName = null;
+	private string? errorDes = null;
+	private string? errorAmount = null;
+	private bool IsAddComboModalOpen = false;
+	private async Task CloseModalById(string modalId)
+	{
+		await Task.Delay(500); // Đợi một chút trước khi đóng (tùy chỉnh theo UI)
+		var script = $"$('#{modalId}').modal('hide');";
+		await _jsRuntime.InvokeVoidAsync("eval", script);
+		showConfirmModal = false;
+		StateHasChanged();
+	}
+
+
+
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
+		});
+		isSubmitting = false;
+		// Chuyển hướng sau khi hoàn tất hiển thị
+		Task.Run(async () =>
+		{
+			await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+		});
+	}
+
 	protected override async Task OnInitializedAsync()
 	{
 		profileImageUpdate = GetImageUrl(foods.Images);
@@ -197,6 +335,7 @@ else
 		{
 			foodsDto.Clear(); // Xóa dữ liệu cũ
 			foodsDto = await _services.GetAllFoodCombo();
+			foodsFilter = foodsDto;
 			await Task.Delay(2000);
 			IsLoading = false;
 		}
@@ -205,7 +344,84 @@ else
 			throw new Exception(ex.Message);
 		}
 	}
+	private void SearchFood(ChangeEventArgs e)
+	{
+		searchTerm = e.Value?.ToString() ?? string.Empty;
 
+		FilterFood();
+	}
+	private void OnStartAmountChanged(ChangeEventArgs e)
+	{
+		if (string.IsNullOrEmpty(e.Value?.ToString()))
+		{
+			priceFrom = null;
+		}
+		else if (Decimal.TryParse(e.Value?.ToString(), out var amount))
+		{
+			priceFrom = amount;
+		}
+		currentPage = 1;
+		FilterFood();
+	}
+
+	private void OnEndAmountChanged(ChangeEventArgs e)
+	{
+		if (string.IsNullOrEmpty(e.Value?.ToString()))
+		{
+			priceTo = null;
+		}
+		else if (Decimal.TryParse(e.Value?.ToString(), out var amount))
+		{
+			priceTo = amount;
+		}
+		currentPage = 1;
+		FilterFood();
+	}
+	private void FilterFood()
+	{
+		string normalizedSearchTerm = NormalizeString(searchTerm);
+		foodsFilter = foodsDto
+			.Where(item =>
+				(string.IsNullOrEmpty(searchTerm) || NormalizeString(item.Content).Contains(normalizedSearchTerm))&&
+				(!priceFrom.HasValue || item.Amount >= priceFrom) &&
+				(!priceTo.HasValue || item.Amount <= priceTo))
+			.ToList();
+
+		currentPage = 1; // Reset current page to 1 after filtering
+	}
+	private string RemoveDiacritics(string text)
+	{
+		if (string.IsNullOrEmpty(text))
+			return text;
+
+		var normalizedString = text.Normalize(NormalizationForm.FormD);
+		var stringBuilder = new StringBuilder();
+
+		foreach (var c in normalizedString)
+		{
+			var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+			if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+			{
+				stringBuilder.Append(c);
+			}
+		}
+
+		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+	}
+
+	private string NormalizeString(string input)
+	{
+		if (string.IsNullOrWhiteSpace(input))
+			return string.Empty;
+
+		// Loại bỏ khoảng trắng đầu và cuối, chuyển về chữ thường
+		input = input.Trim().ToLower();
+
+		// Loại bỏ dấu tiếng Việt
+		input = RemoveDiacritics(input);
+
+		return input;
+	}
 	private async Task HandleSelectedUpdate(InputFileChangeEventArgs e)
 	{
 		UpdateImage = e.File;
@@ -270,42 +486,74 @@ else
 		}
 		return null;
 	}
+
+	//THÊM 
+
 	FoodComboCreateRequest request = new FoodComboCreateRequest();
-	private string contentMessage = "";
-	private string priceMessage = "";
-	private string descipMessage = "";
+	private NeonCinemasContext _context = new NeonCinemasContext();
 	private bool isSubmitting = false;
+	private bool showConfirmModal = false;
+
+	private void CloseModal()
+	{
+		showConfirmModal = false;
+		StateHasChanged();
+	}
+	private void ShowConfirmModal()
+	{
+		bool isValid = true;
+		var nameExists = _context.FoodCombos.Any(x => x.Content == request.Content);
+		// Kiểm tra và hiển thị thông báo lỗi cho các trường
+		if (string.IsNullOrEmpty(request.Content))
+		{
+			errorName = "Không được để trống tên";
+			isSubmitting = false;
+			isValid = false;
+		}		
+		else if (nameExists)
+		{
+			errorName = "Tên này đã tồn tại.";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorName = null;
+		}
+		if (request.TotalPrice == null || request.TotalPrice <= 0)
+		{
+			errorAmount = "Giá bán phải lớn hơn 0";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorAmount = null;
+		}
+		if (string.IsNullOrEmpty(request.Description))
+		{
+			errorDes = "Không được để trống mô tả";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorDes = null;
+		}
+		showConfirmModal = isValid;
+	}
+
 	public async Task HandleSubmit()
 	{
 		isSubmitting = true;
-		contentMessage = "";
-		descipMessage = "";
-		priceMessage = "";
+		errorAmount = "";
+		errorDes = "";
+		errorName = "";
 
 		try
 		{
-			// Kiểm tra và hiển thị thông báo lỗi cho các trường
-			if (string.IsNullOrEmpty(request.Content))
-			{
-				contentMessage = "Không được để trống tên";
-				isSubmitting = false;
-			}
-			if (request.TotalPrice == null || request.TotalPrice <= 0)
-			{
-				priceMessage = "Giá bán phải lớn hơn 0";
-				isSubmitting = false;
-			}
-			if (string.IsNullOrEmpty(request.Description))
-			{
-				descipMessage = "Không được để trống mô tả";
-				isSubmitting = false;
-			}
 
-			// Dừng nếu có lỗi trong dữ liệu
-			if (!isSubmitting)
-			{
-				return;
-			}
+
 
 			// Kiểm tra xem file có được chọn không
 			if (selectedFile != null)
@@ -348,8 +596,10 @@ else
 			if (foodCombos != null)
 			{
 				await LoadFoodCombo();
-				StateHasChanged();
-				Console.WriteLine("Successfully");
+				ShowSnackbar("Thêm combo đồ ăn thành công.", Severity.Success);
+				isSubmitting = false;
+				await Task.Delay(2000);
+				await CloseModalById("addCombo");
 			}
 			else
 			{
@@ -372,30 +622,61 @@ else
 		foods = await _services.DetailCombo(id);
 		profileImageUpdate = GetImageUrl(foods.Images);
 	}
-
+	private void ShowConfirmEditModal()
+	{
+		bool isValid = true;
+		// Kiểm tra và hiển thị thông báo lỗi cho các trường
+		var nameExists = _context.FoodCombos
+			.Any(x => x.Content == foods.Content && x.ID != foods.ID);
+		if (string.IsNullOrEmpty(foods.Content))
+		{
+			errorName = "Không được để trống tên";
+			isSubmitting = false;
+			isValid = false;
+		}	
+		else if (nameExists)
+		{
+			errorName = "Tên này đã tồn tại.";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorName = null;
+		}
+		if (foods.Amount == null || foods.Amount <= 0)
+		{
+			errorAmount = "Giá bán phải lớn hơn 0";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorAmount = null;
+		}
+		if (string.IsNullOrEmpty(foods.Description))
+		{
+			errorDes = "Không được để trống mô tả";
+			isSubmitting = false;
+			isValid = false;
+		}
+		else
+		{
+			errorDes = null;
+		}
+		showConfirmModal = isValid;
+	}
 	public async Task UpdateSumbit()
 	{
 		isSubmitting = true;
-		contentMessage = "";
-		descipMessage = "";
-		priceMessage = "";
-		if (string.IsNullOrEmpty(request.Content))
-		{
-			contentMessage = "Không được để trống tên";
-			isSubmitting = false;
-		}
-		if (request.TotalPrice == null && request.TotalPrice <= 0)
-		{
-			priceMessage = "Giá bán phải lớn hơn 0";
-			isSubmitting = false;
-		}
-		if (string.IsNullOrEmpty(request.Description))
-		{
-			descipMessage = "Không được để trống mô tả";
-			isSubmitting = false;
-		}
+		errorAmount = "";
+		errorDes = "";
+		errorName = "";
+		
 		try
 		{
+			
+			
 			string fileName="";
 			if (UpdateImage != null)
 			{
@@ -436,8 +717,10 @@ else
 			if (updateRequest != null)
 			{
 				await LoadFoodCombo();
-				StateHasChanged();
-				Console.WriteLine($"Successfully");
+				ShowSnackbar("Sửa combo đồ ăn thành công.", Severity.Success);
+				isSubmitting = false;
+				await Task.Delay(2000);
+				await CloseModalById("editCombo");
 			}
 			else
 			{
@@ -449,6 +732,17 @@ else
 			throw new Exception($"Error {ex.Message} : {ex.StackTrace}");
 		}
 	}
+	#region Phân trang
+	private int currentPage = 1;
+	private const int pageSize = 5;
+	private void ChangePage(int newPage)
+	{
+		if (newPage < 1 || newPage > totalPages) return;
+		currentPage = newPage;
+	}
+
+	private int totalPages => (int)Math.Ceiling((double)foodsDto.Count / pageSize);
+	#endregion
 }
 
 
@@ -509,5 +803,45 @@ else
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.search-filter-container {
+		display: flex; /* Sử dụng flexbox */
+		flex-wrap: wrap; /* Không cho xuống dòng */
+		align-items: center; /* Căn giữa theo trục dọc */
+		justify-content: space-between; /* Căn đều các phần tử */
+		background-color: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		margin-left: 1px;
+		margin-right: 1px;
+	}
+
+	.d-flex.align-items-center {
+		display: flex; /* Đảm bảo các thành phần hiển thị ngang hàng */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		gap: 15px; /* Khoảng cách giữa các phần tử */
+	}
+
+	.form-check-inline {
+		margin-right: 15px; /* Khoảng cách giữa các radio button */
+	}
+
+	.form-label {
+		white-space: nowrap; /* Đảm bảo chữ "Trạng thái" không xuống dòng */
+		margin-right: 10px; /* Khoảng cách giữa label và các radio button */
+		margin-bottom: 0; /* Loại bỏ khoảng cách dưới label */
+	}
+
+	.close-btn {
+		position: absolute;
+		top: 10px; /* Cách đỉnh modal một khoảng */
+		right: 10px; /* Cách phải modal một khoảng */
+		background: none; /* Loại bỏ màu nền */
+		border: none; /* Loại bỏ viền */
+		cursor: pointer; /* Thay đổi con trỏ thành biểu tượng tay */
+		font-size: 1.5rem; /* Kích thước biểu tượng */
+		color: #333; /* Màu sắc biểu tượng */
 	}
 </style>
