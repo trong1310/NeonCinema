@@ -9,8 +9,10 @@
 @inject FoodComboServices _services
 @inject HttpClient _http
 @inject NavigationManager _navigation
+@attribute [Authorize(Roles = "Admin")]
 @inject ISnackbar Snackbar
 @inject IJSRuntime _jsRuntime
+
 
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">

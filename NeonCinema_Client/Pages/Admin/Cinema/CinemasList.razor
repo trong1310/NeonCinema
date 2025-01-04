@@ -4,6 +4,7 @@
 @inject NavigationManager Navigation
 @inject ICinemasService CnmSV
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
 <link rel="stylesheet" href="/CINEMA/cinemaslist.css">
 
 <div class="cinema-container">

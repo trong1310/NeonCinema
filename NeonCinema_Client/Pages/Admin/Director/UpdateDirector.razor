@@ -5,7 +5,7 @@
 @inject IDirectorService SV
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
-
+@attribute [Authorize(Roles = "Admin")]
 
 <EditForm Model="DRT" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />

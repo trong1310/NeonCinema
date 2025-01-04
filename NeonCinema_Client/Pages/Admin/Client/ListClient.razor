@@ -9,7 +9,7 @@
 @layout LayoutAdmin
 @inject IUserServices UserService
 @inject NavigationManager Navigation
-
+@attribute [Authorize(Roles = "Admin")]
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 @if (isLoading)
 {
