@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 @inject HttpClient _http
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 

@@ -6,6 +6,8 @@
 @inject FoodComboServices _services
 @inject HttpClient _http
 @inject NavigationManager _navigation
+@attribute [Authorize(Roles = "Admin")]
+
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">

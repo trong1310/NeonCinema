@@ -3,6 +3,8 @@
 @using NeonCinema_Client.Data.IServices.User
 @inject IUserServices UserService 
 @inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
+
 <link rel="stylesheet" href="/css/User/LISTuser.css">
 
     

@@ -13,6 +13,8 @@
 @inject ISeatTypeService seattypeservice
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "Admin")]
+
 <script src="js/Customer/MovieList.js"></script>
 <link rel="stylesheet" href="/css/Room/detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

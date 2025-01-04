@@ -3,6 +3,7 @@
 @using NeonCinema_Client.Data.IServices.Actor
 @using NeonCinema_Domain.Enum
 @inject IActorService ActorService
+@attribute [Authorize(Roles = "Admin")]
 <link rel="stylesheet" href="/css/Actor/listactor.css">
 
 
