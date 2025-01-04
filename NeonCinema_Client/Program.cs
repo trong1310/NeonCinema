@@ -61,6 +61,8 @@ using NeonCinema_Client.Data.Services.BookHistory;
 using NeonCinema_API.Controllers.Service;
 using NeonCinema_Client.Data.Services;
 using Blazored.SessionStorage;
+using NeonCinema_Client.Data.IServices.Actor;
+using NeonCinema_Client.Data.Services.Actor;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -82,6 +84,7 @@ builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
 builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ISV, SV>();
+builder.Services.AddScoped<IActorService, ActorService>();
 builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
 builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService>();
 builder.Services.AddAutoMapper(typeof(Program));
