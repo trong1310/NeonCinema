@@ -14,6 +14,7 @@ namespace NeonCinema_Domain.Database.Entities
         [Key]
         public Guid ID { get; set; }
         public string Name { get; set; }
+        [Required(ErrorMessage = "Giới tính không được để trống.")]
         public EntityStatus Sex { get; set; }
         public EntityStatus Status { get; set; }
         public virtual ICollection<ActorMovies>? ActorMovies { get; set; }
