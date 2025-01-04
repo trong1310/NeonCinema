@@ -11,6 +11,8 @@
 @inject HttpClient _http
 @layout LayoutAdmin
 @inject NavigationManager _navigation
+@attribute [Authorize(Roles = "Admin")]
+
 <body>
 	<div class="container-fluid">
 		<div class="row movie-detail-background d-flex">

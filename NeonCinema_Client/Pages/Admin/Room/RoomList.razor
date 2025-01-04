@@ -6,6 +6,7 @@
 @inject IRoomService RoomService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">

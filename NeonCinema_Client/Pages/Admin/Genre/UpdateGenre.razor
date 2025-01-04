@@ -4,6 +4,8 @@
 @inject IGenreService GenreService
 @inject NavigationManager Navigation
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 <MudContainer>
     <MudGrid>
         <MudItem xs="12">

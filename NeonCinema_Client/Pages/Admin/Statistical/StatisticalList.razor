@@ -4,6 +4,8 @@
 @using NeonCinema_Client.Data.Services.StatisticService
 @inject IJSRuntime JSRuntime
 @inject IStatisticsService StatisticsService
+@attribute [Authorize(Roles = "Admin")]
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="js/chart.js"></script>
 

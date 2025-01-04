@@ -4,6 +4,8 @@
 @inject IGenreService GenreService
 @inject NavigationManager Navigation
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 <MudGrid MaxWidth="100%">
     <MudItem xs="12">
         <MudPaper Elevation="1" Square="true" Style="padding: 16px; margin-bottom: 20px;">
