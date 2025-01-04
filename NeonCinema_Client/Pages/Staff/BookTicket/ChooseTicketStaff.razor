@@ -1,0 +1,1726 @@
+﻿@page "/select-seat-staff/{id:guid}"
+@using Blazored.LocalStorage
+@using NeonCinema_Application.DataTransferObject.BookTicket
+@using NeonCinema_Application.DataTransferObject.BookTicket.Request
+@using NeonCinema_Application.DataTransferObject.BookTicket.Resp
+@using NeonCinema_Application.DataTransferObject.Countrys
+@using NeonCinema_Application.DataTransferObject.Directors
+@using NeonCinema_Application.DataTransferObject.FoodCombos
+@using NeonCinema_Application.DataTransferObject.Genre
+@using NeonCinema_Application.DataTransferObject.Language
+@using NeonCinema_Application.DataTransferObject.Movie
+@using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Collections.Generic
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.IMoviesServices
+@using NeonCinema_Client.Data.Services.BookTicket
+@using NeonCinema_Client.Models.Enums
+@using NeonCinema_Domain.Database.Entities
+@using System.Text.Json
+@using System.Security.Claims
+@layout LayoutStaff
+@inject IMovieservices _movieServices
+@inject BookTicketServices _services
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject IUserServices UserService
+@inject NavigationManager _navigation
+@inject HttpClient _http
+@inject NavigationManager _navi
+@inject ILocalStorageService _localstorage
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
+
+<div class="row m-2">
+	<!-- Thông tin phim -->
+	<div class="col-md-3">
+		<!-- Card thông tin phim -->
+		<div class="card movie-info-card mb-4">
+			<div class="img-container">
+				<img src="@GetImageUrl(movieDto.Images)" class="card-img-top" alt="Tên phim">
+			</div>
+			<div class="card-body">
+				<h3 class="card-title">@movieDto.Name</h3>
+				<div class="tags">
+					<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+					<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+				</div>
+
+				<p class="card-text">
+					<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
+					<strong>Phòng chiếu:</strong> @screenings.RoomName
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 card shadow position-relative">
+		@if (_selectedIndex == 0)
+		{
+			<h3 class="text-center mt-2" style="margin-bottom: -5px">Chọn Ghế</h3>
+			<hr />
+			<div class="d-flex align-items-center justify-content-center">
+				<div class="seat-type">
+					<div class="seat-type-item">
+						<span class="square bg-warning"></span>
+						<span class="seat-name">Ghế thường</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-danger"></span>
+						<span class="seat-name">Ghế vip</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-success"></span>
+						<span class="seat-name">Ghế đôi</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-dark"></span>
+						<span class="seat-name">Ghế đã bán</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-primary"></span>
+						<span class="seat-name">Ghế bạn chọn</span>
+					</div>
+					<div class="seat-type-item">
+						<span class="square bg-secondary"></span>
+						<span class="seat-name">Ghế bảo trì</span>
+					</div>
+				</div>
+			</div>
+			<div class="screen">
+				<svg viewBox="0 0 1000 100" xmlns="http://www.w3.org/2000/svg" class="screen-svg">
+					<!-- Đường cong -->
+					<path d="M0,50 Q500,0 1000,50" fill="none" stroke="#AFFF00" stroke-width="5" />
+					<!-- Hiệu ứng gradient -->
+					<path d="M0,50 Q500,0 1000,50 L1000,100 L0,100 Z" fill="url(#gradient)" />
+					<defs>
+						<linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+							<stop offset="0%" style="stop-color:rgba(175, 255, 0, 0.5); stop-opacity:1" />
+							<stop offset="100%" style="stop-color:white; stop-opacity:0" />
+						</linearGradient>
+					</defs>
+				</svg>
+				<div class="screen-label mt-4">Màn hình</div>
+			</div>
+
+			<div class="seat-selection">
+				@foreach (var row in groupedSeats)
+				{
+					<div class="seat-row">
+						@foreach (var seat in row.Value)
+						{
+							<div class="seat-box @GetSeatCssClass(seat)"
+								 id="@seat.ID"
+								 @onclick="() => SelectSeat(seat)">
+								@seat.SeatNumber
+							</div>
+						}
+					</div>
+				}
+			</div>
+			<div class="button-container">
+				<button class="btn btn-primary mb-3" style="width: 100px" @onclick="NextTab">Tiếp tục</button>
+			</div>
+		}
+		else if (_selectedIndex == 1)
+		{
+			<div class="cinema-concession-container d-flex">
+				<div class="combo-container">
+					<div class="tab-content concession-items">
+						<div class="text-center">
+							<h3>Combo Đồ Ăn</h3>
+						</div>
+						<hr class="dashed">
+						<div class="product-list ">
+							@foreach (var item in foods)
+							{
+								<div class="product-item d-flex align-items-center mb-3">
+									<img src="@GetImageUrl(item.Images)" class="product-image me-3">
+									<div class="product-info flex-grow-1">
+										<h5>@item.Content</h5>
+										<p>
+											<span class="text-success">@item.Amount.ToString("N0") VND</span>
+										</p>
+									</div>
+									<div class="quantity-controls d-flex align-items-center">
+										<button class="btn control" @onclick="() => Decrease(item)">-</button>
+										<span class="mx-2">@GetComboQuantity(item)</span>
+										<button class="btn control" @onclick="() => Increase(item)">+</button>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="button-container">
+				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
+			</div>
+
+			@if (showConfirmModal)
+			{
+				<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
+								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+							</div>
+							<div class="d-flex justify-content-between mt-3">
+								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
+							</div>
+							<div class="modal-body">
+								<p>Bạn chắc chắn muốn thanh toán với số tiền <strong>@totalPrices.ToString("N0")</strong>?</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
+								<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+			@if (showMessage)
+			{
+				<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Thông báo</h5>
+								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+							</div>
+							<div class="d-flex justify-content-between mt-3">
+								<span>Số tiền khách đưa không đủ vui lòng nhập lại</span>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Quay lại</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		}
+		@if (paymentStatus == "success")
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentSuccessLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="paymentSuccessLabel">Thanh toán thành công</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hóa đơn của bạn đã được xác nhận thành công!</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+							<button type="button" class="btn btn-primary" @onclick="ExportFile">In hóa đơn</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		@if (paymentStatus == "failure")
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="paymentFailureLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="paymentFailureLabel">Thanh toán thất bại</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+	<!-- Tóm tắt đơn hàng -->
+	<div class="col-md-3">
+		<div class="card shadow order-summary-card" style="background-color: white">
+			<h4 class="text-center mt-3">NEON CINEMA</h4>
+			<p class="text-center">@screenings.RoomName - @screenings.ShowDate?.ToString("dd/MM/yyyy") - Suất chiếu: @screenings.ShowTime</p>
+			<div class="order-summary">
+				<h4 class="card-title">@movieDto.Name</h4>
+				<div class="tags">
+					<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
+					<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+				</div>
+				<hr class="dashed">
+				<div class="d-flex justify-content-between mb-3">
+					<span>Ghế : @selectedSeatNumbers</span>
+					<span>@seatPrices.ToString("N0") VND</span>
+				</div>
+				@foreach (var combo in selectedCombos)
+				{
+					<div class="d-flex justify-content-between mb-3">
+						<span>@combo.Key.Content  x @combo.Value</span>
+						<span>@combo.Key.Amount.ToString("N0") VND</span>
+					</div>
+				}
+				<div class="d-flex justify-content-between mb-3">
+					<span>Tổng tiền combo</span>
+					<span>@comboPrices.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
+					<span>@surcharge.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Tổng tiền tạm tính</span>
+					<span>@sumPrices.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Giảm giá</span>
+					<span>@discount.ToString("N0") VND</span>
+				</div>
+				<div class="d-flex justify-content-between mb-3">
+					<span>Tổng tiền (Gồm phụ thu & giảm giá)</span>
+					<strong id="amount-display">@totalPrices.ToString("N0") VND</strong>
+				</div>
+				<hr class="dashed">
+				<div class="form-group">
+					<label for="search">Tìm kiếm khách hàng:</label>
+					<div class="row g-2">
+						<div class="col-md-8">
+							<input type="text" id="search" @bind="phoneNumber" placeholder="Nhập số điện thoại khách hàng" class="form-control" />
+						</div>
+						<div class="col-md-4" style="margin-top: 14px">
+							<button @onclick="SearchCustomer" class="btn btn-primary w-100 form-control">Tìm kiếm</button>
+						</div>
+					</div>
+				</div>
+
+				@if (!string.IsNullOrEmpty(Rank.AccountName))
+				{
+					<div class="mt-2">
+						<h5>Thông tin khách hàng</h5>
+						<p><strong>Tên khách hàng:</strong> @Rank.AccountName</p>
+						<p style="margin-top: -10px"><strong>Số điểm:</strong> @Rank.Point.ToString("N0")</p>
+						<span>Số điểm bạn đang sử dụng: @pointApply.ToString("N0")</span>
+						<div class="row g-2" style="margin-top: -20px">
+							<div class="col-md-8">
+								<input type="number" class="form-control points-input me-2" placeholder="Nhập số điểm muốn sử dụng " min="0" @bind="point">
+								<span>Lưu ý : 1000 điểm => 500 VND</span>
+							</div>
+							<div class="col-md-4" style="margin-top: 14px">
+								<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
+							</div>
+						</div>
+						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
+						@* <div class="row g-2" style="margin-top: -20px">
+							<div class="col-md-8">
+								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
+							</div>
+							<div class="col-md-4" style="margin-top: 14px">
+								<!-- Button xác nhận sử dụng điểm -->
+								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
+							</div>
+						</div>
+						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
+					</div>
+				}
+				else if (ShowCreateButton)
+				{
+					<div class="mt-3">
+						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
+					</div>
+				}
+
+
+				<hr class="dashed">
+				<div class="payment-method mt-3 ">
+					<div class="form-check">
+						<label class="form-check-label" for="cashRadio">
+							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment"
+								   @onchange="(e) => isCashPayment = true">
+							<i class="fa-solid fa-money-bill"></i> Tiền mặt
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label" for="bankTransferRadio">
+							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
+								   @onchange="(e) => isCashPayment = false">
+							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
+						</label>
+					</div>
+					<div class="qr-code-container">
+						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
+					</div>
+				</div>
+				@if (isCashPayment)
+				{
+					<div class="form-group">
+						<label class="form-label">Tiền khách đưa</label>
+						<input style="margin-top: -5px" class="form-control" placeholder="Nhập số tiền khách đưa" min="0" @bind="moneyrRceived" @oninput="ValidateReceivedMoney" />
+					</div>
+					<div class="d-flex justify-content-between mt-1">
+						<strong>Tiền thừa</strong>
+						<strong>@refun.ToString("N0")</strong>
+					</div>
+				}
+
+				<div class="button-container">
+					<button class="btn btn-primary" style="width: 100%" @onclick="ShowConfirmModal">Thanh toán</button>
+				</div>
+				<!-- Thời gian đếm ngược -->
+				<div class="mt-3">
+					<h5>
+						<span>Thời gian còn lại: </span>
+						<span style="color: red;">@timeLeft</span>
+					</h5>
+				</div>
+			</div>
+		</div>
+	</div>
+	@if (showCreateAccountModal)
+	{
+		<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="createAccountLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<EditForm Model="requestUser" OnValidSubmit="HandleSubmit">
+					<DataAnnotationsValidator />
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="createAccountLabel">Tạo Tài Khoản</h5>
+							<button type="button" class="close" @onclick="CloseCreateAccountModal" aria-label="Close">
+								<span class="material-icons" aria-hidden="true">close</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="mb-3 col-md-6">
+									<label for="fullName" class="form-label">Họ và tên</label>
+									<input type="text" class="form-control" placeholder="Nhập họ và tên" @bind-value=requestUser.FullName>
+									<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
+								</div>
+								<div class="mb-3 col-md-6">
+									<label for="phone" class="form-label">Số điện thoại</label>
+									<input type="text" class="form-control" placeholder="Nhập số điện thoại" @bind-value=requestUser.PhoneNumber>
+									<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
+									@if (!IsShowPhoneNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
+									}
+								</div>
+							</div>
+							<div class="row">
+								<div class="mb-3 col-md-6">
+									<label for="email" class="form-label">Email</label>
+									<input type="email" class="form-control" placeholder="Nhập email" @bind-value=requestUser.Email>
+									<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
+									@if (!IsShowEmailNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+									}
+								</div>
+								<div class="mb-3 col-md-6">
+									<label for="date" class="form-label">Ngày sinh</label>
+									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
+									@if (!IsShowYearNotification)
+									{
+										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+									}
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseCreateAccountModal">Hủy</button>
+							<button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+						</div>
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+	@if (isTimeout)
+	{
+		<div class="modal fade show d-flex align-items-center justify-content-center" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content text-center">
+					<h5 class="modal-title">Hết thời gian mua vé</h5>
+					<p>Rất tiếc, phiên giao dịch của bạn đã hết hạn. Bạn có thể bắt đầu lại bằng cách nhấn vào nút bên dưới.</p>
+					<button class="btn btn-success" @onclick="NagationToBookTicket">Trở lại</button>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+<script>
+	window.onload = function () {
+	// Ẩn QR code mặc định khi tải trang
+	hienThiQR('ẩn');
+	};
+
+	function hienThiQR(hienThi) {
+	const qrCode = document.getElementById("qrcode");
+	const amountDisplay = document.getElementById("amount-display"); // Phần tử chứa tổng tiền
+
+	if (!qrCode) {
+	console.warn("QR Code element not found.");
+	return;
+	}
+
+	if (hienThi === 'hiện') {
+	// Kiểm tra phần tử tổng tiền
+	if (!amountDisplay) {
+	console.error("Amount display element not found.");
+	qrCode.style.display = 'none';
+	return;
+	}
+	const totalPrice = parseFloat(amountDisplay.innerText.replace(/\./g, '').replace(/[^\d.-]/g, ''));
+	if (isNaN(totalPrice) || totalPrice <= 0) {
+	console.error("Invalid amount for QR code.");
+	qrCode.style.display = 'none';
+	return;
+	}
+	// Tạo URL QR code
+	const accountName = "NGUYEN VAN TRONG";
+	const qrUrl = `https://api.vietqr.io/image/970418-1160087273-TDqOAw1.jpg?accountName=${accountName}&amount=${totalPrice}&addInfo=Thanh%20toan%20hoa%20don%20Neon`;
+
+	qrCode.src = qrUrl;
+	qrCode.style.display = 'block'; // Hiển thị QR code
+	} else {
+	qrCode.style.display = 'none'; // Ẩn QR code
+	}
+	}
+
+	// Thêm sự kiện thay đổi vào radio buttons
+	document.addEventListener('change', function (event) {
+	if (event.target.name === 'flexRadioDefault') {
+	if (event.target.id === 'bankTransferRadio' && event.target.checked) {
+	hienThiQR('hiện');
+	} else if (event.target.id === 'cashRadio' && event.target.checked) {
+	hienThiQR('ẩn');
+	}
+	}
+	});
+
+</script>
+@code {
+	#region
+	[Parameter]
+	public Guid id { get; set; }
+	private MovieDTO movieDto = new MovieDTO();
+	List<GenreDTO> genres = new List<GenreDTO>();
+	List<LanguageDTO> languages = new List<LanguageDTO>();
+	List<CountryDTO> countries = new List<CountryDTO>();
+	List<DirectorDTO> directors = new List<DirectorDTO>();
+	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	private int _selectedIndex = 0;
+	private Dictionary<string,
+	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
+	List<SeatDto> seats = new List<SeatDto>();
+	List<FoodComboDTO> foods = new List<FoodComboDTO>();
+	private decimal totalPrices = 0;
+	private bool showConfirmModal = false;
+	private bool showMessage = false;
+	private decimal seatPrices = 0;
+	public string? phoneNumber;
+	public string error = "";
+	public Guid createBy;
+	public decimal moneyrRceived = 0;
+	public decimal sum => moneyrRceived - totalPrices;
+	public decimal refun => sum > 0 ? sum : 0;
+	private double discount = 0;
+	private double point = 0;
+	private decimal sumPrices;
+	private decimal surcharge = 0;
+	private bool isCashPayment = false;
+	private double pointApply = 0;
+	private void ValidateReceivedMoney(ChangeEventArgs e)
+	{
+		// Parse số tiền khách đưa
+		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
+		{
+			moneyrRceived = inputMoney;
+
+			// Kiểm tra nếu số tiền nhỏ hơn tổng tiền
+			if (moneyrRceived < totalPrices && isCashPayment)
+			{
+				ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
+			}
+		}
+		else
+		{
+			moneyrRceived = 0; // Nếu giá trị nhập không hợp lệ, đặt về 0
+		}
+	}
+	private void ShowConfirmModal()
+	{
+		// Chỉ hiển thị modal nếu thanh toán bằng tiền mặt và số tiền đủ
+		if (isCashPayment && moneyrRceived >= totalPrices)
+		{
+			showConfirmModal = true;
+		}
+		else if (isCashPayment)
+		{
+			showMessage = true; // Hiển thị thông báo lỗi nếu tiền không đủ
+		}
+		else
+		{
+			showConfirmModal = true; // Không cần kiểm tra tiền cho phương thức thanh toán khác
+		}
+	}
+	private void ApplyPoint()
+	{
+		if (point > Rank.Point)
+		{
+			ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
+			return;
+		}
+		else
+		{
+			discount = point * 0.5;
+			if ((decimal)discount >= totalPrices)
+			{
+				ShowSnackbar("Không được quy đổi điểm quá với số tiền hóa đơn !", Severity.Warning);
+			}
+			else
+			{
+
+				if ((pointApply += point) >= Rank.Point)
+				{
+					ShowSnackbar("Điểm quy đổi không đủ vui lòng thử lại", Severity.Warning);
+				}
+				else
+				{
+					pointApply += point;
+					totalPrices -= (decimal)discount;
+				}
+			}
+		}
+	}
+	protected override async Task OnInitializedAsync()
+	{
+		screenings = await _services.ChooseScrening(id);
+
+		seats = screenings.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+		movieDto = await _movieServices.GetMovieById(screenings.MoviesID);
+		genres = await _movieServices.GetAllGenre();
+		languages = await _movieServices.GetAllLanguage();
+		countries = await _movieServices.GetAllCountry();
+		directors = await _movieServices.GetAllDirector();
+		//	account = await _services.GetAccount(phoneNumber);
+
+		foods = await _services.GetFoodCombo();
+		await RefreshSeatsAsync();
+		RestartTransaction();
+		var token = await _localstorage.GetItemAsync<string>("authToken");
+		if (string.IsNullOrEmpty(token))
+		{
+			_navi.NavigateTo("/login");
+			return;
+		}
+		var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+		var jwtToken = handler.ReadJwtToken(token);
+		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+		createBy = Guid.Parse(userIdClaim.Value);
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		if (type != null)
+		{
+			if (type.MovieTypeName.Contains("3D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge3D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+			if (type.MovieTypeName.Contains("2D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge4D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+		}
+		StateHasChanged(); // Cập nhật giao diện
+	}
+	private async Task RefreshSeatsAsync()
+	{
+		// Lấy dữ liệu ghế mới từ server
+		var updatedScreening = await _services.ChooseScrening(id);
+
+		// Cập nhật lại danh sách ghế
+		seats = updatedScreening.Seats;
+
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+	}
+	public async Task OnClickToEditAmount()
+	{
+		await JS.InvokeVoidAsync("thaydoitongtien", totalPrices);
+		StateHasChanged();
+	}
+	private string GetImageUrl(string imageUrl)
+	{
+		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	#region vé
+	private string GetSeatCssClass(SeatDto seat)
+	{
+		// Kiểm tra trạng thái ghế trước tiên
+		if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Sold)
+		{
+			return "sold"; // Ghế đã bán
+		}
+		else if (seat.Status == NeonCinema_Domain.Enum.seatEnum.Maintenance)
+		{
+			return "maintenance"; // Ghế bảo trì
+		}
+		else if (selectedSeats.Contains(seat.SeatNumber))
+		{
+			return "selected"; // Ghế đang được chọn
+		}
+
+		// Nếu không phải các trạng thái trên, xác định màu theo kiểu ghế
+		return seat.SeatType switch
+		{
+			"Ghế thường" => "seat-normal",
+			"Ghế Vip" => "seat-vip",
+			"Ghế đôi" => "seat-couple",
+			_ => "seat-default" // Mặc định nếu không xác định loại ghế
+		};
+
+	}
+	private async Task UpdateQRCode()
+	{
+		// Không cố định gọi "hienThiQR('hiện')"
+		await JS.InvokeVoidAsync("hienThiQR"); // JavaScript sẽ kiểm tra trạng thái radio và cập nhật QR code
+		StateHasChanged(); // Làm mới giao diện Razor
+	}
+	private async void NextTab()
+	{
+		if (_selectedIndex < 1)
+		{
+			_selectedIndex++;
+			await InvokeAsync(StateHasChanged); // Đảm bảo giao diện được cập nhật trước
+			await UpdateQRCode(); // Gọi hàm cập nhật QR code
+		}
+	}
+
+	private void PreviousTab()
+	{
+		if (_selectedIndex > 0)
+		{
+			_selectedIndex--;
+			OnClickToEditAmount();
+		}
+	}
+	private List<string> selectedSeats = new List<string>();
+	private string selectedSeatNumbers = "";
+	private List<Guid> selectedSeatsId = new List<Guid>(); // Danh sách lưu trữ ID ghế được chọn
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
+		});
+	}
+
+	private async void SelectSeat(SeatDto seat)
+	{
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		// Kiểm tra nếu số lượng ghế chọn vượt quá giới hạn
+		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
+		{
+			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
+			return;
+		}
+
+		if (seat.Status != NeonCinema_Domain.Enum.seatEnum.Sold)
+		{
+			// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
+			if (!selectedSeats.Contains(seat.SeatNumber))
+			{
+				char currentRow = seat.SeatNumber[0];
+				int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+
+				foreach (var selectedSeat in selectedSeats)
+				{
+					char selectedRow = selectedSeat[0];
+					int selectedCol = int.Parse(selectedSeat.Substring(1));
+
+					// Kiểm tra ghế giữa trong cùng một hàng
+					if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
+					{
+						int middleCol = (currentCol + selectedCol) / 2;
+						string middleSeat = $"{currentRow}{middleCol}";
+
+						if (!selectedSeats.Contains(middleSeat))
+						{
+							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+							return;
+						}
+					}
+
+					// Kiểm tra ghế giữa trong cùng một cột
+					if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
+					{
+						char middleRow = (char)((currentRow + selectedRow) / 2);
+						string middleSeat = $"{middleRow}{currentCol}";
+
+						if (!selectedSeats.Contains(middleSeat))
+						{
+							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
+							return;
+						}
+					}
+				}
+			}
+
+			// Xử lý chọn/bỏ ghế
+			if (selectedSeats.Contains(seat.SeatNumber))
+			{
+				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+				selectedSeatsId.Remove(seat.ID);
+				selectedSeats.Remove(seat.SeatNumber);
+				seatPrices -= (decimal)seat.Price;
+				totalPrices -= (decimal)seat.Price;
+				sumPrices -= (decimal)seat.Price;
+			}
+			else
+			{
+				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
+				selectedSeats.Add(seat.SeatNumber);
+				selectedSeatsId.Add(seat.ID);
+				seatPrices += (decimal)seat.Price;
+				totalPrices += (decimal)seat.Price;
+				sumPrices += (decimal)seat.Price;
+			}
+
+			selectedSeatNumbers = string.Join(", ", selectedSeats);
+			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+			OnClickToEditAmount();
+			StateHasChanged();
+		}
+	}
+	#endregion
+	#region combo
+	private Dictionary<FoodComboDTO, int> selectedCombos = new Dictionary<FoodComboDTO, int>();
+	private List<Guid> selectedComboId = new List<Guid>();
+	private int currentValue = 0;
+	private decimal comboPrices = 0;
+	private async void Increase(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo))
+		{
+			selectedCombos[combo]++;
+		}
+		else
+		{
+			selectedCombos[combo] = 1;
+		}
+
+		comboPrices += combo.Amount;
+		totalPrices += combo.Amount;
+		sumPrices += combo.Amount;
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+	private async void Decrease(FoodComboDTO combo)
+	{
+		if (selectedCombos.ContainsKey(combo) && selectedCombos[combo] > 0)
+		{
+			selectedCombos[combo]--;
+			comboPrices -= combo.Amount;
+			totalPrices -= combo.Amount;
+			sumPrices -= combo.Amount;
+			if (selectedCombos[combo] == 0)
+			{
+				selectedCombos.Remove(combo);
+			}
+		}
+
+		await OnClickToEditAmount();
+		StateHasChanged(); // Làm mới giao diện
+	}
+
+	private int GetComboQuantity(FoodComboDTO combo)
+	{
+		return selectedCombos.ContainsKey(combo) ? selectedCombos[combo] : 0;
+	}
+
+
+	#endregion
+	CreateBookTicketRequest request = new CreateBookTicketRequest();
+	NeonCinemasContext _context = new NeonCinemasContext();
+	private string paymentStatus = string.Empty; // Trạng thái thanh toán
+	private BillResp? billResp;
+	private void ResetUI()
+	{
+		selectedCombos.Clear();
+		selectedSeatNumbers = string.Empty;
+		selectedComboId.Clear();
+		selectedSeats.Clear();
+		selectedSeatsId.Clear();
+		currentValue = 0;
+		totalPrices = 0;
+		phoneNumber = string.Empty;
+		Rank.AccountName = string.Empty;
+		Rank.Point = 0;
+		seatPrices = 0;
+		comboPrices = 0;
+		point = 0;
+		sumPrices = 0;
+		surcharge = 0;
+		RefreshSeatsAsync();
+	}
+	private async Task ProcessPayment()
+	{
+		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+		if (!string.IsNullOrEmpty(phoneNumber))
+		{
+
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = account?.ID,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+					CreateBy = createBy,
+					Point = point,
+					Voucher = null,
+				};
+		}
+		else
+		{
+			request = new CreateBookTicketRequest
+				{
+					ScreeningID = screenings.Id,
+					SeatID = selectedSeatsId,
+					MovieId = movieDto.ID,
+					AccountID = null,
+					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+					{
+						FoodComboId = combo.Key.ID,
+						Quantity = combo.Value,
+					}).ToList(),
+					CreateBy = createBy,
+					Point = point,
+					Voucher = null,
+					
+				};
+		}
+
+		try
+		{
+			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
+			if (billResp != null)
+			{
+				ResetUI();
+				paymentStatus = "success";
+				if (point > 0)
+				{
+					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+					resetPoint.MinPoint -= point;
+					_context.RankMembers.Update(resetPoint);
+					_context.SaveChanges();
+				}
+			}
+			else
+			{
+				paymentStatus = "failure";
+			}
+
+		}
+		catch (Exception ex)
+		{
+			paymentStatus = "failure";
+			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
+		}
+
+		StateHasChanged();
+	}
+	public Guid BillTicketId { get; set; }
+
+	private async Task ExportFile()
+	{
+		try
+		{
+			BillTicketId = (Guid)billResp.Id;
+			var response = await _services.ExportFile(BillTicketId);
+			if (response == null || response.Length == 0)
+			{
+				Console.WriteLine("Không thể tải hóa đơn: File rỗng hoặc không tồn tại.");
+				return;
+			}
+
+			var fileName = $"HoaDon_{billResp.CustomerName ?? "khachhang"}.zip";
+			var url = $"data:application/octet-stream;base64,{Convert.ToBase64String(response)}";
+			await JS.InvokeVoidAsync("downloadFile", url, fileName);
+		}
+		catch (Exception ex)
+		{
+			// Xử lý lỗi chung
+			Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
+		}
+	}
+
+	private string GetPaymentMessage(string status)
+	{
+		return status switch
+		{
+			"success" => "Thanh toán thành công!",
+			"failure" => "Thanh toán thất bại. Vui lòng thử lại.",
+			_ => string.Empty,
+		};
+	}
+
+	private string GetAlertClass(string status)
+	{
+		return status switch
+		{
+			"success" => "alert-success",
+			"failure" => "alert-danger",
+			_ => string.Empty,
+		};
+	}
+
+	private void CloseModal()
+	{
+		showConfirmModal = false;
+		showMessage = false;
+		paymentStatus = string.Empty;
+		StateHasChanged();
+	}
+	#endregion
+	private bool ShowCreateButton { get; set; }
+
+	private RankMemberResp Rank = new RankMemberResp();
+	private async Task SearchCustomer()
+	{
+		try
+		{
+			var result = await _services.SeachAccount(phoneNumber);
+			if (result != null)
+			{
+				Rank = result;
+				ShowCreateButton = false;
+			}
+			else
+			{
+				ShowCreateButton = true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi tìm kiếm: {ex.Message}");
+			ShowCreateButton = true;
+		}
+	}
+
+
+
+	#region Tạo tài khoản
+
+	private UserCreateRequest requestUser = new UserCreateRequest();
+	private IBrowserFile selectedFile;
+	private bool showPassword = false;
+	private string errorEmailMessage;
+	private string errorPhoneMessage;
+	private string errorYearMessage;
+	private bool IsShowPhoneNotification = true;
+	private bool IsShowEmailNotification = true;
+	private bool IsShowYearNotification = true;
+	private bool showCreateAccountModal = false;
+
+	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+
+	private async Task HandleSelected(InputFileChangeEventArgs e)
+	{
+		selectedFile = e.File;
+
+		// Tạo URL tạm thời cho hình ảnh đã chọn
+		var imageUrl = await GetImageUrl(selectedFile);
+		if (imageUrl != null)
+		{
+			profileImage = imageUrl;
+			StateHasChanged(); // Cập nhật giao diện
+		}
+	}
+
+	private async Task<string> GetImageUrl(IBrowserFile file)
+	{
+		// Chỉ tạo URL cho các tệp hình ảnh
+		if (file.ContentType.StartsWith("image/"))
+		{
+			using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15);
+			using var memoryStream = new MemoryStream();
+			await stream.CopyToAsync(memoryStream);
+			var imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+			return $"data:{file.ContentType};base64,{imageBase64}";
+		}
+
+		return null;
+	}
+
+	private async Task HandleSubmit()
+	{
+		try
+		{
+			IsShowEmailNotification = true;
+			IsShowPhoneNotification = true;
+			IsShowYearNotification = true;
+			errorEmailMessage = string.Empty;
+			errorPhoneMessage = string.Empty;
+			errorYearMessage = string.Empty;
+
+			// Nếu không có file được chọn, sử dụng ảnh mặc định
+			if (selectedFile == null)
+			{
+				requestUser.Images = "default-profile.jpg"; // Tên ảnh mặc định trong hệ thống
+			}
+			else
+			{
+				// Xử lý upload ảnh khi có file được chọn
+				var content = new MultipartFormDataContent();
+				var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 15));
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+
+				content.Add(fileContent, "file", selectedFile.Name);
+				var response = await _http.PostAsync("https://localhost:7211/api/UploadImages/upload-image", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var jsonDoc = JsonDocument.Parse(jsonResponse);
+					var fileUrl = jsonDoc.RootElement.GetProperty("fileUrl").GetString();
+					var fileName = Path.GetFileName(fileUrl);
+					requestUser.Images = fileName;
+
+					Console.WriteLine($"Upload thành công. Tên file: {fileName}");
+				}
+				else
+				{
+					Console.WriteLine($"Lỗi upload ảnh. Status code: {response.StatusCode}");
+					return;
+				}
+			}
+
+			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+			if (emailExists)
+			{
+				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				IsShowEmailNotification = false;
+				return;
+			}
+			if (requestUser.DateOrBriht == null ||
+				requestUser.DateOrBriht.Year < 1900 ||
+				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
+				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
+			{
+				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
+				IsShowYearNotification = false;
+				return;
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại
+			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+			if (phoneExists)
+			{
+				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+				IsShowPhoneNotification = false;
+				return;
+			}
+
+			var userResponse = await UserService.CreateClient(requestUser);
+			if (userResponse.IsSuccessStatusCode)
+			{
+				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+				await Task.Delay(300);
+				CloseCreateAccountModal();
+			}
+			else
+			{
+				var errorContent = await userResponse.Content.ReadAsStringAsync();
+				Console.WriteLine($"Có lỗi xảy ra khi tạo nhân viên: {errorContent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi: {ex.Message}");
+			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+	}
+
+	private async Task CreateCustomer()
+	{
+		showCreateAccountModal = true;
+	}
+	private void CloseCreateAccountModal()
+	{
+		showCreateAccountModal = false;
+	}
+
+	#endregion
+
+	#region đếm ngược
+
+	private string timeLeft; // Thời gian còn lại
+	private bool isTimeout = false; // Trạng thái hết thời gian
+	private Timer? timer; // Timer để đếm ngược
+	private DateTime endTime; // Thời gian kết thúc
+
+	private void RestartTransaction()
+	{
+		// Thiết lập thời gian kết thúc là 5 phút
+		endTime = DateTime.Now.AddMinutes(10);
+		isTimeout = false;
+
+		// Khởi động lại timer
+		timer?.Dispose();
+		timer = new Timer(CheckTime, null, 0, 1000);
+	}
+
+	private void CheckTime(object? state)
+	{
+		var remaining = endTime - DateTime.Now;
+		if (remaining.TotalSeconds <= 0)
+		{
+			// Hết thời gian
+			isTimeout = true;
+			timeLeft = "00:00";
+			timer?.Dispose(); // Dừng timer
+			InvokeAsync(StateHasChanged);
+		}
+		else
+		{
+			// Cập nhật thời gian còn lại
+			timeLeft = $"{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+			InvokeAsync(StateHasChanged);
+		}
+	}
+	private async Task NagationToBookTicket()
+	{
+		_navi.NavigateTo("/book_ticket");
+	}
+
+	#endregion
+	#region SSE
+	private List<SeatShowTimeDTO> UpdatedSeats = new List<SeatShowTimeDTO>();
+	private object? eventSource;
+
+	[JSInvokable]
+	public Task OnSeatsUpdated(List<SeatShowTimeDTO> updatedSeats)
+	{
+		// Cập nhật danh sách ghế với trạng thái mới nhất
+		foreach (var updatedSeat in updatedSeats)
+		{
+			var seatToUpdate = seats.FirstOrDefault(s => s.ID == updatedSeat.ID);
+			if (seatToUpdate != null)
+			{
+				seatToUpdate.Status = updatedSeat.Status;
+			}
+		}
+
+		// Cập nhật lại groupedSeats
+		groupedSeats = seats
+			.GroupBy(seat => seat.SeatNumber.Substring(0, 1))
+			.OrderBy(g => g.Key)
+			.ToDictionary(
+				g => g.Key,
+				g => g.OrderBy(seat => int.Parse(seat.SeatNumber.Substring(1)))
+						.ToList()
+			);
+
+		StateHasChanged(); // Cập nhật giao diện
+		return Task.CompletedTask;
+	}
+
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			eventSource = await JS.InvokeAsync<object>(
+				"sseHandler.startSSE",
+				"https://localhost:7211/stream-seat-status",
+				DotNetObjectReference.Create(this)
+			);
+			StateHasChanged();
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (eventSource != null)
+		{
+			await JS.InvokeVoidAsync("sseHandler.stopSSE", eventSource);
+		}
+	}
+	#endregion
+	// Mặc định là tiền mặt
+}
+<style>
+	.movie-info-card {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		border-radius: 10px;
+		overflow: hidden;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+		@* .movie-info-card:hover {
+			transform: scale(1.05);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		}
+ *@
+	.movie-info-card .card-img-top {
+		object-fit: cover; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+		width: 100%; /* Ảnh chiếm toàn bộ chiều ngang card */
+		height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+		max-height: 700px; /* Giới hạn chiều cao tối đa */
+	}
+
+	.movie-info-card .card-body {
+		text-align: center;
+		background-color: #white; /* Nền tối */
+		color: black;
+		padding: 15px;
+		font-family: 'Be Vietnam Pro', sans-serif;
+	}
+
+	.movie-info-card .card-title {
+		font-size: 1.25rem;
+		margin-bottom: 10px;
+		color: limegreen;
+	}
+
+	.movie-info-card .card-text {
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+
+	.order-summary-card {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	.card-title {
+		white-space: nowrap; /* Ngăn không cho tiêu đề xuống dòng */
+		overflow: hidden; /* Ẩn phần văn bản bị tràn */
+		text-overflow: ellipsis; /* Thêm dấu '...' nếu tiêu đề quá dài */
+		width: 100%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+		display: block; /* Hiển thị tiêu đề dưới dạng khối */
+		margin-bottom: 10px; /* Xóa margin dưới */
+		color: forestgreen;
+	}
+
+	.tags {
+		margin-top: -5px;
+		margin-bottom: 10px;
+	}
+
+		.tags .badge {
+			font-size: 14px; /* Cỡ chữ của các nhãn */
+			padding: 5px 9px; /* Khoảng cách trong của các nhãn */
+			border-radius: 7px; /* Bo góc cho nhãn */
+			margin-right: 3px; /* Khoảng cách bên phải giữa các nhãn */
+		}
+
+			.tags .badge:last-child {
+				margin-right: 0; /* Không có khoảng cách bên phải cho nhãn cuối cùng */
+			}
+
+	.form-group {
+		margin-bottom: 15px;
+	}
+
+	input.form-control {
+		width: 100%;
+		padding: 10px;
+		font-size: 16px;
+		margin-top: 5px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+	}
+
+	button.btn {
+		padding: 10px 15px;
+		font-size: 16px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	button.btn-primary {
+		background-color: #007bff;
+		color: white;
+	}
+
+	button.btn-success {
+		background-color: #28a745;
+		color: white;
+	}
+
+	button:hover {
+		opacity: 0.9;
+	}
+
+	.modal {
+		display: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 1050;
+	}
+
+		.modal.fade .modal-dialog {
+			transition: transform 0.3s ease-out;
+			transform: translateY(-50px);
+		}
+
+	.modal-dialog {
+		margin: 100px auto;
+	}
+
+	.modal-content {
+		background-color: #fff;
+		padding: 15px;
+		border-radius: 5px;
+	}
+
+	.modal-header .btn-close {
+		border: none;
+		background: none;
+	}
+
+	.seat-type {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.seat-type-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.square {
+		width: 20px;
+		height: 20px;
+		display: inline-block;
+	}
+
+	.seat-name {
+		font-size: 14px;
+	}
+
+	.screen {
+		position: relative;
+		width: 100%;
+		max-width: 1000px; /* Giới hạn chiều dài là 1000 */
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.screen-svg {
+		width: 100%;
+		height: auto;
+	}
+
+	.screen-label {
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 18px;
+		font-weight: bold;
+		color: #7a7a7a;
+		text-transform: uppercase;
+	}
+
+
+	.seat-selection {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
+
+	.seat-column {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.seat-item {
+		margin: 10px;
+	}
+
+	.seat-box {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 14px;
+		margin: 2px;
+	}
+
+
+	.seat-selection {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 20px;
+	}
+
+	.seat-row {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 10px;
+	}
+
+	.seat-normal {
+		background-color: #ffc107; /* Màu vàng */
+		color: #fff; /* Chữ màu trắng */
+	}
+
+	/* Ghế VIP */
+	.seat-vip {
+		background-color: #dc3545; /* Màu đỏ */
+		color: #fff; /* Chữ màu trắng */
+	}
+
+	/* Ghế đôi */
+	.seat-couple {
+		background-color: #28a745; /* Màu xanh lá cây */
+		color: #fff; /* Chữ màu trắng */
+	}
+
+	/* Ghế mặc định (nếu không xác định loại) */
+	.seat-default {
+		background-color: #6c757d; /* Màu xám */
+		color: #fff; /* Chữ màu trắng */
+	}
+
+	/* Hiệu ứng hover cho tất cả các ghế */
+	.seat-box:hover {
+		transform: scale(1.1); /* Phóng to nhẹ khi hover */
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Đổ bóng */
+	}
+
+	.sold {
+		background-color: rgb(33 37 41);
+		cursor: not-allowed;
+		color: white;
+	}
+
+	.selected {
+		background-color: rgb(13 110 253);
+	}
+
+	.available {
+		background-color: none;
+	}
+
+	.product-image {
+		width: 150px; /* Chiều rộng cố định */
+		height: 170px; /* Chiều cao cố định */
+		object-fit: contain; /* Đảm bảo hình ảnh vừa khít khung mà không bị méo */
+	}
+
+	.product-list {
+		max-height: 700px; /* Đặt chiều cao tối đa cho danh sách */
+		overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung vượt quá chiều cao */
+		padding-right: 10px; /* Thêm khoảng cách để tránh nội dung bị cắt */
+		margin-right: -10px; /* Giảm khoảng cách để không bị cuộn ngang */
+		scrollbar-width: thin; /* Làm mỏng thanh cuộn (Firefox) */
+		scrollbar-color: #ccc #f5f5f5; /* Màu thanh cuộn (Firefox) */
+	}
+
+		/* Thanh cuộn tùy chỉnh cho trình duyệt Webkit (Chrome, Edge, Safari) */
+		.product-list::-webkit-scrollbar {
+			width: 8px; /* Độ rộng của thanh cuộn */
+		}
+
+		.product-list::-webkit-scrollbar-track {
+			background: #f5f5f5; /* Màu nền của track */
+		}
+
+		.product-list::-webkit-scrollbar-thumb {
+			background-color: #ccc; /* Màu thanh cuộn */
+			border-radius: 10px; /* Bo góc cho thanh cuộn */
+			border: 2px solid #f5f5f5; /* Viền thanh cuộn */
+		}
+
+			.product-list::-webkit-scrollbar-thumb:hover {
+				background-color: #aaa; /* Màu thanh cuộn khi hover */
+			}
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+		margin-top: 20px;
+	}
+
+	button {
+		padding: 10px 20px;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.cinema-concession-container {
+		display: flex;
+		justify-content: space-between;
+		gap: 20px;
+	}
+
+	.control {
+		border-radius: 50% !important; /* Tạo viền hình tròn */
+		width: 40px !important; /* Đặt chiều rộng cố định */
+		height: 40px !important; /* Đặt chiều cao cố định */
+		display: flex !important;
+		align-items: center !important; /* Căn giữa nội dung theo chiều dọc */
+		justify-content: center !important; /* Căn giữa nội dung theo chiều ngang */
+		padding: 0 !important; /* Loại bỏ padding mặc định */
+		font-size: 18px !important; /* Kích thước chữ */
+		border: 2px solid #28a745 !important; /* Viền màu xanh lá */
+		background-color: white !important; /* Nền trắng */
+		color: #28a745 !important; /* Màu chữ xanh lá */
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+		cursor: pointer !important; /* Thay đổi con trỏ khi hover */
+	}
+
+		.control:hover {
+			background-color: #28a745; /* Nền xanh lá khi hover */
+			color: white; /* Màu chữ trắng khi hover */
+			transform: scale(1.1); /* Phóng to nhẹ khi hover */
+		}
+
+		.control:active {
+			transform: scale(0.9); /* Nhỏ lại nhẹ khi bấm */
+		}
+
+		.control:focus {
+			outline: none; /* Loại bỏ viền khi nút được focus */
+			box-shadow: none; /* Loại bỏ bóng xanh dương khi nhấn */
+		}
+
+	.combo-container {
+		flex: 1;
+	}
+
+	.payment-method-container {
+		flex: 0 0 300px;
+	}
+
+	.icon-box {
+		margin-bottom: 15px;
+	}
+
+	.icon-box-img {
+		max-width: 100px;
+		width: 100%;
+	}
+
+	h3 {
+		font-size: 1.25rem;
+		margin-bottom: 15px;
+	}
+
+	.text-center {
+		margin-bottom: 10px;
+	}
+
+	.available {
+		background-color: #ffc107; /* Màu ghế thường */
+		cursor: pointer;
+		border-radius: 4px;
+		color: #fff;
+		font-weight: bold;
+	}
+
+	.disabled {
+		pointer-events: none; /* Vô hiệu hóa nhấp chuột */
+		opacity: 0.5; /* Làm mờ */
+	}
+
+	.selected {
+		background-color: #007bff; /* Màu ghế đang chọn */
+		color: #fff;
+	}
+
+	.bg-dark {
+		background-color: #343a40; /* Màu ghế đã bán */
+		color: #fff;
+	}
+
+	.bg-secondary {
+		background-color: #6c757d; /* Màu ghế bảo trì */
+		color: #fff;
+	}
+
+	.bg-danger {
+		background-color: #dc3545; /* Màu ghế VIP */
+		color: #fff;
+	}
+
+	.bg-success {
+		background-color: #28a745; /* Màu ghế đôi */
+		color: #fff;
+	}
+
+	.qr-code-container {
+		display: flex;
+		justify-content: center; /* Căn giữa theo chiều ngang */
+		align-items: center; /* Căn giữa theo chiều dọc */
+		margin-top: 10px; /* Thêm khoảng cách trên */
+	}
+
+		.qr-code-container img {
+			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
+			height: auto;
+		}
+
+</style>

@@ -1,19 +1,124 @@
-﻿.container {
-    padding: 20px;
-    width: 70%;
-
+﻿/* Reset and global styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fb;
+    color: #495057;
+    margin: 0;
+    padding: 0;
 }
 
-.table {
+h3, h4 {
+    color: #343a40;
     margin-top: 20px;
-    border-radius: 0.5rem;
-    overflow: hidden; /* To round the table corners */
 }
 
-.form-check-input {
+/* Form styling */
+.form-container {
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+    .form-container h4 {
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.btn {
-    margin-left: 5px; /* Space between buttons */
+    button:hover {
+        background-color: #0056b3;
+    }
+
+/* Actor list */
+.actor-list-container {
+    margin: 40px auto;
+    max-width: 900px;
+}
+
+.actor-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.actor-card {
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+    .actor-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .actor-card h5 {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+
+    .actor-card p {
+        margin: 5px 0;
+    }
+
+    .actor-card button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+        .actor-card button:hover {
+            background-color: #218838;
+        }
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .actor-list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .actor-list {
+        grid-template-columns: 1fr;
+    }
 }

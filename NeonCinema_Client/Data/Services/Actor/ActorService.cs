@@ -1,33 +1,38 @@
-﻿//using NeonCinema_Application.DataTransferObject.Actors;
-//using NeonCinema_Client.Data.IServices.Actor;
+﻿using NeonCinema_API.Controllers.Service;
+using NeonCinema_Application.DataTransferObject.Actors;
+using NeonCinema_Application.DataTransferObject.Directors;
+using NeonCinema_Client.Data.IServices.Actor;
 
-//namespace NeonCinema_Client.Data.Services.Actor
-//{
-//    public class ActorService : IActorService
-//    {
-//        private readonly HttpClient _httpClient;
-//        public ActorService(HttpClient client)
-//        {
-//            _httpClient = client;
-//        }
-//        public async Task CreateActor(CreateActorRequest request)
-//        {
-//            await _httpClient.PostAsJsonAsync("api/Actor/Create", request);
-//        }
+namespace NeonCinema_Client.Data.Services.Actor
+{
+    public class ActorService : IActorService
+    {
+        private readonly HttpClient _httpClient;
+        public ActorService(HttpClient client)
+        {
+            _httpClient = client;
+        }
 
-//        public async Task<List<ActorDTO>> GetAllActor()
-//        {
-//            return await _httpClient.GetFromJsonAsync<List<ActorDTO>>("api/Actor/GetAll");
-//        }
+        public async Task CreateActor(ActorCreateRequest request)
+        {
+            await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActor", request);
+        }
 
-//        public async Task<ActorDTO> GetByIdActor(Guid id)
-//        {
-//            return await _httpClient.GetFromJsonAsync<ActorDTO>($"api/Actor/{id}");
-//        }
+        public async Task<List<ActorResponse>> GetAllActor()
+        {
+            return await _httpClient.GetFromJsonAsync<List<ActorResponse>>("https://localhost:7211/api/Actor/GetAll-Actor");
+        }
 
-//        public async Task UpdateActor(Guid id, UpdateActorRequest request)
-//        {
-//            await _httpClient.PutAsJsonAsync($"api/Actor/Update/{id}", request);
-//        }
-//    }
-//}
+        public async Task<ActorResponse> GetByIdActor(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<ActorResponse>($"https://localhost:7211/api/Actor/Get-Actor-Id/{id}");
+        }
+
+        public async Task UpdateActor(UpdateActorRequests request)
+        {
+            await _httpClient.PutAsJsonAsync($"https://localhost:7211/api/Actor/Update-Actor", request);
+        }
+        
+        
+    }
+}

@@ -10,17 +10,21 @@ namespace NeonCinema_Application.DataTransferObject.Promotions
     public class PromotionCreateRequest
     {
 		public Guid ID { get; set; }  // Khóa chính
-		[Required(ErrorMessage = "Không được để trống trường này")]
+		[Required(ErrorMessage = "Không được để trống tên khuyến mại")]
 		[RegularExpression(@"^[\p{L}0-9 /]*$", ErrorMessage = "Chỉ được chứa chữ cái, số, khoảng trắng, và dấu /")]
 		public string Name { get; set; }  // Tên khuyến mãi
 		public string Code { get; set; }  
         public string Description { get; set; } = "Không có"; // Mô tả khuyến mãi
 
+		[Required(ErrorMessage = "Không được để trống phần trăm khuyến mại")]
 		[ConditionalRange(1, 99, ErrorMessage = "Chỉ được nhập từ 1-99")]
 		public double? DiscountPercentage { get; set; } // giảm theo %
 
 		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5-100 nghìn")]
 		public double? DiscountAmount { get; set; }
+
+		[Required(ErrorMessage = "Không được để trống số tiền giảm tối đa")]
+		[ConditionalRange(5000, 100000, ErrorMessage = "Chỉ được nhập từ 5 nghìn đến 100 nghìn")]
 		public double? AmountMax { get; set; }
 
 		[Required(ErrorMessage = "Không được để trống trường này")]
