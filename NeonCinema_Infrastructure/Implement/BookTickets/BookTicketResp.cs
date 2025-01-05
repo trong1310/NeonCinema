@@ -84,8 +84,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					CreatedTime = DateTime.Now,
 					UserID = request.AccountID ?? null,
 					CreatedBy = request.CreateBy,
-					TotalPoint = request.Point,
-					PromotionID = request.Voucher?? null,
+					PromotionID = request.Voucher ?? null,
 					AfterDiscount = 0,
 				};
 				var startTime = screening.ShowTime.StartTime;
@@ -130,7 +129,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						ID = Guid.NewGuid(),
 						ScreningID = (Guid)request.ScreeningID,
-						Code =Uliti.GenerateBillCode(),
+						Code = Uliti.GenerateBillCode(),
 						SeatID = seatId,
 						CreatedTime = DateTime.Now,
 						MovieID = (Guid)request.MovieId,
@@ -188,6 +187,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				}
 				bill.TotalPrice += (decimal)bill.Surcharge;
 				bill.AfterDiscount += (decimal)bill.Surcharge;
+
 				double discount = 0;
 				if (request.Point > 0)
 				{
@@ -217,6 +217,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 						_context.PromotionUsers.Update(accountVoucher);
 					}
 				}
+				bill.TotalPoint = (double)(bill.TotalPrice - bill.AfterDiscount);
 				double convertPoint = (double)bill.AfterDiscount * 6.8 / 100;
 
 				if (request.AccountID != null)
@@ -247,7 +248,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					throw new Exception("Không tìm thấy hóa đơn trong cơ sở dữ liệu.");
 				}
-				var acc = await _context.Users.Where(x => x.ID == bill.CreatedBy).Select(x=>x.FullName).FirstOrDefaultAsync();
+				var acc = await _context.Users.Where(x => x.ID == bill.CreatedBy).Select(x => x.FullName).FirstOrDefaultAsync();
 				await transaction.CommitAsync(cancellationToken);
 				var resp = new BillResp
 				{
@@ -271,7 +272,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					Email = billresp.Users?.Email,
 					TotalPrice = billresp.TotalPrice,
 					AfterPrice = billresp.AfterDiscount,
-					Voucher =billresp.TotalPrice-billresp.AfterDiscount,
+					Voucher = billresp.TotalPrice - billresp.AfterDiscount,
 					Films = flims?.Name,
 					FilmsType = type.MovieTypeName,
 					CreatedBy = acc ?? "NhanVien1",
