@@ -6,17 +6,17 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 @inject HttpClient _http
+@inject NavigationManager _navi
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
-
 
 
 <MudPaper Width="250px" Class="d-inline-flex" Elevation="0">
     <MudNavMenu Class="mud-width-full" Style="display: flex; flex-direction: column;">
         <!-- Khu vực hiển thị avatar và thông tin người dùng -->
 
-        <div class="row align-items-center user-info">
+        <div class="row align-items-center user-info" @onclick="NavigateToProfile">
             <div class="col-3 text-center">
                 @if (string.IsNullOrEmpty(user.Images))
                 {
@@ -24,12 +24,29 @@
                 }
                 else
                 {
-                    <img src="@GetImageUrl(user.Images)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="@(!string.IsNullOrEmpty(user.Images) ? GetImageUrl(user.Images) : profileImage)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                 }
             </div>
             <div class="col-9">
                 <h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
-                <p class="user-role align-items-center justify-content-center">@role</p>
+                <p class="user-role align-items-center justify-content-center">
+                    @if (role == "Staff")
+                    {
+                        <text>Nhân viên</text>
+                    }
+                    else if (role == "Admin")
+                    {
+                        <text>Quản trị viên</text>
+                    }
+                    else if (role == "Client")
+                    {
+                        <text>Khách hàng</text>
+                    }
+                    else
+                    {
+                        <text>Không xác định</text>
+                    }
+                </p>
             </div>
         </div>
         <MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success" >
@@ -59,6 +76,7 @@
             <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
             <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
         </MudNavGroup>
+        <MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
         <!-- Nút Đăng Xuất -->
         <MudNavLink Href="/login" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
     </MudNavMenu>
@@ -70,7 +88,7 @@
     private bool isLoggedIn;
     private string userId;
     private string role = "";
-    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+    private string profileImage = "/images/Client/avt-default.jpg";
     protected override async Task OnInitializedAsync()
     {
         await GetProfileNav();
@@ -99,7 +117,8 @@
                         FullName = fullName,
                         Images = imageUrl
                     };
-
+                
+                
                 isLoggedIn = true;
                 StateHasChanged();
             }
@@ -121,7 +140,10 @@
     {
         return $"https://localhost:7211/api/Resources/{imageUrl}";
     }
-
+    private void NavigateToProfile()
+    {
+        _navi.NavigateTo($"/profile-admin/{userId}");
+    }
 }
 
 
@@ -173,7 +195,7 @@
         .user-info img {
             max-width: 70px;
             height: auto;
-            margin-left: -10px;
+            margin-left: -5px;
         }
 
         /* Đảm bảo nội dung không bị cắt */

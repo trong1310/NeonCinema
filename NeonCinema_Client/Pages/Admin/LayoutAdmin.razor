@@ -33,7 +33,7 @@
             NEON CINEMA
         </MudText>
         <MudSpacer />
-        <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+        @* <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
             <div style="display: flex; align-items: center; gap: 16px;">
                 <!-- Hiển thị ảnh người dùng -->
                 <MudText Typo="Typo.h6">
@@ -53,7 +53,7 @@
                 <!-- Hiển thị tên người dùng -->
                 
             </div>
-        </MudBadge>
+        </MudBadge> *@
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NeonCinema_Client.Pages.Admin.Users.NavMenuAdmin />
@@ -62,7 +62,6 @@
         @Body
     </MudMainContent>
 </MudLayout>
-
 <!-- Tải jQuery trước Owl Carousel -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Bootstrap JS -->
