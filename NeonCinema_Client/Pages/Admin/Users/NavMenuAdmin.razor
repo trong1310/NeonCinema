@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 @inject HttpClient _http
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -25,7 +26,7 @@
 
         <MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success" >
             <MudNavLink Href="/list-movie-admin" Icon="fas fa-video" IconColor="Color.Error" Class="custom-nav-link" Active="true">Danh sách phim</MudNavLink>
-            <MudNavLink Href="/listactor" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
+            <MudNavLink Href="/actor-manager" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
             <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
         </MudNavGroup>
         

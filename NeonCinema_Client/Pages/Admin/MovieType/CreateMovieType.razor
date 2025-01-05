@@ -5,6 +5,8 @@
 @inject IMovieTypeService SV
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 <link rel="stylesheet" href="/css/Actor/Actorr.css">
 <h3 class="text-center mb-4">Add New MovieTYpe</h3>
 

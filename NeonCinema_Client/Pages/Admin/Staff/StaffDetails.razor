@@ -7,6 +7,8 @@
 @inject IUserServices _service
 @inject HttpClient _http
 @inject NavigationManager _navigation
+@attribute [Authorize(Roles = "Admin")]
+
 <div class="container-fluid mt-5">
 	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
 	<div class="row justify-content-center">

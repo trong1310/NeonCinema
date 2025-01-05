@@ -220,10 +220,7 @@ namespace NeonCinema_API.Controllers
             try
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-                if (user == null)
-                {
-                    return NotFound("Email không tồn tại trong hệ thống.");
-                }
+                
                 string newPassword = GenerateRandomPassword();
                 user.PassWord = Hash.Encrypt(newPassword);
                 _context.Users.Update(user);

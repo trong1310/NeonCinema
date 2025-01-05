@@ -6,7 +6,13 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)" />
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)">
+                <NotAuthorized>
+                    <p>Bạn không có quyền truy cập trang này.</p>
+                    <RedirectToLogin />
+                </NotAuthorized>
+            </AuthorizeRouteView>
+           @*  <RouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)" /> *@
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>

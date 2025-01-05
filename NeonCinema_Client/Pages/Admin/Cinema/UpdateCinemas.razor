@@ -3,6 +3,7 @@
 @using NeonCinema_Client.Data.IServices.Cinemas
 @inject NavigationManager Navigation
 @inject ICinemasService CnmSV
+@attribute [Authorize(Roles = "Admin")]
 
 <link rel="stylesheet" href="/CINEMA/updatecnm.css">
 
