@@ -85,7 +85,7 @@ else
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title w-100 text-center" id="addCustomerLabel">Thêm combo</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseFoddCombo"></button>
 					</div>
 					<div class="modal-body">
 						<div class="container-fluid">
@@ -136,7 +136,7 @@ else
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="CloseFoddCombo" style="width: 10%">Hủy</button>
 					 <button @onclick="ShowConfirmModal" class="btn btn-success" style="font-size: 1rem">Thêm</button> 
 						
 						@if (showConfirmModal)
@@ -175,7 +175,7 @@ else
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title w-100 text-center" id="addCustomerLabel">Cập nhật combo</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseFoddCombo"></button>
 					</div>
 					<div class="modal-body">
 						<div class="container-fluid">
@@ -227,7 +227,7 @@ else
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%" @onclick="CloseFoddCombo">Hủy</button>
 						<button type="button" class="btn btn-success btn-lg" style="font-size: 1rem" @onclick="ShowConfirmEditModal">Cập nhật</button>
 
 						@if (showConfirmModal)
@@ -330,6 +330,22 @@ else
 
 		await LoadFoodCombo();
 		StateHasChanged();
+	}
+	private void CloseFoddCombo()
+	{
+		// Reset dữ liệu form
+		request = new FoodComboCreateRequest();
+		updateRequest = new FoodComboUpdateRequest();
+
+		// Reset các thông báo lỗi
+		errorAmount = string.Empty;
+		errorDes = string.Empty;
+		errorName = string.Empty;
+
+		// Reset trạng thái xử lý
+		isSubmitting = false;
+		selectedFile = null;
+		profileImage = "/images/Client/avt-default.jpg";
 	}
 	private async Task LoadFoodCombo()
 	{
