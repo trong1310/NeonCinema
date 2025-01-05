@@ -70,7 +70,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			//optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			//optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			// optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			 optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			 optionsBuilder.UseSqlServer("Data Source=CUONG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 
         }
 
@@ -235,7 +235,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		PhoneNumber = "0862774830",
 		Adderss = "Hà Nội",
 		DateOrBriht = DateTime.Parse("01/01/2004"),
-		Images = "images/mai.jpg",
+		Images = "avt-default.jpg",
 		Gender = false,
 		RoleID = Guid.Parse("25d7afcb-949b-4717-a961-b50f2e18657d"),
 

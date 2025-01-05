@@ -26,7 +26,7 @@
 }
 else
 {
-	<div class="container-fluid mt-4">
+	<div class="container-fluid mt-3">
 		<h3 class="text-center text-secondary-emphasis">Danh sách combo</h3>
 		<!-- Search and Filter Section -->
 		<div class="row mb-4 p-3 search-filter-container">
@@ -291,8 +291,8 @@ else
 	private decimal? priceFrom = null;
 	private decimal? priceTo = null;
 
-	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
-	private string profileImageUpdate = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	private string profileImage = "/images/Client/combo.png";
+	private string profileImageUpdate = "/images/Client/combo.png";
 
 	private string? errorName = null;
 	private string? errorDes = null;
@@ -345,7 +345,7 @@ else
 		// Reset trạng thái xử lý
 		isSubmitting = false;
 		selectedFile = null;
-		profileImage = "/images/Client/avt-default.jpg";
+		profileImage = "/images/Client/combo.png";
 	}
 	private async Task LoadFoodCombo()
 	{
@@ -608,7 +608,7 @@ else
 			// Tiến hành tạo Food Combo
 			if (request.Images == null)
 			{
-				request.Images = "3ada90ce-6f05-47a2-8c65-5747d4790518.png";
+				request.Images = "combo.png";
 			}
 			var foodCombos = await _services.CreateFood(request);
 			if (foodCombos != null)

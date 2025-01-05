@@ -112,8 +112,6 @@
 
     <None Include="Pages\Staff\NavMenuStaff.razor" />
 
-    <None Include="Pages\Staff\ProfileStaff\Profile.razor" />
-
     <None Include="Pages\Staff\TicketPrice\ListTicketPrice.razor" />
     <None Include="wwwroot\images\Director\284d257c-5d38-405b-99e6-1ff9dab2add6.webp" />
     <None Include="wwwroot\images\Director\3acdf00f-7296-458e-969d-1e07f1281f99.webp" />
