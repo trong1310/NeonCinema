@@ -13,6 +13,7 @@
 @inject NavigationManager _nav
 @inject IPromotionServices _prosv
 @inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
 
 @if (IsLoading == true)
 {

@@ -13,6 +13,8 @@
 @inject ISeatTypeService seattypeservice
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "Admin")]
+
 <script src="js/Customer/MovieList.js"></script>
 <link rel="stylesheet" href="/css/Room/detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -64,8 +66,8 @@
                 </div>
                 <div class="update-button text-center mt-4">
                     <button class="btn btn-primary"
-                            disabled="@(!selectedSeats.Any())"
-                            @onclick="ShowModalForSelectedSeats" @onclick:preventDefault="true">
+                    disabled="@(!selectedSeats.Any())"
+                    @onclick="ShowModalForSelectedSeats" @onclick:preventDefault="true">
                         Cập nhật
                     </button>
                 </div>
@@ -109,47 +111,47 @@
                                         string rowLabel = GetRowLabel(row);
                                         string seatLabel = $"{rowLabel}{col}";
 
-                                    <td>
+                                        <td>
                                             @if (seat != null)
                                             {
                                                 <div class="seat" style="font-size: 12px;">
                                                     <button style="@GetSeatColor(seat, selectedSeats.Contains(seat.ID))"
-                                                            @onclick="() => ToggleSeatSelection(seat)"
-                                                            @onclick:preventDefault="true">
-                                                           @seatLabel
+                                                    @onclick="() => ToggleSeatSelection(seat)"
+                                                    @onclick:preventDefault="true">
+                                                        @seatLabel
                                                     </button>
-                                
+
                                                 </div>
 
                                             }
                                             else
                                             {
                                                 <div class="seat empty">
-                                                         @seatLabel
+                                                    @seatLabel
                                                 </div>
                                             }
-                                    </td>
+                                        </td>
                                     }
                                 </tr>
                             }
 
                         }
-    <div class="seatcolor">
-        <div class="seat-legend">
-            <p><span style="background-color: #69d685; color: white; padding: 5px;"></span> - Ghế đôi</p>
-            <p><span style="background-color: #ee4646; color: white; padding: 5px;"></span> - Ghế thường</p>
-            
-        </div>
+                        <div class="seatcolor">
+                            <div class="seat-legend">
+                                <p><span style="background-color: #69d685; color: white; padding: 5px;"></span> - Ghế đôi</p>
+                                <p><span style="background-color: #ee4646; color: white; padding: 5px;"></span> - Ghế thường</p>
 
-        <div class="seat-legend">
-            <p><span style="background-color: #a064d6; color: white; padding: 5px;"></span> - Ghế VIP</p>
-            <p><span style="background-color: gray; color: white; padding: 5px;"></span> - Ghế đang bảo trì</p>
+                            </div>
+
+                            <div class="seat-legend">
+                                <p><span style="background-color: #a064d6; color: white; padding: 5px;"></span> - Ghế VIP</p>
+                                <p><span style="background-color: gray; color: white; padding: 5px;"></span> - Ghế đang bảo trì</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
     </div>
 </EditForm>
 
@@ -174,7 +176,7 @@
 
                     <option value="@seatEnum.Available">Hoạt động</option>
                     <option value="@seatEnum.Maintenance">Bảo trì</option>
-                    
+
 
                 </InputSelect>
             </div>
@@ -333,6 +335,7 @@
         var result = await seatservice.UpdateSeate(selectedSeat.ID, updateSeatRequest);
         if (result.IsSuccessStatusCode)
         {
+            
             seats = await RoomService.GetSeatsByRoomId(roomId);
             // CloseModal();
             Console.WriteLine("Seat updated successfully.");

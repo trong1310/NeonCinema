@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @using NeonCinema_Application.DataTransferObject.Countrys
 @using NeonCinema_Client.Data.IServices.Country
+@attribute [Authorize(Roles = "Admin")]
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="pa-4">
     <!-- Khung tiêu đề -->
