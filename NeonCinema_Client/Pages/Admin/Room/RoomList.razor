@@ -75,17 +75,15 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @if (filteredRooms != null)
+                        @if (PagedRooms != null)
                         {
-                            int index = 1;
-                            foreach (var room in filteredRooms)
+                            int index = (currentPage - 1) * itemsPerPage + 1;
+                            foreach (var room in PagedRooms)
                             {
-                                var cinema = cinemasdto.FirstOrDefault(c => c.ID == room.CinemasId);
                                 <tr>
                                     <td>@index</td>
                                     <td>@room.Name</td>
                                     <td>@(room.RowNumber * room.ColumnNumber)</td>
-
                                     <td>@room.RowNumber</td>
                                     <td>@room.ColumnNumber</td>
                                     <td>
@@ -103,7 +101,19 @@ else
                             }
                         }
                     </tbody>
+
                 </table>
+                <div class="d-flex justify-content-center align-items-center mt-3 pagination-controls">
+                    <button class="btn btn-outline-secondary me-2" @onclick="PreviousPage" disabled="@(!CanGoToPreviousPage())">
+                        Trước
+                    </button>
+                    <span class="mx-2">Trang @currentPage trên @totalPages</span>
+                    <button class="btn btn-outline-secondary ms-2" @onclick="NextPage" disabled="@(!CanGoToNextPage())">
+                        Sau
+                    </button>
+                </div>
+
+
             </div>
         }
     </div>
@@ -117,7 +127,31 @@ else
     private string searchText = string.Empty;
     private string selectedStatus = "All"; // Giới tính mặc định là "Tất cả"
     private bool isLoading = true;
+    private int currentPage = 1;
+    private int itemsPerPage = 5;
+    private int totalPages => (int)Math.Ceiling((double)filteredRooms.Count / itemsPerPage);
+    private bool CanGoToNextPage() => currentPage < totalPages;
+    private bool CanGoToPreviousPage() => currentPage > 1;
 
+    private IEnumerable<RoomDTO> PagedRooms => filteredRooms
+        .Skip((currentPage - 1) * itemsPerPage)
+        .Take(itemsPerPage);
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
@@ -159,10 +193,22 @@ else
                          || (selectedStatus == "Active" && r.Status == EntityStatus.Active)
                          || (selectedStatus == "Inactive" && r.Status == EntityStatus.Inactive))
             .ToList();
+        currentPage = 1;
     }
 
 }
 <style>
+    .pagination-controls {
+        gap: 0.5rem; /* Adjust gap between items */
+    }
+
+        .pagination-controls button {
+            padding: 0.5rem 1rem; /* Adjust button size */
+        }
+
+        .pagination-controls span {
+            font-weight: bold; /* Highlight the page indicator */
+        }
 
     body {
         background-color: #f8f9fa;

@@ -20,7 +20,7 @@
 		<!-- Khu vực hiển thị avatar và thông tin người dùng -->
 
 		<div class="row align-items-center user-info" @onclick="NavigateToProfile">
-			@if (authToken != null)
+            @if (authToken != null)
 			{
 				<div class="col-3 text-center">
 					@if (string.IsNullOrEmpty(user.Images))
@@ -69,45 +69,107 @@
 
 		<MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
 
-		<MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info">
-			<MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
-			<MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
-		</MudNavGroup>
-		<MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
-		<!-- Nút Đăng Xuất -->
-		<MudNavLink Href="/login" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
-	</MudNavMenu>
+        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info" >
+            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
+            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
+        <!-- Nút Đăng Xuất -->
+        @if (isLoggedIn)
+        {
+            <MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="/login" Icon="fas fa-sign-in-alt" IconColor="Color.Success" Class="custom-nav-link">Đăng Nhập</MudNavLink>
+        }
+
+
+    </MudNavMenu>
 </MudPaper>
 
 
 @code {
-	private UserDTO user = new UserDTO();
-	private bool isLoggedIn;
-	private string userId;
-	private string role = "";
-	string authToken = "";
-	private string profileImage = "/images/Client/avt-default.jpg";
-	protected override async Task OnInitializedAsync()
-	{
-		authToken = await _localStorage.GetItemAsync<string>("authToken");
-		if (authToken != null)
-		{
-			var handler = new JwtSecurityTokenHandler();
-			var jwtToken = handler.ReadJwtToken(authToken);
-			userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-			user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
-			role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-		}
-		StateHasChanged();
-	}
-	private string GetImageUrl(string imageUrl)
-	{
-		return $"https://localhost:7211/api/Resources/{imageUrl}";
-	}
-	private void NavigateToProfile()
-	{
-		_navi.NavigateTo($"/profile-admin/{userId}");
-	}
+    private UserProfile user = new UserProfile();
+    private bool isLoggedIn;
+    string authToken = "";
+    private string userId;
+    private string role = "";
+    private string profileImage = "/images/Client/avt-default.jpg";
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProfileNav();
+        // Gọi StateHasChanged sau khi hoàn tất xử lý
+        StateHasChanged();
+    }
+    public async Task GetProfileNav()
+    {
+        // Lấy token từ LocalStorage
+        var authToken = await _localStorage.GetItemAsync<string>("authToken");
+
+        // Kiểm tra token có tồn tại hay không
+        if (!string.IsNullOrEmpty(authToken))
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(authToken);
+                var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+                role = jwtToken?.Claims?.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
+
+                user = new UserProfile
+                    {
+                        FullName = fullName,
+                        Images = imageUrl
+                    };
+                
+                
+                isLoggedIn = true;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Xử lý trường hợp token không hợp lệ
+                isLoggedIn = false;
+                await _localStorage.RemoveItemAsync("authToken");
+                Console.WriteLine($"Token không hợp lệ: {ex.Message}");
+            }
+        }
+        else
+        {
+            // Token không tồn tại, chuyển trạng thái sang chưa đăng nhập
+            isLoggedIn = false;
+        }
+    }
+    private string GetImageUrl(string imageUrl)
+    {
+        return $"https://localhost:7211/api/Resources/{imageUrl}";
+    }
+    private void NavigateToProfile()
+    {
+        _navi.NavigateTo($"/profile-admin/{userId}");
+    }
+    private async Task Logout()
+    {
+        try
+        {
+            // Xóa token trong LocalStorage
+            await _localStorage.RemoveItemAsync("authToken");
+
+            // Đặt trạng thái đăng nhập thành false
+            isLoggedIn = false;
+
+            // Chuyển hướng người dùng đến trang đăng nhập
+            _navi.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi đăng xuất: {ex.Message}");
+        }
+    }
+
 }
 <style>
 	.custom-nav-link {
