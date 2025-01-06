@@ -20,7 +20,7 @@
 		<!-- Khu vực hiển thị avatar và thông tin người dùng -->
 
 		<div class="row align-items-center user-info" @onclick="NavigateToProfile">
-			@if (authToken != null)
+            @if (authToken != null)
 			{
 				<div class="col-3 text-center">
 					@if (string.IsNullOrEmpty(user.Images))
@@ -92,6 +92,7 @@
 @code {
     private UserProfile user = new UserProfile();
     private bool isLoggedIn;
+    string authToken = "";
     private string userId;
     private string role = "";
     private string profileImage = "/images/Client/avt-default.jpg";
