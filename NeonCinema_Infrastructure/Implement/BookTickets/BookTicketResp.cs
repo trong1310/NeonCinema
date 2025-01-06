@@ -146,7 +146,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						bill.Surcharge = ticketPriceSetting.Surcharge3D;
 					}
-					if (type.MovieTypeName.Contains("2D".Trim()))
+					if (type.MovieTypeName.Contains("4D".Trim()))
 					{
 						bill.Surcharge = ticketPriceSetting.Surcharge4D;
 					}
