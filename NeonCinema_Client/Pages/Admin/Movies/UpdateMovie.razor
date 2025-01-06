@@ -19,6 +19,8 @@
 @layout LayoutAdmin
 @inject NavigationManager _navigation
 @inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Admin")]
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />

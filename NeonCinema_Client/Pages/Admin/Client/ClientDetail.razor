@@ -4,10 +4,11 @@
 @using NeonCinema_Client.Data.IServices.User
 @using System.Globalization
 @inject IUserServices UserService
+@inject NavigationManager _navigation
+@attribute [Authorize(Roles = "Admin")] 
 
-
-<div class="container-fluid mt-5">
-	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
+<div class="container-fluid mt-3">
+	<h2 class="text-center mb-4 font-weight-bold">Chỉnh sửa nhân viên</h2>
 	<div class="row justify-content-center">
 		<div class="col-md-3 text-center mb-4 mt-5">
 			<img src=@GetImageUrl(user.Images) alt="Profile" class="rounded-circle img-fluid profile-pic">
@@ -18,13 +19,13 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="fullname" class="font-weight-bold">Họ và tên</label>
-							<input type="text" class="form-control" id="fullname" @bind-value="user.FullName">
+							<input type="text" class="form-control" id="fullname" @bind-value="user.FullName" disabled>
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="phone" class="font-weight-bold">Số điện thoại</label>
-							<input type="text" class="form-control" id="phone" @bind-value="user.PhoneNumber">
+							<input type="text" class="form-control" id="phone" @bind-value="user.PhoneNumber" disabled>
 						</div>
 					</div>
 				</div>
@@ -33,13 +34,13 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="email" class="font-weight-bold">Email</label>
-							<input type="email" class="form-control" id="email" @bind-value="user.Email">
+							<input type="email" class="form-control" id="email" @bind-value="user.Email" disabled>
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="dob" class="font-weight-bold">Ngày sinh</label>
-							<input type="text" class="form-control" id="dob" @bind-value="formattedDate" @oninput="OnDateChanged" />
+							<input type="text" class="form-control" id="dob" @bind-value="formattedDate" @oninput="OnDateChanged" disabled />
 						</div>
 					</div>
 				</div>
@@ -53,22 +54,22 @@
 									@if (user.Gender == true)
 									{
 										<div class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" id="genderMale" checked />
+											<input class="form-check-input" type="radio" id="genderMale" checked disabled />
 											<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 										</div>
 										<div class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" id="genderFemale" />
+											<input class="form-check-input" type="radio" id="genderFemale" disabled />
 											<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 										</div>
 									}
 									else
 									{
 										<div class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" id="genderMale" />
+											<input class="form-check-input" type="radio" id="genderMale" disabled />
 											<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 										</div>
 										<div class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" id="genderFemale" checked />
+											<input class="form-check-input" type="radio" id="genderFemale" checked disabled />
 											<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 										</div>
 									}
@@ -80,7 +81,7 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label>Trạng thái</label>
-							<select class="form-select" @bind="status">
+							<select class="form-select" @bind="status" disabled>
 								<option value="Active">Đang hoạt động</option>
 								<option value="Locked">Không hoạt động</option>
 							</select>
@@ -90,11 +91,11 @@
 
 				<div class="form-group">
 					<label for="address" class="font-weight-bold">Địa chỉ</label>
-					<textarea class="form-control" id="address" rows="3" @bind="user.Adderss"></textarea>
+					<textarea class="form-control" id="address" rows="3" @bind="user.Adderss" disabled></textarea>
 				</div>
 
 				<div class="text-center">
-					<button type="submit" class="btn btn-primary btn-lg">Lưu</button>
+					<button type="button" @onclick="NavigateToList" class="btn btn-warning">Quay lại</button>
 				</div>
 			</form>
 		</div>
@@ -139,6 +140,10 @@
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
+	}
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo($"/client");
 	}
 }
 

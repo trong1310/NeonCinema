@@ -5,6 +5,8 @@
 @inject NavigationManager Navi
 @inject IMovieTypeService SV
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 @* <link rel="stylesheet" href="/css/Actor/listactor.css"> *@
 <h3>List of MovieType</h3>
 

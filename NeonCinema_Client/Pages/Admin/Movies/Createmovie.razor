@@ -23,6 +23,8 @@
 @inject NavigationManager _navigation
 @inject HttpClient _http
 @inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Admin")]
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 @* <AuthorizeView Roles="Admin">
 	<Authorized > *@

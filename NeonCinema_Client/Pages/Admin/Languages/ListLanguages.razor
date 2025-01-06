@@ -6,6 +6,8 @@
 @inject NavigationManager navi
 @inject IToastService ToastService // Dịch vụ thông báo
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 <div class="container-fluid">
     <!-- Card cho tên trang -->
     <div class="card mb-4">

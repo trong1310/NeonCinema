@@ -9,6 +9,7 @@
 @layout LayoutAdmin
 @inject BookTicketServices _service
 @inject NavigationManager _navi
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
