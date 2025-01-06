@@ -235,7 +235,8 @@
 							{
 								<p class="mt-2">
 									<strong>Mã giảm giá đã chọn:</strong> @selectedDiscountCode <br />
-									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND)
+									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND
+									<span>Tối đa:  VND</span>
 								</p>
 							}
 						</div>
@@ -267,7 +268,7 @@
 														<div class="discount-info">
 															<h3>@discount.Name</h3>
 															<p>Giảm giá @discount.DiscountPercentage %</p>
-															<p class="text-dark">tổng tiền </p>
+															<p class="text-dark">Tối đa : @discount.AmountMax </p>
 															@* <div class="progress-bar" style="width:90%">
 															<div class="progress" style="width: @discount.Percentage%;"></div>
 															</div> *@
