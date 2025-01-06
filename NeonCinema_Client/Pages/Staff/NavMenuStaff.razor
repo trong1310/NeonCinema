@@ -2,7 +2,10 @@
 @using Blazored.LocalStorage
 @using NeonCinema_API.Controllers.Service
 @using System.IdentityModel.Tokens.Jwt
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.User
 @inject ILocalStorageService _localstorage
+@inject IUserServices Service
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 @inject HttpClient _http
@@ -68,22 +71,7 @@
 			<div class="col-9">
 				<h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
 				<p class="user-role align-items-center justify-content-center">
-					@if (role == "Staff")
-					{
-						<text>Nhân viên</text>
-					}
-					else if (role == "Admin")
-					{
-						<text>Quản trị viên</text>
-					}
-					 else if (role == "Client")
-                    {
-                        <text>Khách hàng</text>
-                    }
-					else
-					{
-						<text>Không xác định</text>
-					}
+					@role
 				</p>
 			</div>
 		</div>
@@ -97,57 +85,23 @@
 	</MudNavMenu>
 </MudPaper>
 @code {
-	private UserProfile user = new UserProfile();
+	private UserDTO user = new UserDTO();
 	private bool isLoggedIn;
 	private string userId;
 	private string role="";
 	private string profileImage = "/images/Client/avt-default.jpg";
 	protected override async Task OnInitializedAsync()
 	{
-		await GetProfileNav();
-		// Gọi StateHasChanged sau khi hoàn tất xử lý
+
+		var authToken = await _localStorage.GetItemAsync<string>("authToken");
+		var handler = new JwtSecurityTokenHandler();
+		var jwtToken = handler.ReadJwtToken(authToken);
+		userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+		user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
+		role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
 		StateHasChanged();
 	}
-	public async Task GetProfileNav()
-	{
-		// Lấy token từ LocalStorage
-		var authToken = await _localStorage.GetItemAsync<string>("authToken");
-
-		// Kiểm tra token có tồn tại hay không
-		if (!string.IsNullOrEmpty(authToken))
-		{
-			try
-			{
-				var handler = new JwtSecurityTokenHandler();
-				var jwtToken = handler.ReadJwtToken(authToken);
-				var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-				 role = jwtToken?.Claims?.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-				userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-				var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
-				
-				user = new UserProfile
-					{
-						FullName = fullName,
-						Images = imageUrl
-					};
-
-				isLoggedIn = true;
-				StateHasChanged();
-			}
-			catch (Exception ex)
-			{
-				// Xử lý trường hợp token không hợp lệ
-				isLoggedIn = false;
-				await _localStorage.RemoveItemAsync("authToken");
-				Console.WriteLine($"Token không hợp lệ: {ex.Message}");
-			}
-		}
-		else
-		{
-			// Token không tồn tại, chuyển trạng thái sang chưa đăng nhập
-			isLoggedIn = false;
-		}
-	}
+	
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";

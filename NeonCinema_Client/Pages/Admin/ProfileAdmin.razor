@@ -83,12 +83,12 @@
 								<div style="margin-left: -20px; margin-top: 5px">
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderMale" name="gender"
-											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
+										checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
 										<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 									</div>
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderFemale" name="gender"
-											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
+										checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
 										<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 									</div>
 								</div>
@@ -126,7 +126,7 @@
 										<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
 										<button type="button" @onclick="UpdateAccout" class="btn btn-success" disabled="@isSubmitting">
 											<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-												  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+											style="display: @(isSubmitting ? "inline-block" : "none")"></span>
 											<span>@(isSubmitting ? "Đang xử lý..." : "Xác nhận")</span>
 										</button>
 									</div>
@@ -167,7 +167,7 @@
 		{
 			user.Gender = true; // Mặc định là Nam
 		}
-
+		StateHasChanged(); 
 	}
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
