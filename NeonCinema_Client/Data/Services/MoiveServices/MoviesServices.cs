@@ -47,7 +47,7 @@ namespace NeonCinema_Client.Services.MoivesService
         }
 		public async Task<HttpResponseMessage> CreateActor(CreateActorRequest request)
 		{
-			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createActor", request);
+			var respones = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/Actor/createspeed", request);
 			return respones;
 		}
 		public async Task<PaginationResponse<ActorDTO>> GetActor(ViewActorRequest request)
