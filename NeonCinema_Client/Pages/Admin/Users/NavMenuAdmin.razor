@@ -2,10 +2,13 @@
 @using Blazored.LocalStorage
 @using NeonCinema_API.Controllers.Service
 @using System.IdentityModel.Tokens.Jwt
+@using NeonCinema_Application.DataTransferObject.User
+@using NeonCinema_Client.Data.IServices.User
 @inject ILocalStorageService _localstorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService _localStorage;
 @inject HttpClient _http
+@inject IUserServices Service
 @inject NavigationManager _navi
 @attribute [Authorize(Roles = "Admin")]
 
@@ -13,64 +16,58 @@
 
 
 <MudPaper Width="250px" Class="d-inline-flex" Elevation="0">
-    <MudNavMenu Class="mud-width-full" Style="display: flex; flex-direction: column;">
-        <!-- Khu vực hiển thị avatar và thông tin người dùng -->
+	<MudNavMenu Class="mud-width-full" Style="display: flex; flex-direction: column;">
+		<!-- Khu vực hiển thị avatar và thông tin người dùng -->
 
-        <div class="row align-items-center user-info" @onclick="NavigateToProfile">
-            <div class="col-3 text-center">
-                @if (string.IsNullOrEmpty(user.Images))
-                {
-                    <img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                }
-                else
-                {
-                    <img src="@(!string.IsNullOrEmpty(user.Images) ? GetImageUrl(user.Images) : profileImage)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                }
-            </div>
-            <div class="col-9">
-                <h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
-                <p class="user-role align-items-center justify-content-center">
-                    @if (role == "Staff")
-                    {
-                        <text>Nhân viên</text>
-                    }
-                    else if (role == "Admin")
-                    {
-                        <text>Quản trị viên</text>
-                    }
-                    else if (role == "Client")
-                    {
-                        <text>Khách hàng</text>
-                    }
-                    else
-                    {
-                        <text>Không xác định</text>
-                    }
-                </p>
-            </div>
-        </div>
-        <MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success" >
-            <MudNavLink Href="/list-movie-admin" Icon="fas fa-video" IconColor="Color.Error" Class="custom-nav-link" Active="true">Danh sách phim</MudNavLink>
-            <MudNavLink Href="/actor-manager" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
-            <MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
-        </MudNavGroup>
-        
-        <MudNavLink Href="/screenings" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
-        <MudNavLink Href="/listroom" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
-        @* <MudNavLink Href="/showtimes" Icon="fas fa-clock" IconColor="Color.Info" Class="custom-nav-link">Quản lý giờ chiếu</MudNavLink> *@
-       
-        <MudNavLink Href="/list-promotion-admin" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
+		<div class="row align-items-center user-info" @onclick="NavigateToProfile">
+			@if (authToken != null)
+			{
+				<div class="col-3 text-center">
+					@if (string.IsNullOrEmpty(user.Images))
+					{
+						<img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+					}
+					else
+					{
+						<img src="@(!string.IsNullOrEmpty(user.Images) ? GetImageUrl(user.Images) : profileImage)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+					}
+				</div>
+				<div class="col-9">
+					<h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
+					<p class="user-role align-items-center justify-content-center">
+						@role
+					</p>
+				</div>
+			}
+			else
+			{
+				<div class="col-3 text-center">
+					<img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+				</div>
+			}
+		</div>
+		<MudNavGroup Title="Quản lý phim" Icon="fas fa-film" IconColor="Color.Success">
+			<MudNavLink Href="/list-movie-admin" Icon="fas fa-video" IconColor="Color.Error" Class="custom-nav-link" Active="true">Danh sách phim</MudNavLink>
+			<MudNavLink Href="/actor-manager" Icon="fas fa-user" IconColor="Color.Success" Class="custom-nav-link">Quản lý diễn viên</MudNavLink>
+			<MudNavLink Href="/listDirector" Icon="fas fa-user-tie" IconColor="Color.Primary" Class="custom-nav-link">Quản lý đạo diễn</MudNavLink>
+		</MudNavGroup>
 
-        <MudNavGroup Title="Quản lý vé" Icon="@Icons.Material.Filled.CardTravel" IconColor="Color.Error">
-            @* <MudNavLink Href="/ticketprices" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary">Quản lý giá vé</MudNavLink> *@
-            <MudNavLink Href="/ticket-pricing" Icon="@Icons.Material.Filled.Event" IconColor="Color.Secondary" Class="custom-nav-link">Danh sách giá vé</MudNavLink>
-            <MudNavLink Href="/book_ticket" Icon="@Icons.Material.Filled.BookOnline" IconColor="Color.Success" Class="custom-nav-link">Đặt vé</MudNavLink>
-            <MudNavLink Href="/booking-history" Icon="@Icons.Material.Filled.History" IconColor="Color.Primary" Class="custom-nav-link">Lịch sử đặt vé</MudNavLink>
-        </MudNavGroup>
+		<MudNavLink Href="/screenings" Icon="fas fa-calendar" IconColor="Color.Info" Class="custom-nav-link">Quản lý lịch chiếu</MudNavLink>
+		<MudNavLink Href="/listroom" Icon="fas fa-theater-masks" IconColor="Color.Warning" Class="custom-nav-link">Quản lý phòng chiếu</MudNavLink>
+		@* <MudNavLink Href="/showtimes" Icon="fas fa-clock" IconColor="Color.Info" Class="custom-nav-link">Quản lý giờ chiếu</MudNavLink> *@
 
-        <MudNavLink Href="/food-combos" Icon="fas fa-hamburger" IconColor="Color.Tertiary" Class="custom-nav-link">Quản lý combo đồ ăn</MudNavLink>
+		<MudNavLink Href="/list-promotion-admin" Icon="fas fa-tags" IconColor="Color.Primary" Class="custom-nav-link">Quản lý khuyến mãi</MudNavLink>
 
-        <MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
+		<MudNavGroup Title="Quản lý vé" Icon="@Icons.Material.Filled.CardTravel" IconColor="Color.Error">
+			@* <MudNavLink Href="/ticketprices" Icon="@Icons.Material.Filled.Settings" IconColor="Color.Primary">Quản lý giá vé</MudNavLink> *@
+			<MudNavLink Href="/ticket-pricing" Icon="@Icons.Material.Filled.Event" IconColor="Color.Secondary" Class="custom-nav-link">Danh sách giá vé</MudNavLink>
+			<MudNavLink Href="/book_ticket" Icon="@Icons.Material.Filled.BookOnline" IconColor="Color.Success" Class="custom-nav-link">Đặt vé</MudNavLink>
+			<MudNavLink Href="/booking-history" Icon="@Icons.Material.Filled.History" IconColor="Color.Primary" Class="custom-nav-link">Lịch sử đặt vé</MudNavLink>
+		</MudNavGroup>
+
+		<MudNavLink Href="/food-combos" Icon="fas fa-hamburger" IconColor="Color.Tertiary" Class="custom-nav-link">Quản lý combo đồ ăn</MudNavLink>
+
+		<MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
 
         <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info" >
             <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
@@ -173,64 +170,59 @@
     }
 
 }
-
-
-
-
-
 <style>
-    .custom-nav-link {
-        height: 59px; /* Chiều cao của NavLink */
-        display: flex;
-        align-items: center; /* Căn giữa nội dung theo chiều dọc */
-        text-decoration: none !important; /* Bỏ gạch chân */
-        color: inherit; /* Giữ nguyên màu chữ từ MudBlazor */
-    }
+	.custom-nav-link {
+		height: 59px; /* Chiều cao của NavLink */
+		display: flex;
+		align-items: center; /* Căn giữa nội dung theo chiều dọc */
+		text-decoration: none !important; /* Bỏ gạch chân */
+		color: inherit; /* Giữ nguyên màu chữ từ MudBlazor */
+	}
 
-        .custom-nav-link:hover,
-        .custom-nav-link:focus,
-        .custom-nav-link:visited,
-        .custom-nav-link:active {
-            text-decoration: none !important; /* Đảm bảo không có gạch chân trong tất cả trạng thái */
-            outline: none; /* Bỏ viền nếu có */
-        }
+		.custom-nav-link:hover,
+		.custom-nav-link:focus,
+		.custom-nav-link:visited,
+		.custom-nav-link:active {
+			text-decoration: none !important; /* Đảm bảo không có gạch chân trong tất cả trạng thái */
+			outline: none; /* Bỏ viền nếu có */
+		}
 
-    .mud-nav-link {
-        text-decoration: none !important; /* Bỏ gạch chân từ các lớp mặc định */
-    }
+	.mud-nav-link {
+		text-decoration: none !important; /* Bỏ gạch chân từ các lớp mặc định */
+	}
 
-    .user-info {
-        padding: 10px;
-        background-color: #f8f9fa; /* Nền sáng */
-        border-radius: 8px; /* Bo góc */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    }
+	.user-info {
+		padding: 10px;
+		background-color: #f8f9fa; /* Nền sáng */
+		border-radius: 8px; /* Bo góc */
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+	}
 
-        .user-info h5 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0;
-            color: #333;
-        }
+		.user-info h5 {
+			font-size: 1rem;
+			font-weight: 600;
+			margin: 0;
+			color: #333;
+		}
 
-        .user-info p.user-role {
-            font-size: 0.9rem;
-            color: #666;
-            margin: 0;
-            font-style: italic; /* Kiểu chữ nghiêng */
-        }
+		.user-info p.user-role {
+			font-size: 0.9rem;
+			color: #666;
+			margin: 0;
+			font-style: italic; /* Kiểu chữ nghiêng */
+		}
 
-        .user-info img {
-            max-width: 70px;
-            height: auto;
-            margin-left: -5px;
-        }
+		.user-info img {
+			max-width: 70px;
+			height: auto;
+			margin-left: -5px;
+		}
 
-        /* Đảm bảo nội dung không bị cắt */
-        .user-info .col-9 {
-            flex: 0 0 auto; /* Không co giãn cột */
-            max-width: 100%; /* Sử dụng tối đa không gian */
-        }
+		/* Đảm bảo nội dung không bị cắt */
+		.user-info .col-9 {
+			flex: 0 0 auto; /* Không co giãn cột */
+			max-width: 100%; /* Sử dụng tối đa không gian */
+		}
 </style>
 @* 
 @code {
@@ -249,7 +241,7 @@
     private UserProfile user;
     private string previewImage;
     bool _drawerOpen = true;
-    
+
     private async Task OnFileChange(InputFileChangeEventArgs e)
     {
         var file = e.File;
