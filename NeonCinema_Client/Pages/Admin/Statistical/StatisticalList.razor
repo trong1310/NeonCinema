@@ -182,13 +182,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        isLoading = true; StateHasChanged(); // Cập nhật giao diện để hiển thị loading
+        isLoading = true;
+        StateHasChanged();
 
+        // Gọi hàm lấy số liệu & vẽ biểu đồ luôn
         await FetchStatistics();
         await CalculateGrowthPercentage();
-        await Task.Delay(2000); // Tạm dừng trong 2 giây
-        isLoading = false; // Kết thúc trạng thái đang tải
+
+        isLoading = false;
+        StateHasChanged();
     }
+
 
     private async Task FetchStatistics()
     {
