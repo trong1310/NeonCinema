@@ -1,19 +1,31 @@
-﻿@page "/staff-details/{id:guid}"
+﻿@page "/profile-admin/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.User
 @layout LayoutAdmin
 @using NeonCinema_Client.Data.IServices.User
 @using System.Globalization
 @using System.Text.Json
+@using NeonCinema_Client.Pages.Staff
+@using NeonCinema_Infrastructure.Database.AppDbContext
+@using System.Text.RegularExpressions
 @inject IUserServices _service
 @inject HttpClient _http
 @inject NavigationManager _navigation
-@attribute [Authorize(Roles = "Admin")] 
+@inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Admin")]
 
-<div class="container-fluid mt-4">
-	<h2 class="text-center mb-4 font-weight-bold">Thông tin nhân viên</h2>
+<MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
+<div class="container-fluid mt-2">
+	<h2 class="text-center mb-2 font-weight-bold" style="margin-top:30px;">Thông tin cá nhân</h2>
 	<div class="row justify-content-center">
 		<div class="col-md-3 text-center mb-4 mt-5">
 			<img src="@profileFilmsImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
+			<label class="custom-file-upload">
+				<span style="margin-left:-5px">
+					<i class="material-icons">cloud_upload</i>
+				</span>
+				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
+				<span>Chọn ảnh</span>
+			</label>
 		</div>
 		<div class="col-md-9" style="margin-top:10px;">
 			<form>
@@ -21,13 +33,21 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="fullname" class="font-weight-bold">Họ và tên</label>
-							<input type="text" class="form-control" id="fullname" @bind-value="@user.FullName" disabled>
+							<input type="text" class="form-control" id="fullname" @bind-value="@user.FullName">
+							@if (!string.IsNullOrEmpty(errorName))
+							{
+								<span class="text-danger">@errorName</span>
+							}
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="phone" class="font-weight-bold">Số điện thoại</label>
-							<input type="text" class="form-control" id="phone" @bind-value="@user.PhoneNumber" disabled>
+							<input type="text" class="form-control" id="phone" @bind-value="@user.PhoneNumber">
+							@if (!string.IsNullOrEmpty(errorPhone))
+							{
+								<span class="text-danger">@errorPhone</span>
+							}
 						</div>
 					</div>
 				</div>
@@ -36,13 +56,21 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="email" class="font-weight-bold">Email</label>
-							<input type="email" class="form-control" id="email" @bind-value="@user.Email" disabled>
+							<input type="email" class="form-control" id="email" @bind-value="@user.Email">
+							@if (!string.IsNullOrEmpty(errorEmail))
+							{
+								<span class="text-danger">@errorEmail</span>
+							}
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="dob" class="font-weight-bold">Ngày sinh</label>
-							<input type="date" class="form-control" @bind-value="@user.DateOrBriht" disabled />
+							<input type="date" class="form-control" @bind-value="@user.DateOrBriht" />
+							@if (!string.IsNullOrEmpty(errorYear))
+							{
+								<span class="text-danger">@errorYear</span>
+							}
 						</div>
 					</div>
 				</div>
@@ -55,12 +83,12 @@
 								<div style="margin-left: -20px; margin-top: 5px">
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderMale" name="gender"
-											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" disabled />
+											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
 										<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 									</div>
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderFemale" name="gender"
-											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" disabled />
+											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
 										<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 									</div>
 								</div>
@@ -72,11 +100,41 @@
 
 				<div class="form-group">
 					<label for="address" class="font-weight-bold">Địa chỉ</label>
-					<textarea class="form-control" id="address" rows="3" @bind="@user.Adderss" disabled></textarea>
+					<textarea class="form-control" id="address" rows="3" @bind="@user.Adderss"></textarea>
+					@if (!string.IsNullOrEmpty(errorAdress))
+					{
+						<span class="text-danger">@errorAdress</span>
+					}
 				</div>
 
 				<div class="text-center">
-					<button type="button" @onclick="NavigateToList" class="btn btn-warning">Quay lại</button>
+					<button type="button" @onclick="ShowConfirmEditModal" class="btn btn-primary btn-lg">Lưu</button>
+					@if (showConfirmModal)
+					{
+						<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" @onclick="CloseModal" aria-label="Close" class="close-btn">
+											<span class="material-icons" aria-hidden="true">close</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<h5 class="text-center">Bạn chắn chắn muốn cập nhật thông tin cá nhân ?</h5>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
+										<button type="button" @onclick="UpdateAccout" class="btn btn-success" disabled="@isSubmitting">
+											<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+												  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+											<span>@(isSubmitting ? "Đang xử lý..." : "Xác nhận")</span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					}
 				</div>
 			</form>
 		</div>
@@ -89,8 +147,18 @@
 	private UserDTO user = new UserDTO();
 	UserUpdateRequest updateRequest = new UserUpdateRequest();
 	private IBrowserFile selectedFile;
-	private string profileFilmsImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
+	private string profileFilmsImage = "/images/Client/avt-default.jpg";
 
+
+	private void ShowSnackbar(string message, Severity severity)
+	{
+		Snackbar.Add(message, severity, options =>
+		{
+			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
+			options.VisibleStateDuration = 3000; // Thời gian hiển thị (3 giây)
+		});
+		isSubmitting = false;
+	}
 	protected override async Task OnInitializedAsync()
 	{
 		user = await _service.GetByIDUser(id, CancellationToken.None);
@@ -128,8 +196,104 @@
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";
 	}
+
+	private NeonCinemasContext _context = new NeonCinemasContext();
+	private string? errorName = null;
+	private string? errorPhone = null;
+	private string? errorEmail = null;
+	private string? errorAdress = null;
+	private string? errorYear = null;
+	private bool isSubmitting = false;
+	private bool showConfirmModal = false;
+	private void CloseModal()
+	{
+		showConfirmModal = false;
+		StateHasChanged();
+	}
+	private void ShowConfirmEditModal()
+	{
+		bool isValid = true;
+		// Kiểm tra và hiển thị thông báo lỗi cho các trường
+		var phoneExists = _context.Users.Any(x => x.PhoneNumber == user.PhoneNumber && x.ID != user.ID);
+		var emailExists = _context.Users.Any(x => x.Email == user.Email && x.ID != user.ID);
+
+		// Kiểm tra họ và tên
+		if (string.IsNullOrWhiteSpace(user.FullName))
+		{
+			errorName = "Họ và tên không được để trống.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else if (!Regex.IsMatch(user.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+		{
+			errorName = "Họ và tên không được chứa số và kí tự đặc biệt.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else
+		{
+			errorName = null;
+		}
+
+		// Email
+		if (string.IsNullOrWhiteSpace(user.Email))
+		{
+			errorEmail = "Email không được để trống.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else if (emailExists)
+		{
+			errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else
+		{
+			errorEmail = null;
+		}
+
+		// SDT
+		if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+		{
+			errorPhone = "Số điện thoại không được để trống.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else if (!Regex.IsMatch(user.PhoneNumber, @"^0\d{9}$"))
+		{
+			errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại gồm 10 chữ số và bắt đầu bằng 0.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else if (phoneExists)
+		{
+			errorPhone = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else
+		{
+			errorPhone = null;
+		}
+
+		// Nếu tất cả hợp lệ, hiển thị modal xác nhận
+		if (isValid)
+		{
+			showConfirmModal = true;
+		}
+		StateHasChanged();
+	}
+
+
 	private async Task UpdateAccout()
 	{
+		isSubmitting = true;
+		errorName = "";
+		errorPhone = "";
+		errorEmail = "";
+		errorAdress = "";
+		errorYear = "";
 		try
 		{
 			string fileName = user.Images; // Dùng ảnh hiện tại nếu không chọn ảnh mới
@@ -171,8 +335,10 @@
 			var updateResponse = await _service.UpdateUser(updateRequest, CancellationToken.None);
 			if (updateResponse.IsSuccessStatusCode)
 			{
-				Console.WriteLine("Chỉnh sửa thành công.");
-				_navigation.NavigateTo("/staff");
+				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
+				isSubmitting = false;
+				await Task.Delay(2000);
+				CloseModal();
 			}
 			else
 			{
@@ -185,10 +351,7 @@
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 		}
 	}
-	private async Task NavigateToList()
-	{
-		_navigation.NavigateTo($"/staff");
-	}
+
 }
 
 <style>
@@ -286,5 +449,16 @@
 
 	label {
 		margin-left: -17px;
+	}
+
+	.close-btn {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		background: none; /* Loại bỏ màu nền */
+		border: none; /* Loại bỏ viền */
+		font-size: 24px; /* Kích thước biểu tượng */
+		cursor: pointer;
+		color: #333; /* Màu sắc biểu tượng */
 	}
 </style>

@@ -6,6 +6,7 @@
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
 @layout LayoutStaff
+@attribute [Authorize(Roles = "Admin,Staff")]
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
@@ -20,9 +21,7 @@ else
 {
     <EditForm Model="ticketPriceSetting" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <div class="card-header text-center mb-1">
-            <h3>Quản lý giá vé</h3>
-        </div>
+        <h3 class="text-center text-secondary-emphasis mt-3">Quản lý giá vé</h3>
         <div class="card" style="border: none">
 
             <div class="card-body p-2">
@@ -85,7 +84,7 @@ else
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-center align-middle" style="font-weight:bold">2D</td>
+                            <td class="text-center align-middle" style="font-weight:bold">3D</td>
                             <td>
                                 <div class="input-container">
                                     <input type="text" class="form-control"
@@ -96,7 +95,7 @@ else
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center align-middle" style="font-weight:bold">3D</td>
+                            <td class="text-center align-middle" style="font-weight:bold">4D</td>
                             <td>
                                 <div class="input-container">
                                     <input type="text" class="form-control"
@@ -106,7 +105,7 @@ else
                             </td>
                             <ValidationMessage For="@(() => ticketPriceSetting.Surcharge4D)" disabled />
                         </tr>
-                        <tr>
+                       @*  <tr>
                             <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
                             <td>
                                 <div class="input-container">
@@ -116,7 +115,7 @@ else
                                 </div>
                                 <ValidationMessage For="@(() => ticketPriceSetting.SurchargeIMAX)" />
                             </td>
-                        </tr>
+                        </tr> *@
                         <tr>
                             <td class="text-center align-middle" style="font-weight:bold">Ghế vip</td>
                             <td>
