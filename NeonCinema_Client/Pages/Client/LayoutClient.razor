@@ -50,7 +50,7 @@
 			</nav>
 			<!-- User Actions -->
 			<div class="user-actions d-flex align-items-center">
-				@if ( user != null)
+				@if (user != null)
 				{
 					<div class="d-flex align-items-center">
 						@if (string.IsNullOrEmpty(user.Images))
@@ -66,14 +66,10 @@
 							@onclick="async () => await Profile()">
 						}
 						<span class="ms-2 text-white" @onclick="async () => await Profile()" style="cursor: pointer">
-							@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : "Người dùng")
+							@user.FullName
 						</span>
 						<button class="btn btn-outline-light ms-2" @onclick="Logout">Đăng xuất</button>
 					</div>
-				}
-				else if (user == null)
-				{
-					<span class="text-white">Đang tải...</span>
 				}
 				else
 				{
@@ -156,17 +152,21 @@
 	private string otherphone;
 	private bool isLoginPage;
 	private UserDTO user = new UserDTO();
+	private string authToken = "";
 	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE=";
 	protected override async Task OnInitializedAsync()
 	{
-		var authToken = await _localStorage.GetItemAsync<string>("authToken");
-		var handler = new JwtSecurityTokenHandler();
-		var jwtToken = handler.ReadJwtToken(authToken);
-		userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-		user = await Service.GetByIDUser(Guid.Parse(userId),CancellationToken.None);
-		// Gọi StateHasChanged sau khi hoàn tất xử lý
+		authToken = await _localStorage.GetItemAsync<string>("authToken");
+		if (authToken != null)
+		{
+			var handler = new JwtSecurityTokenHandler();
+			var jwtToken = handler.ReadJwtToken(authToken);
+			userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+			user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
+		}
 		StateHasChanged();
 	}
+
 	private async Task Logout()
 	{
 		await _localStorage.RemoveItemAsync("nameidentifier");
