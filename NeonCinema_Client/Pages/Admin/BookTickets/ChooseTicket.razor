@@ -19,6 +19,7 @@
 @using NeonCinema_Domain.Database.Entities
 @using System.Text.Json
 @using System.Security.Claims
+@using System.Text.RegularExpressions
 @layout LayoutAdmin
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
@@ -30,6 +31,7 @@
 @inject HttpClient _http
 @inject NavigationManager _navi
 @inject ILocalStorageService _localstorage
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
@@ -336,6 +338,7 @@
 				{
 					<div class="mt-3">
 						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+						 
 						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
 					</div>
 				} 
@@ -402,41 +405,50 @@
 								<div class="mb-3 col-md-6">
 									<label for="fullName" class="form-label">Họ và tên</label>
 									<input type="text" class="form-control" placeholder="Nhập họ và tên" @bind-value=requestUser.FullName>
-									<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
+									@if (!string.IsNullOrEmpty(errorName))
+									{
+										<span class="text-danger">@errorName</span>
+									}
 								</div>
 								<div class="mb-3 col-md-6">
 									<label for="phone" class="form-label">Số điện thoại</label>
 									<input type="text" class="form-control" placeholder="Nhập số điện thoại" @bind-value=requestUser.PhoneNumber>
-									<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
-									@if (!IsShowPhoneNotification)
+									@if (!string.IsNullOrEmpty(errorPhone))
 									{
-										<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
-									}
+										<span class="text-danger">@errorPhone</span>
+									}	
+									
 								</div>
 							</div>
 							<div class="row">
 								<div class="mb-3 col-md-6">
 									<label for="email" class="form-label">Email</label>
 									<input type="email" class="form-control" placeholder="Nhập email" @bind-value=requestUser.Email>
-									<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
-									@if (!IsShowEmailNotification)
+									@if (!string.IsNullOrEmpty(errorEmail))
 									{
-										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+										<span class="text-danger">@errorEmail</span>
 									}
+									
 								</div>
 								<div class="mb-3 col-md-6">
 									<label for="date" class="form-label">Ngày sinh</label>
 									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
-									@if (!IsShowYearNotification)
+									 @if (!string.IsNullOrEmpty(errorYear))
 									{
-										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+										<span class="text-danger">@errorYear</span>
 									}
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" @onclick="CloseCreateAccountModal">Hủy</button>
-							<button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+							@* <button type="submit" class="btn btn-primary">Tạo tài khoản</button> *@
+							<button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+								<span>@(isSubmitting ? "Đang xử lý..." : "Tạo tài khoản")</span>
+							</button>
+
+
 						</div>
 					</div>
 				</EditForm>
@@ -743,6 +755,12 @@
 			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
 			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
 		});
+		 isSubmitting = false;
+        // Chuyển hướng sau khi hoàn tất hiển thị
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+        });
 	}
 
 	private async void SelectSeat(SeatDto seat)
@@ -1057,12 +1075,12 @@
 	private UserCreateRequest requestUser = new UserCreateRequest();
 	private IBrowserFile selectedFile;
 	private bool showPassword = false;
-	private string errorEmailMessage;
-	private string errorPhoneMessage;
-	private string errorYearMessage;
-	private bool IsShowPhoneNotification = true;
-	private bool IsShowEmailNotification = true;
-	private bool IsShowYearNotification = true;
+	 private string? errorName = null;
+    private string? errorPhone = null;
+    private string? errorEmail = null;
+    private string? errorAdress = null;
+    private string? errorYear = null;
+	private bool isSubmitting = false;
 	private bool showCreateAccountModal = false;
 
 	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
@@ -1097,15 +1115,11 @@
 
 	private async Task HandleSubmit()
 	{
+		isSubmitting = true;
+		 StateHasChanged();
 		try
 		{
-			IsShowEmailNotification = true;
-			IsShowPhoneNotification = true;
-			IsShowYearNotification = true;
-			errorEmailMessage = string.Empty;
-			errorPhoneMessage = string.Empty;
-			errorYearMessage = string.Empty;
-
+			
 			// Nếu không có file được chọn, sử dụng ảnh mặc định
 			if (selectedFile == null)
 			{
@@ -1138,37 +1152,99 @@
 				}
 			}
 
-			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
-			if (emailExists)
-			{
-				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
-				IsShowEmailNotification = false;
-				return;
-			}
-			if (requestUser.DateOrBriht == null ||
-				requestUser.DateOrBriht.Year < 1900 ||
-				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
-				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
-			{
-				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
-				IsShowYearNotification = false;
-				return;
-			}
 
-			// Kiểm tra số điện thoại đã tồn tại
-			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
-			if (phoneExists)
-			{
-				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
-				IsShowPhoneNotification = false;
-				return;
-			}
+        var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+        var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+        //Ngày sinh
+        if (requestUser.DateOrBriht == null ||
+            requestUser.DateOrBriht.Year < 1900 ||
+            requestUser.DateOrBriht > DateTime.Now.AddYears(-14))
+        {
+            errorYear = "Khách hàng phải từ 14 trở lên.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorYear = null;
+        }
+
+        // Kiểm tra họ và tên
+        if (string.IsNullOrWhiteSpace(requestUser.FullName))
+        {
+            errorName = "Họ và tên không được để trống.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+        {
+            errorName = "Họ và tên không được chứa số và kí tự đặc biệt.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorName = null;
+        }
+
+        //Email
+        if (string.IsNullOrWhiteSpace(requestUser.Email))
+        {
+            errorEmail = "Email không được để trống.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+        {
+            errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+            isSubmitting = false;
+        }
+        else if (emailExists)
+        {
+            errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorEmail = null;
+        }
+
+        //SDT
+        if (string.IsNullOrWhiteSpace(requestUser.PhoneNumber))
+        {
+            errorPhone = "Số điện thoại không được để trống.";
+            isSubmitting = false;
+        }
+        // Kiểm tra số điện thoại đã tồn tại
+
+        else if (phoneExists)
+        {
+            errorPhone = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
+        {
+            errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorPhone = null;
+        }
+
+        //Địa chỉ
+        if (string.IsNullOrWhiteSpace(requestUser.Adderss))
+        {
+            errorAdress = "Địa chỉ không được để trống.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorAdress = null;
+        }
 
 			var userResponse = await UserService.CreateClient(requestUser);
 			if (userResponse.IsSuccessStatusCode)
 			{
-				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
-				await Task.Delay(300);
+				 ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+                isSubmitting = false;
+                await Task.Delay(2000);
 				CloseCreateAccountModal();
 			}
 			else
@@ -1181,6 +1257,11 @@
 		{
 			Console.WriteLine($"Lỗi: {ex.Message}");
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+		 finally
+		{
+			isSubmitting = false; // Luôn đặt lại trạng thái
+			StateHasChanged(); // Cập nhật giao diện
 		}
 	}
 

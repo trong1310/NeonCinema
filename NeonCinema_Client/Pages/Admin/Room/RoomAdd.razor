@@ -5,6 +5,7 @@
 @using NeonCinema_Domain.Enum
 @inject IRoomService RoomService
 @inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
 
 <EditForm Model="request" OnValidSubmit="AddRoom">
     <DataAnnotationsValidator />

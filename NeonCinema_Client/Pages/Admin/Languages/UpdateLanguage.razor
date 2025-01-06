@@ -6,6 +6,8 @@
 @inject NavigationManager navi
 @inject IToastService ToastService
 @layout LayoutAdmin
+@attribute [Authorize(Roles = "Admin")]
+
 <div class="container mt-5">
     <h2 class="text-black mb-4">Cập nhật ngôn ngữ</h2>
 

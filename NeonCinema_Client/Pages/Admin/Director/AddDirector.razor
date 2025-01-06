@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager
 @layout LayoutAdmin
 @inject HttpClient _http
+@attribute [Authorize(Roles = "Admin")]
    
 
 <EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit">
