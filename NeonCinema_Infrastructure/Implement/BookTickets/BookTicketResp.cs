@@ -199,18 +199,18 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				if (request.Voucher != null)
 				{
 					var voucher = await _context.Promotions.Where(x => x.ID == request.Voucher).FirstOrDefaultAsync();
-
 					if (voucher != null)
 					{
 						var accountVoucher = await _context.PromotionUsers.Where(x => x.PromotionID == voucher.ID).FirstOrDefaultAsync();
-						if (voucher.DiscountAmount != null)
-						{
-							bill.AfterDiscount -= (decimal)voucher.DiscountAmount;
 
-						}
-						if (voucher.DiscountPercentage != null)
+						decimal discountAmount = bill.TotalPrice * ((decimal)voucher.DiscountPercentage / 100);
+						
+						if(discountAmount >(decimal) voucher.AmountMax)
 						{
-							decimal discountAmount = bill.TotalPrice * ((decimal)voucher.DiscountPercentage / 100);
+							bill.AfterDiscount -= (decimal)voucher.AmountMax;
+						}
+						else
+						{
 							bill.AfterDiscount -= discountAmount;
 						}
 						accountVoucher.Status = NeonCinema_Domain.Enum.PromotionStatus.Used;
