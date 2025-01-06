@@ -78,7 +78,16 @@
         </MudNavGroup>
         <MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
         <!-- Nút Đăng Xuất -->
-        <MudNavLink Href="/login" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+        @if (isLoggedIn)
+        {
+            <MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="/login" Icon="fas fa-sign-in-alt" IconColor="Color.Success" Class="custom-nav-link">Đăng Nhập</MudNavLink>
+        }
+
+
     </MudNavMenu>
 </MudPaper>
 
@@ -144,6 +153,25 @@
     {
         _navi.NavigateTo($"/profile-admin/{userId}");
     }
+    private async Task Logout()
+    {
+        try
+        {
+            // Xóa token trong LocalStorage
+            await _localStorage.RemoveItemAsync("authToken");
+
+            // Đặt trạng thái đăng nhập thành false
+            isLoggedIn = false;
+
+            // Chuyển hướng người dùng đến trang đăng nhập
+            _navi.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi khi đăng xuất: {ex.Message}");
+        }
+    }
+
 }
 
 
