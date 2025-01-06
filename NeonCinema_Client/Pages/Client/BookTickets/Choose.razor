@@ -118,8 +118,8 @@
 									@foreach (var seat in row.Value)
 									{
 										<div class="seat-box @GetSeatCssClass(seat)"
-										id="@seat.ID"
-										@onclick="() => SelectSeat(seat)">
+											 id="@seat.ID"
+											 @onclick="() => SelectSeat(seat)">
 											@seat.SeatNumber
 										</div>
 									}
@@ -274,8 +274,8 @@
 															</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
-														@onclick="() => SelectDiscount(discount)"
-														disabled="@(selectedDiscountCode == discount.Code)">
+																@onclick="() => SelectDiscount(discount)"
+																disabled="@(selectedDiscountCode == discount.Code)">
 															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
 														</button>
 													</div>
@@ -458,7 +458,7 @@
 	private UserProfile user = new UserProfile();
 	private void ApplyPoint()
 	{
-		decimal maxDiscount = sumPrices * 0.5m; 
+		decimal maxDiscount = sumPrices * 0.5m;
 
 		if (point > Rank.Point)
 		{
@@ -1113,14 +1113,22 @@
 	}
 
 	// Xử lý khi chọn mã giảm giá
+	decimal discountMax = 0;
 	private void SelectDiscount(VoucherDTO discount)
 	{
+		discountMax = (decimal)discount.AmountMax;
 		selectedDiscountCode = discount.Code;
 		selectedVoucherId = discount.ID;
 		discountPercentage = discount.DiscountPercentage; // Lưu phần trăm giảm giá
 		discountAmount = (totalPrices * (decimal)(discountPercentage ?? 0)) / 100;
-		// showDiscountPopup = false; // Đóng popup
-		totalPrices -= discountAmount;
+		if (discountAmount > (decimal)discount.AmountMax)
+		{
+			totalPrices -= discountMax;
+		}
+		else
+		{
+			totalPrices -= discountAmount;
+		}
 	}
 	// Xử lý khi hủy mã giảm giá
 	private void CancelDiscount()
