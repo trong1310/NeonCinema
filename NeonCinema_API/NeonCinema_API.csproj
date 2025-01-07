@@ -34,6 +34,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Oscore.QrCodes.SkiaSharp" Version="1.1.0" />
+    <PackageReference Include="payOS" Version="1.0.9" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="QRCoder-ImageSharp" Version="0.10.0" />
     <PackageReference Include="QRCoder.Core" Version="1.0.3" />

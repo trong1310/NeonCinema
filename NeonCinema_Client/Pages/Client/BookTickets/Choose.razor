@@ -118,8 +118,8 @@
 									@foreach (var seat in row.Value)
 									{
 										<div class="seat-box @GetSeatCssClass(seat)"
-											 id="@seat.ID"
-											 @onclick="() => SelectSeat(seat)">
+										id="@seat.ID"
+										@onclick="() => SelectSeat(seat)">
 											@seat.SeatNumber
 										</div>
 									}
@@ -190,13 +190,13 @@
 						<span>Tổng tiền combo</span>
 						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
-					<div class="d-flex justify-content-between mb-3">
+					@* <div class="d-flex justify-content-between mb-3">
 						<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 						<span>@surcharge.ToString("N0")  VND</span>
-					</div>
+					</div> *@
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền tạm tính</span>
-						<span> @totalPrices.ToString("N0") VND</span>
+						<span> @sumPrices.ToString("N0") VND</span>
 					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Số tiền quy đổi điểm: </span>
@@ -204,7 +204,7 @@
 					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Voucher giảm giá: </span>
-						<span>@discountAmount.ToString("N0") VND</span>
+						<span>@discountMax1.ToString("N0") VND</span>
 					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền</span>
@@ -235,8 +235,8 @@
 							{
 								<p class="mt-2">
 									<strong>Mã giảm giá đã chọn:</strong> @selectedDiscountCode <br />
-									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND
-									<span>Tối đa:  VND</span>
+									<strong>Chiết khấu:</strong> @discountPercentage%
+									<span>Tối đa: @discountMax1.ToString("N0") VND</span>
 								</p>
 							}
 						</div>
@@ -274,8 +274,8 @@
 															</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
-																@onclick="() => SelectDiscount(discount)"
-																disabled="@(selectedDiscountCode == discount.Code)">
+														@onclick="() => SelectDiscount(discount)"
+														disabled="@(selectedDiscountCode == discount.Code)">
 															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
 														</button>
 													</div>
@@ -539,24 +539,24 @@
 		Rank = await _services.SeachAccount(user.PhoneNumber);
 		voucher = await _services.GetVoucher(user.ID);
 		#endregion
-		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
-		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
-		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-		if (type != null)
-		{
-			if (type.MovieTypeName.Contains("3D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge3D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-			if (type.MovieTypeName.Contains("2D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge4D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-		}
+		// var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		// var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		// var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		// if (type != null)
+		// {
+		// 	if (type.MovieTypeName.Contains("3D".Trim()))
+		// 	{
+		// 		surcharge = ticketPriceSetting.Surcharge3D;
+		// 		sumPrices += surcharge;
+		// 		totalPrices += surcharge;
+		// 	}
+		// 	if (type.MovieTypeName.Contains("4D".Trim()))
+		// 	{
+		// 		surcharge = ticketPriceSetting.Surcharge4D;
+		// 		sumPrices += surcharge;
+		// 		totalPrices += surcharge;
+		// 	}
+		// }
 
 		StateHasChanged(); // Cập nhật giao diện
 	}
@@ -1114,6 +1114,7 @@
 
 	// Xử lý khi chọn mã giảm giá
 	decimal discountMax = 0;
+	decimal discountMax1 = 0;
 	private void SelectDiscount(VoucherDTO discount)
 	{
 		discountMax = (decimal)discount.AmountMax;
@@ -1124,10 +1125,12 @@
 		if (discountAmount > (decimal)discount.AmountMax)
 		{
 			totalPrices -= discountMax;
+			discountMax1 = discountMax;
 		}
 		else
 		{
 			totalPrices -= discountAmount;
+			discountMax1 = discountAmount;
 		}
 	}
 	// Xử lý khi hủy mã giảm giá

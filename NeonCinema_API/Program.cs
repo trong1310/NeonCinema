@@ -78,6 +78,8 @@ builder.Services.AddScoped<IUserServicesss, UserService>();
 builder.Services.AddHostedService<TimerProcess>();
 builder.Services.AddLogging();
 builder.Services.AddTransient<EmailServices>();
+builder.Services.Configure<PayOSSettings>(builder.Configuration.GetSection("PayOS"));
+builder.Services.AddHttpClient();
 
 builder.Services.Configure<FormOptions>(options =>
 {

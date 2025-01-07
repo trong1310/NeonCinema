@@ -85,6 +85,7 @@ builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ISV, SV>();
 builder.Services.AddScoped<IActorService, ActorService>();
+//builder.Services.AddScoped<UtilitiPayos>();
 builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
 builder.Services.AddScoped<ITicketPriceSettingService, TicketPriceSettingService>();
 builder.Services.AddAutoMapper(typeof(Program));
@@ -96,6 +97,7 @@ builder.Services.AddCors(options =>
 						  policy.AllowAnyOrigin();
 					  });
 });
+
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7211/") });
 builder.Services.AddDbContext<NeonCinemasContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
