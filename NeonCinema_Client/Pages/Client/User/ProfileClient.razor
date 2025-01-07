@@ -1,23 +1,29 @@
-﻿   @page "/profile-admin/{id:guid}"
+﻿@page "/profile-client/{id:guid}"
+@using NeonCinema_API.Controllers.Service
 @using NeonCinema_Application.DataTransferObject.User
-@layout LayoutAdmin
+@layout LayoutClient
+@using NeonCinema_Application.DataTransferObject.User.Request
 @using NeonCinema_Client.Data.IServices.User
 @using System.Globalization
 @using System.Text.Json
 @using NeonCinema_Client.Pages.Staff
+@using NeonCinema_Domain.Database.Entities
 @using NeonCinema_Infrastructure.Database.AppDbContext
 @using System.Text.RegularExpressions
+@using System.Text
 @inject IUserServices _service
 @inject HttpClient _http
 @inject NavigationManager _navigation
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@inject ISV isv
 @inject ISnackbar Snackbar
-@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager _navi
 
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
 <div class="container-fluid mt-2">
 	<h2 class="text-center mb-2 font-weight-bold" style="margin-top:30px;">Thông tin cá nhân</h2>
 	<div class="row justify-content-center">
-		<div class="col-md-3 text-center mb-4 mt-5">
+		<div class="col-md-4 text-center">
 			<img src="@profileFilmsImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
 			<label class="custom-file-upload">
 				<span style="margin-left:-5px">
@@ -26,8 +32,15 @@
 				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
 				<span>Chọn ảnh</span>
 			</label>
+			<div class="card custom-card">
+				<p><b>Điểm tích lũy:</b>  @TotalPoints điểm</p>
+				<p><b>Tổng chi tiêu:</b>  @totalMoney.ToString("N0") VND</p>
+				<p><b>Hạng thành viên:</b>  @Rank</p>
+				<p><b>Ngày đăng ký:</b> @users.CreatedTime.Value.ToString("dd/MM/yyyy")</p>
+			</div>
+
 		</div>
-		<div class="col-md-9" style="margin-top:10px;">
+		<div class="col-md-8" style="margin-top:10px;">
 			<form>
 				<div class="row">
 					<div class="col-md-6">
@@ -83,12 +96,12 @@
 								<div style="margin-left: -20px; margin-top: 5px">
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderMale" name="gender"
-										checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
+											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
 										<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 									</div>
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderFemale" name="gender"
-										checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
+											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
 										<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 									</div>
 								</div>
@@ -108,7 +121,8 @@
 				</div>
 
 				<div class="text-center">
-					<button type="button" @onclick="ShowConfirmEditModal" class="btn btn-primary btn-lg">Lưu</button>
+					<button type="button" @onclick="OnChangePasswordClick" class="btn btn-warning btn-lg">Đổi mật khẩu</button>
+					<button type="button" @onclick="ShowConfirmEditModal" class="btn btn-primary btn-lg">Cập nhật</button>
 					@if (showConfirmModal)
 					{
 						<div class="modal fade show custom-modal" style="display:block; margin-top: 50px" tabindex="-1" role="dialog" aria-hidden="false">
@@ -126,7 +140,7 @@
 										<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
 										<button type="button" @onclick="UpdateAccout" class="btn btn-success" disabled="@isSubmitting">
 											<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-											style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+												  style="display: @(isSubmitting ? "inline-block" : "none")"></span>
 											<span>@(isSubmitting ? "Đang xử lý..." : "Xác nhận")</span>
 										</button>
 									</div>
@@ -135,12 +149,135 @@
 						</div>
 
 					}
+					
 				</div>
 			</form>
 		</div>
 	</div>
+	@if (showPasswordModal)
+	{
+		<div class="modal fade show" style="display: block; margin-top: 100px" tabindex="-1" role="dialog" aria-hidden="false">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">Đổi mật khẩu</h1>
+						<button type="button" class="btn-close" @onclick="OnClosePasswordModal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="recipient-name" class="col-form-label" style="margin-left: 5px">Mật khẩu hiện tại:</label>
+								<input type="text" class="form-control" style="margin-left: 1px" @bind="currentPassword" id="currentPassword" placeholder="Nhập mật khẩu hiện tại">
+							</div>
+							<div class="mb-3">
+								<label for="recipient-name" class="col-form-label" style="margin-left: 5px">Mật khẩu mới:</label>
+								<input type="text" class="form-control" style="margin-left: 1px" @bind="newPassword" id="newPassword" placeholder="Nhập mật khẩu mới">
+							</div>
+							<div class="mb-3">
+								<label for="message-text" class="col-form-label" style="margin-left: 5px">Xác nhận mật khẩu mới:</label>
+								<textarea class="form-control" style="margin-left: 1px" @bind="confirmPassword" id="confirmPassword" placeholder="Nhập lại mật khẩu mới"></textarea>
+							</div>
+						</form>
+					</div>
+					@if (successMessage != null)
+					{
+						<div class="alert alert-success" role="alert">
+							@successMessage
+						</div>
+					}
+
+					@if (errorMessage != null)
+					{
+						<div class="alert alert-danger" role="alert">
+							@errorMessage
+						</div>
+					}
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="OnClosePasswordModal">Hủy</button>
+						<button type="button" class="btn btn-success" @onclick="OnSubmitChangePassword">Xác nhận</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 </div>
 
+<div class="row p-5">
+	<div class="row bg bg-secondary rounded">
+		<div class="col-md-10">
+			<span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
+		</div>
+		<div class="col-md-2">
+			<input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
+		</div>
+	</div>
+	<div class="row border rounded">
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">STT</th>
+					<th scope="col">Thời gian giao dịch</th>
+					<th scope="col">Mã hóa đơn</th>
+					<th scope="col">Tên phim</th>
+					<th scope="col">Tổng tiền</th>
+					<th scope="col">Số ghế</th>
+					<th scope="col">Phòng</th>
+					<th scope="col">Tổng điểm tích lũy</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (_lstBill == null || !_lstBill.Any())
+				{
+					<tr>
+						<td colspan="8" class="text-center text-muted">
+							Bạn chưa có giao dịch nào.
+						</td>
+					</tr>
+				}
+				else
+				{
+					@foreach (var item in _lstBill.Select((value, index) => new { value, index }))
+					{
+						string seatNumber = ""; // Reset seatNumber cho mỗi item
+						string roomName = ""; // Reset roomName cho mỗi item
+						string nameMovie = ""; // Cần đảm bảo nameMovie được reset
+
+						if (item.value.Ticket != null)
+						{
+							foreach (var x in item.value.Ticket)
+							{
+								nameMovie = x.Movies.Name;
+								if (x.Seat.SeatNumber.ToString() != null)
+								{
+									seatNumber = seatNumber + "," + x.Seat.SeatNumber.ToString();
+								}
+
+								roomName = x.Screenings.Rooms.Name;
+							}
+						}
+
+						// Loại bỏ dấu "," đầu tiên nếu có
+						if (seatNumber.StartsWith(","))
+						{
+							seatNumber = seatNumber.Substring(1);
+						}
+
+						<tr>
+							<th scope="row">@(item.index + 1)</th>
+							<td>@item.value.CreatedTime</td>
+							<td>@item.value.BillCode</td>
+							<td>@nameMovie</td>
+							<td>@item.value.TotalPrice.ToString("N0") VND</td>
+							<td>@seatNumber</td>
+							<td>@roomName</td>
+							<td>@item.value.PendingPoint.Point điểm</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
 @code {
 	[Parameter]
 	public Guid id { get; set; }
@@ -148,8 +285,29 @@
 	UserUpdateRequest updateRequest = new UserUpdateRequest();
 	private IBrowserFile selectedFile;
 	private string profileFilmsImage = "/images/Client/avt-default.jpg";
+	private int TotalPoints = 0;
+	private decimal TotalSpent = 0;
+	private string Rank;
 
-
+	
+	protected override async Task OnInitializedAsync()
+	{
+		user = await _service.GetByIDUser(id, CancellationToken.None);
+		var userStats = await isv.GetUserStatsAsync(id);
+		TotalPoints = userStats.TotalPoints;
+		TotalSpent = userStats.TotalSpent;
+		Rank = userStats.ranks;
+		profileFilmsImage = GetImageUrl(user.Images);
+		if (user.Gender == null)
+		{
+			user.Gender = true; // Mặc định là Nam
+		}
+		StateHasChanged();
+		await LoadUserDetails();
+		await TotalMoneyUser();
+		await TotalPointUser();
+	}
+	
 	private void ShowSnackbar(string message, Severity severity)
 	{
 		Snackbar.Add(message, severity, options =>
@@ -159,17 +317,7 @@
 		});
 		isSubmitting = false;
 	}
-	protected override async Task OnInitializedAsync()
-	{
-		user = await _service.GetByIDUser(id, CancellationToken.None);
-		profileFilmsImage = GetImageUrl(user.Images);
-		originalEmail = user.Email; // Lưu lại email gốc
-		if (user.Gender == null)
-		{
-			user.Gender = true; // Mặc định là Nam
-		}
-		StateHasChanged(); 
-	}
+	#region Cập nhật thông tin
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
 		selectedFile = e.File;
@@ -206,7 +354,6 @@
 	private string? errorYear = null;
 	private bool isSubmitting = false;
 	private bool showConfirmModal = false;
-	private string? originalEmail;
 	private void CloseModal()
 	{
 		showConfirmModal = false;
@@ -237,37 +384,23 @@
 			errorName = null;
 		}
 
-
-		// Kiểm tra email (chỉ khi thay đổi)
-		if (!string.IsNullOrWhiteSpace(user.Email) && user.Email != originalEmail)
+		// Email
+		if (string.IsNullOrWhiteSpace(user.Email))
 		{
-			if (!Regex.IsMatch(user.Email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
-			{
-				errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
-				isValid = false;
-			}
-			else if (string.IsNullOrWhiteSpace(user.Email))
-			{
-				errorEmail = "Email không được để trống.";
-				isValid = false;
-				isSubmitting = false;
-			}
-			else if (_context.Users.Any(x => x.Email == user.Email && x.ID != user.ID))
-			{
-				errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
-				isValid = false;
-			}
-			else
-			{
-				errorEmail = null;
-			}
+			errorEmail = "Email không được để trống.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else if (emailExists)
+		{
+			errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+			isValid = false;
+			isSubmitting = false;
 		}
 		else
 		{
 			errorEmail = null;
 		}
-
-		
 
 		// SDT
 		if (string.IsNullOrWhiteSpace(user.PhoneNumber))
@@ -367,7 +500,145 @@
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 		}
 	}
+	#endregion
 
+
+	#region Lịch sử giao dịch
+	private Users users = new Users();
+	private List<Bill> _lstBill = new List<Bill>();
+	private double totalMoney = 0;
+	private string nameMovie = "";
+	private string seatNumber = "";
+	private string roomName = "";
+	private int totalPoint = 0;
+	private async Task LoadUserDetails()
+	{
+		var token = await _localStorage.GetItemAsync<string>("authToken");
+		var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7211/api/User/get-user-by-id");
+		requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+		var response = await _http.SendAsync(requestMessage);
+		if (response.IsSuccessStatusCode)
+		{
+			users = await response.Content.ReadFromJsonAsync<Users>();
+		}
+
+
+		if (users.Bills != null)
+		{
+			_lstBill = users.Bills.ToList();
+		}
+	}
+
+
+	private async Task<double> TotalMoneyUser()
+	{
+		foreach (var item in _lstBill)
+		{
+			totalMoney = totalMoney + Convert.ToDouble(item.TotalPrice);
+		}
+
+		return totalMoney;
+	}
+
+	private async Task TotalPointUser()
+	{
+		if (users.RankMembers.Count != 0)
+		{
+			foreach (var item in users.RankMembers)
+			{
+				totalPoint = totalPoint + Convert.ToInt32(item.MinPoint);
+			}
+		}
+	}
+	#endregion
+
+	#region Đổi mật khẩu
+	private string currentPassword;
+	private string newPassword;
+	private string confirmPassword;
+	private string errorMessage;
+	private string? successMessage;
+	private string? successMessages;
+	private string errorMessages;
+	private bool showPasswordModal = false;
+	private void OnChangePasswordClick()
+	{
+		showPasswordModal = true;
+	}
+	private void OnClosePasswordModal()
+	{
+		showPasswordModal = false;
+	}
+	private async Task OnSubmitChangePassword()
+	{
+		if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword))
+		{
+			ShowErrorMessage("Vui lòng điền đầy đủ các trường mật khẩu.");
+			return;
+		}
+		if (newPassword != confirmPassword)
+		{
+			ShowErrorMessage("Mật khẩu mới và mật khẩu xác nhận không khớp.");
+			return;
+		}
+		var token = await _localStorage.GetItemAsync<string>("authToken");
+		if (string.IsNullOrEmpty(token))
+		{
+			_navi.NavigateTo("/login");
+			return;
+		}
+		var checkPasswordRequest = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7211/api/User/Check-Current-Password");
+		checkPasswordRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+		checkPasswordRequest.Content = new StringContent(JsonSerializer.Serialize(new { password = currentPassword }), Encoding.UTF8, "application/json");
+
+		var checkPasswordResponse = await _http.SendAsync(checkPasswordRequest);
+		if (!checkPasswordResponse.IsSuccessStatusCode)
+		{
+			var errorResponse = await checkPasswordResponse.Content.ReadAsStringAsync();
+			ShowErrorMessage($"Lỗi Mật khẩu hiện tại không đúng: {errorResponse}");
+			return;
+		}
+
+
+		var check = new ClientChangerPass { Currenpassword = currentPassword, Newpassword = newPassword, Confirmpasss = confirmPassword };
+		var requestMessage = new HttpRequestMessage(HttpMethod.Put, "https://localhost:7211/api/User/Changer-Password");
+		requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+		requestMessage.Content = new StringContent(JsonSerializer.Serialize(check), Encoding.UTF8, "application/json");
+		var response = await _http.SendAsync(requestMessage);
+		if (response.IsSuccessStatusCode)
+		{
+			ShowSuccessMessage("Đổi mật khẩu thành công.");
+		}
+		else
+		{
+			var errorResponse = await response.Content.ReadAsStringAsync();
+			Console.WriteLine($"Lỗi HTTP: {response.StatusCode}");
+			Console.WriteLine($"Thông báo lỗi từ server: {errorResponse}");
+			ShowErrorMessage($"Đổi mật khẩu thất bại: {errorResponse}");
+			return;
+		}
+	}
+	private void ShowErrorMessage(string message)
+	{
+		errorMessage = message;
+		successMessage = null;
+	}
+	private void ShowSuccessMessage(string message)
+	{
+		successMessage = message;
+		errorMessage = null;
+	}
+	private void ShowErrorMessageUpdate(string message)
+	{
+		errorMessage = message;
+		successMessage = null;
+	}
+	private void ShowMessageUpdate(string message)
+	{
+		errorMessages = message;
+		successMessages = null;
+	}
+	#endregion
 }
 
 <style>
@@ -417,6 +688,7 @@
 		width: 150px;
 		margin-left: auto; /* Thêm */
 		margin-right: auto;
+		margin-top: -15px;
 	}
 
 		.custom-file-upload span {
@@ -451,6 +723,13 @@
 		font-size: 16px;
 	}
 
+	.btn-warning {
+		color: white;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+	}
 		.btn-primary:hover {
 			background-color: #0056b3;
 		}
@@ -477,4 +756,24 @@
 		cursor: pointer;
 		color: #333; /* Màu sắc biểu tượng */
 	}
+
+	.custom-card {
+		border: 1px solid #28a745; /* Đường viền xanh lá */
+		border-radius: 10px;
+		padding: 5px;
+		margin-top: 10px;
+		background-color: #ffffff;
+		width: 60%;
+	}
+
+	.text-danger {
+		cursor: pointer;
+		text-decoration: none;
+		font-size: 16px;
+	}
+
+		.text-danger:hover {
+			text-decoration: underline;
+		}
+
 </style>
