@@ -110,7 +110,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
         {
 
             var query = _context.Movies
-                            .Include(x => x.Genre)
+				    .OrderByDescending(x => x.CreatedTime)
+							.Include(x => x.Genre)
                             .Include(x => x.Screening)
                             .Include(x => x.Director)
                             .Include(x => x.Lenguage)

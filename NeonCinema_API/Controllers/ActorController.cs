@@ -48,8 +48,21 @@ namespace NeonCinema_API.Controllers
             var obj = await _actormovies.CreateActorMovies(request, cancellationToken);
             return Ok(obj);
         }
-        
-        [HttpPost("createActor")]
+
+		[HttpPost("createspeed")]
+		public async Task<IActionResult> CreateActor([FromBody] CreateActorRequest request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var obj = await _reps.CreateActor(request, cancellationToken);
+				return Ok(obj);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+			}
+		}
+		[HttpPost("createActor")]
         public async Task<IActionResult> CreateActor([FromBody] ActorCreateRequest request)
         {
             try
@@ -59,7 +72,7 @@ namespace NeonCinema_API.Controllers
                     ID = Guid.NewGuid(),
                     Name = request.Name,
                     Sex = request.Sex,
-                    Status = EntityStatus.Inactive
+                    Status = EntityStatus.Active
                 };
                 await _context.Actor.AddAsync(actor);
                 await _context.SaveChangesAsync();

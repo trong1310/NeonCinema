@@ -6,6 +6,8 @@
 @inject IJSRuntime JSRuntime
 @inject HttpClient _HttpClient
 @layout LayoutStaff
+@attribute [Authorize(Roles = "Admin,Staff")]
+
 <script src="~/js/History.js"></script>
 @if (isLoading)
 {

@@ -8,6 +8,7 @@
 @using NeonCinema_Client.Data.IServices.User
 @using NeonCinema_Infrastructure.Database.AppDbContext
 @using System.Text.Json
+@using System.Text.RegularExpressions
 @inject IUserServices UserServices
 @inject Blazored.LocalStorage.ILocalStorageService _localstorage
 @inject ISnackbar Snackbar
@@ -79,7 +80,11 @@
                             <div class="mb-3">
                                 <label class="form-label" style="color: black;">Email khôi phục</label>
                                 <input type="email" class="form-control" @bind-value="forgotPassRequest.Email"
-                                placeholder="Nhập email của bạn..." style="color:black; background-color: white">
+                                placeholder="Nhập email của bạn..." style="color:black; background-color: white;margin-left: -2px">
+                                @if (!string.IsNullOrEmpty(errorEmailMessage))
+                                {
+                                    <span class="text-danger">@errorEmailMessage</span>
+                                }
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -109,7 +114,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title w-100 text-center" id="addCustomerLabel">Đăng kí tài khoản</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseRegisterForm"></button>
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
@@ -130,17 +135,19 @@
                                             <div class="form-group">
                                                 <label class="form-label">Họ và tên</label>
                                                 <input type="text" class="form-control" id="name" @bind-value="request.FullName" style="color:black; background-color: #f7f7f7" />
-                                                <ValidationMessage For="@(() => request.FullName)" style="margin-top: 2px" />
+                                                @if (!string.IsNullOrEmpty(errorNameMessage))
+                                                {
+                                                    <span class="text-danger">@errorNameMessage</span>
+                                                }
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">Số điện thoại</label>
                                                 <input type="text" class="form-control" id="phone" @bind-value="request.PhoneNumber" style="color:black; background-color: #f7f7f7">
-                                                <ValidationMessage For="@(() => request.PhoneNumber)" style="margin-top: 2px" />
-                                                @if (!IsShowPhoneNotification)
+                                                @if (!string.IsNullOrEmpty(errorPhoneMessage))
                                                 {
-                                                    <span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
+                                                    <span class="text-danger">@errorPhoneMessage</span>
                                                 }
                                             </div>
                                         </div>
@@ -151,10 +158,9 @@
                                             <div class="form-group">
                                                 <label class="form-label">Email</label>
                                                 <input type="email" class="form-control" id="email" @bind-value="request.Email" style="color:black; background-color: #f7f7f7">
-                                                <ValidationMessage For="@(() => request.Email)" style="margin-top: 2px" />
-                                                @if (!IsShowEmailNotification)
+                                                @if (!string.IsNullOrEmpty(errorEmailMessage))
                                                 {
-                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+                                                    <span class="text-danger">@errorEmailMessage</span>
                                                 }
                                             </div>
                                         </div>
@@ -162,10 +168,9 @@
                                             <div class="form-group">
                                                 <label class="form-label">Ngày sinh</label>
                                                 <input type="date" class="form-control" id="dateofbirth" @bind-value="request.DateOrBriht" style="color:black; background-color: #f7f7f7">
-                                                <ValidationMessage For="@(() => request.DateOrBriht)" style="margin-top: 2px" />
-                                                @if (!IsShowYearNotification)
+                                                @if (!string.IsNullOrEmpty(errorYearMessage))
                                                 {
-                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+                                                    <span class="text-danger">@errorYearMessage</span>
                                                 }
                                             </div>
                                         </div>
@@ -186,10 +191,6 @@
                                                 @if (!string.IsNullOrEmpty(errorPasswordMessage))
                                                 {
                                                     <span class="text-danger">@errorPasswordMessage</span>
-                                                }
-                                                @if (!ShowRegexPass)
-                                                {
-                                                    <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@regexPass</span>
                                                 }
                                             </div>
                                         </div>
@@ -225,7 +226,6 @@
                                                         <label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
                                                     </div>
                                                 </div>
-                                                <ValidationMessage For="@(() => request.Gender)" style="margin-top: 2px" />
                                             </div>
 
                                         </div>
@@ -234,9 +234,9 @@
                                     <div class="form-group">
                                         <label class="form-label">Địa chỉ</label>
                                         <textarea class="form-control" id="Description" rows="3" @bind="request.Adderss" style="color:black; background-color: #f7f7f7"></textarea>
-                                        @if (!IsShowAddressNotification)
+                                        @if (!string.IsNullOrEmpty(errorAddressMessage))
                                         {
-                                            <span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorAddressMessage</span>
+                                            <span class="text-danger">@errorAddressMessage</span>
                                         }
                                     </div>
 
@@ -245,8 +245,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 10%">Hủy</button>
-                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting" style="width: 10%">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 15%" @onclick="CloseRegisterForm">Hủy</button>
+                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting" style="width: 15%">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isSubmitting ? "inline-block" : "none");"></span>
                             <span>@(isSubmitting ? "Đang xử lý..." : "Đăng ký")</span>
                         </button>
@@ -304,15 +304,15 @@
                     var fullName = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
                     var imageUrl = jwtToken.Claims.FirstOrDefault(c => c.Type == "Images")?.Value;
 
-                // Điều hướng dựa trên vai trò
+                    // Điều hướng dựa trên vai trò
                     if (roleName == "Client")
                     {
                         _navi.NavigateTo("/list-movie", forceLoad: true);
                         StateHasChanged();
                     }
-                    else if (roleName == "Admin" || roleName == "Staff" )
+                    else if (roleName == "Admin" || roleName == "Staff")
                     {
-                        _navi.NavigateTo("/book_ticket");
+                        _navi.NavigateTo("/book_ticket", forceLoad: true);
                         StateHasChanged();
                     }
                 }
@@ -359,8 +359,19 @@
 
     private void CloseForgotPasswordDialog()
     {
-        showForgotPasswordDialog = false;
+
+        // Reset dữ liệu form
+        forgotPassRequest = new Forgotpass();
+
+        // Reset các thông báo lỗi
+        errorEmailMessage = string.Empty;
         responseMessage = string.Empty;
+
+        // Reset trạng thái xử lý
+        isLoading = false;
+        isSuccess = false;
+
+        showForgotPasswordDialog = false;
     }
     private async Task SubmitForgotPassword()
     {
@@ -368,6 +379,30 @@
         responseMessage = string.Empty;
         try
         {
+            var emailExists = _context.Users.Any(x => x.Email == forgotPassRequest.Email);
+            //Email
+            if (string.IsNullOrWhiteSpace(forgotPassRequest.Email))
+            {
+                errorEmailMessage = "Email không được để trống.";
+                isValid = false;
+                isLoading = false;
+            }
+            else if (!emailExists)
+            {
+                errorEmailMessage = "Email không tồn tại trong hệ thống. Vui lòng chọn email khác.";
+                isValid = false;
+                isLoading = false;
+            }
+            else if (!Regex.IsMatch(forgotPassRequest.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+            {
+                errorEmailMessage = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+                isValid = false;
+                isLoading = false;
+            }
+            else
+            {
+                errorEmailMessage = null;
+            }
             var response = await UserServices.ForgotPass(forgotPassRequest);
 
             if (response.IsSuccessStatusCode)
@@ -378,13 +413,14 @@
             else
             {
                 isSuccess = false;
-                responseMessage = await response.Content.ReadAsStringAsync();
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Đã có lỗi xảy ra {errorContent}");
             }
         }
         catch (Exception ex)
         {
             isSuccess = false;
-            responseMessage = $"Lỗi: {ex.Message}";
+            Console.WriteLine($"Lỗi: {ex.Message}"); 
         }
         finally
         {
@@ -393,20 +429,39 @@
     }
     #endregion
 
+    private void CloseRegisterForm()
+    {
+        // Reset dữ liệu form
+        request = new UserCreateRequest();
+        confirmPassword = string.Empty;
+
+        // Reset các thông báo lỗi
+        errorNameMessage = string.Empty;
+        errorPhoneMessage = string.Empty;
+        errorEmailMessage = string.Empty;
+        errorYearMessage = string.Empty;
+        errorPasswordMessage = string.Empty;
+        errorConfirmPasswordMessage = string.Empty;
+        errorAddressMessage = string.Empty;
+        registrationMessage = string.Empty;
+
+        // Reset trạng thái xử lý
+        isSubmitting = false;
+        selectedFile = null;
+        profileImage = "/images/Client/avt-default.jpg";
+    }
     private NeonCinemasContext _context = new NeonCinemasContext();
     private UserCreateRequest request = new UserCreateRequest();
     private IBrowserFile selectedFile;
     private bool showPassword = false;
-    private string regexPass;
-    private bool ShowRegexPass = true;
-    private string errorEmailMessage;
+    private string confirmPass;
+    private string errorNameMessage;
     private string errorPhoneMessage;
+    private string errorEmailMessage;
     private string errorYearMessage;
-    private bool IsShowPhoneNotification = true;
-    private bool IsShowEmailNotification = true;
-    private bool IsShowYearNotification = true;
+    private bool isValid = true;
 
-    private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
+    private string profileImage = "/images/Client/avt-default.jpg"; // URL mặc định cho ảnh
     private void ShowSnackbar(string message, Severity severity)
     {
         Snackbar.Add(message, severity, options =>
@@ -448,16 +503,13 @@
     private string errorPasswordMessage = ""; // Thông báo lỗi liên quan đến mật khẩu
     private string errorConfirmPasswordMessage = ""; // Thông báo lỗi liên quan đến nhập lại mật khẩu
     private string errorAddressMessage;
-    private bool IsShowAddressNotification = true;
     private async Task HandleSubmit()
     {
         isSubmitting = true; // Hiển thị spinner
         registrationMessage = ""; // Xóa thông báo cũ
         errorPasswordMessage = ""; // Xóa thông báo lỗi mật khẩu cũ
         errorConfirmPasswordMessage = ""; // Xóa thông báo lỗi nhập lại mật khẩu cũ
-        IsShowEmailNotification = true;
-        IsShowPhoneNotification = true;
-        IsShowYearNotification = true;
+        isValid = true;
         errorEmailMessage = string.Empty;
         errorPhoneMessage = string.Empty;
         errorYearMessage = string.Empty;
@@ -496,74 +548,154 @@
                     return;
                 }
             }
+
+            var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
+            var emailExists = _context.Users.Any(x => x.Email == request.Email);
+            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
+
+            //Ngày sinh
+            if (request.DateOrBriht == null ||
+                request.DateOrBriht.Year < 1900 ||
+                request.DateOrBriht > DateTime.Now.AddYears(-14))
+            {
+                errorYearMessage = "Khách hàng phải từ 14 trở lên.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else
+            {
+                errorYearMessage = null;
+            }
+
+            // Kiểm tra họ và tên
+            if (string.IsNullOrWhiteSpace(request.FullName))
+            {
+                errorNameMessage = "Họ và tên không được để trống.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else if (!Regex.IsMatch(request.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+            {
+                errorNameMessage = "Họ và tên không được chứa số và kí tự đặc biệt.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else
+            {
+                errorNameMessage = null;
+            }
+
+            //Email
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                errorEmailMessage = "Email không được để trống.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else if (!Regex.IsMatch(request.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+            {
+                errorEmailMessage = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else if (emailExists)
+            {
+                errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else
+            {
+                errorEmailMessage = null;
+            }
+
+            //SDT
+            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                errorPhoneMessage = "Số điện thoại không được để trống.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            // Kiểm tra số điện thoại đã tồn tại
+
+            else if (phoneExists)
+            {
+                errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else if (!Regex.IsMatch(request.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
+            {
+                errorPhoneMessage = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
+                isValid = false;
+                isSubmitting = false;
+            }
+            else
+            {
+                errorPhoneMessage = null;
+            }
+
+
+            //Pass
             if (string.IsNullOrWhiteSpace(request.PassWord))
             {
                 errorPasswordMessage = "Mật khẩu không được để trống.";
+                isValid = false;
                 isSubmitting = false;
-                return;
             }
-            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
-            if (!regex.IsMatch(request.PassWord))
+            else if (!regex.IsMatch(request.PassWord))
             {
-                regexPass = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
-                ShowRegexPass = false;
+                errorPasswordMessage = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
+                isValid = false;
                 isSubmitting = false;
             }
-            // Kiểm tra "Nhập lại mật khẩu" không để trống và khớp với mật khẩu
+            else
+            {
+                errorPasswordMessage = null;
+            }
             if (string.IsNullOrWhiteSpace(confirmPassword))
             {
-                errorConfirmPasswordMessage = "Vui lòng nhập lại mật khẩu.";
+                errorConfirmPasswordMessage = "Nhập lại mật khẩu không được để trống.";
+                isValid = false;
                 isSubmitting = false;
-                return;
             }
-            if (request.PassWord != confirmPassword)
+            else if (confirmPassword != request.PassWord)
             {
-                errorConfirmPasswordMessage = "Mật khẩu và nhập lại mật khẩu không khớp.";
+                errorConfirmPasswordMessage = "Mật khẩu nhập lại không khớp.";
+                isValid = false;
                 isSubmitting = false;
-                return;
             }
-            var emailExists = _context.Users.Any(x => x.Email == request.Email);
-            if (emailExists)
+            else
             {
-                errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
-                IsShowEmailNotification = false;
-                isSubmitting = false;
-                return;
+                errorConfirmPasswordMessage = null;
             }
-            if (request.DateOrBriht == null ||
-               request.DateOrBriht.Year < 1900 ||
-               request.DateOrBriht > DateTime.Now.AddYears(-18))
-            {
-                errorYearMessage = "Bạn phải từ 18 tuổi trở lên.";
-                IsShowYearNotification = false;
-                isSubmitting = false;
-                return;
-            }
+
+            //Địa chỉ
             if (string.IsNullOrWhiteSpace(request.Adderss))
             {
                 errorAddressMessage = "Địa chỉ không được để trống.";
-                IsShowAddressNotification = false;
+                isValid = false;
+                isSubmitting = false;
+            }
+            else
+            {
+                errorAddressMessage = null;
+            }
+           
+            if (!isValid)
+            {
                 isSubmitting = false;
                 return;
             }
-            // Kiểm tra số điện thoại đã tồn tại
-            var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
-            if (phoneExists)
-            {
-                errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
-                IsShowPhoneNotification = false;
-                return;
-            }
-
             var userResponse = await UserServices.CreateClient(request);
             if (userResponse.IsSuccessStatusCode)
             {
-                registrationMessage = "Đăng kí thành công!";
+                registrationMessage = "Đăng ký thành công!";
             }
             else
             {
                 var errorContent = await userResponse.Content.ReadAsStringAsync();
-                registrationMessage = $"Có lỗi xảy ra: {errorContent}";
+                Console.WriteLine($"Có lỗi xảy ra: {errorContent}"); 
             }
         }
         catch (Exception ex)

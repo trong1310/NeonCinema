@@ -7,20 +7,13 @@
 @inject IUserServices _service
 @inject HttpClient _http
 @inject NavigationManager _navigation
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin")] 
 
-<div class="container-fluid mt-5">
-	<h2 class="text-center mb-4 font-weight-bold" style="margin-top:30px;">Chỉnh sửa nhân viên</h2>
+<div class="container-fluid mt-4">
+	<h2 class="text-center mb-4 font-weight-bold">Thông tin nhân viên</h2>
 	<div class="row justify-content-center">
 		<div class="col-md-3 text-center mb-4 mt-5">
 			<img src="@profileFilmsImage" alt="Profile" class="rounded-circle img-fluid profile-pic"> <br />
-			<label class="custom-file-upload">
-				<span style="margin-left:-5px">
-					<i class="material-icons">cloud_upload</i>
-				</span>
-				<InputFile OnChange="HandleSelected" class="d-none" style="width: 200px" />
-				<span>Chọn ảnh</span>
-			</label>
 		</div>
 		<div class="col-md-9" style="margin-top:10px;">
 			<form>
@@ -28,13 +21,13 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="fullname" class="font-weight-bold">Họ và tên</label>
-							<input type="text" class="form-control" id="fullname" @bind-value="@user.FullName">
+							<input type="text" class="form-control" id="fullname" @bind-value="@user.FullName" disabled>
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="phone" class="font-weight-bold">Số điện thoại</label>
-							<input type="text" class="form-control" id="phone" @bind-value="@user.PhoneNumber">
+							<input type="text" class="form-control" id="phone" @bind-value="@user.PhoneNumber" disabled>
 						</div>
 					</div>
 				</div>
@@ -43,13 +36,13 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="email" class="font-weight-bold">Email</label>
-							<input type="email" class="form-control" id="email" @bind-value="@user.Email">
+							<input type="email" class="form-control" id="email" @bind-value="@user.Email" disabled>
 						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="dob" class="font-weight-bold">Ngày sinh</label>
-							<input type="date" class="form-control" @bind-value="@user.DateOrBriht" />
+							<input type="date" class="form-control" @bind-value="@user.DateOrBriht" disabled />
 						</div>
 					</div>
 				</div>
@@ -62,12 +55,12 @@
 								<div style="margin-left: -20px; margin-top: 5px">
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderMale" name="gender"
-											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" />
+											   checked="@user.Gender" @onclick="@(() => user.Gender = true)" disabled />
 										<label class="form-check-label" for="genderMale" style="margin-left: 0.5rem; margin-top: 5px">Nam</label>
 									</div>
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" id="genderFemale" name="gender"
-											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" />
+											   checked="@(user.Gender == false)" @onclick="@(() => user.Gender = false)" disabled />
 										<label class="form-check-label" for="genderFemale" style="margin-left: 0.5rem; margin-top: 5px">Nữ</label>
 									</div>
 								</div>
@@ -79,12 +72,11 @@
 
 				<div class="form-group">
 					<label for="address" class="font-weight-bold">Địa chỉ</label>
-					<textarea class="form-control" id="address" rows="3" @bind="@user.Adderss"></textarea>
+					<textarea class="form-control" id="address" rows="3" @bind="@user.Adderss" disabled></textarea>
 				</div>
 
 				<div class="text-center">
-					<button type="button" @onclick="UpdateAccout" class="btn btn-primary btn-lg">Lưu</button>
-
+					<button type="button" @onclick="NavigateToList" class="btn btn-warning">Quay lại</button>
 				</div>
 			</form>
 		</div>
@@ -193,7 +185,10 @@
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 		}
 	}
-
+	private async Task NavigateToList()
+	{
+		_navigation.NavigateTo($"/staff");
+	}
 }
 
 <style>

@@ -41,7 +41,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 					Images = request.Images, // Lưu tên hình ảnh
 					DateOrBriht = request.DateOrBriht,
 					Adderss = request.Adderss == null ? "" : request.Adderss,
-					CreatedTime = DateTime.UtcNow,
+					CreatedTime = DateTime.Now,
 					Status = NeonCinema_Domain.Enum.EntityStatus.Active,
 					RoleID = Guid.Parse("BA820C64-1A81-4C44-80EA-47038C930C3B"),
 				};
@@ -100,7 +100,7 @@ namespace NeonCinema_Infrastructure.Implement.Users
 					Images = request.Images, // Lưu tên hình ảnh
 					DateOrBriht = request.DateOrBriht,
 					Adderss = request.Adderss,
-					CreatedTime = DateTime.UtcNow,
+					CreatedTime = DateTime.Now,
 					Status = NeonCinema_Domain.Enum.EntityStatus.Active,
 					RoleID = Guid.Parse("56BECE24-BA60-4B2B-801C-B68CFC8CCF9D"),
 				};

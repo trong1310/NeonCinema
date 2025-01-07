@@ -16,7 +16,7 @@ using NeonCinema_Application.DataTransferObject.User.Request;
 using NeonCinema_API.Controllers;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Infrastructure.Database.AppDbContext;
-using static NeonCinema_Client.Pages.Client.User.Profile;
+using static NeonCinema_Client.Pages.Client.User.ProfileClient;
 using Microsoft.EntityFrameworkCore;
 using NeonCinema_Domain.Enum;
 using System.Threading;

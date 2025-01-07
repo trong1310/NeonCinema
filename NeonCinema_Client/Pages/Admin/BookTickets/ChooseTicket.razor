@@ -19,6 +19,8 @@
 @using NeonCinema_Domain.Database.Entities
 @using System.Text.Json
 @using System.Security.Claims
+@using System.Text.RegularExpressions
+@using static NeonCinema_API.Controllers.PromotionController
 @layout LayoutAdmin
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
@@ -320,23 +322,78 @@
 								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
-						@* <div class="row g-2" style="margin-top: -20px">
-							<div class="col-md-8">
-								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
-							</div>
-							<div class="col-md-4" style="margin-top: 14px">
-								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
-							</div>
+						<div class="discount-container mt-3">
+							<!-- Nút mở popup -->
+							<button class="btn btn-primary w-100" @onclick="() => showDiscountPopup = true">Chọn mã giảm giá</button>
+
+							<!-- Hiển thị mã giảm giá đã chọn -->
+							@if (!string.IsNullOrEmpty(selectedDiscountCode))
+							{
+								<p class="mt-2">
+									<strong>Mã giảm giá đã chọn:</strong> @selectedDiscountCode <br />
+									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND
+									<span>Tối đa:  VND</span>
+								</p>
+							}
 						</div>
-						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
+
+						<!-- Popup chọn mã giảm giá -->
+						@if (showDiscountPopup)
+						{
+							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);">
+								<div class="modal-dialog discount-dialog" style="margin-top: 150px">
+									<div class="modal-content discount-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Chọn mã giảm giá</h5>
+											<button type="button" class="btn-close" aria-label="Close" @onclick="() => showDiscountPopup = false"></button>
+										</div>
+										<div class="modal-body">
+											<!-- Tìm kiếm mã giảm giá -->
+											<div class="search-discount mt-3">
+												<div class="input-group mb-3">
+													<input type="text" class="form-control" placeholder="Nhập mã giảm giá" @bind="searchCode" />
+													<button class="btn btn-primary" @onclick="SearchDiscount">Tìm kiếm</button>
+												</div>
+											</div>
+
+											<!-- Danh sách mã giảm giá -->
+											<ul class="list-group discount-list mt-3">
+												@foreach (var discount in voucher)
+												{
+													<div class="discount-card">
+														<div class="discount-info">
+															<h3>@discount.Name</h3>
+															<p>Giảm giá @discount.DiscountPercentage %</p>
+															<p class="text-dark">Tối đa : @discount.AmountMax </p>
+															@* <div class="progress-bar" style="width:90%">
+															<div class="progress" style="width: @discount.Percentage%;"></div>
+															</div> *@
+														</div>
+														<button class="btn btn-primary btn-sm btn-discount"
+																@onclick="() => SelectDiscount(discount)"
+																disabled="@(selectedDiscountCode == discount.Code)">
+															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
+														</button>
+													</div>
+												}
+											</ul>
+										</div>
+										<!-- Footer với nút hủy chọn -->
+										<div class="modal-footer">
+											<button class="btn btn-secondary" @onclick="CancelDiscount">Hủy chọn</button>
+											<button class="btn btn-primary" @onclick="ConfirmDiscountSelection">Xác nhận</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
 					</div>
 				}
 				else if (ShowCreateButton)
 				{
 					<div class="mt-3">
 						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
+						 
 						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
 					</div>
 				} 
@@ -403,41 +460,50 @@
 								<div class="mb-3 col-md-6">
 									<label for="fullName" class="form-label">Họ và tên</label>
 									<input type="text" class="form-control" placeholder="Nhập họ và tên" @bind-value=requestUser.FullName>
-									<ValidationMessage For="@(() => requestUser.FullName)" style="margin-top: 2px" />
+									@if (!string.IsNullOrEmpty(errorName))
+									{
+										<span class="text-danger">@errorName</span>
+									}
 								</div>
 								<div class="mb-3 col-md-6">
 									<label for="phone" class="form-label">Số điện thoại</label>
 									<input type="text" class="form-control" placeholder="Nhập số điện thoại" @bind-value=requestUser.PhoneNumber>
-									<ValidationMessage For="@(() => requestUser.PhoneNumber)" style="margin-top: 2px" />
-									@if (!IsShowPhoneNotification)
+									@if (!string.IsNullOrEmpty(errorPhone))
 									{
-										<span class="text-danger" style="font-size: 1rem" ; margin-top: 2px>@errorPhoneMessage</span>
-									}
+										<span class="text-danger">@errorPhone</span>
+									}	
+									
 								</div>
 							</div>
 							<div class="row">
 								<div class="mb-3 col-md-6">
 									<label for="email" class="form-label">Email</label>
 									<input type="email" class="form-control" placeholder="Nhập email" @bind-value=requestUser.Email>
-									<ValidationMessage For="@(() => requestUser.Email)" style="margin-top: 2px" />
-									@if (!IsShowEmailNotification)
+									@if (!string.IsNullOrEmpty(errorEmail))
 									{
-										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorEmailMessage</span>
+										<span class="text-danger">@errorEmail</span>
 									}
+									
 								</div>
 								<div class="mb-3 col-md-6">
 									<label for="date" class="form-label">Ngày sinh</label>
 									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
-									@if (!IsShowYearNotification)
+									 @if (!string.IsNullOrEmpty(errorYear))
 									{
-										<span class="text-danger" style="font-size: 1rem; margin-top: 2px">@errorYearMessage</span>
+										<span class="text-danger">@errorYear</span>
 									}
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" @onclick="CloseCreateAccountModal">Hủy</button>
-							<button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+							@* <button type="submit" class="btn btn-primary">Tạo tài khoản</button> *@
+							<button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isSubmitting ? "inline-block" : "none")"></span>
+								<span>@(isSubmitting ? "Đang xử lý..." : "Tạo tài khoản")</span>
+							</button>
+
+
 						</div>
 					</div>
 				</EditForm>
@@ -518,6 +584,7 @@
 	List<CountryDTO> countries = new List<CountryDTO>();
 	List<DirectorDTO> directors = new List<DirectorDTO>();
 	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	List<VoucherDTO> voucher = new List<VoucherDTO>();
 	private int _selectedIndex = 0;
 	private Dictionary<string,
 	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
@@ -539,6 +606,7 @@
 	private decimal surcharge = 0;
 	private bool isCashPayment = false;
 	private double pointApply = 0;
+	private Guid? selectedVoucherId;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
 	{
 		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
@@ -620,6 +688,7 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
+		voucher = await _services.GetVoucher(Rank.AccountId);
 		//	account = await _services.GetAccount(phoneNumber);
 
 		foods = await _services.GetFoodCombo();
@@ -744,6 +813,12 @@
 			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
 			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
 		});
+		 isSubmitting = false;
+        // Chuyển hướng sau khi hoàn tất hiển thị
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+        });
 	}
 
 	private async void SelectSeat(SeatDto seat)
@@ -1052,18 +1127,79 @@
 	}
 
 
+		#region Mã giảm giá
 
+	private bool showDiscountPopup = false; // Trạng thái hiển thị popup
+	private string selectedDiscountCode = null; // Mã giảm giá đã chọn
+	private decimal discountAmount = 0; // Số tiền được giảm
+	private double? discountPercentage = 0; // Phần trăm giảm giá
+
+	private string searchCode = string.Empty;
+	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
+
+
+	protected override void OnInitialized()
+	{
+
+	}
+
+	private void SearchDiscount()
+	{
+		if (string.IsNullOrWhiteSpace(searchCode))
+		{
+
+		}
+		else
+		{
+		}
+
+		isSearchPerformed = true; // Đánh dấu đã tìm kiếm
+	}
+
+	// Xử lý khi chọn mã giảm giá
+	decimal discountMax = 0;
+	private void SelectDiscount(VoucherDTO discount)
+	{
+		discountMax = (decimal)discount.AmountMax;
+		selectedDiscountCode = discount.Code;
+		selectedVoucherId = discount.ID;
+		discountPercentage = discount.DiscountPercentage; // Lưu phần trăm giảm giá
+		discountAmount = (totalPrices * (decimal)(discountPercentage ?? 0)) / 100;
+		if (discountAmount > (decimal)discount.AmountMax)
+		{
+			totalPrices -= discountMax;
+		}
+		else
+		{
+			totalPrices -= discountAmount;
+		}
+	}
+	// Xử lý khi hủy mã giảm giá
+	private void CancelDiscount()
+	{
+		// totalPrices += discountAmount; // Khôi phục số tiền bị giảm
+		selectedDiscountCode = null; // Xóa trạng thái mã giảm giá đã chọn
+		discountPercentage = 0;
+		discountAmount = 0;
+		totalPrices += discountAmount;
+	}
+	//nút xác nhận để đóng form
+	private void ConfirmDiscountSelection()
+	{
+		showDiscountPopup = false; // Đóng popup
+	}
+	#endregion
 	#region Tạo tài khoản
 
 	private UserCreateRequest requestUser = new UserCreateRequest();
 	private IBrowserFile selectedFile;
 	private bool showPassword = false;
-	private string errorEmailMessage;
-	private string errorPhoneMessage;
-	private string errorYearMessage;
-	private bool IsShowPhoneNotification = true;
-	private bool IsShowEmailNotification = true;
-	private bool IsShowYearNotification = true;
+	 private string? errorName = null;
+    private string? errorPhone = null;
+    private string? errorEmail = null;
+    private string? errorAdress = null;
+    private string? errorYear = null;
+	private bool isSubmitting = false;
 	private bool showCreateAccountModal = false;
 
 	private string profileImage = "https://media.istockphoto.com/id/1397556857/vi/vec-to/avatar-13.jpg?s=612x612&w=0&k=20&c=rNjYzaNEVujaKNJBN2yBdHGDjoYrPRgeSIDrenAZcbE="; // URL mặc định cho ảnh
@@ -1098,15 +1234,11 @@
 
 	private async Task HandleSubmit()
 	{
+		isSubmitting = true;
+		 StateHasChanged();
 		try
 		{
-			IsShowEmailNotification = true;
-			IsShowPhoneNotification = true;
-			IsShowYearNotification = true;
-			errorEmailMessage = string.Empty;
-			errorPhoneMessage = string.Empty;
-			errorYearMessage = string.Empty;
-
+			
 			// Nếu không có file được chọn, sử dụng ảnh mặc định
 			if (selectedFile == null)
 			{
@@ -1139,37 +1271,99 @@
 				}
 			}
 
-			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
-			if (emailExists)
-			{
-				errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
-				IsShowEmailNotification = false;
-				return;
-			}
-			if (requestUser.DateOrBriht == null ||
-				requestUser.DateOrBriht.Year < 1900 ||
-				requestUser.DateOrBriht > DateTime.Now.AddYears(-18) ||
-				requestUser.DateOrBriht <= DateTime.Now.AddYears(-50))
-			{
-				errorYearMessage = "Khách hàng phải từ 18 đến 50 tuổi.";
-				IsShowYearNotification = false;
-				return;
-			}
 
-			// Kiểm tra số điện thoại đã tồn tại
-			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
-			if (phoneExists)
-			{
-				errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
-				IsShowPhoneNotification = false;
-				return;
-			}
+        var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+        var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+        //Ngày sinh
+        if (requestUser.DateOrBriht == null ||
+            requestUser.DateOrBriht.Year < 1900 ||
+            requestUser.DateOrBriht > DateTime.Now.AddYears(-14))
+        {
+            errorYear = "Khách hàng phải từ 14 trở lên.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorYear = null;
+        }
+
+        // Kiểm tra họ và tên
+        if (string.IsNullOrWhiteSpace(requestUser.FullName))
+        {
+            errorName = "Họ và tên không được để trống.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+        {
+            errorName = "Họ và tên không được chứa số và kí tự đặc biệt.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorName = null;
+        }
+
+        //Email
+        if (string.IsNullOrWhiteSpace(requestUser.Email))
+        {
+            errorEmail = "Email không được để trống.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+        {
+            errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+            isSubmitting = false;
+        }
+        else if (emailExists)
+        {
+            errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorEmail = null;
+        }
+
+        //SDT
+        if (string.IsNullOrWhiteSpace(requestUser.PhoneNumber))
+        {
+            errorPhone = "Số điện thoại không được để trống.";
+            isSubmitting = false;
+        }
+        // Kiểm tra số điện thoại đã tồn tại
+
+        else if (phoneExists)
+        {
+            errorPhone = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(requestUser.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
+        {
+            errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorPhone = null;
+        }
+
+        //Địa chỉ
+        if (string.IsNullOrWhiteSpace(requestUser.Adderss))
+        {
+            errorAdress = "Địa chỉ không được để trống.";
+            isSubmitting = false;
+        }
+        else
+        {
+            errorAdress = null;
+        }
 
 			var userResponse = await UserService.CreateClient(requestUser);
 			if (userResponse.IsSuccessStatusCode)
 			{
-				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
-				await Task.Delay(300);
+				 ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+                isSubmitting = false;
+                await Task.Delay(2000);
 				CloseCreateAccountModal();
 			}
 			else
@@ -1182,6 +1376,11 @@
 		{
 			Console.WriteLine($"Lỗi: {ex.Message}");
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+		 finally
+		{
+			isSubmitting = false; // Luôn đặt lại trạng thái
+			StateHasChanged(); // Cập nhật giao diện
 		}
 	}
 
@@ -1712,5 +1911,44 @@
 			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
 			height: auto;
 		}
+		.discount-list {
+		max-height: 300px; /* Giới hạn chiều cao */
+		overflow-y: auto; /* Hiển thị thanh cuộn dọc */
+		padding: 0; /* Xóa khoảng cách bên trong */
+		list-style: none; /* Loại bỏ ký hiệu danh sách */
+		margin: 0; /* Xóa margin */
+	}
 
+	.discount-card {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px; /* Tăng padding bên trong card */
+		margin: 10px 5px; /* Thêm khoảng cách giữa các card */
+		background-color: #fff; /* Nền trắng */
+		border: 1px solid #ddd; /* Viền nhẹ */
+		border-radius: 10px; /* Bo góc */
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+	}
+
+
+	.discount-info {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+		.discount-info h3 {
+			font-size: 18px;
+			font-weight: bold;
+			margin: 0 0 5px 0;
+			color: #333;
+		}
+
+		.discount-info p {
+			font-size: 17px;
+			margin: 0;
+			color: #red;
+		}
 </style>
