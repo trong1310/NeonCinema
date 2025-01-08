@@ -164,48 +164,49 @@
 				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
 			</div>
 
-			@if (showConfirmModal)
-			{
-				<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
-								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
-							</div>
-							<div class="d-flex justify-content-between mt-3">
-								<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
-							</div>
-							<div class="modal-body">
-								<p>Xác nhận thanh toán.</p>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
-								<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
-							</div>
+			
+		}
+		@if (showConfirmModal)
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Xác nhận thanh toán</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="d-flex justify-content-between mt-3">
+							<strong>Bạn cần trả lại khách : @refun.ToString("N0")</strong>
+						</div>
+						<div class="modal-body">
+							<p>Xác nhận thanh toán.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
+							<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
 						</div>
 					</div>
 				</div>
-			}
-			@if (showMessage)
-			{
-				<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">Thông báo</h5>
-								<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
-							</div>
-							<div class="d-flex justify-content-between mt-3">
-								<span>Số tiền khách đưa không đủ vui lòng nhập lại</span>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" @onclick="CloseModal">Quay lại</button>
-							</div>
+			</div>
+		}
+		@if (showMessage)
+		{
+			<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Thông báo</h5>
+							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+						</div>
+						<div class="d-flex justify-content-between mt-3">
+							<span>Số tiền khách đưa không đủ vui lòng nhập lại</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="CloseModal">Quay lại</button>
 						</div>
 					</div>
 				</div>
-			}
+			</div>
 		}
 		@if (paymentStatus == "success")
 		{
@@ -276,10 +277,10 @@
 					<span>Tổng tiền combo</span>
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
-				<div class="d-flex justify-content-between mb-3">
+@* 				 <div class="d-flex justify-content-between mb-3">
 					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 					<span>@surcharge.ToString("N0") VND</span>
-				</div>
+				</div> *@
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền tạm tính</span>
 					<span>@sumPrices.ToString("N0") VND</span>
@@ -401,7 +402,7 @@
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
-							<input type="radio" name="flexRadioDefault" id="cashRadio" checked="isCashPayment"
+							<input type="radio" name="flexRadioDefault" id="cashRadio" 
 								   @onchange="(e) => isCashPayment = true">
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
@@ -413,10 +414,17 @@
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
+
 					<div class="qr-code-container">
 						<img id="qrcode" style="border: 1px solid; height: 300px; width: 260px; display: none;" alt="QR Code">
 					</div>
 				</div>
+				@if (showMethodMessage)
+				{
+					<div class="alert alert-warning mt-2">
+						Vui lòng chọn phương thức thanh toán!
+					</div>
+				}
 				@if (isCashPayment == true)
 				{
 					<div class="form-group">
@@ -606,6 +614,8 @@
 	private decimal surcharge = 0;
 	private bool isCashPayment = false;
 	private double pointApply = 0;
+	private bool isPaymentMethodSelected = false;
+	private bool showMethodMessage = false; // Biến để hiển thị thông báo chưa chọn phương thức
 	private Guid? selectedVoucherId;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
 	{
@@ -620,20 +630,34 @@
 	}
 	private void ShowConfirmModal()
 	{
-		// Chỉ hiển thị modal nếu thanh toán bằng tiền mặt và số tiền đủ
-		if (isCashPayment && moneyrRceived >= totalPrices)
+		// Kiểm tra nếu chưa chọn phương thức thanh toán
+		if (!isPaymentMethodSelected)
 		{
-			showConfirmModal = true;
+			showMethodMessage = true; // Hiển thị thông báo
+			return; // Dừng xử lý tiếp theo
 		}
-		else if (isCashPayment)
+
+		// Kiểm tra nếu thanh toán bằng tiền mặt
+		if (isCashPayment)
 		{
-			showMessage = true; // Hiển thị thông báo lỗi nếu tiền không đủ
+			if (moneyrRceived >= totalPrices)
+			{
+				showConfirmModal = true; // Hiển thị modal nếu đủ tiền
+				showMessage = false;     // Không hiển thị thông báo lỗi
+			}
+			else
+			{
+				showMessage = true;      // Hiển thị thông báo lỗi nếu không đủ tiền
+				showConfirmModal = false; // Không hiển thị modal
+			}
 		}
 		else
 		{
-			showConfirmModal = true; // Không cần kiểm tra tiền cho phương thức thanh toán khác
+			showConfirmModal = true; // Hiển thị modal cho các phương thức khác
+			showMessage = false;     // Ẩn thông báo lỗi
 		}
 	}
+
 	private void ApplyPoint()
 	{
 		decimal maxDiscount = sumPrices * 0.5m;
@@ -704,24 +728,24 @@
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 		createBy = Guid.Parse(userIdClaim.Value);
-		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
-		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
-		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-		if (type != null)
-		{
-			if (type.MovieTypeName.Contains("3D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge3D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-			if (type.MovieTypeName.Contains("2D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge4D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-		}
+		// var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		// var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		// var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		// if (type != null)
+		// {
+		// 	if (type.MovieTypeName.Contains("3D".Trim()))
+		// 	{
+		// 		surcharge = ticketPriceSetting.Surcharge3D;
+		// 		sumPrices += surcharge;
+		// 		totalPrices += surcharge;
+		// 	}
+		// 	if (type.MovieTypeName.Contains("2D".Trim()))
+		// 	{
+		// 		surcharge = ticketPriceSetting.Surcharge4D;
+		// 		sumPrices += surcharge;
+		// 		totalPrices += surcharge;
+		// 	}
+		// }
 		StateHasChanged(); // Cập nhật giao diện
 	}
 	private async Task RefreshSeatsAsync()
@@ -1014,10 +1038,6 @@
 					Voucher = null,
 
 				};
-		}
-		if (moneyrRceived < totalPrices)
-		{
-			ShowSnackbar("Số tiền khách đưa không đủ để thanh toán.", Severity.Warning);
 		}
 		try
 		{
