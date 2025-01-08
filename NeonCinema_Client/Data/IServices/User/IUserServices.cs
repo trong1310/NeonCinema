@@ -6,7 +6,7 @@ using NeonCinema_Application.DataTransferObject.User.Request;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.DataTransferObject.MovieData;
 using NeonCinema_Domain.Database.Entities;
-using static NeonCinema_Client.Pages.Client.User.Profile;
+using static NeonCinema_Client.Pages.Client.User.ProfileClient;
 
 namespace NeonCinema_Client.Data.IServices.User
 {

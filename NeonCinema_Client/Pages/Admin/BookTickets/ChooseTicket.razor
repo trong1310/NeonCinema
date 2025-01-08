@@ -20,6 +20,7 @@
 @using System.Text.Json
 @using System.Security.Claims
 @using System.Text.RegularExpressions
+@using static NeonCinema_API.Controllers.PromotionController
 @layout LayoutAdmin
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
@@ -322,17 +323,71 @@
 								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
-						@* <div class="row g-2" style="margin-top: -20px">
-							<div class="col-md-8">
-								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
-							</div>
-							<div class="col-md-4" style="margin-top: 14px">
-								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
-							</div>
+						<div class="discount-container mt-3">
+							<!-- Nút mở popup -->
+							<button class="btn btn-primary w-100" @onclick="() => showDiscountPopup = true">Chọn mã giảm giá</button>
+
+							<!-- Hiển thị mã giảm giá đã chọn -->
+							@if (!string.IsNullOrEmpty(selectedDiscountCode))
+							{
+								<p class="mt-2">
+									<strong>Mã giảm giá đã chọn:</strong> @selectedDiscountCode <br />
+									<strong>Chiết khấu:</strong> @discountPercentage% (Giảm: @discountAmount.ToString("N0") VND
+									<span>Tối đa:  VND</span>
+								</p>
+							}
 						</div>
-						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
+
+						<!-- Popup chọn mã giảm giá -->
+						@if (showDiscountPopup)
+						{
+							<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0, 0, 0, 0.5);">
+								<div class="modal-dialog discount-dialog" style="margin-top: 150px">
+									<div class="modal-content discount-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Chọn mã giảm giá</h5>
+											<button type="button" class="btn-close" aria-label="Close" @onclick="() => showDiscountPopup = false"></button>
+										</div>
+										<div class="modal-body">
+											<!-- Tìm kiếm mã giảm giá -->
+											<div class="search-discount mt-3">
+												<div class="input-group mb-3">
+													<input type="text" class="form-control" placeholder="Nhập mã giảm giá" @bind="searchCode" />
+													<button class="btn btn-primary" @onclick="SearchDiscount">Tìm kiếm</button>
+												</div>
+											</div>
+
+											<!-- Danh sách mã giảm giá -->
+											<ul class="list-group discount-list mt-3">
+												@foreach (var discount in voucher)
+												{
+													<div class="discount-card">
+														<div class="discount-info">
+															<h3>@discount.Name</h3>
+															<p>Giảm giá @discount.DiscountPercentage %</p>
+															<p class="text-dark">Tối đa : @discount.AmountMax </p>
+															@* <div class="progress-bar" style="width:90%">
+															<div class="progress" style="width: @discount.Percentage%;"></div>
+															</div> *@
+														</div>
+														<button class="btn btn-primary btn-sm btn-discount"
+																@onclick="() => SelectDiscount(discount)"
+																disabled="@(selectedDiscountCode == discount.Code)">
+															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
+														</button>
+													</div>
+												}
+											</ul>
+										</div>
+										<!-- Footer với nút hủy chọn -->
+										<div class="modal-footer">
+											<button class="btn btn-secondary" @onclick="CancelDiscount">Hủy chọn</button>
+											<button class="btn btn-primary" @onclick="ConfirmDiscountSelection">Xác nhận</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
 					</div>
 				}
 				else if (ShowCreateButton)
@@ -537,6 +592,7 @@
 	List<CountryDTO> countries = new List<CountryDTO>();
 	List<DirectorDTO> directors = new List<DirectorDTO>();
 	ScreeningMoviesDto screenings = new ScreeningMoviesDto();
+	List<VoucherDTO> voucher = new List<VoucherDTO>();
 	private int _selectedIndex = 0;
 	private Dictionary<string,
 	List<SeatDto>> groupedSeats = new Dictionary<string, List<SeatDto>>();
@@ -560,7 +616,7 @@
 	private double pointApply = 0;
 	private bool isPaymentMethodSelected = false;
 	private bool showMethodMessage = false; // Biến để hiển thị thông báo chưa chọn phương thức
-
+	private Guid? selectedVoucherId;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
 	{
 		if (decimal.TryParse(e.Value.ToString(), out var inputMoney))
@@ -656,6 +712,7 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
+		voucher = await _services.GetVoucher(Rank.AccountId);
 		//	account = await _services.GetAccount(phoneNumber);
 
 		foods = await _services.GetFoodCombo();
@@ -1090,7 +1147,68 @@
 	}
 
 
+		#region Mã giảm giá
 
+	private bool showDiscountPopup = false; // Trạng thái hiển thị popup
+	private string selectedDiscountCode = null; // Mã giảm giá đã chọn
+	private decimal discountAmount = 0; // Số tiền được giảm
+	private double? discountPercentage = 0; // Phần trăm giảm giá
+
+	private string searchCode = string.Empty;
+	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
+
+
+	protected override void OnInitialized()
+	{
+
+	}
+
+	private void SearchDiscount()
+	{
+		if (string.IsNullOrWhiteSpace(searchCode))
+		{
+
+		}
+		else
+		{
+		}
+
+		isSearchPerformed = true; // Đánh dấu đã tìm kiếm
+	}
+
+	// Xử lý khi chọn mã giảm giá
+	decimal discountMax = 0;
+	private void SelectDiscount(VoucherDTO discount)
+	{
+		discountMax = (decimal)discount.AmountMax;
+		selectedDiscountCode = discount.Code;
+		selectedVoucherId = discount.ID;
+		discountPercentage = discount.DiscountPercentage; // Lưu phần trăm giảm giá
+		discountAmount = (totalPrices * (decimal)(discountPercentage ?? 0)) / 100;
+		if (discountAmount > (decimal)discount.AmountMax)
+		{
+			totalPrices -= discountMax;
+		}
+		else
+		{
+			totalPrices -= discountAmount;
+		}
+	}
+	// Xử lý khi hủy mã giảm giá
+	private void CancelDiscount()
+	{
+		// totalPrices += discountAmount; // Khôi phục số tiền bị giảm
+		selectedDiscountCode = null; // Xóa trạng thái mã giảm giá đã chọn
+		discountPercentage = 0;
+		discountAmount = 0;
+		totalPrices += discountAmount;
+	}
+	//nút xác nhận để đóng form
+	private void ConfirmDiscountSelection()
+	{
+		showDiscountPopup = false; // Đóng popup
+	}
+	#endregion
 	#region Tạo tài khoản
 
 	private UserCreateRequest requestUser = new UserCreateRequest();
@@ -1813,5 +1931,44 @@
 			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
 			height: auto;
 		}
+		.discount-list {
+		max-height: 300px; /* Giới hạn chiều cao */
+		overflow-y: auto; /* Hiển thị thanh cuộn dọc */
+		padding: 0; /* Xóa khoảng cách bên trong */
+		list-style: none; /* Loại bỏ ký hiệu danh sách */
+		margin: 0; /* Xóa margin */
+	}
 
+	.discount-card {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px; /* Tăng padding bên trong card */
+		margin: 10px 5px; /* Thêm khoảng cách giữa các card */
+		background-color: #fff; /* Nền trắng */
+		border: 1px solid #ddd; /* Viền nhẹ */
+		border-radius: 10px; /* Bo góc */
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+	}
+
+
+	.discount-info {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+		.discount-info h3 {
+			font-size: 18px;
+			font-weight: bold;
+			margin: 0 0 5px 0;
+			color: #333;
+		}
+
+		.discount-info p {
+			font-size: 17px;
+			margin: 0;
+			color: #red;
+		}
 </style>

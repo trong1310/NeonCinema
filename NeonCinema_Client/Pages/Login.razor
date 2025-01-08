@@ -281,6 +281,7 @@
     HttpClient _http = new HttpClient();
     public async Task LoginAccount()
     {
+        
         isProcessing = true;
         errorMessage = null;
 
@@ -290,6 +291,7 @@
 
             if (login.IsSuccessStatusCode)
             {
+                await _localstorage.ClearAsync();
                 var response = await login.Content.ReadFromJsonAsync<LoginResponse>();
 
                 if (response != null && !string.IsNullOrEmpty(response.Token))
