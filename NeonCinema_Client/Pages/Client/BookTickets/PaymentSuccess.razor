@@ -1,0 +1,15 @@
+﻿@page "/payment-success/{id:guid}"
+@using NeonCinema_Client.Data.Services.BookTicket
+@inject BookTicketServices _services
+@inject NavigationManager _navi
+
+@code {
+	[Parameter]
+	public Guid id { get; set; }
+	public double point;
+	protected override async Task OnInitializedAsync()
+	{
+		await _services.PaymentSuccessAsync(id, point);
+		_navi.NavigateTo("/list-movie");
+	}
+}

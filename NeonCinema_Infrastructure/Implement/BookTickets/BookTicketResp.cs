@@ -80,7 +80,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				{
 					ID = Guid.NewGuid(),
 					BillCode = Uliti.GenerateBillCode(),
-					Status = NeonCinema_Domain.Enum.ticketEnum.checkin,
+					Status = NeonCinema_Domain.Enum.ticketEnum.paid,
 					CreatedTime = DateTime.Now,
 					UserID = request.AccountID ?? null,
 					CreatedBy = request.CreateBy,
@@ -146,7 +146,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						bill.Surcharge = ticketPriceSetting.Surcharge3D;
 					}
-					if (type.MovieTypeName.Contains("2D".Trim()))
+					if (type.MovieTypeName.Contains("4D".Trim()))
 					{
 						bill.Surcharge = ticketPriceSetting.Surcharge4D;
 					}
@@ -185,9 +185,12 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					bill.TotalPrice += tickets.Sum(t => t.Price);
 					bill.AfterDiscount += bill.TotalPrice;
 				}
-				bill.TotalPrice += (decimal)bill.Surcharge;
-				bill.AfterDiscount += (decimal)bill.Surcharge;
+				if (bill.Surcharge > 0)
+				{
+					bill.TotalPrice += (decimal)bill.Surcharge;
+					bill.AfterDiscount += (decimal)bill.Surcharge;
 
+				}
 				double discount = 0;
 				if (request.Point > 0)
 				{

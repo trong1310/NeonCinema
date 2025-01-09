@@ -33,6 +33,7 @@ namespace NeonCinema_Domain.Enum
         waiting_for_payment = 1,
         paid = 2,
         cancel = 3,
+
     }
 
     public enum ScreeningStatus

@@ -51,23 +51,23 @@
 			</nav>
 			<!-- User Actions -->
 			<div class="user-actions d-flex align-items-center">
-				@if (user != null)
+				@if (currentUser != null)
 				{
 					<div class="d-flex align-items-center">
-						@if (string.IsNullOrEmpty(user.Images))
+						@if (string.IsNullOrEmpty(currentUser.Images))
 						{
 							<img src="@profileImage" alt="User Image" class="rounded-circle"
 							style="width: 50px; height: 50px; object-fit: cover;cursor: pointer"
-								 @onclick="NavigateToProfile">
+							@onclick="NavigateToProfile">
 						}
 						else
 						{
-							<img src="@GetImageUrl(user.Images)" alt="User Image"
+							<img src="@GetImageUrl(currentUser.Images)" alt="User Image"
 							class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;cursor: pointer"
-								 @onclick="NavigateToProfile">
+							@onclick="NavigateToProfile">
 						}
 						<span class="ms-2 text-white" @onclick="NavigateToProfile" style="cursor: pointer">
-							@user.FullName
+							@currentUser.FullName
 						</span>
 						<button class="btn btn-outline-light ms-2" @onclick="Logout">Đăng xuất</button>
 					</div>
@@ -146,8 +146,10 @@
 
 </body>
 </html>
+<ProfileClient OnUserUpdated="HandleUserUpdated" />
 
 @code {
+	private UserDTO currentUser;
 	private string username;
 	private string userId;
 	private string otherphone;
@@ -163,11 +165,19 @@
 			var handler = new JwtSecurityTokenHandler();
 			var jwtToken = handler.ReadJwtToken(authToken);
 			userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-			user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
+			await LoadUserData();
 		}
 		StateHasChanged();
 	}
-
+	private async Task HandleUserUpdated()
+	{
+		await LoadUserData();
+		StateHasChanged();
+	}
+	private async Task LoadUserData()
+	{
+		currentUser = await Service.GetByIDUser(Guid.Parse(userId),CancellationToken.None);
+	}
 	private async Task Logout()
 	{
 		await _localStorage.RemoveItemAsync("nameidentifier");
