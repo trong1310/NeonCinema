@@ -90,6 +90,20 @@ namespace NeonCinema_API.Controllers.Statisticss
 			var result = await _statisticalRepo.GetGrowthStatisticsAsync(currentStart, currentEnd, previousStart, previousEnd);
 			return Ok(result);
 		}
+		[HttpGet("new-order-customers")]
+		public async Task<IActionResult> GetNewOrderCustomers(DateTime startDate, DateTime endDate)
+		{
+			try
+			{
+				var newCustomers = await _statisticalRepo.GetNewCustomersAsync(startDate, endDate);
+				return Ok(newCustomers);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error: {ex.Message}");
+				return StatusCode(500, "An error occurred while processing your request.");
+			}
+		}
 
 
 
