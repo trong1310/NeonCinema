@@ -1,5 +1,6 @@
 ﻿
 using NeonCinema_Application.DataTransferObject.Statistics;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Client.Data.IServices.Statistics;
 
 namespace NeonCinema_Client.Data.Services.StatisticService
@@ -34,6 +35,11 @@ namespace NeonCinema_Client.Data.Services.StatisticService
 		}
 
 
+		public async Task<List<UserDTO>> GetNewOrderCustomersAsync(DateTime startDate, DateTime endDate)
+		{
+			var response = await _httpClient.GetFromJsonAsync<List<UserDTO>>($"api/Statistics/new-order-customers?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}");
+			return response ?? new List<UserDTO>();
+		}
 
 
 		public async Task<List<ComboStatisticsDTO>> GetComboStatisticsAsync(DateTime startDate, DateTime endDate)
