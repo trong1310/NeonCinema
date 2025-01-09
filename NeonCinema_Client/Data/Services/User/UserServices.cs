@@ -63,7 +63,8 @@ namespace NeonCinema_Client.Services.User
             catch (HttpRequestException ex)
             {
                 // Xử lý lỗi yêu cầu HTTP
-                throw new Exception($"Có lỗi xảy ra khi gọi API: {ex.Message}");
+                Console.WriteLine($"Có lỗi xảy ra khi gọi API: {ex.Message}");
+                return new UserDTO();
             }
         }
 
