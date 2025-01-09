@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus.Hollywood.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +17,18 @@ using NeonCinema_Infrastructure.Extention;
 namespace NeonCinema_Infrastructure.Implement.Movie
 {
 	public class MovieRepositories : IMovieRepositories
-    {
-        private readonly NeonCinemasContext _context;
-        private readonly IMapper _maps;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public MovieRepositories(IMapper maps, IWebHostEnvironment hv)
-        {
-            _webHostEnvironment = hv;
-            _context = new NeonCinemasContext();
-            _maps = maps;
-        }
-        public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
-        {
+	{
+		private readonly NeonCinemasContext _context;
+		private readonly IMapper _maps;
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		public MovieRepositories(IMapper maps, IWebHostEnvironment hv)
+		{
+			_webHostEnvironment = hv;
+			_context = new NeonCinemasContext();
+			_maps = maps;
+		}
+		public async Task<HttpResponseMessage> Create(CreateMovieRequest request, CancellationToken cancellationToken)
+		{
 			try
 			{
 				var movies = new Movies()
@@ -52,13 +53,13 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				};
 				await _context.Movies.AddAsync(movies);
 				await _context.SaveChangesAsync(cancellationToken);
-                var actorMovies = request.ActorMovies.Select(x => new NeonCinema_Domain.Database.Entities.ActorMovies
-                {
-                    MovieID = movies.ID,
-                    ActorID = x,
-                }).ToList();
-                await _context.ActorMovies.AddRangeAsync(actorMovies);
-                await _context.SaveChangesAsync();
+				var actorMovies = request.ActorMovies.Select(x => new NeonCinema_Domain.Database.Entities.ActorMovies
+				{
+					MovieID = movies.ID,
+					ActorID = x,
+				}).ToList();
+				await _context.ActorMovies.AddRangeAsync(actorMovies);
+				await _context.SaveChangesAsync();
 				return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
 				{
 					Content = new StringContent("Thêm thành công")
@@ -73,129 +74,134 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				};
 			}
 		}
-        public async Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
-                if (obj != null)
-                {
-                    obj.Deleted = true;
-                    obj.DeletedTime = DateTime.Now;
-                    _context.Movies.Update(obj);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("Đã xóa thành công")
-                    };
+		public async Task<HttpResponseMessage> Delete(Movies request, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var obj = await _context.Movies.FirstOrDefaultAsync(x => x.ID == request.ID);
+				if (obj != null)
+				{
+					obj.Deleted = true;
+					obj.DeletedTime = DateTime.Now;
+					_context.Movies.Update(obj);
+					await _context.SaveChangesAsync(cancellationToken);
+					return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+					{
+						Content = new StringContent("Đã xóa thành công")
+					};
 
-                }
-                else
-                {
-                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Không tìm thấy phim")
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent("có lỗi xảy ra" + ex.Message)
-                };
-            }
-        }
-        public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
-        {
+				}
+				else
+				{
+					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Không tìm thấy phim")
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("có lỗi xảy ra" + ex.Message)
+				};
+			}
+		}
+		public async Task<PaginationResponse<MovieDTO>> GetAll(ViewMovieRequest request, CancellationToken cancellationToken)
+		{
 
-            var query = _context.Movies
-                            .Include(x => x.Genre)
-                            .Include(x => x.Screening)
-                            .Include(x => x.Director)
-                            .Include(x => x.Lenguage)
-                            .Include(x => x.Countrys)
-                            .Include(x => x.MovieTypes)
-                            .Include(x => x.TicketSeats)
-							.AsNoTracking();
+			IOrderedQueryable<Movies> query = _context.Movies
+				.Include(x => x.Genre)
+				.Include(x => x.Screening)
+				.Include(x => x.Director)
+				.Include(x => x.Lenguage)
+				.Include(x => x.Countrys)
+				.Include(x => x.MovieTypes)
+				.Include(x => x.TicketSeats)
+				.Where(x => x.Deleted == false)
+				.AsNoTracking()
+				.OrderByDescending(x => x.CreatedTime); // Bắt đầu với sắp xếp
+
 			if (!string.IsNullOrWhiteSpace(request.SearchName))
-            {
-                query = query.Where(x => x.Name.Contains(request.SearchName.ToLower()));
-            }
+			{
+				query = query.Where(x => x.Name.ToLower().Contains(request.SearchName.ToLower())) as IOrderedQueryable<Movies>;
+			}
 
-            var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
-            var dataview = (from a in result.Data
-                            join b in query on a.ID
-                            equals b.ID orderby b.CreatedTime descending
+			var result = await query.PaginateAsync<Movies, MovieDTO>(request, _maps, cancellationToken);
+			var dataview = (from a in result.Data
+							join b in query on a.ID equals b.ID
 							where b.Deleted == false
+							orderby b.CreatedTime descending // Thêm sắp xếp theo CreatedTime
 							select new MovieDTO
-                            {
-                                ID = b.ID,
-                                AgeAllowed = b.AgeAllowed,
-                                Trailer = b.Trailer,
-                                Status = b.Status,
-                                Name = b.Name,
-                                Images = b.Images,
-                                StarTime = b.StarTime,
-                                Duration = b.Duration,
-                                Description = b.Description,
-                                LanguareName = b.Lenguage.LanguageName,
-                                CountryName = b.Countrys.CountryName,
-                                DirectorName = b.Director.FullName,
-                                GenreName = b.Genre.GenreName,
-								Sub = b.Sub, 
-								MovieTypeName = b.MovieTypes.MovieTypeName
+							{
+								ID = b.ID,
+								AgeAllowed = b.AgeAllowed,
+								Trailer = b.Trailer,
+								Status = b.Status,
+								Name = b.Name,
+								Images = b.Images,
+								StarTime = b.StarTime,
+								Duration = b.Duration,
+								Description = b.Description,
+								LanguareName = b.Lenguage.LanguageName,
+								CountryName = b.Countrys.CountryName,
+								DirectorName = b.Director.FullName,
+								GenreName = b.Genre.GenreName,
+								Sub = b.Sub,
+								MovieTypeName = b.MovieTypes.MovieTypeName,
+								CreateTime = b.CreatedTime,
+							}).ToList();
 
-                            }).ToList();
 
-            return new PaginationResponse<MovieDTO>()
-            {
-                Data = dataview,
-                HasNext = result.HasNext,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize
-            };
-        }
-        public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
-        {
-            var movie = await _context.Movies
-                .Include(x => x.Genre)
-                .Include(x => x.Screening)
-                .Include(x => x.Director)
-                .Include(x => x.Lenguage)
-                .Include(x => x.Countrys)
-                .Include(x => x.TicketSeats)
-                .Include(x=>x.MovieTypes)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
+			return new PaginationResponse<MovieDTO>()
+			{
+				Data = dataview,
+				HasNext = result.HasNext,
+				PageNumber = result.PageNumber,
+				PageSize = result.PageSize
+			};
+		}
+		public async Task<MovieDTO> GetById(Guid id, CancellationToken cancellationToken)
+		{
+			var movie = await _context.Movies
+				.Include(x => x.Genre)
+				.Include(x => x.Screening)
+				.Include(x => x.Director)
+				.Include(x => x.Lenguage)
+				.Include(x => x.Countrys)
+				.Include(x => x.TicketSeats)
+				.Include(x => x.MovieTypes)
+				.AsNoTracking()
+				.FirstOrDefaultAsync(x => x.ID == id, cancellationToken);
 
-            if (movie == null)
-            {
-                return null;
-            }
+			if (movie == null)
+			{
+				return null;
+			}
 
-            var movieDTO = new MovieDTO
-            {
-                ID = movie.ID,
-                AgeAllowed = movie.AgeAllowed,
-                Trailer = movie.Trailer,
-                Status = movie.Status,
-                Name = movie.Name,
-                Images = movie.Images,
-                StarTime = movie.StarTime,
-                Duration = movie.Duration,
-                Description = movie.Description,
-                LanguareName = movie.Lenguage.LanguageName,
-                CountryName = movie.Countrys.CountryName,
-                DirectorName = movie.Director.FullName,
-                GenreName = movie.Genre.GenreName,
-               MovieTypeName = movie.MovieTypes.MovieTypeName,
-               Sub = movie.Sub,
-                
-            };
+			var movieDTO = new MovieDTO
+			{
+				ID = movie.ID,
+				AgeAllowed = movie.AgeAllowed,
+				Trailer = movie.Trailer,
+				Status = movie.Status,
+				Name = movie.Name,
+				Images = movie.Images,
+				StarTime = movie.StarTime,
+				Duration = movie.Duration,
+				Description = movie.Description,
+				LanguareName = movie.Lenguage.LanguageName,
+				CountryName = movie.Countrys.CountryName,
+				DirectorName = movie.Director.FullName,
+				GenreName = movie.Genre.GenreName,
+				CreateTime = movie.CreatedTime,
+				MovieTypeName = movie.MovieTypes.MovieTypeName,
+				Sub = movie.Sub,
 
-            return movieDTO;
-        }
+			};
+
+			return movieDTO;
+		}
 		public async Task<HttpResponseMessage> Update(UpdateMovieRequest request, CancellationToken cancellationToken)
 		{
 			try
@@ -221,8 +227,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				obj.StarTime = request.StarTime;
 				obj.ModifiedTime = DateTime.UtcNow;
 				obj.Images = request.Images;
-                obj.Sub = request.Sub;
-                obj.MovieTypeID = request.MovieTypeID;
+				obj.Sub = request.Sub;
+				obj.MovieTypeID = request.MovieTypeID;
 				var existingActors = await _context.ActorMovies
 					.Where(am => am.MovieID == obj.ID)
 					.ToListAsync(cancellationToken);
@@ -263,48 +269,48 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 		}
 
 		public async Task<List<MovieDTO>> GetFilmsNowShowing()
-        {
-            var query = await _context.Movies
-                .Include(x => x.Genre)
-                .Include(x => x.Screening)
-                .Include(x => x.Director)
-                .Include(x => x.Lenguage)
-                .Include(x => x.Countrys)
-                .Include(x => x.MovieTypes)
-                .Include(x => x.TicketSeats)
-                .Where(x => x.Status == MovieStatus.isreleasing)
-                .OrderByDescending(x => x.CreatedTime) 
-                .AsNoTracking()
-                .ToListAsync();
+		{
+			var query = await _context.Movies
+				.Include(x => x.Genre)
+				.Include(x => x.Screening)
+				.Include(x => x.Director)
+				.Include(x => x.Lenguage)
+				.Include(x => x.Countrys)
+				.Include(x => x.MovieTypes)
+				.Include(x => x.TicketSeats)
+				.Where(x => x.Status == MovieStatus.isreleasing)
+				.OrderByDescending(x => x.CreatedTime)
+				.AsNoTracking()
+				.ToListAsync();
 
-            if (query == null || !query.Any()) return null;
-            var actor = await _context.ActorMovies.Include(x => x.Actor).AsNoTracking().ToListAsync();
-            var movieDtos = query.Select(result => new MovieDTO
-            {
-                ID = result.ID,
-                Name = result.Name,
-                AgeAllowed = result.AgeAllowed,
-                CountryName = result.Countrys.CountryName,
-                Description = result.Description,
-                DirectorName = result.Director.FullName,
-                Duration = result.Duration,
-                GenreName = result.Genre.GenreName,
-                Images = result.Images,
-                LanguareName = result.Lenguage.LanguageName,
-                StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
-                Status = result.Status,
-                Trailer = result.Trailer,
-                MovieTypeName = result.MovieTypes.MovieTypeName,
-                Sub = result.Sub,
+			if (query == null || !query.Any()) return null;
+			var actor = await _context.ActorMovies.Include(x => x.Actor).AsNoTracking().ToListAsync();
+			var movieDtos = query.Select(result => new MovieDTO
+			{
+				ID = result.ID,
+				Name = result.Name,
+				AgeAllowed = result.AgeAllowed,
+				CountryName = result.Countrys.CountryName,
+				Description = result.Description,
+				DirectorName = result.Director.FullName,
+				Duration = result.Duration,
+				GenreName = result.Genre.GenreName,
+				Images = result.Images,
+				LanguareName = result.Lenguage.LanguageName,
+				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
+				Status = result.Status,
+				Trailer = result.Trailer,
+				MovieTypeName = result.MovieTypes.MovieTypeName,
+				Sub = result.Sub,
 
-                ActorMovies = actor.Where(x=>x.MovieID == result.ID).Select(act => new ActorMoviesDto
-                {
-                    ActorName = act.Actor.Name,
-                }).ToList(),
-            }).ToList();
+				ActorMovies = actor.Where(x => x.MovieID == result.ID).Select(act => new ActorMoviesDto
+				{
+					ActorName = act.Actor.Name,
+				}).ToList(),
+			}).ToList();
 
-            return movieDtos;
-        }
+			return movieDtos;
+		}
 		public async Task<List<MovieDTO>> GetFilmsComing()
 		{
 			var query = await _context.Movies
@@ -313,10 +319,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-                .Include(x => x.MovieTypes)
-                .Include(x => x.TicketSeats)
+				.Include(x => x.MovieTypes)
+				.Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.upcomingkrelease)
-				.OrderByDescending(x => x.CreatedTime) 
+				.OrderByDescending(x => x.CreatedTime)
 				.AsNoTracking()
 				.ToListAsync();
 
@@ -337,10 +343,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-                MovieTypeName = result.MovieTypes.MovieTypeName,
-                Sub = result.Sub,
+				MovieTypeName = result.MovieTypes.MovieTypeName,
+				Sub = result.Sub,
 
-            }).ToList();
+			}).ToList();
 
 			return movieDtos;
 		}
@@ -354,8 +360,8 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				.Include(x => x.Director)
 				.Include(x => x.Lenguage)
 				.Include(x => x.Countrys)
-                .Include(x => x.MovieTypes)
-                .Include(x => x.TicketSeats)
+				.Include(x => x.MovieTypes)
+				.Include(x => x.TicketSeats)
 				.Where(x => x.Status == MovieStatus.StopShowing)
 				.OrderByDescending(x => x.CreatedTime)
 				.AsNoTracking()
@@ -378,10 +384,10 @@ namespace NeonCinema_Infrastructure.Implement.Movie
 				StarTime = result.StarTime, // Đảm bảo tên thuộc tính đúng nếu không sẽ gây lỗi
 				Status = result.Status,
 				Trailer = result.Trailer,
-                MovieTypeName = result.MovieTypes.MovieTypeName,
-                Sub = result.Sub,
+				MovieTypeName = result.MovieTypes.MovieTypeName,
+				Sub = result.Sub,
 
-            }).ToList();
+			}).ToList();
 
 			return movieDtos;
 		}

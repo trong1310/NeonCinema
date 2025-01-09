@@ -21,7 +21,6 @@ namespace NeonCinema_Domain.Database.Entities
 		[Precision(18, 3)]
 		public decimal? Surcharge { get; set; }
 		public double? TotalPoint { get; set; }
-
 		public long BillCode { get; set; }
 		public ticketEnum Status { get; set; }
 		public virtual Users? Users { get; set; }

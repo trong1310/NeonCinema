@@ -86,22 +86,24 @@
 </MudPaper>
 @code {
 	private UserDTO user = new UserDTO();
+	string authToken = "";
 	private bool isLoggedIn;
 	private string userId;
 	private string role="";
 	private string profileImage = "/images/Client/avt-default.jpg";
 	protected override async Task OnInitializedAsync()
 	{
-
-		var authToken = await _localStorage.GetItemAsync<string>("authToken");
-		var handler = new JwtSecurityTokenHandler();
-		var jwtToken = handler.ReadJwtToken(authToken);
-		userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-		user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
-		role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+		authToken = await _localStorage.GetItemAsync<string>("authToken");
+		if (authToken != null)
+		{
+			var handler = new JwtSecurityTokenHandler();
+			var jwtToken = handler.ReadJwtToken(authToken);
+			userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+			user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
+			role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+		}
 		StateHasChanged();
 	}
-	
 	private string GetImageUrl(string imageUrl)
 	{
 		return $"https://localhost:7211/api/Resources/{imageUrl}";

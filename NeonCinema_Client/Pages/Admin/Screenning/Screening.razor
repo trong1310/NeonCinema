@@ -471,6 +471,9 @@ else
 							messageString = "Success"; //dữ liệu để hiển thị animation success
 							newScreening = new ScreeningCreateRequest();
 							newShowTime = new ShowTimeCreateRequest();
+							date = DateTime.Now.Date;
+							startTime = DateTime.Parse("8:30");
+							endTime = DateTime.Parse("8:30");
 							//
 
 							await LoadShowTimeFil(); //load lịch validate luôn tránh trường hợp tạo 2 lần liên tiếp

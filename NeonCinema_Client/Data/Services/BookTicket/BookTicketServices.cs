@@ -10,6 +10,7 @@ using NeonCinema_Application.Pagination;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading;
 using static NeonCinema_API.Controllers.PromotionController;
 
@@ -183,5 +184,71 @@ namespace NeonCinema_Client.Data.Services.BookTicket
 				throw new Exception("Có lỗi xảy ra: " + ex.Message);
 			}
 		}
+		public async Task<BillResp?> ClientBookTicket(CreateBookTicketRequest request)
+		{
+			try
+			{
+				var response = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/BookTicket/client-bookticket", request);
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadFromJsonAsync<BillResp>();
+				}
+				else
+				{
+					var errorMessage = await response.Content.ReadAsStringAsync();
+					throw new Exception($"Error: {response.StatusCode}, {errorMessage}");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Failed to book tickets: {ex.Message}");
+			}
+		}
+		public async Task<bool> PaymentFaildAsync(Guid billId)
+		{
+			try
+			{
+				var response = await _httpClient.PostAsJsonAsync("https://localhost:7211/api/BookTicket/payment-faild", billId);
+				if (response.IsSuccessStatusCode)
+				{
+					return true;
+				}
+				else
+				{
+					var error = await response.Content.ReadAsStringAsync();
+					throw new Exception($"Error: {response.StatusCode}, {error}");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Payment failed operation failed: {ex.Message}");
+			}
+		}
+		public async Task<bool> PaymentSuccessAsync(Guid billId, double point)
+		{
+			try
+			{
+				// Xây dựng URL với query string
+				var url = $"https://localhost:7211/api/BookTicket/payment-success?billId={billId}&point={point}";
+
+				var response = await _httpClient.PostAsync(url, new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+
+
+				if (response.IsSuccessStatusCode)
+				{
+					return true;
+				}
+				else
+				{
+					var error = await response.Content.ReadAsStringAsync();
+					throw new Exception($"Error: {response.StatusCode}, {error}");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Payment success operation failed: {ex.Message}");
+			}
+		}
+
 	}
 }
