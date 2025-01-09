@@ -1,4 +1,5 @@
-﻿using NeonCinema_Domain.Database.Entities;
+﻿using NeonCinema_Application.DataTransferObject.User;
+using NeonCinema_Domain.Database.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace NeonCinema_Application.DataTransferObject.Statistics
 
 		public List<DailyRevenueDTO> RevenueChart { get; set; }
 		public List<ComboStatisticsDTO> ComboStatistics { get; set; } // Thống kê combo
+		public List<UserDTO> NewOrderCustomers { get; set; }
 	}
 }

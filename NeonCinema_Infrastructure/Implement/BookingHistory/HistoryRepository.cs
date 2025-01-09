@@ -100,7 +100,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 					BillID = b.ID,
 					UserName = b.Users.FullName, // Lấy tên người dùng
 					BillCode = b.BillCode,
-					TotalPrice = b.TotalPrice,
+					TotalPrice = Convert.ToDecimal( b.AfterDiscount),
 					BillDate = b.CreatedTime.Value,
 					StaffID = b.CreatedBy, // Staff ID
 					StaffName = b.CreatedBy.HasValue && users.ContainsKey(b.CreatedBy.Value) ? users[b.CreatedBy.Value] : "Không xác định", // Staff name

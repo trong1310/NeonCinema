@@ -16,6 +16,7 @@ namespace NeonCinema_Application.DataTransferObject.User
         public string Email { get; set; }
         public bool Gender { get; set; }
         public string Images { get; set; }
+        public DateTime Createdate { get; set; }
         public DateTime DateOrBriht { get; set; }// ngày sinh nhật  
         public string Adderss { get; set; }
         public EntityStatus Status { get; set; }
