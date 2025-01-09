@@ -365,7 +365,7 @@ namespace NeonCinema_API.Controllers
 						{
 							bill.AfterDiscount -= discountAmount;
 						}
-						
+
 					}
 				}
 				bill.TotalPoint = (double)(bill.TotalPrice - bill.AfterDiscount);
@@ -520,10 +520,13 @@ namespace NeonCinema_API.Controllers
 				}
 				_context.RankMembers.Update(rankMember);
 				var accountVoucher = await _context.PromotionUsers.Where(x => x.PromotionID == bill.PromotionID).FirstOrDefaultAsync();
-				accountVoucher.Status = NeonCinema_Domain.Enum.PromotionStatus.Used;
-				_context.PromotionUsers.Update(accountVoucher);
+				if (accountVoucher != null)
+				{
+					accountVoucher.Status = NeonCinema_Domain.Enum.PromotionStatus.Used;
+					_context.PromotionUsers.Update(accountVoucher);
+				}
 				var acc = await _context.Users.Where(x => x.ID == bill.CreatedBy).Select(x => x.FullName).FirstOrDefaultAsync();
-				var flims = await _context.Movies.Where(x => ticket.Select(a=>a.MovieID).Contains(x.ID)).FirstOrDefaultAsync();
+				var flims = await _context.Movies.Where(x => ticket.Select(a => a.MovieID).Contains(x.ID)).FirstOrDefaultAsync();
 				var type = await _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefaultAsync();
 				await _context.SaveChangesAsync();
 				var resp = new BillResp
