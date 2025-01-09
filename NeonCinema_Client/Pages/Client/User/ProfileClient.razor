@@ -226,7 +226,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				@if (_lstBill == null || !_lstBill.Any())
+				@if (_lstBill == null || !_lstBill.Any() || _lstBill.Count == 0)
 				{
 					<tr>
 						<td colspan="8" class="text-center text-muted">
@@ -270,7 +270,14 @@
 							<td>@item.value.TotalPrice.ToString("N0") VND</td>
 							<td>@seatNumber</td>
 							<td>@roomName</td>
-							<td>@item.value.PendingPoint.Point điểm</td>
+							@if (item.value.PendingPoint != null)
+							{
+								<td>@item.value.PendingPoint.Point điểm</td>
+							}
+							else
+							{
+								<td>0 điểm</td>
+							}
 						</tr>
 					}
 				}
@@ -491,9 +498,11 @@
 					await OnUserUpdated.InvokeAsync();
 				}
 				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
-				await Task.Delay(2000);
-				StateHasChanged();
+				isSubmitting = false;
+				await Task.Delay(4000);
+				
 				CloseModal();
+				_navi.NavigateTo(_navi.Uri, forceLoad: true);
 			}
 			else
 			{

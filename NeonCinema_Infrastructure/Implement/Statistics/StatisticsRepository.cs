@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeonCinema_Application.DataTransferObject.Statistics;
+using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.Interface.Statistics;
 using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
@@ -33,17 +34,29 @@ namespace NeonCinema_Infrastructure.Implement.Statistics
 				.CountAsync();
 		}
 
-		public async Task<int> GetNewCustomersAsync(DateTime startDate, DateTime endDate)
+		public async Task<List<UserDTO>> GetNewCustomersAsync(DateTime startDate, DateTime endDate)
 		{
-			return await _context.Users
-				.Where(u => u.CreatedTime >= startDate && u.CreatedTime <= endDate)
-				.CountAsync();
+			var oneWeekAgo = DateTime.Now.AddDays(-7);
+			return await _context.BillDetails
+					.Where(b => b.CreatedTime.HasValue &&
+								b.CreatedTime.Value.Date >= startDate.Date &&
+								b.CreatedTime.Value.Date <= endDate.Date)
+					.Select(b => new UserDTO
+					{
+						ID = b.Users.ID,
+						FullName = b.Users.FullName,
+						Email = b.Users.Email,
+						Createdate = b.Users.CreatedTime ?? DateTime.MinValue
+					})
+					.Distinct() // Chỉ lấy khách hàng duy nhất
+					.ToListAsync();
 		}
+
 
 		public async Task<List<DailyRevenueDTO>> GetDailyRevenueAsync(DateTime startDate, DateTime endDate)
 		{
 			var data = await _context.BillDetails
-				.Where(b => b.CreatedTime.HasValue && b.CreatedTime.Value >= startDate && b.CreatedTime.Value <= endDate)
+				.Where(b => b.CreatedTime.HasValue && b.CreatedTime.Value >= startDate && b.CreatedTime.Value <= endDate  )
 				.GroupBy(b => b.CreatedTime.Value.Date)
 				.Select(g => new DailyRevenueDTO
 				{
