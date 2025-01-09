@@ -1,0 +1,121 @@
+﻿@page "/services"
+@layout LayoutClient
+<div class="container-fluid p-0">
+    <!-- Banner -->
+    <div class="banner" style="background-image: url('/images/Client/bg6.jpg'); height: 500px; background-size: cover; background-position: center;">
+        <div class="overlay d-flex justify-content-center align-items-center">
+            <h1 class="text-white display-4 font-weight-bold">Dịch Vụ Của BHD STAR</h1>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="container-fluid mt-5">
+        <h2 class="text-center mb-5">Khám Phá Các Dịch Vụ Tuyệt Vời</h2>
+        <div class="row">
+            <!-- Dịch vụ 1 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=Food+%26+Beverage" class="card-img-top" alt="Đồ Ăn và Nước Uống">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Đồ Ăn & Nước Uống</h5>
+                        <p class="card-text">Thưởng thức các combo bắp nước phong phú với giá cực ưu đãi tại quầy BHD STAR.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ 2 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=Couple+Seats" class="card-img-top" alt="Ghế Đôi Cao Cấp">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ghế Đôi Cao Cấp</h5>
+                        <p class="card-text">Không gian riêng tư với ghế đôi sang trọng, lý tưởng cho các cặp đôi.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ 3 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=VIP+Experience" class="card-img-top" alt="Phòng Chiếu VIP">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Phòng Chiếu VIP</h5>
+                        <p class="card-text">Đắm chìm trong trải nghiệm cao cấp với phòng chiếu chất lượng và âm thanh đỉnh cao.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ 4 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=Online+Booking" class="card-img-top" alt="Đặt Vé Online">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Đặt Vé Online</h5>
+                        <p class="card-text">Đặt vé dễ dàng mọi lúc mọi nơi qua hệ thống trực tuyến nhanh chóng.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ 5 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=Entertainment+Zone" class="card-img-top" alt="Khu Giải Trí">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Khu Giải Trí</h5>
+                        <p class="card-text">Thỏa sức vui chơi với khu giải trí hiện đại trước và sau mỗi suất chiếu.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ 6 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <img src="https://via.placeholder.com/400x250?text=Private+Event" class="card-img-top" alt="Thuê Phòng Chiếu">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Thuê Phòng Chiếu</h5>
+                        <p class="card-text">Phòng chiếu chất lượng cao cho các sự kiện và buổi họp chuyên nghiệp.</p>
+                        <a href="#" class="btn btn-primary">Tìm Hiểu Thêm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    .banner .overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+        height: 100%;
+    }
+
+    .service-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .service-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-title {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    h2 {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #333;
+    }
+</style>

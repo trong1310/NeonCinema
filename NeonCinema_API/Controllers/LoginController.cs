@@ -82,7 +82,7 @@ namespace NeonCinema_API.Controllers
                 issuer: _configuration["JWT:Issuer"], 
                 audience: _configuration["JWT:Audience"], 
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(20),   
+                expires: DateTime.Now.AddDays(20),   
                 signingCredentials: creds); 
 
             // Trả về chuỗi JWT

@@ -249,6 +249,7 @@ namespace NeonCinema_API.Controllers
 
             return password.ToString();
         }
+        
         [HttpPut("Changer-Password")]
         public async Task<ActionResult> ChangerPassword([FromBody] ClientChangerPass request)
         {
