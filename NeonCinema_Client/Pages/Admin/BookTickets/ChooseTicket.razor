@@ -402,15 +402,17 @@
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
-							<input type="radio" name="flexRadioDefault" id="cashRadio" 
-								   @onchange="(e) => isCashPayment = true">
+							<input type="radio" name="flexRadioDefault" id="cashRadio"
+								   @onchange="(e) => { isCashPayment = true; isPaymentMethodSelected = true; }">
+
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
 					</div>
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
 							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
-								   @onchange="(e) => isCashPayment = false">
+								   @onchange="(e) => { isCashPayment = false; isPaymentMethodSelected = true; }">
+
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
 					</div>
@@ -634,8 +636,13 @@
 		if (!isPaymentMethodSelected)
 		{
 			showMethodMessage = true; // Hiển thị thông báo
-			return; // Dừng xử lý tiếp theo
+			showMessage = false;      // Ẩn thông báo lỗi không đủ tiền
+			showConfirmModal = false; // Ẩn modal xác nhận
+			return;
 		}
+
+		// Ẩn thông báo lỗi chọn phương thức
+		showMethodMessage = false;
 
 		// Kiểm tra nếu thanh toán bằng tiền mặt
 		if (isCashPayment)
@@ -643,7 +650,7 @@
 			if (moneyrRceived >= totalPrices)
 			{
 				showConfirmModal = true; // Hiển thị modal nếu đủ tiền
-				showMessage = false;     // Không hiển thị thông báo lỗi
+				showMessage = false;     // Ẩn thông báo lỗi không đủ tiền
 			}
 			else
 			{
@@ -654,7 +661,7 @@
 		else
 		{
 			showConfirmModal = true; // Hiển thị modal cho các phương thức khác
-			showMessage = false;     // Ẩn thông báo lỗi
+			showMessage = false;     // Ẩn thông báo lỗi không đủ tiền
 		}
 	}
 
