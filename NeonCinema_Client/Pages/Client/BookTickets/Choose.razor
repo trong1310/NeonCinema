@@ -200,10 +200,10 @@
 						<span>Tổng tiền combo</span>
 						<span>@comboPrices.ToString("N0") VND</span>
 					</div>
-					@* <div class="d-flex justify-content-between mb-3">
+					<div class="d-flex justify-content-between mb-3">
 						<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 						<span>@surcharge.ToString("N0")  VND</span>
-					</div> *@
+					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Tổng tiền tạm tính</span>
 						<span> @sumPrices.ToString("N0") VND</span>
@@ -554,24 +554,30 @@
 		Rank = await _services.SeachAccount(user.PhoneNumber);
 		voucher = await _services.GetVoucher(user.ID);
 		#endregion
-		// var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
-		// var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
-		// var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-		// if (type != null)
-		// {
-		// 	if (type.MovieTypeName.Contains("3D".Trim()))
-		// 	{
-		// 		surcharge = ticketPriceSetting.Surcharge3D;
-		// 		sumPrices += surcharge;
-		// 		totalPrices += surcharge;
-		// 	}
-		// 	if (type.MovieTypeName.Contains("4D".Trim()))
-		// 	{
-		// 		surcharge = ticketPriceSetting.Surcharge4D;
-		// 		sumPrices += surcharge;
-		// 		totalPrices += surcharge;
-		// 	}
-		// }
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
+		if (type != null)
+		{
+			if (type.MovieTypeName.Contains("3D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge3D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+			if (type.MovieTypeName.Contains("4D".Trim()))
+			{
+				surcharge = ticketPriceSetting.Surcharge4D;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+			if (type.MovieTypeName.Contains("2D".Trim()))
+			{
+				surcharge = 0;
+				sumPrices += surcharge;
+				totalPrices += surcharge;
+			}
+		}
 
 		StateHasChanged(); // Cập nhật giao diện
 	}

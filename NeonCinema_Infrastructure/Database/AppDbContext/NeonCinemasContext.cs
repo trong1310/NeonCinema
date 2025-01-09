@@ -164,6 +164,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			{
 				new MovieType
 				{
+					ID = Guid.Parse("e53dc036-adcd-4a38-9fdc-c7fe231af726"),
+					MovieTypeName = "4D",
+				},
+				new MovieType
+				{
 					ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),
 					MovieTypeName = "3D",
 				},
