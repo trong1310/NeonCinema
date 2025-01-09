@@ -283,7 +283,7 @@ namespace NeonCinema_API.Controllers
 		public async Task<IActionResult> GetVoucherAccount([FromBody] Guid Id)
 		{
 			var voucher = await _context.PromotionUsers.Where(x => x.UserID == Id&& x.Status == PromotionStatus.Unused).ToListAsync();
-			var voucherAccount = await _context.Promotions.Where(x => voucher.Select(a => a.PromotionID).Contains(x.ID)).ToListAsync();
+			var voucherAccount = await _context.Promotions.Where(x => voucher.Select(a => a.PromotionID).Contains(x.ID)&& x.Status == PromotionStatus.Active).ToListAsync();
 			var voucherDto = voucherAccount.Select(v => new VoucherDTO
 			{
 				ID = v.ID,

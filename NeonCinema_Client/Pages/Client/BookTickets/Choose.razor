@@ -21,6 +21,9 @@
 @using System.Text.Json
 @using System.Security.Claims
 @using System.Diagnostics.Tracing
+@using NeonCinema_Infrastructure.Services
+@using Net.payOS
+@using Net.payOS.Types
 @using static NeonCinema_API.Controllers.PromotionController
 @inject IMovieservices _movieServices
 @inject BookTicketServices _services
@@ -295,7 +298,7 @@
 					<div class="payment-method mt-3 mb-3">
 						<div class="button-pay d-flex justify-content-center gap-3 mt-4">
 							<button class="btn btn-secondary" @onclick="PreviousTab">Quay lại</button>
-							<button class="btn btn-primary" id="payButton" @onclick="ShowConfirmModal">Thanh toán</button>
+							<button class="btn btn-primary" id="payButton" @onclick="ProcessPayment">Thanh toán</button>
 						</div>
 
 						@if (showConfirmModal)
@@ -808,6 +811,7 @@
 		RefreshSeatsAsync();
 	}
 
+	public Guid billId { get; set; }
 	private async Task ProcessPayment()
 	{
 
@@ -829,20 +833,23 @@
 			};
 		try
 		{
-			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
+			billResp = await _services.ClientBookTicket(request);
 
 			if (billResp != null)
 			{
-				ResetUI();
-				paymentStatus = "success";
-				Console.WriteLine($"thành công");
-				if (point > 0)
-				{
-					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
-					resetPoint.MinPoint -= point;
-					_context.RankMembers.Update(resetPoint);
-					_context.SaveChanges();
-				}
+				//	ResetUI();
+				billId = (Guid)billResp.Id;
+				await CheckOut();
+				paymentStatus = "pending";
+			//	await EmailServices.GenerateBillEmail(billResp);
+				// Console.WriteLine($"thành công");
+				// if (point > 0)
+				// {
+				// 	var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+				// 	resetPoint.MinPoint -= point;
+				// 	_context.RankMembers.Update(resetPoint);
+				// 	_context.SaveChanges();
+				// }
 			}
 			else
 			{
@@ -858,7 +865,8 @@
 
 		StateHasChanged();
 	}
-	public Guid BillTicketId { get; set; }
+
+
 	private string GetAlertClass(string status)
 	{
 		return status switch
@@ -869,6 +877,26 @@
 		};
 	}
 
+	private async Task CheckOut()
+	{
+		var bill = _context.BillDetails.Where(x => x.ID == billId).FirstOrDefault();
+		PayOS payOS = new PayOS("1ada9cc6-442a-4ab2-be26-3b6c30b083d3", "034d36fc-e272-4e29-9748-ee2e4c568e80", "a5e7d631c3da12d0aae501cdc556aed667d89edeff39cb5e99aac2925b68a461");
+		ItemData itemData = new ItemData(bill.BillCode.ToString(), 1, Convert.ToInt32(bill.AfterDiscount));
+		List<ItemData> lstItemDatas = new List<ItemData>();
+		lstItemDatas.Add(itemData);
+		PaymentData paymentData = new PaymentData
+		(
+			bill.BillCode,
+			Convert.ToInt32(bill.AfterDiscount),
+			"Neon Cinema",
+			lstItemDatas,
+			$"https://localhost:7130/payment-faild/{billId}",
+			$"https://localhost:7130/payment-success/{billId}?point={point}"
+		);
+		CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+		_navi.NavigateTo(createPayment.checkoutUrl, true);
+
+	}
 	private void CloseModal()
 	{
 		showConfirmModal = false;
@@ -1133,15 +1161,17 @@
 			discountMax1 = discountAmount;
 		}
 	}
-	// Xử lý khi hủy mã giảm giá
 	private void CancelDiscount()
 	{
-		// totalPrices += discountAmount; // Khôi phục số tiền bị giảm
-		selectedDiscountCode = null; // Xóa trạng thái mã giảm giá đã chọn
+		// Cộng lại số tiền giảm giá trước khi đặt discountMax1 = 0
+		totalPrices += discountMax1;
+
+		selectedDiscountCode = null;
 		discountPercentage = 0;
 		discountAmount = 0;
-		totalPrices += discountAmount;
+		discountMax1 = 0; // Sau khi cộng lại, đặt discountMax1 về 0
 	}
+
 	//nút xác nhận để đóng form
 	private void ConfirmDiscountSelection()
 	{
@@ -1202,9 +1232,6 @@
 	}
 	#endregion
 }
-
-
-
 
 <style>
 
