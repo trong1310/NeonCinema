@@ -164,7 +164,7 @@
 				<button class="btn btn-secondary" style="width: 25%" @onclick="PreviousTab">Quay lại</button>
 			</div>
 
-			
+
 		}
 		@if (showConfirmModal)
 		{
@@ -277,7 +277,7 @@
 					<span>Tổng tiền combo</span>
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
-@* 				 <div class="d-flex justify-content-between mb-3">
+				@* 				 <div class="d-flex justify-content-between mb-3">
 					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 					<span>@surcharge.ToString("N0") VND</span>
 				</div> *@
@@ -366,9 +366,6 @@
 															<h3>@discount.Name</h3>
 															<p>Giảm giá @discount.DiscountPercentage %</p>
 															<p class="text-dark">Tối đa : @discount.AmountMax </p>
-															@* <div class="progress-bar" style="width:90%">
-															<div class="progress" style="width: @discount.Percentage%;"></div>
-															</div> *@
 														</div>
 														<button class="btn btn-primary btn-sm btn-discount"
 																@onclick="() => SelectDiscount(discount)"
@@ -394,10 +391,10 @@
 				{
 					<div class="mt-3">
 						<p class="text-danger">Không tìm thấy khách hàng với số điện thoại: @phoneNumber</p>
-						 
+
 						<button @onclick="CreateCustomer" class="btn btn-success">Tạo tài khoản</button>
 					</div>
-				} 
+				}
 				<hr class="dashed">
 				<div class="payment-method mt-3 ">
 					<div class="form-check">
@@ -481,8 +478,8 @@
 									@if (!string.IsNullOrEmpty(errorPhone))
 									{
 										<span class="text-danger">@errorPhone</span>
-									}	
-									
+									}
+
 								</div>
 							</div>
 							<div class="row">
@@ -493,12 +490,12 @@
 									{
 										<span class="text-danger">@errorEmail</span>
 									}
-									
+
 								</div>
 								<div class="mb-3 col-md-6">
 									<label for="date" class="form-label">Ngày sinh</label>
 									<input type="date" class="form-control" @bind-value=requestUser.DateOrBriht>
-									 @if (!string.IsNullOrEmpty(errorYear))
+									@if (!string.IsNullOrEmpty(errorYear))
 									{
 										<span class="text-danger">@errorYear</span>
 									}
@@ -719,7 +716,6 @@
 		languages = await _movieServices.GetAllLanguage();
 		countries = await _movieServices.GetAllCountry();
 		directors = await _movieServices.GetAllDirector();
-		voucher = await _services.GetVoucher(Rank.AccountId);
 		//	account = await _services.GetAccount(phoneNumber);
 
 		foods = await _services.GetFoodCombo();
@@ -844,12 +840,12 @@
 			options.RequireInteraction = false; // Không bắt buộc người dùng tắt
 			options.VisibleStateDuration = 5000; // Thời gian hiển thị (5 giây)
 		});
-		 isSubmitting = false;
-        // Chuyển hướng sau khi hoàn tất hiển thị
-        Task.Run(async () =>
-        {
-            await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
-        });
+		isSubmitting = false;
+		// Chuyển hướng sau khi hoàn tất hiển thị
+		Task.Run(async () =>
+		{
+			await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
+		});
 	}
 
 	private async void SelectSeat(SeatDto seat)
@@ -1135,10 +1131,11 @@
 	{
 		try
 		{
-			var result = await _services.SeachAccount(phoneNumber);
-			if (result != null)
+			Rank = await _services.SeachAccount(phoneNumber);
+			if (Rank != null)
 			{
-				Rank = result;
+
+				voucher = await _services.GetVoucher(Rank.AccountId);
 				ShowCreateButton = false;
 			}
 			else
@@ -1152,9 +1149,7 @@
 			ShowCreateButton = true;
 		}
 	}
-
-
-		#region Mã giảm giá
+	#region Mã giảm giá
 
 	private bool showDiscountPopup = false; // Trạng thái hiển thị popup
 	private string selectedDiscountCode = null; // Mã giảm giá đã chọn
@@ -1185,6 +1180,7 @@
 
 	// Xử lý khi chọn mã giảm giá
 	decimal discountMax = 0;
+	decimal discountMax1 = 0;
 	private void SelectDiscount(VoucherDTO discount)
 	{
 		discountMax = (decimal)discount.AmountMax;
@@ -1195,20 +1191,23 @@
 		if (discountAmount > (decimal)discount.AmountMax)
 		{
 			totalPrices -= discountMax;
+			discountMax1 = discountMax;
 		}
 		else
 		{
 			totalPrices -= discountAmount;
+			discountMax1 = discountAmount;
 		}
 	}
-	// Xử lý khi hủy mã giảm giá
 	private void CancelDiscount()
 	{
-		// totalPrices += discountAmount; // Khôi phục số tiền bị giảm
-		selectedDiscountCode = null; // Xóa trạng thái mã giảm giá đã chọn
+		// Cộng lại số tiền giảm giá trước khi đặt discountMax1 = 0
+		totalPrices += discountMax1;
+
+		selectedDiscountCode = null;
 		discountPercentage = 0;
 		discountAmount = 0;
-		totalPrices += discountAmount;
+		discountMax1 = 0; // Sau khi cộng lại, đặt discountMax1 về 0
 	}
 	//nút xác nhận để đóng form
 	private void ConfirmDiscountSelection()
@@ -1221,11 +1220,11 @@
 	private UserCreateRequest requestUser = new UserCreateRequest();
 	private IBrowserFile selectedFile;
 	private bool showPassword = false;
-	 private string? errorName = null;
-    private string? errorPhone = null;
-    private string? errorEmail = null;
-    private string? errorAdress = null;
-    private string? errorYear = null;
+	private string? errorName = null;
+	private string? errorPhone = null;
+	private string? errorEmail = null;
+	private string? errorAdress = null;
+	private string? errorYear = null;
 	private bool isSubmitting = false;
 	private bool showCreateAccountModal = false;
 
@@ -1262,10 +1261,10 @@
 	private async Task HandleSubmit()
 	{
 		isSubmitting = true;
-		 StateHasChanged();
+		StateHasChanged();
 		try
 		{
-			
+
 			// Nếu không có file được chọn, sử dụng ảnh mặc định
 			if (selectedFile == null)
 			{
@@ -1299,98 +1298,98 @@
 			}
 
 
-        var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
-        var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
-        //Ngày sinh
-        if (requestUser.DateOrBriht == null ||
-            requestUser.DateOrBriht.Year < 1900 ||
-            requestUser.DateOrBriht > DateTime.Now.AddYears(-14))
-        {
-            errorYear = "Khách hàng phải từ 14 trở lên.";
-            isSubmitting = false;
-        }
-        else
-        {
-            errorYear = null;
-        }
+			var phoneExists = _context.Users.Any(x => x.PhoneNumber == requestUser.PhoneNumber);
+			var emailExists = _context.Users.Any(x => x.Email == requestUser.Email);
+			//Ngày sinh
+			if (requestUser.DateOrBriht == null ||
+				requestUser.DateOrBriht.Year < 1900 ||
+				requestUser.DateOrBriht > DateTime.Now.AddYears(-14))
+			{
+				errorYear = "Khách hàng phải từ 14 trở lên.";
+				isSubmitting = false;
+			}
+			else
+			{
+				errorYear = null;
+			}
 
-        // Kiểm tra họ và tên
-        if (string.IsNullOrWhiteSpace(requestUser.FullName))
-        {
-            errorName = "Họ và tên không được để trống.";
-            isSubmitting = false;
-        }
-        else if (!Regex.IsMatch(requestUser.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
-        {
-            errorName = "Họ và tên không được chứa số và kí tự đặc biệt.";
-            isSubmitting = false;
-        }
-        else
-        {
-            errorName = null;
-        }
+			// Kiểm tra họ và tên
+			if (string.IsNullOrWhiteSpace(requestUser.FullName))
+			{
+				errorName = "Họ và tên không được để trống.";
+				isSubmitting = false;
+			}
+			else if (!Regex.IsMatch(requestUser.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+			{
+				errorName = "Họ và tên không được chứa số và kí tự đặc biệt.";
+				isSubmitting = false;
+			}
+			else
+			{
+				errorName = null;
+			}
 
-        //Email
-        if (string.IsNullOrWhiteSpace(requestUser.Email))
-        {
-            errorEmail = "Email không được để trống.";
-            isSubmitting = false;
-        }
-        else if (!Regex.IsMatch(requestUser.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
-        {
-            errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
-            isSubmitting = false;
-        }
-        else if (emailExists)
-        {
-            errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
-            isSubmitting = false;
-        }
-        else
-        {
-            errorEmail = null;
-        }
+			//Email
+			if (string.IsNullOrWhiteSpace(requestUser.Email))
+			{
+				errorEmail = "Email không được để trống.";
+				isSubmitting = false;
+			}
+			else if (!Regex.IsMatch(requestUser.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+			{
+				errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+				isSubmitting = false;
+			}
+			else if (emailExists)
+			{
+				errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				isSubmitting = false;
+			}
+			else
+			{
+				errorEmail = null;
+			}
 
-        //SDT
-        if (string.IsNullOrWhiteSpace(requestUser.PhoneNumber))
-        {
-            errorPhone = "Số điện thoại không được để trống.";
-            isSubmitting = false;
-        }
-        // Kiểm tra số điện thoại đã tồn tại
+			//SDT
+			if (string.IsNullOrWhiteSpace(requestUser.PhoneNumber))
+			{
+				errorPhone = "Số điện thoại không được để trống.";
+				isSubmitting = false;
+			}
+			// Kiểm tra số điện thoại đã tồn tại
 
-        else if (phoneExists)
-        {
-            errorPhone = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
-            isSubmitting = false;
-        }
-        else if (!Regex.IsMatch(requestUser.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
-        {
-            errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
-            isSubmitting = false;
-        }
-        else
-        {
-            errorPhone = null;
-        }
+			else if (phoneExists)
+			{
+				errorPhone = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+				isSubmitting = false;
+			}
+			else if (!Regex.IsMatch(requestUser.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
+			{
+				errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
+				isSubmitting = false;
+			}
+			else
+			{
+				errorPhone = null;
+			}
 
-        //Địa chỉ
-        if (string.IsNullOrWhiteSpace(requestUser.Adderss))
-        {
-            errorAdress = "Địa chỉ không được để trống.";
-            isSubmitting = false;
-        }
-        else
-        {
-            errorAdress = null;
-        }
+			//Địa chỉ
+			if (string.IsNullOrWhiteSpace(requestUser.Adderss))
+			{
+				errorAdress = "Địa chỉ không được để trống.";
+				isSubmitting = false;
+			}
+			else
+			{
+				errorAdress = null;
+			}
 
 			var userResponse = await UserService.CreateClient(requestUser);
 			if (userResponse.IsSuccessStatusCode)
 			{
-				 ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
-                isSubmitting = false;
-                await Task.Delay(2000);
+				ShowSnackbar("Thêm khách hàng thành công.", Severity.Success);
+				isSubmitting = false;
+				await Task.Delay(2000);
 				CloseCreateAccountModal();
 			}
 			else
@@ -1404,7 +1403,7 @@
 			Console.WriteLine($"Lỗi: {ex.Message}");
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
 		}
-		 finally
+		finally
 		{
 			isSubmitting = false; // Luôn đặt lại trạng thái
 			StateHasChanged(); // Cập nhật giao diện
@@ -1938,7 +1937,8 @@
 			max-width: 100%; /* Đảm bảo hình ảnh không vượt quá khung chứa */
 			height: auto;
 		}
-		.discount-list {
+
+	.discount-list {
 		max-height: 300px; /* Giới hạn chiều cao */
 		overflow-y: auto; /* Hiển thị thanh cuộn dọc */
 		padding: 0; /* Xóa khoảng cách bên trong */
