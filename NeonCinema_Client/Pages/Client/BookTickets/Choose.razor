@@ -11,6 +11,7 @@
 @using NeonCinema_Application.DataTransferObject.Language
 @using NeonCinema_Application.DataTransferObject.Movie
 @using NeonCinema_Client.Data.IServices.User
+@using NeonCinema_Domain.Enum
 @using NeonCinema_Infrastructure.Database.AppDbContext
 @using System.Collections.Generic
 @using NeonCinema_Application.DataTransferObject.User
@@ -51,9 +52,12 @@
 				<div class="card-body">
 					<h4 class="card-title mb-2">@movieDto.Name</h4>
 					<div class="tags">
-						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-secondary">Thời lượng: @movieDto.Duration phút</span>
-						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+						 <span class="badge bg-danger">T @movieDto.AgeAllowed</span>
+						 <span class="badge bg-dark">
+							 @(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
+								 movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+						 </span>
+						 <span class="badge bg-success">@movieDto.MovieTypeName</span>
 					</div>
 
 					<p class="card-text">
@@ -174,9 +178,12 @@
 				<div class="order-summary">
 					<h3 class="card-title">@movieDto.Name</h3>
 					<div class="tags">
-						<span class="badge bg-danger">Độ tuổi : @movieDto.AgeAllowed</span>
-						<span class="badge bg-dark">Thời lượng: @movieDto.Duration phút</span>
-						<span class="badge bg-success">Ngôn ngữ: @movieDto.LanguareName</span>
+						 <span class="badge bg-danger">T @movieDto.AgeAllowed</span>
+						 <span class="badge bg-dark">
+							 @(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
+								 movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+						 </span>
+						 <span class="badge bg-success">@movieDto.MovieTypeName</span>
 					</div>
 					<div class="d-flex justify-content-between mb-3">
 						<span>Ghế : @selectedSeatNumbers</span>
@@ -265,20 +272,28 @@
 
 											<!-- Danh sách mã giảm giá -->
 											<ul class="list-group discount-list mt-3">
-												@foreach (var discount in voucher)
+												@if (isSearchPerformed && !filteredVouchers.Any())
 												{
-													<div class="discount-card">
-														<div class="discount-info">
-															<h3>@discount.Name</h3>
-															<p>Giảm giá @discount.DiscountPercentage %</p>
-															<p class="text-dark">Tối đa : @discount.AmountMax </p>
+													<li class="list-group-item">Không tìm thấy mã giảm giá phù hợp.</li>
+												}
+												else
+												{
+													@foreach (var discount in (isSearchPerformed ? filteredVouchers : voucher))
+													{
+														<div class="discount-card">
+															<div class="discount-info">
+																<h3>@discount.Name - @discount.Code</h3>
+																
+																<p>Giảm giá @discount.DiscountPercentage %</p>
+																<p class="text-dark">Tối đa : @discount.AmountMax</p>
+															</div>
+															<button class="btn btn-primary btn-sm btn-discount"
+																	@onclick="() => SelectDiscount(discount)"
+																	disabled="@(selectedDiscountCode == discount.Code)">
+																@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
+															</button>
 														</div>
-														<button class="btn btn-primary btn-sm btn-discount"
-														@onclick="() => SelectDiscount(discount)"
-														disabled="@(selectedDiscountCode == discount.Code)">
-															@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
-														</button>
-													</div>
+													}
 												}
 											</ul>
 										</div>
@@ -1115,8 +1130,7 @@
 	private decimal discountAmount = 0; // Số tiền được giảm
 	private double? discountPercentage = 0; // Phần trăm giảm giá
 
-	private string searchCode = string.Empty;
-	private bool isSearchPerformed = false; // Đánh dấu đã thực hiện tìm kiếm
+
 
 
 	protected override void OnInitialized()
@@ -1124,17 +1138,32 @@
 
 	}
 
+	private string searchCode = string.Empty; // Mã giảm giá cần tìm
+	private bool isSearchPerformed = false;  // Đánh dấu đã thực hiện tìm kiếm
+	private List<VoucherDTO> filteredVouchers = new List<VoucherDTO>(); // Danh sách voucher đã lọc
+
 	private void SearchDiscount()
 	{
 		if (string.IsNullOrWhiteSpace(searchCode))
 		{
-
+			// Nếu mã nhập rỗng, hiển thị lại toàn bộ danh sách voucher
+			filteredVouchers = voucher;
 		}
 		else
 		{
+			// Lọc danh sách voucher theo mã
+			filteredVouchers = voucher
+				.Where(v => v.Code.Contains(searchCode, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+
+			if (!filteredVouchers.Any())
+			{
+				ShowSnackbar("Không tìm thấy mã giảm giá phù hợp.", Severity.Warning);
+			}
 		}
 
 		isSearchPerformed = true; // Đánh dấu đã tìm kiếm
+		StateHasChanged(); // Cập nhật giao diện
 	}
 
 	// Xử lý khi chọn mã giảm giá

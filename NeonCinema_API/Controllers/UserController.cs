@@ -43,7 +43,7 @@ namespace NeonCinema_API.Controllers
                       ? result.GeneratedPassword
                       : request.PassWord;
                 // Nội dung email
-                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateClient(request.FullName, request.Email, password);
+                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateClient(request.FullName, request.Email, request.PhoneNumber, password);
 
                 // Gửi email
                 await _emailService.SendEmailAsync(request.Email, "Tạo tài khoản thành công", emailContent);
@@ -62,7 +62,7 @@ namespace NeonCinema_API.Controllers
                       ? result.GeneratedPassword
                       : request.PassWord;
                 // Nội dung email
-                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateStaff(request.FullName, request.Email, password);
+                var emailContent = NeonCinema_API.SendMail.Template.CreateUser.CreateStaff(request.FullName, request.Email, request.PhoneNumber, password);
 
                 // Gửi email
                 await _emailService.SendEmailAsync(request.Email, "Tạo tài khoản thành công", emailContent);
