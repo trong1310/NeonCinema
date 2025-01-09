@@ -486,9 +486,11 @@
 			var updateResponse = await _service.UpdateUser(updateRequest, CancellationToken.None);
 			if (updateResponse.IsSuccessStatusCode)
 			{
-				await OnUserUpdated.InvokeAsync();
+				if (OnUserUpdated.HasDelegate)
+				{
+					await OnUserUpdated.InvokeAsync();
+				}
 				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
-				isSubmitting = false;
 				await Task.Delay(2000);
 				StateHasChanged();
 				CloseModal();
@@ -502,6 +504,10 @@
 		{
 			Console.WriteLine($"Lỗi: {ex.Message}");
 			Console.WriteLine($"Chi tiết ngoại lệ: {ex.StackTrace}");
+		}
+		finally
+		{
+			isSubmitting = false;
 		}
 	}
 	#endregion
