@@ -460,11 +460,6 @@
         try
         {
             var token = await _localstorage.GetItemAsync<string>("authToken");
-            if (token is null)
-            {
-                _navi.NavigateTo("/login");
-                return;
-            }
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.GetAsync("api/User/getfrofile");
             if (response.IsSuccessStatusCode)
