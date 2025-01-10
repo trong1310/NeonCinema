@@ -2,11 +2,12 @@
 ﻿@using Microsoft.AspNetCore.Routing
 @using NeonCinema_Client.Pages.Admin
 @using NeonCinema_Client.Pages.Client
+@inject NavigationManager _navi
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(LayoutAdmin)">
+            <AuthorizeRouteView RouteData="@routeData" >
                 <NotAuthorized>
                     <p>Bạn không có quyền truy cập trang này.</p>
                     <RedirectToLogin />
@@ -17,8 +18,10 @@
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(LayoutAdmin)">
-                <p role="alert">Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng</p>
+            <LayoutView Layout="@typeof(LayoutClient)">
+                @{
+                    _navi.NavigateTo("/list-movie");
+                };
             </LayoutView>
         </NotFound>
     </Router>
