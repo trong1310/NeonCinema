@@ -359,7 +359,7 @@
 										<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
 									</div>
 									<div class="modal-body">
-										<p>Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.</p>
+										<p>Ghế đã có người chọn trước vui lòng chọn ghế khác và thử lại.</p>
 									</div>
 									<div class="modal-footer">
 										<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
@@ -834,11 +834,11 @@
 
 			if (billResp != null)
 			{
-				//	ResetUI();
+				ResetUI();
 				billId = (Guid)billResp.Id;
 				await CheckOut();
 				paymentStatus = "pending";
-			//	await EmailServices.GenerateBillEmail(billResp);
+				//	await EmailServices.GenerateBillEmail(billResp);
 				// Console.WriteLine($"thành công");
 				// if (point > 0)
 				// {
@@ -850,7 +850,8 @@
 			}
 			else
 			{
-				paymentStatus = "failure";
+				await CheckOut();
+				paymentStatus = "pending";
 				Console.WriteLine($"failure");
 			}
 		}
@@ -881,6 +882,11 @@
 		ItemData itemData = new ItemData(bill.BillCode.ToString(), 1, Convert.ToInt32(bill.AfterDiscount));
 		List<ItemData> lstItemDatas = new List<ItemData>();
 		lstItemDatas.Add(itemData);
+		DateTime expirationTime = DateTime.Now.AddMinutes(2);
+		if (DateTime.Now > expirationTime)
+		{
+			_navi.NavigateTo($"https://localhost:7130/payment-faild/{billId}", forceLoad:  true);
+		}
 		PaymentData paymentData = new PaymentData
 		(
 			bill.BillCode,
@@ -888,11 +894,12 @@
 			"Neon Cinema",
 			lstItemDatas,
 			$"https://localhost:7130/payment-faild/{billId}",
-			$"https://localhost:7130/payment-success/{billId}?point={point}"
+			$"https://localhost:7130/payment-success/{billId}?point={point}",
+			expiredAt: ((DateTimeOffset)expirationTime).ToUnixTimeSeconds()
 		);
 		CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
 		_navi.NavigateTo(createPayment.checkoutUrl, true);
-
+		
 	}
 	private void CloseModal()
 	{
