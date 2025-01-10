@@ -296,10 +296,6 @@ namespace NeonCinema_API.Controllers
 					.SetFont(normalFont)
 					.SetFontSize(12)
 					.SetTextAlignment(TextAlignment.LEFT));
-				document.Add(new Paragraph($"Phụ phí phim: {bill.Surcharge ?? 0:n0}đ")
-					.SetFont(normalFont)
-					.SetFontSize(12)
-					.SetTextAlignment(TextAlignment.LEFT));
 				document.Add(new Paragraph($"Giảm giá: {bill.TotalPoint ?? 0:n0}đ")
 		   .SetFont(normalFont)
 		   .SetFontSize(12)

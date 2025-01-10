@@ -23,14 +23,23 @@
             @if (authToken != null)
 			{
 				<div class="col-3 text-center">
-					@if (string.IsNullOrEmpty(user.Images))
+					@if (user == null)
 					{
-						<img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						<p class="text-danger">Lỗi: Đối tượng người dùng không tồn tại.</p>
+
 					}
 					else
 					{
-						<img src="@(!string.IsNullOrEmpty(user.Images) ? GetImageUrl(user.Images) : profileImage)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						@if (string.IsNullOrEmpty(user.Images))
+						{
+							<img src="@profileImage" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						}
+						else
+						{
+							<img src="@GetImageUrl(user.Images)" alt="User Image" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+						}
 					}
+
 				</div>
 				<div class="col-9">
 					<h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
@@ -69,46 +78,43 @@
 
 		<MudNavLink Href="/statistics" Icon="fas fa-chart-pie" IconColor="Color.Info" Class="custom-nav-link">Thống kê</MudNavLink>
 
-        <MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info" >
-            <MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
-            <MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
-        </MudNavGroup>
-        <MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
-        <!-- Nút Đăng Xuất -->
-        @if (isLoggedIn)
-        {
-            <MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
-        }
-        else
-        {
-            <MudNavLink Href="/login" Icon="fas fa-sign-in-alt" IconColor="Color.Success" Class="custom-nav-link">Đăng Nhập</MudNavLink>
-        }
+		<MudNavGroup Title="Tài Khoản" Icon="fas fa-user-circle" IconColor="Color.Info" >
+			<MudNavLink Href="/staff" Icon="@Icons.Material.Filled.Person" Class="custom-nav-link">Nhân Viên</MudNavLink>
+			<MudNavLink Href="/client" Icon="@Icons.Material.Filled.People" Class="custom-nav-link">Khách Hàng</MudNavLink>
+		</MudNavGroup>
+		<MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
+		<!-- Nút Đăng Xuất -->
+		<MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+		
 
 
-    </MudNavMenu>
+	</MudNavMenu>
 </MudPaper>
 
 
 @code {
 	private UserDTO user = new UserDTO();
-    private bool isLoggedIn;
-    string authToken = "";
-    private string userId;
-    private string role = "";
-    private string profileImage = "/images/Client/avt-default.jpg";
+	private bool isLoggedIn;
+	string authToken = "";
+	private string userId;
+	private string role = "";
+	private string profileImage = "/images/Client/avt-default.jpg";
 	protected override async Task OnInitializedAsync()
 	{
+		
 		authToken = await _localStorage.GetItemAsync<string>("authToken");
-		if (authToken != null)
+		if (authToken != null )
 		{
 			var handler = new JwtSecurityTokenHandler();
 			var jwtToken = handler.ReadJwtToken(authToken);
 			userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
 			if(userId != null){
 				user = await Service.GetByIDUser(Guid.Parse(userId), CancellationToken.None);
+				
 			}
 			role = jwtToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
 		}
+		
 		StateHasChanged();
 	}
     private string GetImageUrl(string imageUrl)

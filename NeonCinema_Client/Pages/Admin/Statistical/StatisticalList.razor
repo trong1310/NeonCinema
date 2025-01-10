@@ -1,9 +1,10 @@
 ﻿@page "/statistics"
 @using NeonCinema_Application.DataTransferObject.Statistics
+@using NeonCinema_Application.DataTransferObject.User
 @using NeonCinema_Client.Data.IServices.Statistics
 @using NeonCinema_Client.Data.Services.StatisticService
 @inject IJSRuntime JSRuntime
-@inject IStatisticsService StatisticsService
+@inject IStatisticsService _StatisticsService
 @attribute [Authorize(Roles = "Admin")]
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -34,12 +35,14 @@ else
             <div class="col-md-3">
                 <div class="card text-center shadow">
                     <div class="card-body">
-                        <h5>Khách hàng mới</h5>
-                        <h3>@statistics?.NewCustomers</h3>
-                        <p>@DateTime.Now.ToString("dd-MM-yyyy")</p>
+                        <h5>Khách hàng đã đặt vé</h5>
+                        <h3>@newOrderCustomers.Count</h3> <!-- Hiển thị số lượng khách hàng -->
+                        <p>@DateTime.Now.AddDays(-7).ToString("dd-MM-yyyy") | @DateTime.Now.ToString("dd-MM-yyyy")</p>
                     </div>
                 </div>
             </div>
+
+
             <div class="col-md-3">
                 <div class="card text-center shadow">
                     <div class="card-body">
@@ -97,10 +100,12 @@ else
                     <option value="Year">Năm này</option>
                 </select>
             </div>
-            <div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end">
-                <button class="btn btn-primary w-100" @onclick="FetchStatistics">Xác nhận</button>
+            <div class="col-lg-4 col-md-6 col-sm-12 form-actions">
+                <button class="btn btn-primary w-50" @onclick="FetchStatistics">Xác nhận</button>
+                <button class="btn btn-secondary w-50" @onclick="ClearFilters">Clear</button>
             </div>
         </div>
+
 
         <!-- Biểu đồ doanh thu -->
         <div class="row chart-section">
@@ -148,6 +153,40 @@ else
                 </table>
             </div>
         </div>
+        <div class="row mt-5 chart-section">
+            <div class="col-md-12">
+                <h5 class="text-center">Danh Sách Khách Hàng Đã Đặt Vé</h5>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tên khách hàng</th>
+                            <th>Email</th>
+                            <th>Ngày tạo tài khoản</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (newOrderCustomers != null && newOrderCustomers.Any())
+                        {
+                            @foreach (var customer in newOrderCustomers)
+                            {
+                                <tr>
+                                    <td>@customer.FullName</td>
+                                    <td>@customer.Email</td>
+                                    <td>@customer.Createdate.ToString("dd-MM-yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">Không có dữ liệu trong 1 tuần qua</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 
         <!-- Biểu đồ doanh thu theo combo -->
         <div class="row mt-5 chart-section">
@@ -168,7 +207,7 @@ else
 @code {
     private DateTime startDate = DateTime.Now;
     private DateTime endDate = DateTime.Now;
-
+    private List<UserDTO> newOrderCustomers = new();
     private FilterModel filterModel = new FilterModel();
     private RevenueStatisticsDTO statistics;
     private List<MovieStatisticsDTO> movieStatistics = new();
@@ -200,11 +239,11 @@ else
         {
             if (filterModel.SpecificDate.HasValue)
             {
-                statistics = await StatisticsService.GetRevenueStatisticsAsync(filterModel.SpecificDate, null, null);
+                statistics = await _StatisticsService.GetRevenueStatisticsAsync(filterModel.SpecificDate, null, null);
             }
             else if (filterModel.StartDate.HasValue && filterModel.EndDate.HasValue)
             {
-                statistics = await StatisticsService.GetRevenueStatisticsAsync(null, filterModel.StartDate, filterModel.EndDate);
+                statistics = await _StatisticsService.GetRevenueStatisticsAsync(null, filterModel.StartDate, filterModel.EndDate);
             }
             else
             {
@@ -228,12 +267,15 @@ else
                         break;
                 }
 
-                statistics = await StatisticsService.GetRevenueStatisticsAsync(null, startDate, endDate);
+                statistics = await _StatisticsService.GetRevenueStatisticsAsync(null, startDate, endDate);
             }
 
-            allMovieStatistics = await StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
+            allMovieStatistics = await _StatisticsService.GetMovieStatisticsAsync(startDate, endDate);
             movieStatistics = allMovieStatistics;
-            comboStatistics = await StatisticsService.GetComboStatisticsAsync(startDate, endDate);
+            comboStatistics = await _StatisticsService.GetComboStatisticsAsync(startDate, endDate);
+            newOrderCustomers = await _StatisticsService.GetNewOrderCustomersAsync(
+    DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
+
 
             if (statistics != null)
             {
@@ -251,6 +293,19 @@ else
             Console.WriteLine($"Error: {ex.Message}");
         }
     }
+
+    private async Task ClearFilters()
+    {
+        // Đặt mốc thời gian mặc định là dữ liệu năm hiện tại
+        filterModel = new FilterModel(); // Xóa các giá trị cụ thể
+        filterTime = "Year"; // Mặc định hiển thị theo năm
+
+        startDate = new DateTime(DateTime.Now.Year, 1, 1); // Bắt đầu từ đầu năm
+        endDate = new DateTime(DateTime.Now.Year, 12, 31); // Kết thúc vào cuối năm
+
+        await FetchStatistics(); // Lấy lại dữ liệu thống kê
+    }
+
 
     private async Task CalculateGrowthPercentage()
     {
@@ -296,6 +351,7 @@ else
         public DateTime? EndDate { get; set; }
     }
 }
+
 
 <style>
     body {
@@ -396,4 +452,12 @@ else
         justify-content: center;
         align-items: center;
     }
+
+    .filter .form-actions {
+        display: flex;
+        justify-content: space-between; /* Đặt khoảng cách đều giữa các nút */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        gap: 10px; /* Khoảng cách giữa các nút */
+    }
+
 </style>
