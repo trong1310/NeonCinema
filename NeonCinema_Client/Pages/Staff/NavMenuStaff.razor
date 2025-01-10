@@ -81,7 +81,7 @@
 		<MudNavLink Href="/booking-history-staff" Icon="@Icons.Material.Filled.History" IconColor="Color.Primary" Class="custom-nav-link">Thông tin vé khách hàng</MudNavLink>
 		<MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Info" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
 		<!-- Nút Đăng Xuất -->
-		<MudNavLink Href="/login" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+		<MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
 	</MudNavMenu>
 </MudPaper>
 @code {
@@ -111,6 +111,19 @@
 	private void NavigateToProfile()
 	{
 		_navi.NavigateTo($"/profile-staff/{userId}");
+	}
+	private async Task Logout()
+	{
+		try
+		{
+			await _localStorage.RemoveItemAsync("authToken");
+			isLoggedIn = false;
+			_navi.NavigateTo("/login", forceLoad: true);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Lỗi khi đăng xuất: {ex.Message}");
+		}
 	}
 }
 
