@@ -215,16 +215,16 @@ namespace NeonCinema_API.Controllers
 				{
 					throw new InvalidOperationException($"Ghế không khả dụng: {string.Join(", ", unavailableSeats)}");
 				}
-				//var selectedSeats = seats.Where(x => request.SeatID.Contains(x.SeatID)).ToList();
+				var selectedSeats = seats.Where(x => request.SeatID.Contains(x.SeatID)).ToList();
 
-				//foreach (var seat in selectedSeats)
-				//{
-				//	seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Sold;
+				foreach (var seat in selectedSeats)
+				{
+					seat.seatEnum = NeonCinema_Domain.Enum.seatEnum.Selected;
 
-				////}
-				//_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
-				// tinhs gia ve
-				var seatTypes = screening.Rooms.Seats.ToDictionary(
+				}
+				_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
+			//	tinhs gia ve
+			   var seatTypes = screening.Rooms.Seats.ToDictionary(
 								s => s.ID,
 								s => s.SeatTypes?.SeatTypeName ?? "Unknown"
 							);
@@ -438,7 +438,7 @@ namespace NeonCinema_API.Controllers
 			catch (Exception ex)
 			{
 				await transaction.RollbackAsync();
-				throw new Exception($"{ex.Message} : {ex.StackTrace}");
+				return null;
 			}
 		}
 		[HttpPost("payment-faild")]
@@ -457,6 +457,14 @@ namespace NeonCinema_API.Controllers
 				}
 				var ticket = await _context.Tickets.Where(x => x.BillId == bill.ID).ToListAsync();
 				var combo = await _context.BillCombos.Where(x => x.BillID == bill.ID).ToListAsync();
+				var seat = await _context.SeatShowTimeStatuss.Where(x => ticket.Select(a => a.SeatID).Contains(x.SeatID)).ToListAsync();
+
+				foreach (var item in seat)
+				{
+						item.seatEnum = seatEnum.Available;
+					
+				}
+				_context.SeatShowTimeStatuss.UpdateRange(seat);
 				_context.BillCombos.RemoveRange(combo);
 				_context.Tickets.RemoveRange(ticket);
 				_context.BillDetails.Remove(bill);
@@ -472,6 +480,7 @@ namespace NeonCinema_API.Controllers
 		[HttpPost("payment-success")]
 		public async Task<IActionResult> PaymentSuccess(Guid billId, double point)
 		{
+
 			try
 			{
 				// Kiểm tra xem bill có tồn tại không
@@ -490,9 +499,18 @@ namespace NeonCinema_API.Controllers
 
 				var ticket = await _context.Tickets.Where(x => x.BillId == bill.ID).ToListAsync();
 				var seat = await _context.SeatShowTimeStatuss.Where(x => ticket.Select(a => a.SeatID).Contains(x.SeatID)).ToListAsync();
-
-				// Cập nhật trạng thái ghế
-				seat.ForEach(x => x.seatEnum = seatEnum.Sold);
+			
+				foreach(var item in seat)
+				{
+					if(item.seatEnum == seatEnum.Sold)
+					{
+						return BadRequest("Ghế đã có người đặt trước đó rồi vui lòng thử lại");
+					}
+					else
+					{
+						item.seatEnum = seatEnum.Sold;
+					}
+				}
 				bill.Status = ticketEnum.paid;
 
 				_context.BillDetails.Update(bill);
@@ -564,7 +582,7 @@ namespace NeonCinema_API.Controllers
 			{
 				// Log lỗi và trả về lỗi chi tiết
 				Console.WriteLine($"Lỗi: {ex.Message}");
-				return StatusCode(500, $"Đã xảy ra lỗi: {ex.Message}");
+				return null;
 			}
 		}
 
