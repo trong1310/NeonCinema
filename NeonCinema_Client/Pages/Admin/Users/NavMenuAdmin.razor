@@ -84,14 +84,8 @@
 		</MudNavGroup>
 		<MudNavLink @onclick="NavigateToProfile" Icon="fas fa-user-circle" IconColor="Color.Success" Class="custom-nav-link">Thông tin cá nhân</MudNavLink>
 		<!-- Nút Đăng Xuất -->
-		@if (isLoggedIn == true)
-		{
-			<MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
-		}
-		else
-		{
-			<MudNavLink Href="/login" Icon="fas fa-sign-in-alt" IconColor="Color.Success" Class="custom-nav-link">Đăng Nhập</MudNavLink>
-		}
+		<MudNavLink @onclick="Logout" Icon="fas fa-sign-out-alt" IconColor="Color.Error" Class="custom-nav-link">Đăng Xuất</MudNavLink>
+		
 
 
 	</MudNavMenu>

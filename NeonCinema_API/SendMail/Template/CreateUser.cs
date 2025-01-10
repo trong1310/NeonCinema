@@ -2,7 +2,7 @@
 {
     public class CreateUser
     {
-        public static string CreateClient(string fullName, string Email, string Password)
+        public static string CreateClient(string fullName, string Email, string phone, string Password)
         {
             return $@"
             <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
@@ -12,6 +12,7 @@
                     <p>Thông tin tài khoản của bạn:</p>
                     <ul>
                                     <li><strong>Email:</strong> {Email}</li>
+                                    <li><strong>SĐT (Tên đăng nhập):</strong> {phone}</li>
                                     <li><strong>Mật khẩu:</strong> {Password}</li>
                     </ul>            
                     <p>Cảm ơn bạn đã tin tưởng và lựa chọn rạp chiếu phim NeonCinema. Chúng tôi rất vui mừng được chào đón bạn trở thành một phần của cộng đồng yêu phim tuyệt vời này.</p>
@@ -30,7 +31,7 @@
                 </div>
             </div>";
         }
-        public static string CreateStaff(string fullName, string Email, string Password)
+        public static string CreateStaff(string fullName, string Email, string phone, string Password)
         {
             return $@"
             <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
@@ -41,6 +42,7 @@
                     <p>Dưới đây là thông tin tài khoản của bạn:</p>
                     <ul>
                                     <li><strong>Email:</strong> {Email}</li>
+                                    <li><strong>SĐT (Tên đăng nhập):</strong> {phone}</li>
                                     <li><strong>Mật khẩu:</strong> {Password}</li>
                     </ul>            
                      <p>Với tài khoản này, bạn có thể:</p>

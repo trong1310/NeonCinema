@@ -205,6 +205,7 @@
 	private string? errorYear = null;
 	private bool isSubmitting = false;
 	private bool showConfirmModal = false;
+	private string? originalEmail;
 	private void CloseModal()
 	{
 		showConfirmModal = false;
@@ -235,23 +236,36 @@
 			errorName = null;
 		}
 
-		// Email
-		if (string.IsNullOrWhiteSpace(user.Email))
+
+		// Kiểm tra email (chỉ khi thay đổi)
+		if (!string.IsNullOrWhiteSpace(user.Email) && user.Email != originalEmail)
 		{
-			errorEmail = "Email không được để trống.";
-			isValid = false;
-			isSubmitting = false;
-		}
-		else if (emailExists)
-		{
-			errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
-			isValid = false;
-			isSubmitting = false;
+			if (!Regex.IsMatch(user.Email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+			{
+				errorEmail = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+				isValid = false;
+			}
+			else if (string.IsNullOrWhiteSpace(user.Email))
+			{
+				errorEmail = "Email không được để trống.";
+				isValid = false;
+				isSubmitting = false;
+			}
+			else if (_context.Users.Any(x => x.Email == user.Email && x.ID != user.ID))
+			{
+				errorEmail = "Email này đã tồn tại. Vui lòng chọn email khác.";
+				isValid = false;
+			}
+			else
+			{
+				errorEmail = null;
+			}
 		}
 		else
 		{
 			errorEmail = null;
 		}
+
 
 		// SDT
 		if (string.IsNullOrWhiteSpace(user.PhoneNumber))

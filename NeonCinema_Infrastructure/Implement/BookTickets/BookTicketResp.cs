@@ -325,6 +325,7 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				RoomName = screening.Rooms.Name,
 				ShowDate = screening.ShowDate,
 				ShowTime = screening.ShowTime.StartTime,
+				EndTime = screening.ShowTime.EndTime,
 				MoviesID = screening.MovieID,
 				Sub = screening.Movies?.Sub, // Lấy thông tin phụ đề từ Movie
 				MovieTypeName = screening.Movies?.MovieTypes?.MovieTypeName // Lấy thông tin loại phim từ Movie
