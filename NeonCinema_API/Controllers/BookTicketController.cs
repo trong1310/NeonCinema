@@ -109,9 +109,7 @@ namespace NeonCinema_API.Controllers
 			}
 		}
 
-		[HttpGet("/stream-seat-status")] // Đặt đường dẫn API
-										 //[Authorize]		
-
+		[HttpGet("/stream-seat-status")] 
 		public async Task UpdateStatusSeat(Guid id)
 		{
 			Response.ContentType = "text/event-stream"; // Định nghĩa kiểu trả về
@@ -135,17 +133,15 @@ namespace NeonCinema_API.Controllers
 							PropertyNamingPolicy = JsonNamingPolicy.CamelCase
 						});
 
-						await Response.WriteAsync($"data: {eventData}\n\n", cancellationToken);
-						await Response.Body.FlushAsync(cancellationToken);
+						await Response.WriteAsync($"data: {eventData}\n\n");
+						await Response.Body.FlushAsync();
 					}
-
-					// Tạm dừng 1 giây trước khi gửi dữ liệu tiếp theo
-					await Task.Delay(1000, cancellationToken);
+					await Task.Delay(1000);
 				}
 			}
 			catch (TaskCanceledException)
 			{
-				// Xử lý khi yêu cầu bị hủy bỏ
+				
 			}
 			finally
 			{
