@@ -2,12 +2,13 @@
 @using NeonCinema_API.Controllers.Service
 @using NeonCinema_Client.Data.IServices.Actor
 @using NeonCinema_Domain.Enum
+@layout LayoutAdmin
 @inject IActorService ActorService
 @attribute [Authorize(Roles = "Admin")]
 <link rel="stylesheet" href="/css/Actor/listactor.css">
 
 
-<div class="actor-list-container">
+<div class="container-fluid">
     <h4 style="text-align: center">Danh Sách Diễn Viên</h4>
     <button class="btn btn-success" @onclick="ShowCreateDialog">Thêm Diễn Viên</button>
     <div class="filter-container">
