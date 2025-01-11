@@ -2,6 +2,7 @@
 using NeonCinema_Application.DataTransferObject.BookingHistory;
 using NeonCinema_Application.Interface.IBookingHistory;
 using NeonCinema_Domain.Database.Entities;
+using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
 using System.Collections.Generic;
@@ -92,22 +93,26 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 
 		public async Task<List<BillHistoryDTO>> GetAllBillHistoryAsync()
 		{
-			// Fetch all user details (staff)
 			var users = await _context.Users.ToDictionaryAsync(u => u.ID, u => u.FullName);
+
+			// Chỉ lấy các Bill có Status == checkin (0) HOẶC paid (2)
 			return await _context.BillDetails
+				.Where(b => b.Status == ticketEnum.checkin || b.Status == ticketEnum.paid)
 				.Select(b => new BillHistoryDTO
 				{
 					BillID = b.ID,
-					UserName = b.Users.FullName, // Lấy tên người dùng
+					UserName = b.Users.FullName,
 					BillCode = b.BillCode,
-					TotalPrice = Convert.ToDecimal( b.AfterDiscount),
+					TotalPrice = Convert.ToDecimal(b.AfterDiscount),
 					BillDate = b.CreatedTime.Value,
-					StaffID = b.CreatedBy, // Staff ID
-					StaffName = b.CreatedBy.HasValue && users.ContainsKey(b.CreatedBy.Value) ? users[b.CreatedBy.Value] : "Không xác định", // Staff name
+					StaffID = b.CreatedBy,
+					StaffName = b.CreatedBy.HasValue && users.ContainsKey(b.CreatedBy.Value)
+							   ? users[b.CreatedBy.Value]
+							   : "Không xác định",
 					Status = b.Status.ToString(),
 					Tickets = b.Ticket.Select(bt => new BookingHistoryDTO
 					{
-						UserName = b.Users.FullName, // Lấy tên người dùng
+						UserName = b.Users.FullName,
 						TicketID = bt.ID,
 						MovieName = bt.Movies.Name,
 						ShowDate = bt.Screenings.ShowDate,
@@ -117,7 +122,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 						Price = bt.Price,
 						Room = bt.Screenings.Rooms.Name,
 						Status = bt.Status.ToString(),
-						MoviePoster = $"/Resources/export/{bt.Movies.Images}.png" // Đường dẫn đầy đủ tới hình ảnh phim
+						MoviePoster = $"/Resources/export/{bt.Movies.Images}.png"
 					}).ToList(),
 					Combos = b.BillCombos.Select(bc => new ComboDTO
 					{
@@ -128,6 +133,7 @@ namespace NeonCinema_Infrastructure.Implement.BookingHistory
 				})
 				.ToListAsync();
 		}
+		
 
 	}
 
