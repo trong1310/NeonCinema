@@ -223,11 +223,11 @@ namespace NeonCinema_API.Controllers
 
 				}
 				_context.SeatShowTimeStatuss.UpdateRange(selectedSeats);
-			//	tinhs gia ve
-			   var seatTypes = screening.Rooms.Seats.ToDictionary(
-								s => s.ID,
-								s => s.SeatTypes?.SeatTypeName ?? "Unknown"
-							);
+				//	tinhs gia ve
+				var seatTypes = screening.Rooms.Seats.ToDictionary(
+								 s => s.ID,
+								 s => s.SeatTypes?.SeatTypeName ?? "Unknown"
+							 );
 				var bill = new Bill
 				{
 					ID = Guid.NewGuid(),
@@ -461,8 +461,7 @@ namespace NeonCinema_API.Controllers
 
 				foreach (var item in seat)
 				{
-						item.seatEnum = seatEnum.Available;
-					
+					item.seatEnum = seatEnum.Available;
 				}
 				_context.SeatShowTimeStatuss.UpdateRange(seat);
 				_context.BillCombos.RemoveRange(combo);
@@ -499,10 +498,10 @@ namespace NeonCinema_API.Controllers
 
 				var ticket = await _context.Tickets.Where(x => x.BillId == bill.ID).ToListAsync();
 				var seat = await _context.SeatShowTimeStatuss.Where(x => ticket.Select(a => a.SeatID).Contains(x.SeatID)).ToListAsync();
-			
-				foreach(var item in seat)
+
+				foreach (var item in seat)
 				{
-					if(item.seatEnum == seatEnum.Sold)
+					if (item.seatEnum == seatEnum.Sold)
 					{
 						return BadRequest("Ghế đã có người đặt trước đó rồi vui lòng thử lại");
 					}
