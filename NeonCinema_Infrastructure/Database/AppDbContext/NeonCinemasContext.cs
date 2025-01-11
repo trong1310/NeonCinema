@@ -67,12 +67,13 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-			optionsBuilder.UseSqlServer("Data Source=DESKTOP-8GC0563\\LEQUANGHAO29BAVI;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+		//	optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			//optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 			// optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-			 //optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
-				
-        }
+			 optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			
+
+		}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -162,6 +163,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<Roles>().HasData(roleData);
 			var movieType = new List<MovieType>
 			{
+				new MovieType
+				{
+					ID = Guid.Parse("e53dc036-adcd-4a38-9fdc-c7fe231af726"),
+					MovieTypeName = "4D",
+				},
 				new MovieType
 				{
 					ID = Guid.Parse("56bece24-ba60-4b2b-801c-b68cfc8ccf9d"),

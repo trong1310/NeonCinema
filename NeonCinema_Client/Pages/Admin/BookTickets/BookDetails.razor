@@ -83,7 +83,7 @@
 					{
 						<div class="col-6 col-md-3 mb-3">
 							<button class="btn btn-success btn-time" @onclick="() => ChooseSeatNavigate(item.Id)">
-								@(string.Format("{0:hh\\:mm}", item.ShowTime))
+								@(string.Format("{0:hh\\:mm} - {1:hh\\:mm}", item.ShowTime, item.EndTime))
 							</button>
 							<div class="tags">
 								<span class="badge bg-dark">
