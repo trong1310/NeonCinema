@@ -164,7 +164,7 @@ namespace NeonCinema_API.Controllers
 				foreach (var ticket in tickets)
 				{
 					string seatName = $"{ticket.Seat.Column}{ticket.Seat.Row}";
-					string seatPdfFileName = $"HoaDon_Ghe_{seatName}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+					string seatPdfFileName = $"Vé xem phim_{seatName}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
 					var seatPdfPath = Path.Combine(tempFolder, seatPdfFileName);
 
 					GenerateSingleSeatPdf_NoCombo(ticket, staffName, seatPdfPath);

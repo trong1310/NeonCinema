@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeonCinema_Application.Interface.IBookingHistory;
+using NeonCinema_Domain.Enum;
+using NeonCinema_Infrastructure.Database.AppDbContext;
 
 namespace NeonCinema_API.Controllers.BookHistory
 {
@@ -9,9 +11,11 @@ namespace NeonCinema_API.Controllers.BookHistory
 	public class HistoryController : ControllerBase
 	{
 		private readonly IHistoryRepository _service;
-		public HistoryController(IHistoryRepository service)
+		private readonly NeonCinemasContext _context;
+		public HistoryController(IHistoryRepository service, NeonCinemasContext context)
 		{
 			_service = service;
+			_context = context;
 		}
 		[HttpGet("bookings/{userId}")]
 		public async Task<IActionResult> GetBookingHistory(Guid userId)
@@ -57,7 +61,30 @@ namespace NeonCinema_API.Controllers.BookHistory
 
 			return Ok(history);
 		}
-		
+		// PUT: api/History/updateStatusToPaid/{billId}
+		[HttpPut("updateStatusToPaid/{billId}")]
+		public async Task<IActionResult> UpdateStatusToPaid(Guid billId)
+		{
+			// Tìm hóa đơn theo billId
+			var bill = await _context.BillDetails.FindAsync(billId);
+			if (bill == null)
+			{
+				return NotFound("Không tìm thấy Bill với ID này.");
+			}
+
+			// Chỉ cho phép chuyển từ checkin -> paid
+			if (bill.Status == ticketEnum.checkin)
+			{
+				bill.Status = ticketEnum.paid;
+				_context.Update(bill);
+				await _context.SaveChangesAsync();
+				return Ok(); // 200 OK
+			}
+
+			return BadRequest("Bill không ở trạng thái checkin.");
+		}
+
+
 
 
 
