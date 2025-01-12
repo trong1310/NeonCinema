@@ -7,7 +7,7 @@
 @layout LayoutAdmin
 @inject HttpClient _http
 @attribute [Authorize(Roles = "Admin")]
-   
+
 
 <EditForm Model="newdirector" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -75,22 +75,49 @@
         </div>
     </div>
 </EditForm>
+@if (showConfirmation)
+{
+    <div class="confirmation-container @showClass">
+        <h4>Xác nhận đạo diễn</h4>
 
+        <div class="button-group">
+            <button class="btn btn-success" @onclick="ConfirmAddRoom">Xác nhận</button>
+            <button class="btn btn-secondary" @onclick="CancelConfirmation">Hủy</button>
+        </div>
+    </div>
+}
 
 
 
 @code {
-    
+
     private CreateDirectorRequest newdirector = new CreateDirectorRequest();
+    private bool showConfirmation = false;
+    private string showClass = "";
     private async Task HandleValidSubmit()
     {
-        await SV.CreateDirector(newdirector);
-        NavigationManager.NavigateTo("/listDirector");
+        ShowConfirmationForm();
     }
 
     private void NavigateBack()
     {
-        NavigationManager.NavigateTo("/listDirector");
+        NavigationManager.NavigateTo("/director");
+    }
+    private void ShowConfirmationForm()
+    {
+        showConfirmation = true;
+        showClass = "show";
+    }
+    private async Task ConfirmAddRoom()
+    {
+        await SV.CreateDirector(newdirector);
+        NavigationManager.NavigateTo("/director");
+    }
+    private void CancelConfirmation()
+    {
+        showConfirmation = false; // Ẩn phần xác nhận
+        showClass = "";
+
     }
 }
 
@@ -156,5 +183,43 @@
         padding: 10px 20px;
         border-radius: 5px;
         font-size: 16px;
+    }
+
+    .confirmation-container {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 550px; /* Đặt chiều ngang là 900px */
+        width: 100%; /* Đảm bảo container có thể mở rộng tối đa đến 900px */
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease, top 0.5s ease;
+    }
+
+
+
+
+
+        .confirmation-container.show {
+            opacity: 1;
+            visibility: visible;
+            top: 20%;
+            transform: translate(-50%, -50%);
+        }
+
+    /* Optional: Add smooth fade-in and slide-down transition */
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.5s ease-in-out, top 0.5s ease;
+    }
+
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
+        top: -100%;
     }
 </style>
