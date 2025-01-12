@@ -6,7 +6,7 @@
 @inject IRoomService RoomService
 @inject NavigationManager Navigation
 @attribute [Authorize(Roles = "Admin")]
-
+@layout LayoutAdmin
 <EditForm Model="request" OnValidSubmit="AddRoom">
     <DataAnnotationsValidator />
     
