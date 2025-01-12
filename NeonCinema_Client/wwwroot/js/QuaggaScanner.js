@@ -118,6 +118,5 @@ function downloadFile(fileName, bytes, mimeType) {
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
     link.click();
-    // Thu hồi URL để tránh rò rỉ bộ nhớ
-    URL.revokeObjectURL(link.href);
+    URL.revokeObjectURL(link.href); // Dọn dẹp URL
 }
