@@ -3,6 +3,7 @@
 @using NeonCinema_Client.Data.IServices.Screenning
 @inject IScreeningService ScreeningService
 @inject NavigationManager NavigationManager
+@layout LayoutAdmin
 @attribute [Authorize(Roles = "Admin")]
 
 <h3>Edit Screening</h3>

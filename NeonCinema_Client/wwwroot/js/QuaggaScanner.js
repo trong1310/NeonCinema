@@ -2,51 +2,43 @@
 
 let quaggaInitialized = false;
 
+/**
+ * Hàm bắt đầu Quagga
+ * @param {any} dotNetRef Tham chiếu đến Blazor .NET object
+ */
 function startQuaggaScan(dotNetRef) {
     if (quaggaInitialized) {
-        console.warn("Quagga đã được khởi tạo.");
+        console.warn("Quagga đã được khởi tạo, bỏ qua!");
         return;
     }
 
     Quagga.init({
         inputStream: {
             type: "LiveStream",
-            target: document.querySelector('#quagga-video'),
+            target: document.querySelector('#quagga-video'), // div hiển thị camera
             constraints: {
-                facingMode: "environment", // Sử dụng camera sau
-                width: { ideal: 1920 }, // Tăng độ phân giải để cải thiện độ chính xác
+                facingMode: "environment", // Ưu tiên camera sau
+                width: { ideal: 1920 },    // Tăng độ phân giải
                 height: { ideal: 1080 }
             }
         },
         locator: {
-            patchSize: "large", // Kích thước lớn hơn để cải thiện độ chính xác
-            halfSample: false, // Đảm bảo quét ảnh gốc
-            debug: {
-                showCanvas: true, // Hiển thị ảnh xử lý để kiểm tra
-                showPatches: true,
-                showFoundPatches: true,
-                showSkeleton: true,
-                showLabels: true,
-                showPatchLabels: true,
-                showRemainingPatchLabels: true,
-                boxFromPatches: {
-                    showTransformed: true,
-                    showTransformedBox: true,
-                    showBB: true
-                }
-            }
+            patchSize: "large", // "large" hoặc "xlarge" để tăng độ chính xác
+            halfSample: false
+            // Có thể bật "debug" nếu cần xem hình ảnh xử lý
         },
         decoder: {
+            // Hỗ trợ nhiều loại mã vạch
             readers: [
                 "code_128_reader",
                 "ean_reader",
                 "code_39_reader",
-                "upc_reader" // Thêm hỗ trợ cho mã UPC
+                "upc_reader"
             ]
         },
-        locate: true, // Kích hoạt tìm kiếm mã vạch tự động
-        numOfWorkers: navigator.hardwareConcurrency || 4, // Sử dụng tối đa số worker của CPU
-        frequency: 15 // Tần số quét cao hơn để tăng độ nhạy
+        locate: true,          // Tìm vị trí mã vạch tự động
+        numOfWorkers: 4,       // Số worker (tùy theo CPU)
+        frequency: 15          // Tần số quét
     }, function (err) {
         if (err) {
             console.error("Quagga init error:", err);
@@ -55,44 +47,57 @@ function startQuaggaScan(dotNetRef) {
         }
         Quagga.start();
         quaggaInitialized = true;
-        console.log("Quagga đã được khởi tạo và bắt đầu quét.");
+        console.log("Quagga đã bắt đầu quét...");
     });
 
-    // Xử lý sự kiện quét thành công
+    // Các biến kiểm soát
     let lastCode = null;
-    let confidenceThreshold = 0.85; // Ngưỡng độ tin cậy
+    let confidenceThreshold = 0.8; // Ngưỡng độ tin cậy
 
+    // Xử lý mỗi lần quét
     Quagga.onDetected(function (result) {
         const code = result.codeResult.code;
-        const confidence = result.codeResult.decodedCodes.reduce((sum, code) => sum + (code.error || 0), 0) / result.codeResult.decodedCodes.length;
 
-        console.log(`Quét được mã: ${code}, Độ tin cậy: ${1 - confidence}`);
+        // Tính toán lỗi trung bình (càng nhỏ càng tốt)
+        let avgErrors = result.codeResult.decodedCodes
+            .filter(x => x.error !== undefined)
+            .map(x => x.error)
+            .reduce((a, b) => a + b, 0) / result.codeResult.decodedCodes.length;
 
-        if ((1 - confidence) < confidenceThreshold) {
-            console.warn("Độ tin cậy thấp, bỏ qua mã:", code);
+        // Độ tin cậy = 1 - avgErrors
+        let confidence = 1 - avgErrors;
+        console.log(`Mã quét được: ${code}, Độ tin cậy: ${confidence.toFixed(2)}`);
+
+        if (confidence < confidenceThreshold) {
+            console.warn("Độ tin cậy quá thấp, bỏ qua mã:", code);
             return;
         }
 
+        // Tránh quét trùng liên tiếp
         if (code === lastCode) {
-            console.log("Mã trùng lặp, bỏ qua:", code);
+            console.log("Mã trùng, bỏ qua:", code);
             return;
         }
-
-        if (code.length < 8 || !/^\d+$/.test(code)) {
-            console.warn("Mã không hợp lệ:", code);
-            return;
-        }
-
         lastCode = code;
-        console.log("Đã quét được mã hợp lệ:", code);
 
-        // Dừng Quagga và gửi dữ liệu đến Blazor
+        // Nếu BillCode yêu cầu >= 8 ký tự số
+        if (code.length < 8 || !/^\d+$/.test(code)) {
+            console.warn("Mã không hợp lệ (quá ngắn hoặc có ký tự không phải số):", code);
+            return;
+        }
+
+        // Dừng Quagga
         Quagga.stop();
         quaggaInitialized = false;
+
+        // Gửi dữ liệu về Blazor
         dotNetRef.invokeMethodAsync("OnQuaggaScanned", code);
     });
 }
 
+/**
+ * Hàm dừng Quagga, giải phóng camera
+ */
 function stopQuagga() {
     if (quaggaInitialized) {
         Quagga.stop();
@@ -101,6 +106,12 @@ function stopQuagga() {
     }
 }
 
+/**
+ * Hàm tải file từ bytes[] (phục vụ in/tải PDF)
+ * @param {string} fileName Tên file
+ * @param {any} bytes Mảng byte
+ * @param {string} mimeType Kiểu MIME
+ */
 function downloadFile(fileName, bytes, mimeType) {
     const blob = new Blob([new Uint8Array(bytes)], { type: mimeType });
     const link = document.createElement('a');
@@ -108,10 +119,4 @@ function downloadFile(fileName, bytes, mimeType) {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(link.href); // Dọn dẹp URL
-}
-
-// Tính toán độ trung bình của mã để tăng độ tin cậy
-function calculateConfidence(decodedCodes) {
-    const confidenceScores = decodedCodes.map(code => 1 - (code.error || 0));
-    return confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length;
 }

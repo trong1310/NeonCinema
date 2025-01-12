@@ -49,12 +49,12 @@
 			<div class="card-body">
 				<h3 class="card-title">@movieDto.Name</h3>
 				<div class="tags">
-					 <span class="badge bg-danger">T @movieDto.AgeAllowed</span>
-                                        <span class="badge bg-dark">
-                                            @(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
-                                                movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
-                                        </span>
-                                        <span class="badge bg-success">@movieDto.MovieTypeName</span>
+					<span class="badge bg-danger">T @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">
+						@(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
+													movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+					</span>
+					<span class="badge bg-success">@movieDto.MovieTypeName</span>
 				</div>
 
 				<p class="card-text">
@@ -261,12 +261,12 @@
 			<div class="order-summary">
 				<h4 class="card-title">@movieDto.Name</h4>
 				<div class="tags">
-					 <span class="badge bg-danger">T @movieDto.AgeAllowed</span>
-					 <span class="badge bg-dark">
-						 @(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
-							 movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
-					 </span>
-					 <span class="badge bg-success">@movieDto.MovieTypeName</span>
+					<span class="badge bg-danger">T @movieDto.AgeAllowed</span>
+					<span class="badge bg-dark">
+						@(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
+													movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+					</span>
+					<span class="badge bg-success">@movieDto.MovieTypeName</span>
 				</div>
 				<hr class="dashed">
 				<div class="d-flex justify-content-between mb-3">
@@ -287,7 +287,7 @@
 				<div class="d-flex justify-content-between mb-3">
 					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
 					<span>@surcharge.ToString("N0") VND</span>
-				</div> 
+				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền tạm tính</span>
 					<span>@sumPrices.ToString("N0") VND</span>
@@ -377,7 +377,7 @@
 														<div class="discount-card">
 															<div class="discount-info">
 																<h3>@discount.Name - @discount.Code</h3>
-																
+
 																<p>Giảm giá @discount.DiscountPercentage %</p>
 																<p class="text-dark">Tối đa : @discount.AmountMax</p>
 															</div>
@@ -869,7 +869,6 @@
 			await Task.Delay(3000); // Đợi thời gian hiển thị của Snackbar
 		});
 	}
-
 	private async void SelectSeat(SeatDto seat)
 	{
 		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
@@ -878,27 +877,53 @@
 			return;
 		}
 
-		// Kiểm tra nếu số lượng ghế chọn vượt quá giới hạn
-		if (!selectedSeats.Contains(seat.SeatNumber) && selectedSeats.Count >= 10)
-		{
-			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
-			return;
-		}
-
 		if (seat.Status != NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
-			// Kiểm tra ghế bị bỏ trống (hàng hoặc cột)
-			if (!selectedSeats.Contains(seat.SeatNumber))
+			if (selectedSeats.Contains(seat.SeatNumber))
 			{
-				char currentRow = seat.SeatNumber[0];
-				int currentCol = int.Parse(seat.SeatNumber.Substring(1));
+				// Bỏ ghế
+				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
+				selectedSeatsId.Remove(seat.ID);
+				selectedSeats.Remove(seat.SeatNumber);
+				seatPrices -= (decimal)seat.Price;
+				sumPrices -= (decimal)seat.Price;
+				totalPrices -= (decimal)seat.Price;
+			}
+			else
+			{
+				// Chọn ghế
+				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
+				selectedSeats.Add(seat.SeatNumber);
+				selectedSeatsId.Add(seat.ID);
+				seatPrices += (decimal)seat.Price;
+				sumPrices += (decimal)seat.Price;
+				totalPrices += (decimal)seat.Price;
+			}
+
+			// Cập nhật tổng tiền
+			selectedSeatNumbers = string.Join(", ", selectedSeats);
+			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
+			StateHasChanged();
+		}
+	}
+	private string ValidateSeats()
+	{
+		foreach (var seatNumber in selectedSeats)
+		{
+			char currentRow = seatNumber[0];
+			int currentCol = int.Parse(seatNumber.Substring(1));
+
+			if (groupedSeats.TryGetValue(currentRow.ToString(), out var seatsInRow))
+			{
+				var firstSeat = seatsInRow.First().SeatNumber;
+				var lastSeat = seatsInRow.Last().SeatNumber;
 
 				foreach (var selectedSeat in selectedSeats)
 				{
 					char selectedRow = selectedSeat[0];
 					int selectedCol = int.Parse(selectedSeat.Substring(1));
 
-					// Kiểm tra ghế giữa trong cùng một hàng
+					// Kiểm tra ghế giữa trong hàng ngang
 					if (currentRow == selectedRow && Math.Abs(currentCol - selectedCol) == 2)
 					{
 						int middleCol = (currentCol + selectedCol) / 2;
@@ -906,51 +931,37 @@
 
 						if (!selectedSeats.Contains(middleSeat))
 						{
-							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
-							return;
+							return $"Không được để trống ghế giữa ";
 						}
 					}
 
-					// Kiểm tra ghế giữa trong cùng một cột
-					if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 2)
-					{
-						char middleRow = (char)((currentRow + selectedRow) / 2);
-						string middleSeat = $"{middleRow}{currentCol}";
+					// // Kiểm tra ghế cách hàng (hàng dọc)
+					// if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 1)
+					// {
+					// 	char middleRow = (char)((currentRow + selectedRow) / 2);
+					// 	string middleSeat = $"{middleRow}{currentCol}";
 
-						if (!selectedSeats.Contains(middleSeat))
-						{
-							ShowSnackbar($"Không được để trống ghế giữa: {middleSeat}!", Severity.Warning);
-							return;
-						}
-					}
+					// 	if (!selectedSeats.Contains(middleSeat))
+					// 	{
+					// 		return $"Ghế {middleSeat} bị cách hàng!";
+					// 	}
+					// }
+				}
+
+				// Kiểm tra ghế ngoài cùng
+				if (seatNumber == seatsInRow[1].SeatNumber && !selectedSeats.Contains(firstSeat))
+				{
+					return $"Không được để trống ghế ngoài cùng";
+				}
+
+				if (seatNumber == seatsInRow[^2].SeatNumber && !selectedSeats.Contains(lastSeat))
+				{
+					return $"Không được để trống ghế ngoài cùng";
 				}
 			}
-
-			// Xử lý chọn/bỏ ghế
-			if (selectedSeats.Contains(seat.SeatNumber))
-			{
-				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
-				selectedSeatsId.Remove(seat.ID);
-				selectedSeats.Remove(seat.SeatNumber);
-				seatPrices -= (decimal)seat.Price;
-				totalPrices -= (decimal)seat.Price;
-				sumPrices -= (decimal)seat.Price;
-			}
-			else
-			{
-				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
-				selectedSeats.Add(seat.SeatNumber);
-				selectedSeatsId.Add(seat.ID);
-				seatPrices += (decimal)seat.Price;
-				totalPrices += (decimal)seat.Price;
-				sumPrices += (decimal)seat.Price;
-			}
-
-			selectedSeatNumbers = string.Join(", ", selectedSeats);
-			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
-			OnClickToEditAmount();
-			StateHasChanged();
 		}
+
+		return null; // Không có lỗi
 	}
 	#endregion
 	#region combo
@@ -1025,73 +1036,83 @@
 	}
 	private async Task ProcessPayment()
 	{
-		var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
-		if (!string.IsNullOrEmpty(phoneNumber))
+		var validationMessage = ValidateSeats();
+		if (validationMessage != null)
 		{
-
-			request = new CreateBookTicketRequest
-				{
-					ScreeningID = screenings.Id,
-					SeatID = selectedSeatsId,
-					MovieId = movieDto.ID,
-					AccountID = account?.ID,
-					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
-					{
-						FoodComboId = combo.Key.ID,
-						Quantity = combo.Value,
-					}).ToList(),
-					CreateBy = createBy,
-					Point = point,
-					Voucher = null,
-				};
+			ShowSnackbar(validationMessage, Severity.Error);
+			return;
 		}
 		else
 		{
-			request = new CreateBookTicketRequest
-				{
-					ScreeningID = screenings.Id,
-					SeatID = selectedSeatsId,
-					MovieId = movieDto.ID,
-					AccountID = null,
-					BillCombos = selectedCombos.Select(combo => new BillComboReuqest
-					{
-						FoodComboId = combo.Key.ID,
-						Quantity = combo.Value,
-					}).ToList(),
-					CreateBy = createBy,
-					Point = point,
-					Voucher = null,
-
-				};
-		}
-		try
-		{
-			billResp = await _services.BookTicketCounter(request, CancellationToken.None);
-			if (billResp != null)
+			var account = _context.Users.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+			if (!string.IsNullOrEmpty(phoneNumber))
 			{
-				ResetUI();
-				paymentStatus = "success";
-				if (point > 0)
-				{
-					var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
-					resetPoint.MinPoint -= point;
-					_context.RankMembers.Update(resetPoint);
-					_context.SaveChanges();
-				}
+
+				request = new CreateBookTicketRequest
+					{
+						ScreeningID = screenings.Id,
+						SeatID = selectedSeatsId,
+						MovieId = movieDto.ID,
+						AccountID = account?.ID,
+						BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+						{
+							FoodComboId = combo.Key.ID,
+							Quantity = combo.Value,
+						}).ToList(),
+						CreateBy = createBy,
+						Point = point,
+						Voucher = null,
+					};
 			}
 			else
 			{
+				request = new CreateBookTicketRequest
+					{
+						ScreeningID = screenings.Id,
+						SeatID = selectedSeatsId,
+						MovieId = movieDto.ID,
+						AccountID = null,
+						BillCombos = selectedCombos.Select(combo => new BillComboReuqest
+						{
+							FoodComboId = combo.Key.ID,
+							Quantity = combo.Value,
+						}).ToList(),
+						CreateBy = createBy,
+						Point = point,
+						Voucher = null,
+
+					};
+			}
+			try
+			{
+				billResp = await _services.BookTicketCounter(request, CancellationToken.None);
+				if (billResp != null)
+				{
+					ResetUI();
+					paymentStatus = "success";
+					if (point > 0)
+					{
+						var resetPoint = _context.RankMembers.Where(x => x.UserID == account.ID).FirstOrDefault();
+						resetPoint.MinPoint -= point;
+						_context.RankMembers.Update(resetPoint);
+						_context.SaveChanges();
+					}
+				}
+				else
+				{
+					paymentStatus = "failure";
+				}
+
+			}
+			catch (Exception ex)
+			{
 				paymentStatus = "failure";
+				Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
 			}
 
-		}
-		catch (Exception ex)
-		{
-			paymentStatus = "failure";
-			Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
-		}
+			StateHasChanged();
 
-		StateHasChanged();
+		}
 	}
 	public Guid BillTicketId { get; set; }
 
