@@ -1,5 +1,4 @@
-﻿
-using NeonCinema_API.Controllers;
+﻿using NeonCinema_API.Controllers;
 using NeonCinema_Application.DataTransferObject.Movie;
 using NeonCinema_Application.DataTransferObject.User;
 using NeonCinema_Application.DataTransferObject.User.Request;
