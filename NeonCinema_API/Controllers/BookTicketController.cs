@@ -506,7 +506,7 @@ namespace NeonCinema_API.Controllers
 						item.seatEnum = seatEnum.Sold;
 					}
 				}
-				bill.Status = ticketEnum.paid;
+				bill.Status = ticketEnum.checkin;
 
 				_context.BillDetails.Update(bill);
 				_context.SeatShowTimeStatuss.UpdateRange(seat);
