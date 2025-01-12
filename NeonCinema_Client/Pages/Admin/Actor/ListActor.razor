@@ -5,6 +5,7 @@
 @layout LayoutAdmin
 @inject IActorService ActorService
 @attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager navi
 <link rel="stylesheet" href="/css/Actor/listactor.css">
 
 
@@ -45,7 +46,7 @@
             </tr>
         </thead>
         <tbody>
-            
+
             @if (FilteredActors != null && FilteredActors.Any())
             {
                 var actorsToDisplay = FilteredActors.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
@@ -59,7 +60,7 @@
                             <span class="badge @(actor.status == EntityStatus.Active ? "bg-success" : "bg-danger")">
                                 @(actor.status == EntityStatus.Active ? "Hoạt động" : "Không hoạt động")
                             </span>
-                         </td>
+                        </td>
                         <td class="text-center">
                             <button class="btn btn-outline-primary btn-sm" style="border: none;" @onclick="() => EditActor(actor)">
                                 <i class="fas fa-edit"></i>
@@ -102,7 +103,7 @@
             <h4>@(IsEditDialogVisible ? "Sửa Diễn Viên" : "Thêm Diễn Viên")</h4>
             <EditForm Model="@ActorFormModel" OnValidSubmit="@HandleFormSubmit">
                 <DataAnnotationsValidator />
-                
+
                 <div class="form-group">
                     <label for="Name">Tên:</label>
                     <InputText id="Name" @bind-Value="ActorFormModel.Name" class="form-control" />
@@ -128,7 +129,19 @@
         </div>
     </div>
 }
+@if (showConfirmation)
+{
+    <div class="confirmation-container @showClass">
+        <h4>Xác nhận thêm diễn viên</h4>
+        <p><strong>Tên diễn viên:</strong> @ActorFormModel.Name</p>
+        
 
+        <div class="button-group">
+            <button class="btn btn-success" @onclick="ConfirmAddRoom">Xác nhận</button>
+            <button class="btn btn-secondary" @onclick="CancelConfirmation">Hủy</button>
+        </div>
+    </div>
+}
 @code {
     private List<ActorResponse> Actors = new();
     private ActorCreateRequest ActorFormModel = new();
@@ -139,7 +152,8 @@
     private string SelectedStatus = string.Empty;
     private string SearchName = string.Empty;
     private bool isLoading = true;
-
+    private bool showConfirmation = false;
+    private string showClass = "";
     protected override async Task OnInitializedAsync()
     {
         await LoadActors();
@@ -149,9 +163,13 @@
         StateHasChanged(); // Cập nhật giao diện để hiển thị loading
         await Task.Delay(2000); // Tạm dừng trong 2 giây
         isLoading = false; // Kết thúc trạng thái đang tải
-        
-    }
 
+    }
+    private void ShowConfirmationForm()
+    {
+        showConfirmation = true;
+        showClass = "show";
+    }
     private async Task LoadActors()
     {
         try
@@ -218,7 +236,8 @@
             ActorFormModel.Name = NormalizeString(ActorFormModel.Name);
             if (IsCreateDialogVisible)
             {
-                await ActorService.CreateActor(ActorFormModel);
+                ShowConfirmationForm();
+                // await ActorService.CreateActor(ActorFormModel);
             }
             else if (IsEditDialogVisible)
             {
@@ -240,6 +259,23 @@
             Console.WriteLine($"Lỗi khi xử lý biểu mẫu: {ex.Message}");
         }
     }
+    private async Task ConfirmAddRoom()
+    {
+        await ActorService.CreateActor(ActorFormModel);
+        CancelConfirmation();
+        StateHasChanged();
+        await Task.Delay(1000);
+
+        // Làm mới trang hiện tại
+        navi.NavigateTo(navi.Uri, forceLoad: true);
+    }
+    private void CancelConfirmation()
+    {
+        showConfirmation = false; // Ẩn phần xác nhận
+        showClass = "";
+
+    }
+
     private string NormalizeString(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -325,4 +361,42 @@
         .employee-table tbody tr {
             position: relative; /* Đảm bảo các thành phần bên trong dòng không bị che */
         }
+
+    .confirmation-container {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 550px; /* Đặt chiều ngang là 900px */
+        width: 100%; /* Đảm bảo container có thể mở rộng tối đa đến 900px */
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease, top 0.5s ease;
+    }
+
+
+
+
+
+        .confirmation-container.show {
+            opacity: 1;
+            visibility: visible;
+            top: 20%;
+            transform: translate(-50%, -50%);
+        }
+
+    /* Optional: Add smooth fade-in and slide-down transition */
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.5s ease-in-out, top 0.5s ease;
+    }
+
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
+        top: -100%;
+    }
 </style>
