@@ -107,11 +107,7 @@ namespace NeonCinema_Infrastructure.Services
             </tr>
         "))}
         <!-- Thêm tổng tiền -->
-        <tr>
-            <th colspan=""2"" style=""text-align: left;"">Phụ thu phim :{bill.FilmsType}</th>
-            <td>{bill.Surcharge?.ToString("N0")}</td>
-        </tr>
- <tr>
+		<tr>
             <th colspan=""2"" style=""text-align: left;"">Tạm tính</th>
             <td>{bill.TotalPrice?.ToString("N0")}</td>
         </tr>

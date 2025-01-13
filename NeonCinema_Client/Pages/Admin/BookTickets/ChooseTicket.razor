@@ -52,7 +52,7 @@
 					<span class="badge bg-danger">T @movieDto.AgeAllowed</span>
 					<span class="badge bg-dark">
 						@(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
-													movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+																				movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
 					</span>
 					<span class="badge bg-success">@movieDto.MovieTypeName</span>
 				</div>
@@ -120,8 +120,8 @@
 						@foreach (var seat in row.Value)
 						{
 							<div class="seat-box @GetSeatCssClass(seat)"
-								 id="@seat.ID"
-								 @onclick="() => SelectSeat(seat)">
+							id="@seat.ID"
+							@onclick="() => SelectSeat(seat)">
 								@seat.SeatNumber
 							</div>
 						}
@@ -264,7 +264,7 @@
 					<span class="badge bg-danger">T @movieDto.AgeAllowed</span>
 					<span class="badge bg-dark">
 						@(movieDto.Sub == eSubEnum.Caption ? "Phụ đề" :
-													movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
+																				movieDto.Sub == eSubEnum.VoiceActing ? "Lồng tiếng" : "Không xác định")
 					</span>
 					<span class="badge bg-success">@movieDto.MovieTypeName</span>
 				</div>
@@ -283,10 +283,6 @@
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền combo</span>
 					<span>@comboPrices.ToString("N0") VND</span>
-				</div>
-				<div class="d-flex justify-content-between mb-3">
-					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
-					<span>@surcharge.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền tạm tính</span>
@@ -382,8 +378,8 @@
 																<p class="text-dark">Tối đa : @discount.AmountMax</p>
 															</div>
 															<button class="btn btn-primary btn-sm btn-discount"
-																	@onclick="() => SelectDiscount(discount)"
-																	disabled="@(selectedDiscountCode == discount.Code)">
+															@onclick="() => SelectDiscount(discount)"
+															disabled="@(selectedDiscountCode == discount.Code)">
 																@(selectedDiscountCode == discount.Code ? "Đã chọn" : "Chọn")
 															</button>
 														</div>
@@ -416,7 +412,7 @@
 					<div class="form-check">
 						<label class="form-check-label" for="cashRadio">
 							<input type="radio" name="flexRadioDefault" id="cashRadio"
-								   @onchange="(e) => { isCashPayment = true; isPaymentMethodSelected = true; }">
+							@onchange="(e) => { isCashPayment = true; isPaymentMethodSelected = true; }">
 
 							<i class="fa-solid fa-money-bill"></i> Tiền mặt
 						</label>
@@ -424,7 +420,7 @@
 					<div class="form-check">
 						<label class="form-check-label" for="bankTransferRadio">
 							<input type="radio" name="flexRadioDefault" id="bankTransferRadio"
-								   @onchange="(e) => { isCashPayment = false; isPaymentMethodSelected = true; }">
+							@onchange="(e) => { isCashPayment = false; isPaymentMethodSelected = true; }">
 
 							<i class="fa-solid fa-money-check-dollar"></i> Chuyển khoản
 						</label>
@@ -626,7 +622,6 @@
 	private double discount = 0;
 	private double point = 0;
 	private decimal sumPrices;
-	private decimal surcharge = 0;
 	private bool isCashPayment = false;
 	private double pointApply = 0;
 	private bool isPaymentMethodSelected = false;
@@ -747,30 +742,6 @@
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 		createBy = Guid.Parse(userIdClaim.Value);
-		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
-		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
-		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-		if (type != null)
-		{
-			if (type.MovieTypeName.Contains("3D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge3D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-			if (type.MovieTypeName.Contains("4D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge4D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-			if (type.MovieTypeName.Contains("2D".Trim()))
-			{
-				surcharge = 0;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-		}
 		StateHasChanged(); // Cập nhật giao diện
 	}
 	private async Task RefreshSeatsAsync()
@@ -876,31 +847,49 @@
 			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
 			return;
 		}
-
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 		if (seat.Status != NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
+			decimal basePrice = (decimal)seat.Price; // Nếu không có BasePrice, sử dụng giá hiện tại làm giá gốc
+
 			if (selectedSeats.Contains(seat.SeatNumber))
 			{
-				// Bỏ ghế
+				if (type.MovieTypeName.Contains("3D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge3D;
+				}
+				if (type.MovieTypeName.Contains("4D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge4D;
+				}
 				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
 				selectedSeatsId.Remove(seat.ID);
 				selectedSeats.Remove(seat.SeatNumber);
-				seatPrices -= (decimal)seat.Price;
-				sumPrices -= (decimal)seat.Price;
-				totalPrices -= (decimal)seat.Price;
+				seatPrices -= basePrice;
+				sumPrices -= basePrice;
+				totalPrices -= basePrice;
+				/* seat.Price = basePrice; */
 			}
 			else
 			{
-				// Chọn ghế
+
+				if (type.MovieTypeName.Contains("3D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge3D;
+				}
+				if (type.MovieTypeName.Contains("4D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge4D;
+				}
 				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
 				selectedSeats.Add(seat.SeatNumber);
 				selectedSeatsId.Add(seat.ID);
-				seatPrices += (decimal)seat.Price;
-				sumPrices += (decimal)seat.Price;
-				totalPrices += (decimal)seat.Price;
+				seatPrices += basePrice;
+				sumPrices += basePrice;
+				totalPrices += basePrice;
 			}
-
-			// Cập nhật tổng tiền
 			selectedSeatNumbers = string.Join(", ", selectedSeats);
 			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
 			StateHasChanged();
@@ -934,18 +923,6 @@
 							return $"Không được để trống ghế giữa ";
 						}
 					}
-
-					// // Kiểm tra ghế cách hàng (hàng dọc)
-					// if (currentCol == selectedCol && Math.Abs(currentRow - selectedRow) == 1)
-					// {
-					// 	char middleRow = (char)((currentRow + selectedRow) / 2);
-					// 	string middleSeat = $"{middleRow}{currentCol}";
-
-					// 	if (!selectedSeats.Contains(middleSeat))
-					// 	{
-					// 		return $"Ghế {middleSeat} bị cách hàng!";
-					// 	}
-					// }
 				}
 
 				// Kiểm tra ghế ngoài cùng
@@ -1031,7 +1008,6 @@
 		comboPrices = 0;
 		point = 0;
 		sumPrices = 0;
-		surcharge = 0;
 		RefreshSeatsAsync();
 	}
 	private async Task ProcessPayment()
@@ -1097,6 +1073,7 @@
 						_context.RankMembers.Update(resetPoint);
 						_context.SaveChanges();
 					}
+					_navi.NavigateTo("/book_ticket");
 				}
 				else
 				{
