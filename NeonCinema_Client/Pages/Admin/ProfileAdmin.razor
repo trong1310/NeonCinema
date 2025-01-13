@@ -1,6 +1,5 @@
-﻿   @page "/profile-admin/{id:guid}"
+﻿@page "/profile-admin/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.User
-@layout LayoutAdmin
 @using NeonCinema_Client.Data.IServices.User
 @using System.Globalization
 @using System.Text.Json
@@ -9,6 +8,7 @@
 @using System.Text.RegularExpressions
 @inject IUserServices _service
 @inject HttpClient _http
+@layout LayoutAdmin
 @inject NavigationManager _navigation
 @inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin")]
