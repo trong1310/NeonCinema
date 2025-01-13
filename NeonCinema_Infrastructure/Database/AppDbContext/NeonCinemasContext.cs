@@ -66,7 +66,8 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			 optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			 //optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			 optionsBuilder.UseSqlServer("Data Source=PHONGKEDAY2\\PHONGKE2004;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 				
         }
 
@@ -996,11 +997,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		PriceAfter17hWeekDay = 60000,
 		PriceBefore17hWeekeend = 60000,
 		PriceAfter17hWeekeend = 70000,
-		Surcharge3D = 30000,
-		Surcharge4D = 40000,
+		Surcharge3D = 10000,
+		Surcharge4D = 20000,
 		SurchargeIMAX = 50000,
-		SurchargeVIP = 30000,
-		SurchargeCouple = 50000
+		SurchargeVIP = 5000,
+		SurchargeCouple = 10000
 	},
 	
 	};
