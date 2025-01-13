@@ -10,7 +10,7 @@
 
 <EditForm Model="request" OnValidSubmit="AddRoom">
     <DataAnnotationsValidator />
-    
+
     <div class="add-room-container">
         <h3 class="title">Thêm phòng chiếu</h3>
 
@@ -28,31 +28,14 @@
             <div class="form-group">
                 <label for="rowNumber">Số hàng</label>
                 <input id="rowNumber" type="number" class="form-control" @bind="request.RowNumber" />
-               
                 <ValidationMessage For="@(() => request.RowNumber)" />
             </div>
 
             <div class="form-group">
                 <label for="columnNumber">Số cột</label>
                 <input id="columnNumber" type="number" class="form-control" @bind="request.ColumnNumber" />
-               
                 <ValidationMessage For="@(() => request.ColumnNumber)" />
             </div>
-
-           @*  <div class="form-group">
-                <label for="cinema">Chọn rạp</label>
-                <select id="cinema" class="form-control" @bind="request.CinemasId" >
-                    <option value="@Guid.Empty">-Chọn rạp-</option>
-                    @foreach (var cinema in cinemas )
-                    {
-                        <option value="@cinema.ID">@cinema.Name</option>
-                    }
-                </select>
-                <ValidationSummary />
-                <ValidationMessage For="@(() => request.CinemasId)" />
-               
-                
-            </div> *@
         </div>
 
         <div class="button-group">
@@ -61,25 +44,35 @@
         </div>
     </div>
 
-
+    
+    
 </EditForm>
+@if (showConfirmation)
+{
+    <div class="confirmation-container @showClass">
+        <h4>Xác nhận thêm phòng</h4>
+        <p><strong>Tên phòng:</strong> @request.Name</p>
+        <p><strong>Số hàng:</strong> @request.RowNumber</p>
+        <p><strong>Số cột:</strong> @request.ColumnNumber</p>
 
-
-   
-
-
+        <div class="button-group">
+            <button class="btn btn-success" @onclick="ConfirmAddRoom">Xác nhận</button>
+            <button class="btn btn-secondary" @onclick="CancelConfirmation">Hủy</button>
+        </div>
+    </div>
+}
 @code {
     
     private List<CinemasDTO> cinemas = new List<CinemasDTO>();
     private string errorMessage;
-
+    private bool showConfirmation = false;
+    private string showClass = "";
     private RoomCreateRequest request = new RoomCreateRequest
-        {
-            Status = EntityStatus.Active ,
-            CinemasId = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
-        };
+    {
+        Status = EntityStatus.Active ,
+        CinemasId = Guid.Parse("8fb86c77-213f-4316-8a7a-43fee795514e")
+    };
     private List<string> selectedSeats = new List<string>();
-    
     private void SelectSeat(int row, int col)
     {
         string seatLabel = $"{(char)('A' + row)}{col + 1}";
@@ -97,15 +90,20 @@
     {
         cinemas = await RoomService.GetAllCinemas();
     }
+    private void ShowConfirmationForm()
+    {
+        showConfirmation = true;
+        showClass = "show";
+    }
     
     private async Task AddRoom()
     {
-        if (request.CinemasId == Guid.Empty)
-        {
-            errorMessage = "Vui lòng chọn rạp.";
-            StateHasChanged(); 
-            return;
-        }
+        // if (request.CinemasId == Guid.Empty)
+        // {
+        //     errorMessage = "Vui lòng chọn rạp.";
+        //     StateHasChanged(); 
+        //     return;
+        // }
         var normalizedName = NormalizeName(request.Name);
         if (await IsRoomNameDuplicate(normalizedName))
         {
@@ -114,11 +112,22 @@
             return;
         }
         errorMessage = null;
-        StateHasChanged();
+        ShowConfirmationForm();
+        //StateHasChanged();
+        //await RoomService.CreateRoom(request);
+        //Navigation.NavigateTo("/listroom");
+    }
+    private async Task ConfirmAddRoom()
+    {
         await RoomService.CreateRoom(request);
         Navigation.NavigateTo("/listroom");
     }
-
+    private void CancelConfirmation()
+    {
+        showConfirmation = false; // Ẩn phần xác nhận
+        showClass = "";
+        
+    }
     private void Cancel()
     {
         Navigation.NavigateTo("/listroom");
@@ -212,15 +221,44 @@
     .btn-secondary:hover {
         background-color: #5a6268;
     }
-    /* transition.css */
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity 0.5s ease-in-out;
+    
+
+    .confirmation-container {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 550px; /* Đặt chiều ngang là 900px */
+        width: 100%; /* Đảm bảo container có thể mở rộng tối đa đến 900px */
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease, top 0.5s ease;
     }
 
-    .fade-enter,
-    .fade-leave-to {
+        
+        
+
+
+        .confirmation-container.show {
+            opacity: 1;
+            visibility: visible;
+            top: 20%;
+            transform: translate(-50%, -50%);
+        }
+
+    /* Optional: Add smooth fade-in and slide-down transition */
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.5s ease-in-out, top 0.5s ease;
+    }
+
+    .fade-enter, .fade-leave-to {
         opacity: 0;
+        top: -100%;
     }
 
 </style>

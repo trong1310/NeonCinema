@@ -104,20 +104,28 @@ else
                     </tbody>
 
                 </table>
-                <div class="d-flex justify-content-center align-items-center mt-3 pagination-controls">
-                    <button class="btn btn-outline-secondary me-2" @onclick="PreviousPage" disabled="@(!CanGoToPreviousPage())">
-                        Trước
-                    </button>
-                    <span class="mx-2">Trang @currentPage trên @totalPages</span>
-                    <button class="btn btn-outline-secondary ms-2" @onclick="NextPage" disabled="@(!CanGoToNextPage())">
-                        Sau
-                    </button>
-                </div>
+                
 
 
             </div>
+            
         }
     </div>
+    <div class="content-wrapper d-flex flex-column">
+        <div class="content">
+            <!-- Nội dung khác -->
+        </div>
+        <div class="pagination-controls">
+            <button class="btn btn-outline-secondary me-2" @onclick="PreviousPage" disabled="@(!CanGoToPreviousPage())">
+                <i class="fa-solid fa-circle-left"></i>
+            </button>
+            <span class="mx-2">Trang @currentPage trên @totalPages</span>
+            <button class="btn btn-outline-secondary ms-2" @onclick="NextPage" disabled="@(!CanGoToNextPage())">
+                <i class="fa-solid fa-circle-right"></i>
+            </button>
+        </div>
+    </div>
+
 }
 
 
@@ -129,7 +137,7 @@ else
     private string selectedStatus = "All"; // Giới tính mặc định là "Tất cả"
     private bool isLoading = true;
     private int currentPage = 1;
-    private int itemsPerPage = 5;
+    private int itemsPerPage = 8;
     private int totalPages => (int)Math.Ceiling((double)filteredRooms.Count / itemsPerPage);
     private bool CanGoToNextPage() => currentPage < totalPages;
     private bool CanGoToPreviousPage() => currentPage > 1;
@@ -200,8 +208,19 @@ else
 }
 <style>
     .pagination-controls {
-        gap: 0.5rem; /* Adjust gap between items */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        position: sticky; /* Hoặc absolute tùy ý */
+        bottom: 0; /* Luôn đặt ở cuối */
+        margin-top: auto; /* Giúp đẩy xuống dưới */
+        padding: 1rem;
+        background-color: white;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng cho phân tách */
+        z-index: 10; /* Đảm bảo hiển thị trên nội dung khác */
     }
+
 
         .pagination-controls button {
             padding: 0.5rem 1rem; /* Adjust button size */
@@ -281,4 +300,15 @@ else
         justify-content: center;
         align-items: center;
     }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Đảm bảo chiều cao toàn màn hình */
+    }
+
+    .content {
+        flex: 1; /* Chiếm hết không gian còn lại trước khi đến pagination */
+    }
+
 </style>
