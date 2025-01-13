@@ -1,5 +1,6 @@
 ﻿@page "/profile-client/{id:guid}"
 @using NeonCinema_API.Controllers.Service
+@using NeonCinema_Application.DataTransferObject.BookingHistory
 @using NeonCinema_Application.DataTransferObject.User
 @layout LayoutClient
 @using NeonCinema_Application.DataTransferObject.User.Request
@@ -17,6 +18,8 @@
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @inject ISV isv
 @inject ISnackbar Snackbar
+@inject HttpClient _HttpClient
+@inject IJSRuntime JSRuntime
 @inject NavigationManager _navi
 
 <MudSnackbarProvider MaxSnackbars="3" Position="SnackbarPosition.TopRight" PreventDuplicates="true" />
@@ -207,8 +210,14 @@
 		<div class="col-md-10">
 			<span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
 		</div>
-		<div class="col-md-2">
-			<input type="month" name="name" class="form-control mb-3" style="max-width: 200px; height: 50px; margin-top: 15px " />
+		<div class="col-3">
+			<label for="StartDate">Từ ngày</label>
+			<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="fromDate" @oninput="OnInputChangedFromDate" />
+
+		</div>
+		<div class="col-3">
+			<label for="EndDate">Đến ngày</label>
+			<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="toDate" @oninput="OnInputChangedToDate" />
 		</div>
 	</div>
 	<div class="row border rounded">
@@ -223,6 +232,7 @@
 					<th scope="col">Số ghế</th>
 					<th scope="col">Phòng</th>
 					<th scope="col">Tổng điểm tích lũy</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -236,7 +246,7 @@
 				}
 				else
 				{
-					@foreach (var item in _lstBill.Select((value, index) => new { value, index }))
+					@foreach (var item in _lstBillFil.Select((value, index) => new { value, index }))
 					{
 						string seatNumber = ""; // Reset seatNumber cho mỗi item
 						string roomName = ""; // Reset roomName cho mỗi item
@@ -278,6 +288,7 @@
 							{
 								<td>0 điểm</td>
 							}
+							<td><i class="fa-solid fa-eye" style="color: #74C0FC;" @onclick="(() => ShowDetail(item.value))"></i></td>
 						</tr>
 					}
 				}
@@ -285,6 +296,82 @@
 		</table>
 	</div>
 </div>
+
+<!--Modal Details-->
+@if (selectedBill != null)
+{
+	<div class="modal show fade"
+		 tabindex="-1"
+		 style="display: block; margin-top: 20px; height: 850px; position: fixed"
+		 aria-hidden="false">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header" style="position: sticky">
+					<h5 class="modal-title">Chi Tiết Hóa Đơn</h5>
+					<button type="button"
+							class="btn-close"
+							@onclick="CloseDetail"></button>
+				</div>
+				<div class="modal-body">
+					<h4>Thông Tin Hóa Đơn</h4>
+					<p><b>Mã Hóa Đơn:</b> @selectedBill.BillCode</p>
+					<p><b>Khách Hàng:</b> @users.FullName</p>
+					<p><b>Nhân viên xử lý:</b></p>
+					<p><b>Tên Rạp:</b> @TheaterName</p>
+					<p><b>Địa Chỉ Rạp:</b> @TheaterAddress</p>
+
+					<h4 class="mt-4">Thông Tin Vé</h4>
+					@if (selectedBill.Ticket != null)
+					{
+						@foreach (var ticket in selectedBill.Ticket)
+						{
+							<div class="ticket-info mb-3 border rounded p-3">
+								<p><b>Phim:</b> @ticket.Screenings?.Movies?.Name</p>
+								<p><b>Ngày Chiếu:</b> @ticket.Screenings?.ShowDate.ToString("dd/MM/yyyy")</p>
+								<p><b>Giờ Chiếu:</b> @ticket.Screenings?.ShowTime?.StartTime.ToString(@"hh\:mm") - @ticket.Screenings?.ShowTime?.EndTime.ToString(@"hh\:mm")</p>
+								<p><b>Ghế:</b> @ticket.Seat?.SeatNumber</p>
+								<p><b>Phòng:</b> @ticket.Screenings?.Rooms?.Name</p>
+								<p><b>Giá Vé:</b> @ticket.Price.ToString("C0")</p>
+							</div>
+						}
+					}
+					else
+					{
+						<p>Không có thông tin vé.</p>
+					}
+
+					<h4 class="mt-4">Thông Tin Combo</h4>
+					@if (selectedBill.BillCombos != null)
+					{
+						@foreach (var combo in selectedBill.BillCombos)
+						{
+							<p>@combo.FoodCombo?.Content - Số Lượng: @combo.Quantity - Giá: @combo.FoodCombo?.TotalPrice.ToString("C0")</p>
+						}
+					}
+					else
+					{
+						<p>Không có combo.</p>
+					}
+
+					<div class="mt-4 text-center">
+						<h4>Quét Barcode Để Xem Chi Tiết</h4>
+						<img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=@GenerateBarcodeData(selectedBill)&scale=2&includetext=true"
+							 alt="Barcode">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" @onclick="DownloadInvoice">
+						Tải Hóa Đơn PDF
+					</button>
+					<button class="btn btn-secondary" @onclick="CloseDetail">
+						Đóng
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-backdrop fade show"></div>
+}
 @code {
 	[Parameter]
 	public Guid id { get; set; }
@@ -315,6 +402,8 @@
 		await LoadUserDetails();
 		await TotalMoneyUser();
 		await TotalPointUser();
+		await FilterDate();
+
 	}
 
 	private void ShowSnackbar(string message, Severity severity)
@@ -513,7 +602,7 @@
 				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
 				isSubmitting = false;
 				await Task.Delay(4000);
-				
+
 				CloseModal();
 				_navi.NavigateTo(_navi.Uri, forceLoad: true);
 			}
@@ -534,10 +623,10 @@
 	}
 	#endregion
 
-
 	#region Lịch sử giao dịch
 	private Users users = new Users();
 	private List<Bill> _lstBill = new List<Bill>();
+	private List<Bill> _lstBillFil = new List<Bill>();
 	private double totalMoney = 0;
 	private string nameMovie = "";
 	private string seatNumber = "";
@@ -574,13 +663,16 @@
 
 	private async Task TotalPointUser()
 	{
-		if (users.RankMembers.Count != 0)
+		if(users.RankMembers != null)
 		{
-			foreach (var item in users.RankMembers)
+			if (users.RankMembers.Count != 0)
 			{
-				totalPoint = totalPoint + Convert.ToInt32(item.MinPoint);
+				foreach (var item in users.RankMembers)
+				{
+					totalPoint = totalPoint + Convert.ToInt32(item.MinPoint);
+				}
 			}
-		}
+		}	
 	}
 	#endregion
 
@@ -670,6 +762,93 @@
 		errorMessages = message;
 		successMessages = null;
 	}
+	#endregion
+
+
+	#region Filter
+	private DateTime? fromDate;
+	private DateTime? toDate;
+
+	private async Task OnInputChangedFromDate(ChangeEventArgs e)
+	{
+		fromDate = DateTime.Parse(e.Value.ToString());
+		if (toDate < fromDate)
+		{
+			toDate = fromDate;
+		}
+		await FilterDate();
+	}
+
+	private async Task OnInputChangedToDate(ChangeEventArgs e)
+	{
+		toDate = DateTime.Parse(e.Value.ToString());
+
+		if(toDate < fromDate)
+		{
+			toDate = fromDate;
+		}
+		await FilterDate();
+	}
+
+	private async Task FilterDate()
+	{
+		if(fromDate != null && toDate != null)
+		{
+			_lstBillFil = _lstBill.Where(x => x.CreatedTime >= fromDate && x.CreatedTime < toDate).ToList();
+		}
+		else
+		{
+			_lstBillFil = _lstBill;
+		}
+	}
+	#endregion
+
+	#region Bill Details
+	private Bill? selectedBill = null;
+
+	// Thông tin bổ sung
+	public string TheaterName = "NeonCinemas";
+	public string TheaterAddress = "Số 1 - Phúc diễn - Bắc từ liêm - Hà nội";
+
+
+	private void CloseDetail() => selectedBill = null;
+
+	private async Task DownloadInvoice()
+	{
+		if (selectedBill != null)
+		{
+			try
+			{
+				var response = await _HttpClient.GetAsync($"api/Resources/generate-invoice-pdf?billId={selectedBill.ID}");
+				if (response.IsSuccessStatusCode)
+				{
+					var fileBytes = await response.Content.ReadAsByteArrayAsync();
+					await JSRuntime.InvokeVoidAsync("downloadFile",
+						$"Invoice_{selectedBill.BillCode}.zip",
+						fileBytes,
+						"application/zip");
+				}
+				else
+				{
+					await JSRuntime.InvokeVoidAsync("alert", $"Lỗi tải hoá đơn: {response.ReasonPhrase}");
+				}
+			}
+			catch (Exception ex)
+			{
+				await JSRuntime.InvokeVoidAsync("alert", $"Có lỗi khi tải hoá đơn: {ex.Message}");
+			}
+		}
+		else
+		{
+			await JSRuntime.InvokeVoidAsync("alert", "Không có hoá đơn để tải.");
+		}
+	}
+
+	private string GenerateBarcodeData(Bill bill)
+				=> bill.BillCode.ToString();
+
+
+	private void ShowDetail(Bill bill) => selectedBill = bill;
 	#endregion
 }
 
