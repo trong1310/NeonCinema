@@ -1,7 +1,9 @@
 ﻿@page "/booking-history"
+
 @using NeonCinema_Application.DataTransferObject.BookingHistory
 @using NeonCinema_Client.Data.IServices.BookHistory
 @using System.Net.NetworkInformation
+
 @inject IHistoryService HistoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -9,7 +11,7 @@
 @inject HttpClient _HttpClient
 @attribute [Authorize(Roles = "Admin")]
 
-<!-- Thêm link QuaggaJS CDN và QuaggaScanner.js -->
+// Thư viện quét barcode
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <script src="/js/QuaggaScanner.js"></script>
 
@@ -80,12 +82,20 @@ else
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
-                                        <h5 class="card-title font-weight-bold">
-                                            Mã Hóa Đơn: @bill.BillCode
-                                        </h5>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="card-title font-weight-bold">
+                                                Mã Hóa Đơn: @bill.BillCode
+                                            </h5>
+                                            <!-- Trạng thái hiển thị màu -->
+                                            <span class="@GetStatusBadgeClass(bill.Status)">
+                                                @GetVietnameseStatus(bill.Status)
+                                            </span>
+                                        </div>
+
                                         <p>Người dùng: <span class="text-primary">@bill.UserName</span></p>
                                         <p>Nhân viên xử lý: <span class="text-info">@bill.StaffName</span></p>
                                         <p>Ngày hóa đơn: @bill.BillDate.ToString("dd/MM/yyyy")</p>
+
                                         <p>
                                             Tổng tiền:
                                             <span class="text-success font-weight-bold">
@@ -110,35 +120,81 @@ else
             }
         </div>
 
-        <!-- PHÂN TRANG -->
-        <div class="d-flex align-items-center justify-content-between mt-4">
-            <div>
-                <label>Hiển thị</label>
-                <select @bind="pageSize"
-                        class="form-select d-inline-block"
-                        style="width:auto">
-                    @foreach (var size in pageSizeOptions)
+        <!-- PHÂN TRANG (DÙNG ICON) -->
+        <div class="d-flex align-items-center justify-content-center mt-4 pagination-container">
+            <nav aria-label="pagination" class="shadow-sm">
+                <ul class="pagination pagination-md">
+                    <!-- Nút Về Đầu -->
+                    <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                        <button class="page-link"
+                                @onclick="GotoFirst"
+                                aria-label="First">
+                            <span aria-hidden="true">
+                                <i class="fas fa-angle-double-left"></i>
+                            </span>
+                        </button>
+                    </li>
+
+                    <!-- Nút Trang Trước -->
+                    <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                        <button class="page-link"
+                                @onclick="PrevPage"
+                                aria-label="Previous">
+                            <span aria-hidden="true">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        </button>
+                    </li>
+
+                    <!-- Danh sách số trang (có thể hiển thị "...") -->
+                    @foreach (var p in GetPageRange())
                     {
-                        <option value="@size">@size</option>
+                        if (p == 0)
+                        {
+                            <!-- Hiển thị dấu ... -->
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item @(pageNumber == p ? "active" : "")">
+                                <button class="page-link"
+                                        @onclick="() => GotoPage(p)">
+                                    @p
+                                </button>
+                            </li>
+                        }
                     }
-                </select>
-                <span>bản ghi / trang</span>
-            </div>
-            <div>
-                <button class="btn btn-secondary me-2"
-                        @onclick="PrevPage"
-                        disabled="@(pageNumber == 1)">
-                    « Trang trước
-                </button>
-                <button class="btn btn-secondary"
-                        @onclick="NextPage"
-                        disabled="@(pageNumber >= TotalPages)">
-                    Trang sau »
-                </button>
-            </div>
+
+                    <!-- Nút Trang Sau -->
+                    <li class="page-item @(pageNumber == TotalPages ? "disabled" : "")">
+                        <button class="page-link"
+                                @onclick="NextPage"
+                                aria-label="Next">
+                            <span aria-hidden="true">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </button>
+                    </li>
+
+                    <!-- Nút Về Cuối -->
+                    <li class="page-item @(pageNumber == TotalPages ? "disabled" : "")">
+                        <button class="page-link"
+                                @onclick="GotoLast"
+                                aria-label="Last">
+                            <span aria-hidden="true">
+                                <i class="fas fa-angle-double-right"></i>
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <div class="text-center mt-2">
-            Trang @pageNumber trên @TotalPages (Tổng @TotalRecords hóa đơn)
+
+        <div class="text-center mt-2 text-secondary small">
+            Trang @pageNumber / @TotalPages
+            (Tổng @TotalRecords hóa đơn)
         </div>
     </div>
 
@@ -164,6 +220,12 @@ else
                         <p><b>Nhân viên xử lý:</b> @selectedBill.StaffName</p>
                         <p><b>Tên Rạp:</b> @selectedBill.TheaterName</p>
                         <p><b>Địa Chỉ Rạp:</b> @selectedBill.TheaterAddress</p>
+                        <p>
+                            <b>Trạng Thái Hóa Đơn:</b>
+                            <span class="@GetStatusBadgeClass(selectedBill.Status)">
+                                @GetVietnameseStatus(selectedBill.Status)
+                            </span>
+                        </p>
 
                         <h4 class="mt-4">Thông Tin Vé</h4>
                         @if (selectedBill.Tickets.Any())
@@ -217,6 +279,7 @@ else
         </div>
         <div class="modal-backdrop fade show"></div>
     }
+
     <!-- MODAL CAMERA QUÉT BARCODE -->
     @if (showScanner)
     {
@@ -232,7 +295,7 @@ else
                             <i class="fas fa-play"></i> Bắt đầu quét
                         </button>
                         <div>
-                            <!-- Sử dụng div để hiển thị video từ QuaggaJS -->
+                            <!-- div hiển thị video QuaggaJS -->
                             <div id="quagga-video" style="width:auto; height:auto; border:1px solid #ccc;"></div>
                         </div>
                         @if (!string.IsNullOrEmpty(scannedResult))
@@ -252,9 +315,9 @@ else
         </div>
         <div class="modal-backdrop fade show"></div>
     }
+}
 
-
-    @code {
+@code {
     private List<BillHistoryDTO> billHistory = new();
     private BillHistoryDTO? selectedBill = null;
 
@@ -263,20 +326,21 @@ else
     private string filterBillCode = "";
     private DateTime? filterDate;
 
-    // Biến loading
+    // Loading
     private bool isLoading = true;
 
-    // Biến barcode
+    // Barcode
     private bool showScanner = false;
     private string scannedResult = "";
 
-    // ---------------------------
-    // PHÂN TRANG & SORT
-    // ---------------------------
+    // Phân trang
     private int pageNumber = 1;
     private int pageSize = 5;
     private int[] pageSizeOptions = new[] { 5, 10, 20, 50 };
 
+    // =========================================
+    // TÍNH TOÁN SỐ TRANG
+    // =========================================
     private int TotalRecords => FilteredAndSortedBills.Count();
     private int TotalPages => (int)Math.Ceiling((double)TotalRecords / pageSize);
 
@@ -284,35 +348,129 @@ else
     private IEnumerable<BillHistoryDTO> FilteredAndSortedBills =>
         billHistory
             .Where(b =>
-                (string.IsNullOrEmpty(searchUserName) || b.UserName?.Contains(searchUserName, StringComparison.OrdinalIgnoreCase) == true) &&
-                (string.IsNullOrEmpty(filterBillCode) || b.BillCode.ToString()?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true) &&
-                (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
+                (string.IsNullOrEmpty(searchUserName)
+                 || b.UserName?.Contains(searchUserName, StringComparison.OrdinalIgnoreCase) == true)
+                && (string.IsNullOrEmpty(filterBillCode)
+                 || b.BillCode.ToString()?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true)
+                && (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
             )
             .OrderByDescending(b => b.BillDate);
 
-    // Lấy trang hiện tại
     private IEnumerable<BillHistoryDTO> PagedBills =>
         FilteredAndSortedBills
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize);
 
-    private void NextPage()
+    protected override async Task OnInitializedAsync()
     {
-        if (pageNumber < TotalPages)
-            pageNumber++;
+        isLoading = true;
+        var allBills = await HistoryService.GetAllBillHistoryAsync();
+
+        // Chỉ hiển thị Bill checkin & paid
+        billHistory = allBills
+            .Where(b =>
+                b.Status?.Equals("checkin", StringComparison.OrdinalIgnoreCase) == true
+             || b.Status?.Equals("paid", StringComparison.OrdinalIgnoreCase) == true
+            )
+            .ToList();
+
+        await Task.Delay(800); // Giả lập loading
+        isLoading = false;
     }
+
+    // ---------------------------
+    // PHƯƠNG THỨC PHÂN TRANG
+    // ---------------------------
+    private void GotoPage(int p)
+    {
+        pageNumber = p;
+    }
+    private void GotoFirst() => pageNumber = 1;
+    private void GotoLast() => pageNumber = TotalPages;
+
     private void PrevPage()
     {
         if (pageNumber > 1)
             pageNumber--;
     }
 
-    protected override async Task OnInitializedAsync()
+    private void NextPage()
     {
-        isLoading = true;
-        billHistory = await HistoryService.GetAllBillHistoryAsync();
-        await Task.Delay(2000);
-        isLoading = false;
+        if (pageNumber < TotalPages)
+            pageNumber++;
+    }
+
+    /// <summary>
+    /// Hàm trả về danh sách trang, kèm theo 0 để hiển thị "..."
+    /// </summary>
+    private List<int> GetPageRange()
+    {
+        var pages = new List<int>();
+
+        if (TotalPages <= 7)
+        {
+            // Hiển thị hết, VD: 1 2 3 4 5
+            for (int i = 1; i <= TotalPages; i++)
+                pages.Add(i);
+        }
+        else
+        {
+            // Số trang nhiều => hiển thị rút gọn
+            // Lấy 1,2,3... X, X+1, X+2..., last
+            // Hoặc hiển thị xung quanh pageNumber:
+            int current = pageNumber;
+            int firstPage = 1;
+            int lastPage = TotalPages;
+
+            pages.Add(firstPage);
+
+            // Nếu pageNumber > 3 => hiển thị ...
+            if (current - 2 > 2)
+                pages.Add(0); // 0 => "..."
+
+            // Thêm các trang giữa
+            // start: current-1; end: current+1
+            int start = Math.Max(current - 1, 2);
+            int end = Math.Min(current + 1, lastPage - 1);
+
+            for (int i = start; i <= end; i++)
+                pages.Add(i);
+
+            // Nếu pageNumber < lastPage-2 => hiển thị ...
+            if (current + 2 < lastPage)
+                pages.Add(0); // 0 => "..."
+
+            pages.Add(lastPage);
+        }
+
+        return pages;
+    }
+
+    // -----------------------------------------
+
+    private string GetVietnameseStatus(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status)) return "Không xác định";
+
+        return status.ToLower() switch
+        {
+            "checkin" => "Đợi Check-in",
+            "paid" => "Đã Hoàn Tất",
+            _ => "Không xác định"
+        };
+    }
+
+    private string GetStatusBadgeClass(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+            return "badge bg-secondary";
+
+        return status.ToLower() switch
+        {
+            "checkin" => "badge bg-danger",
+            "paid" => "badge bg-success",
+            _ => "badge bg-secondary"
+        };
     }
 
     private void ShowDetail(BillHistoryDTO bill) => selectedBill = bill;
@@ -323,6 +481,7 @@ else
         showScanner = true;
         scannedResult = "";
     }
+
     private void CloseScanner()
     {
         showScanner = false;
@@ -333,11 +492,12 @@ else
     {
         await JSRuntime.InvokeVoidAsync("startQuaggaScan", DotNetObjectReference.Create(this));
     }
+
     private void CancelScan()
     {
-        showScanner = false; // Đóng modal quét mã
-        JSRuntime.InvokeVoidAsync("stopQuagga"); // Dừng QuaggaJS
-        StateHasChanged(); // Cập nhật giao diện
+        showScanner = false;
+        JSRuntime.InvokeVoidAsync("stopQuagga");
+        StateHasChanged();
     }
 
     [JSInvokable]
@@ -349,9 +509,9 @@ else
             var foundBill = billHistory.FirstOrDefault(b => b.BillCode == codeValue);
             if (foundBill != null)
             {
-                selectedBill = foundBill; // Hiển thị chi tiết hóa đơn
-                showScanner = false; // Tắt modal quét
-                StateHasChanged(); // Cập nhật UI
+                selectedBill = foundBill;
+                showScanner = false;
+                StateHasChanged();
             }
             else
             {
@@ -366,55 +526,77 @@ else
 
     private async Task DownloadInvoice()
     {
-        if (selectedBill != null)
+        if (selectedBill is null)
         {
-            try
+            await JSRuntime.InvokeVoidAsync("alert", "Không có hoá đơn để tải!");
+            return;
+        }
+
+        try
+        {
+            // Nếu bill đang checkin => PUT api/History/updateStatusToPaid/{billId}
+            if (selectedBill.Status?.Equals("checkin", StringComparison.OrdinalIgnoreCase) == true)
             {
-                var response = await _HttpClient.GetAsync($"api/Resources/generate-invoice-pdf?billId={selectedBill.BillID}");
-                if (response.IsSuccessStatusCode)
+                var updateResponse = await _HttpClient.PutAsync(
+                    $"api/History/updateStatusToPaid/{selectedBill.BillID}",
+                    null
+                );
+                if (updateResponse.IsSuccessStatusCode)
                 {
-                    var fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    await JSRuntime.InvokeVoidAsync("downloadFile",
-                        $"Invoice_{selectedBill.BillCode}.zip",
-                        fileBytes,
-                        "application/zip");
+                    selectedBill.Status = "paid";
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", $"Lỗi tải hoá đơn: {response.ReasonPhrase}");
+                    await JSRuntime.InvokeVoidAsync("alert",
+                        $"Không thể chuyển Bill sang paid (HTTP {updateResponse.StatusCode}).");
+                    return;
                 }
             }
-            catch (Exception ex)
+
+            // Gọi API tải hoá đơn
+            var downloadResponse = await _HttpClient.GetAsync(
+                $"api/Resources/generate-invoice-pdf?billId={selectedBill.BillID}"
+            );
+            if (downloadResponse.IsSuccessStatusCode)
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"Có lỗi khi tải hoá đơn: {ex.Message}");
+                var fileBytes = await downloadResponse.Content.ReadAsByteArrayAsync();
+                await JSRuntime.InvokeVoidAsync("downloadFile",
+                    $"Invoice_{selectedBill.BillCode}.zip",
+                    fileBytes,
+                    "application/zip");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert",
+                    $"Lỗi tải hoá đơn: {downloadResponse.ReasonPhrase} (HTTP {downloadResponse.StatusCode}).");
             }
         }
-        else
+        catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Không có hoá đơn để tải.");
+            await JSRuntime.InvokeVoidAsync("alert", $"Có lỗi khi tải hoá đơn: {ex.Message}");
         }
     }
 
     private string GenerateBarcodeData(BillHistoryDTO bill)
         => bill.BillCode.ToString();
-    }
+}
 
-    <style>
-        .btn-detail {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #ffc107;
-            color: #333;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-        }
+<style>
+    .btn-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffc107;
+        color: #333;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
 
         .btn-detail i {
             margin-right: 8px;
@@ -434,55 +616,87 @@ else
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .modal-dialog {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: auto;
-            margin: auto;
-            max-width: 800px;
-        }
-
-        .modal-content {
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-            padding: 20px;
-        }
-
-        .modal-header {
-            position: relative;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            background-color: #fff;
-        }
-
-        .modal-body {
-            max-height: 70vh;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        #quagga-video {
-            transform: scaleX(1); /* Lật ngang */
-            -webkit-transform: scaleX(1); /* Hỗ trợ cho trình duyệt Webkit */
-        }
-    </style>
+    .modal-dialog {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        margin: auto;
+        max-width: 800px;
     }
+
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        padding: 20px;
+    }
+
+    .modal-header {
+        position: relative;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        background-color: #fff;
+    }
+
+    .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .btn-close {
+        background: transparent;
+        border: none;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    #quagga-video {
+        transform: scaleX(1);
+        -webkit-transform: scaleX(1);
+    }
+
+    .badge {
+        padding: 0.4em 0.75em;
+        font-size: 0.9rem;
+    }
+
+        .badge.bg-danger {
+            background-color: #dc3545 !important; /* đỏ */
+        }
+
+        .badge.bg-success {
+            background-color: #28a745 !important; /* xanh */
+        }
+
+    /* Phần pagination */
+    .pagination-container {
+        margin-bottom: 1rem;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .pagination .page-link {
+        color: #0d6efd;
+        border: none;
+        margin: 0 2px;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #aaa;
+    }
+</style>
