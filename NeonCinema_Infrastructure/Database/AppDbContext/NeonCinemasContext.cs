@@ -1001,11 +1001,11 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 		PriceAfter17hWeekDay = 60000,
 		PriceBefore17hWeekeend = 60000,
 		PriceAfter17hWeekeend = 70000,
-		Surcharge3D = 30000,
-		Surcharge4D = 40000,
+		Surcharge3D = 10000,
+		Surcharge4D = 20000,
 		SurchargeIMAX = 50000,
-		SurchargeVIP = 30000,
-		SurchargeCouple = 50000
+		SurchargeVIP = 5000,
+		SurchargeCouple = 10000
 	},
 	
 	};
