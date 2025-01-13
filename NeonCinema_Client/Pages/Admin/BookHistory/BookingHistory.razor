@@ -341,7 +341,7 @@ else
 
     // Phân trang
     private int pageNumber = 1;
-    private int pageSize = 5;
+    private int pageSize = 6;
     private int[] pageSizeOptions = new[] { 5, 10, 20, 50 };
 
     // ===============================
@@ -448,7 +448,7 @@ else
         return status.ToLower() switch
         {
             "checkin" => "Đợi Check-in",
-            "paid" => "Đã Hoàn Tất",
+            "paid" => "Đã Check-in",
             _ => "Không xác định"
         };
     }
