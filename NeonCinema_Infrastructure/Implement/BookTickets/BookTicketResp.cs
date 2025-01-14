@@ -89,6 +89,8 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 				};
 				var startTime = screening.ShowTime.StartTime;
 				var showDate = screening.ShowDate;
+				var flims = await _context.Movies.Where(x => x.ID == request.MovieId).FirstOrDefaultAsync();
+				var type = await _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefaultAsync();
 				var ticketPriceSetting = await _context.TicketPriceSettings
 				.FirstOrDefaultAsync(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 				var tickets = request.SeatID.Select(seatId =>
@@ -124,7 +126,17 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 					{
 						basePrice += ticketPriceSetting.SurchargeCouple;
 					}
-
+					if (type != null)
+					{
+						if (type.MovieTypeName.Contains("3D".Trim()))
+						{
+							basePrice += ticketPriceSetting.Surcharge3D;
+						}
+						if (type.MovieTypeName.Contains("4D".Trim()))
+						{
+							basePrice += ticketPriceSetting.Surcharge4D;
+						}
+					}
 					return new Ticket
 					{
 						ID = Guid.NewGuid(),
@@ -138,19 +150,6 @@ namespace NeonCinema_Infrastructure.Implement.BookTickets
 
 					};
 				}).ToList();
-				var flims = await _context.Movies.Where(x => x.ID == request.MovieId).FirstOrDefaultAsync();
-				var type = await _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefaultAsync();
-				if (type != null)
-				{
-					if (type.MovieTypeName.Contains("3D".Trim()))
-					{
-						bill.Surcharge = ticketPriceSetting.Surcharge3D;
-					}
-					if (type.MovieTypeName.Contains("4D".Trim()))
-					{
-						bill.Surcharge = ticketPriceSetting.Surcharge4D;
-					}
-				}
 				await _context.Tickets.AddRangeAsync(tickets, cancellationToken);
 
 				// Create bill
