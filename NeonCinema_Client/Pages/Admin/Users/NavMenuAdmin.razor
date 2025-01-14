@@ -44,7 +44,18 @@
 				<div class="col-9">
 					<h5 class="align-items-center justify-content-center">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName : user.PhoneNumber)</h5>
 					<p class="user-role align-items-center justify-content-center">
-						@role
+						@if (role == "Admin")
+						{
+							<span>Quản trị viên</span>
+						}
+						else if (role == "Staff")
+						{
+							<span>Nhân viên</span>
+						}
+						else if (role == "Client")
+						{
+							<span>Khách hàng</span>
+						}
 					</p>
 				</div>
 			}

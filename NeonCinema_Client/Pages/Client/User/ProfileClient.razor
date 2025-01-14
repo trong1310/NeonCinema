@@ -206,17 +206,16 @@
 </div>
 
 <div class="row p-5">
-	<div class="row bg bg-secondary rounded">
-		<div class="col-md-10">
-			<span class="d-flex align-items-center" style="font-size: 30px; padding-left: 50px; color: #fff; font-weight: bold; margin-top: 15px ">Lịch sử giao dịch</span>
+	<div class="row align-items-center bg-secondary rounded">
+		<div class="col-md-6 d-flex align-items-center">
+			<span class="text-white font-weight-bold" style="font-size: 30px; padding-left: 20px;">Lịch sử giao dịch</span>
 		</div>
-		<div class="col-3">
-			<label for="StartDate">Từ ngày</label>
+		<div class="col-md-3">
+			<label for="StartDate" class="text-white">Từ ngày</label>
 			<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="fromDate" @oninput="OnInputChangedFromDate" />
-
 		</div>
-		<div class="col-3">
-			<label for="EndDate">Đến ngày</label>
+		<div class="col-md-3">
+			<label for="EndDate" class="text-white">Đến ngày</label>
 			<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="toDate" @oninput="OnInputChangedToDate" />
 		</div>
 	</div>
@@ -394,6 +393,7 @@
 		TotalSpent = userStats.TotalSpent;
 		Rank = userStats.ranks;
 		profileFilmsImage = GetImageUrl(user.Images);
+		originalEmail = user.Email;
 		if (user.Gender == null)
 		{
 			user.Gender = true; // Mặc định là Nam
@@ -465,6 +465,19 @@
 		var phoneExists = _context.Users.Any(x => x.PhoneNumber == user.PhoneNumber && x.ID != user.ID);
 		var emailExists = _context.Users.Any(x => x.Email == user.Email && x.ID != user.ID);
 
+		//Ngày sinh
+		if (user.DateOrBriht == null ||
+			user.DateOrBriht.Year < 1900 ||
+			user.DateOrBriht > DateTime.Now.AddYears(-14))
+		{
+			errorYear = "Bạn phải từ 14 trở lên.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else
+		{
+			errorYear = null;
+		}
 		// Kiểm tra họ và tên
 		if (string.IsNullOrWhiteSpace(user.FullName))
 		{
@@ -520,9 +533,9 @@
 			isValid = false;
 			isSubmitting = false;
 		}
-		else if (!Regex.IsMatch(user.PhoneNumber, @"^0\d{9}$"))
+		else if (!Regex.IsMatch(user.PhoneNumber, @"^(03|08|09)\d{8}$"))
 		{
-			errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại gồm 10 chữ số và bắt đầu bằng 0.";
+			errorPhone = "Số điện thoại phải bắt đầu bằng 03, 08, 09 và có 10 chữ số.";
 			isValid = false;
 			isSubmitting = false;
 		}
@@ -600,8 +613,9 @@
 					await OnUserUpdated.InvokeAsync();
 				}
 				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
+				await Task.Delay(2000);
 				isSubmitting = false;
-				await Task.Delay(4000);
+				
 
 				CloseModal();
 				_navi.NavigateTo(_navi.Uri, forceLoad: true);

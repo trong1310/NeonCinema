@@ -720,7 +720,7 @@
                 }
             }
 
-            
+
 
             if (!isValid)
             {
@@ -732,6 +732,7 @@
             {
                 await Task.Delay(2000);
                 registrationMessage = "Đăng ký thành công!";
+                isSubmitting = false;
                 ShowSnackbar(registrationMessage, Severity.Success);
                 StateHasChanged();
             }
