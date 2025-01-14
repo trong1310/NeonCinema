@@ -329,7 +329,17 @@
 										</div>
 										<div class="modal-footer">
 											<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
-											<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
+											<button type="button" class="btn btn-primary" disabled="@isProcessing" @onclick="ProcessPayment">
+													@if (isProcessing)
+													{
+														<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+														<span class="sr-only">Đang xử lý...</span>
+													}
+													else
+													{
+														<span>Xác nhận</span>
+													}
+											</button>
 										</div>
 									</div>
 								</div>
@@ -344,7 +354,7 @@
 								<div class="modal-content">
 									<div class="modal-header">
 										<h5 class="modal-title" id="paymentSuccessLabel">Thanh toán thành công</h5>
-										<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+										<button type="button" class="btn-close" @onclick="NagationToList" aria-label="Close"></button>
 									</div>
 									<div class="modal-body">
 										<p>
@@ -354,7 +364,7 @@
 										</p>
 									</div>
 									<div class="modal-footer">
-										<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
+										<button type="button" class="btn btn-primary" @onclick="NagationToList">Đóng</button>
 									</div>
 								</div>
 							</div>
@@ -774,8 +784,12 @@
 	}
 
 	public Guid billId { get; set; }
+	private bool isProcessing = false;
 	private async Task ProcessPayment()
 	{
+		isProcessing = true;
+        // Tạm dừng 2 giây để hiển thị spinner
+        await Task.Delay(1000);
 		var validationMessage = ValidateSeats();
 		if (validationMessage != null)
 		{
@@ -833,7 +847,11 @@
 				Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
 			}
 
-			StateHasChanged();
+			finally
+			{
+				isProcessing = false; // Hoàn tất xử lý
+				StateHasChanged();
+			}
 		}
 	}
 	private string GetAlertClass(string status)
@@ -1280,6 +1298,11 @@
 		}
 	}
 	#endregion
+
+	private async Task NagationToList()
+	{
+		_navi.NavigateTo("/list-movie");
+	}
 }
 
 <style>
