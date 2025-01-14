@@ -277,10 +277,6 @@
 					<span>@comboPrices.ToString("N0") VND</span>
 				</div>
 				<div class="d-flex justify-content-between mb-3">
-					<span>Phụ thu <strong>( Phim @movieDto.MovieTypeName)</strong></span>
-					<span>@surcharge.ToString("N0") VND</span>
-				</div>
-				<div class="d-flex justify-content-between mb-3">
 					<span>Tổng tiền tạm tính</span>
 					<span>@sumPrices.ToString("N0") VND</span>
 				</div>
@@ -322,17 +318,6 @@
 								<button class="btn btn-primary w-100 form-control" @onclick="ApplyPoint">Dùng điểm</button>
 							</div>
 						</div>
-						@* <p class="mt-2"><strong>Số tiền quy đổi:</strong> @convertedAmount.ToString("N0") VNĐ</p> *@
-						@* <div class="row g-2" style="margin-top: -20px">
-							<div class="col-md-8">
-								<input type="text" class="form-control w-100" placeholder="Nhập mã giảm giá" />
-							</div>
-							<div class="col-md-4" style="margin-top: 14px">
-								<!-- Button xác nhận sử dụng điểm -->
-								<button class="btn btn-primary w-100 form-control">Dùng mã</button>
-							</div>
-						</div>
-						<p class="mt-2"><strong>Số tiền giảm giá:</strong>  @convertedAmount.ToString("N0") VNĐ </p> *@
 					</div>
 				}
 				else if (ShowCreateButton)
@@ -548,7 +533,6 @@
 	private double discount = 0;
 	private double point = 0;
 	private decimal sumPrices;
-	private decimal surcharge = 0;
 	private bool isCashPayment = false;
 	private double pointApply = 0;
 	private void ValidateReceivedMoney(ChangeEventArgs e)
@@ -647,24 +631,6 @@
 		var jwtToken = handler.ReadJwtToken(token);
 		var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 		createBy = Guid.Parse(userIdClaim.Value);
-		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
-		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
-		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
-		if (type != null)
-		{
-			if (type.MovieTypeName.Contains("3D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge3D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-			if (type.MovieTypeName.Contains("2D".Trim()))
-			{
-				surcharge = ticketPriceSetting.Surcharge4D;
-				sumPrices += surcharge;
-				totalPrices += surcharge;
-			}
-		}
 		StateHasChanged(); // Cập nhật giao diện
 	}
 	private async Task RefreshSeatsAsync()
@@ -770,31 +736,50 @@
 			ShowSnackbar("Không thể chọn quá 10 ghế!", Severity.Warning);
 			return;
 		}
-
+		var flims = _context.Movies.Where(x => x.ID == movieDto.ID).FirstOrDefault();
+		var type = _context.MoviesType.Where(x => x.ID == flims.MovieTypeID).FirstOrDefault();
+		var ticketPriceSetting = _context.TicketPriceSettings.FirstOrDefault(x => x.ID == Guid.Parse("4BAB0DA1-D912-4A87-8E21-CB7A665657D3"));
 		if (seat.Status != NeonCinema_Domain.Enum.seatEnum.Sold)
 		{
+
+			decimal basePrice = (decimal)seat.Price; // Nếu không có BasePrice, sử dụng giá hiện tại làm giá gốc
+
 			if (selectedSeats.Contains(seat.SeatNumber))
 			{
-				// Bỏ ghế
+				if (type.MovieTypeName.Contains("3D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge3D;
+				}
+				if (type.MovieTypeName.Contains("4D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge4D;
+				}
 				Console.WriteLine($"Removing seat: {seat.SeatNumber}");
 				selectedSeatsId.Remove(seat.ID);
 				selectedSeats.Remove(seat.SeatNumber);
-				seatPrices -= (decimal)seat.Price;
-				sumPrices -= (decimal)seat.Price;
-				totalPrices -= (decimal)seat.Price;
+				seatPrices -= basePrice;
+				sumPrices -= basePrice;
+				totalPrices -= basePrice;
+				/* seat.Price = basePrice; */
 			}
 			else
 			{
-				// Chọn ghế
+
+				if (type.MovieTypeName.Contains("3D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge3D;
+				}
+				if (type.MovieTypeName.Contains("4D".Trim()))
+				{
+					basePrice += ticketPriceSetting.Surcharge4D;
+				}
 				Console.WriteLine($"Adding seat: {seat.SeatNumber}");
 				selectedSeats.Add(seat.SeatNumber);
 				selectedSeatsId.Add(seat.ID);
-				seatPrices += (decimal)seat.Price;
-				sumPrices += (decimal)seat.Price;
-				totalPrices += (decimal)seat.Price;
+				seatPrices += basePrice;
+				sumPrices += basePrice;
+				totalPrices += basePrice;
 			}
-
-			// Cập nhật tổng tiền
 			selectedSeatNumbers = string.Join(", ", selectedSeats);
 			Console.WriteLine($"Selected seats: {selectedSeatNumbers}");
 			StateHasChanged();
@@ -926,7 +911,6 @@
 		comboPrices = 0;
 		point = 0;
 		sumPrices = 0;
-		surcharge = 0;
 		RefreshSeatsAsync();
 	}
 	private async Task ProcessPayment()
@@ -996,6 +980,7 @@
 						_context.RankMembers.Update(resetPoint);
 						_context.SaveChanges();
 					}
+					_navi.NavigateTo("/book_ticket-staff");
 				}
 				else
 				{
