@@ -40,9 +40,10 @@ else
     </div>
 
     <div class="container-fluid mt-4">
+        <!-- Hàng chứa tất cả các trường lọc và tìm kiếm trên một dòng -->
         <div class="row align-items-center mb-4">
             <!-- Tìm kiếm theo Tên người dùng -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                     <input type="text" @bind-value="searchUserName"
@@ -51,16 +52,35 @@ else
                            class="form-control shadow-sm" />
                 </div>
             </div>
-            <!-- Lọc ngày -->
-            <div class="col-md-4">
+            <!-- Lọc theo trạng thái -->
+            <div class="col-md-2">
                 <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                    <input type="date" @bind="filterDate"
-                           class="form-control shadow-sm" />
+                    <label class="input-group-text" for="filterStatus"><i class="fas fa-filter"></i></label>
+                    <select id="filterStatus" @bind="filterStatus" class="form-select shadow-sm">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="checkin">Đợi Check-in</option>
+                        <option value="paid">Đã Check-in</option>
+                    </select>
                 </div>
             </div>
-            <!-- Lọc theo Mã hoá đơn -->
-            <div class="col-md-4">
+            <!-- Lọc ngày bắt đầu -->
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <input type="date" @bind="filterStartDate"
+                           class="form-control shadow-sm" placeholder="Từ ngày" />
+                </div>
+            </div>
+            <!-- Lọc ngày kết thúc -->
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <input type="date" @bind="filterEndDate"
+                           class="form-control shadow-sm" placeholder="Đến ngày" />
+                </div>
+            </div>
+            <!-- Lọc theo mã hóa đơn -->
+            <div class="col-md-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-barcode"></i></span>
                     <input type="text" @bind-value="filterBillCode"
@@ -197,8 +217,7 @@ else
         </div>
 
         <div class="text-center mt-2 text-secondary small">
-            Trang @pageNumber / @TotalPages
-            (Tổng @TotalRecords hóa đơn)
+            Trang @pageNumber / @TotalPages (Tổng @TotalRecords hóa đơn)
         </div>
     </div>
 
@@ -272,7 +291,7 @@ else
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" @onclick="DownloadInvoice">
-                            Tải Hóa Đơn PDF
+                            Check in
                         </button>
                         <button class="btn btn-secondary" @onclick="CloseDetail">
                             Đóng
@@ -330,7 +349,9 @@ else
     // Biến lọc
     private string searchUserName = "";
     private string filterBillCode = "";
-    private DateTime? filterDate;
+    private DateTime? filterStartDate;
+    private DateTime? filterEndDate;
+    private string filterStatus = "";
 
     // Loading
     private bool isLoading = true;
@@ -357,7 +378,9 @@ else
                  || b.UserName?.Contains(searchUserName, StringComparison.OrdinalIgnoreCase) == true)
                 && (string.IsNullOrEmpty(filterBillCode)
                  || b.BillCode.ToString()?.Contains(filterBillCode, StringComparison.OrdinalIgnoreCase) == true)
-                && (!filterDate.HasValue || b.BillDate.Date == filterDate.Value.Date)
+                && (!filterStartDate.HasValue || b.BillDate.Date >= filterStartDate.Value.Date)
+                && (!filterEndDate.HasValue || b.BillDate.Date <= filterEndDate.Value.Date)
+                && (string.IsNullOrEmpty(filterStatus) || b.Status.Equals(filterStatus, StringComparison.OrdinalIgnoreCase))
             )
             .OrderByDescending(b => b.BillDate);
 
@@ -575,6 +598,7 @@ else
     // Hàm sinh chuỗi Barcode
     private string GenerateBarcodeData(BillHistoryDTO bill) => bill.BillCode.ToString();
 }
+
 
 <style>
     .btn-detail {
