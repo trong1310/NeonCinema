@@ -268,7 +268,7 @@ else
 				var actors = await _movieservices.GetActorsByFilmAsync(movies.ID, CancellationToken.None);
 				movies.ActorMovies = actors;
 			}
-			movieDto.Data = movieDto.Data.OrderByDescending(m => m.StarTime).ToList();
+			movieDto.Data = movieDto.Data.ToList();
 			genres = movieDto.Data.Select(m => m.GenreName).Distinct().OrderBy(g => g).ToList();
 			countries = movieDto.Data.Select(m => m.CountryName).Distinct().OrderBy(c => c).ToList();
 			ages = movieDto.Data.Select(m => m.AgeAllowed.ToString()).Distinct().OrderBy(a => a).ToList();
