@@ -1,4 +1,5 @@
-﻿using Blazorise;
+﻿using AutoMapper;
+using Blazorise;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NeonCinema_Application.DataTransferObject.Movie;
@@ -7,6 +8,7 @@ using NeonCinema_Application.DataTransferObject.Screening;
 using NeonCinema_Application.DataTransferObject.ShowTime;
 using NeonCinema_Application.Pagination;
 using NeonCinema_Client.Data.IServices.Screenning;
+using NeonCinema_Domain.Database.Entities;
 using NeonCinema_Domain.Enum;
 using NeonCinema_Infrastructure.Database.AppDbContext;
 using System;
@@ -14,14 +16,17 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Transactions;
 
 public class ScreeningService : IScreeningService
 {
     private readonly HttpClient _httpClient;
+    private readonly IMapper _mapper;
 
-    public ScreeningService(HttpClient httpClient)
+    public ScreeningService(HttpClient httpClient, IMapper mapper)
     {
         _httpClient = httpClient;
+        _mapper = mapper;
     }
 
     public async Task<List<ScreeningDTO>> GetAllScreeningsAsync()
@@ -57,19 +62,39 @@ public class ScreeningService : IScreeningService
         else return false;
 	}
 
-    public async Task UpdateScreeningAsync(Guid id)
+    public async Task<bool> UpdateScreeningAsync(Screening input)
     {
         using (var context = new NeonCinemasContext())
         {
-            var scr = await context.Screening.FindAsync(id);
-
-            if(scr != null && scr.Status == ScreeningStatus.InActive)
+			using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                scr.Status = ScreeningStatus.Cancelled;
+                try
+                {
+                    var scr = await context.Screening.FindAsync(input.ID);
+                    var showtime = await context.ShowTimes.FindAsync(input.ShowTimeID);
 
-                context.Screening.Update(scr);
-                await context.SaveChangesAsync();
-            }
+
+                    scr.RoomID = input.RoomID;
+                    scr.ShowTimeID = input.ShowTimeID;
+
+                    showtime.StartTime = input.ShowTime.StartTime;
+                    showtime.EndTime = input.ShowTime.EndTime;
+
+                    context.ShowTimes.Update(showtime);
+
+                    context.Screening.Update(scr);
+
+                    await context.SaveChangesAsync(); 
+
+                    scope.Complete();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }	
+			}		
         }
     }
 
@@ -157,8 +182,23 @@ public class ScreeningService : IScreeningService
 		}
 	}
 
-	public Task<bool> ValidateShowTimeInRoom(Guid roomId)
+	public async Task<Screening> GetScreeningById(Guid id)
 	{
-		throw new NotImplementedException();
+		using (NeonCinemasContext context = new NeonCinemasContext())
+        {
+            var scr = await context.Screening
+                .Include(x => x.ShowTime)
+                .Include(x => x.Movies)
+                .FirstOrDefaultAsync(x => x.ID.Equals(id));
+
+            if(scr != null)
+            {
+				return scr;
+			}
+            else
+                { return new Screening(); }
+            
+        }
 	}
+
 }
