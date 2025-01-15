@@ -15,7 +15,7 @@
 @inject IRoomService _roSv
 @layout LayoutAdmin
 @inject NavigationManager navi
-@attribute [Authorize(Roles = "Admin")] 
+@attribute [Authorize(Roles = "Admin")]
 
 @if (IsLoading == true)
 {
@@ -49,42 +49,42 @@ else
 					<tbody>
 						@foreach (var item in screenings.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
 						{
-							if(item.value.Status != ScreeningStatus.Ended)
+							if (item.value.Status != ScreeningStatus.Ended)
 							{
 								<tr>
-								<td>@(item.index + 1)</td>
-								<td>@item.value.FlimsName</td>
-								<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
-								<td>@item.value.ShowTime?.ToString()</td>
-								<td>@item.value.RoomName</td>
-								<td>
-									<span class="@GetStatusClass(item.value.Status) text-white rounded">
+									<td>@(item.index + 1)</td>
+									<td>@item.value.FlimsName</td>
+									<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
+									<td>@item.value.ShowTime?.ToString()</td>
+									<td>@item.value.RoomName</td>
+									<td>
+										<span class="@GetStatusClass(item.value.Status) text-white rounded">
+											@if (item.value.Status == ScreeningStatus.InActive)
+											{
+												<text>Chưa chiếu</text>
+											}
+											else if (item.value.Status == ScreeningStatus.Showing)
+											{
+												<text>Đang chiếu</text>
+											}
+											else if (item.value.Status == ScreeningStatus.Ended)
+											{
+												<text>Đã kết thúc</text>
+											}
+											else if (item.value.Status == ScreeningStatus.Cancelled)
+											{
+												<text>Bị hủy</text>
+											}
+										</span>
+									</td>
+									<td>
 										@if (item.value.Status == ScreeningStatus.InActive)
-										{
-											<text>Chưa chiếu</text>
-										}
-										else if (item.value.Status == ScreeningStatus.Showing)
-										{
-											<text>Đang chiếu</text>
-										}
-										else if (item.value.Status == ScreeningStatus.Ended)
-										{
-											<text>Đã kết thúc</text>
-										}
-										else if (item.value.Status == ScreeningStatus.Cancelled)
-										{
-											<text>Bị hủy</text>
-										}
-									</span>
-								</td>
-								<td>
-									@if(item.value.Status == ScreeningStatus.InActive)
 										{
 											<button @onclick="() => ToggleEditForm(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
 											<button @onclick="() => OpenModalConfirm2(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
 										}
 									</td>
-								</tr>								
+								</tr>
 							}
 						}
 					</tbody>
@@ -161,11 +161,11 @@ else
 											</div>
 											@if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 											{
-												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị chồng lấn lên lịch khác</p>
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị trùng với lịch khác. Vui lòng kiểm tra lại</p>
 											}
-											@if(!checkCDate)
+											@if (!checkCDate)
 											{
-												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu không là ngày quá khứ hoặc <br/>nhỏ hơn ngày khởi chiếu @comingDate</p>
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu phải lớn hơn ngày hiện tại <br /> và nhỏ hơn ngày khởi chiếu @comingDate</p>
 											}
 											@if (!ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 											{
@@ -255,7 +255,7 @@ else
 		}
 	}
 
-	if(isModalVisible == 2)
+	if (isModalVisible == 2)
 	{
 		<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
 			<div class="modal-dialog" role="document">
@@ -283,8 +283,19 @@ else
 										<ChildContent Context="createContext">
 											<DataAnnotationsValidator />
 											<div class="mb-3">
+												<label for="" class="form-label">Phim</label>
+												<InputSelect @bind-Value="updateScr.MovieID" @oninput="OnInputChangedMovie" class="form-control">
+													<option value="" disabled selected>Chọn phim</option>
+													@foreach (var movies in movies.Data)
+													{
+														<option value="@movies.ID">@movies.Name</option>
+													}
+												</InputSelect>
+												<ValidationMessage For="@(() => updateScr.MovieID)" />
+											</div>
+											<div class="mb-3">
 												<label for="" class="form-label">Phòng chiếu</label>
-												<InputSelect @bind-Value="updateScr.RoomID" @oninput="OnInputChangedRoom" class="form-control">
+												<InputSelect @bind-Value="updateScr.RoomID" @oninput="OnInputChangedRoom" class="form-control" disabled="@isDisabled">
 													<option value="" disabled selected>Chọn phòng</option>
 													@foreach (var rooms in rooms)
 													{
@@ -296,31 +307,35 @@ else
 
 											<div class="mb-3">
 												<label for="" class="form-label">Ngày chiếu</label>
-												<InputDate @bind-Value="date" @oninput="OnInputChangedDate" class="form-control"></InputDate>
+												<InputDate @bind-Value="date"
+														   @oninput="OnInputChangedDate"
+														   class="form-control"
+														   disabled="@isDisabled">
+												</InputDate>
 											</div>
 
 											<div class="mb-3">
 												<label for="" class="form-label">Giờ chiếu</label>
-												<input type="time" @bind="startTime" @oninput="OnInputChangedStartTimeEdit" class="form-control" />
+												<input type="time" @bind="startTime" @oninput="OnInputChangedStartTimeEdit" class="form-control" readonly />
 											</div>
 
 											<div class="mb-3">
 												<label for="" class="form-label">Giờ kết thúc</label>
 												<input type="time" @bind="endTime" class="form-control" readonly />
 											</div>
-											@if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+											@* 	@if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 											{
-												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị chồng lấn lên lịch khác</p>
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu bị trùng với lịch khác. Vui lòng kiểm tra lại</p>
 											}
 											@if (!checkCDate)
 											{
-												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu không là ngày quá khứ hoặc <br />nhỏ hơn ngày khởi chiếu @comingDate</p>
+												<p style="color: red; font-size:14px; font-style: italic">Lịch chiếu phải lớn hơn ngày hiện tại <br /> và nhỏ hơn ngày khởi chiếu @comingDate</p>
 											}
 											@if (!ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 											{
 												<p style="color: red; font-size:14px; font-style: italic">Thời gian bắt đầu chỉ từ 8h30 đến 23h45</p>
 											}
-
+ *@
 											<button type="submit" class="btn btn-primary">Lưu thay đổi</button>
 										</ChildContent>
 									</EditForm>
@@ -373,8 +388,8 @@ else
 										<span aria-hidden="true">&times;</span>
 									</button>
 								</div>
-								<div class="col-5">
-									<h6>Xác nhận</h6>
+								<div class="col-3 text-center">
+									<h6>Bạn chắc chắn muốn xóa ?</h6>
 								</div>
 							</div>
 
@@ -512,7 +527,7 @@ else
 	private List<ShowTimeDTO> _lstSTFil = new List<ShowTimeDTO>();
 	private PaginationResponse<MovieDTO> movies = new PaginationResponse<MovieDTO>();
 	private List<RoomDTO> rooms = new List<RoomDTO>();
-
+	private bool isDisabled = true;
 	private bool checkCDate = true;
 
 
@@ -523,6 +538,7 @@ else
 	private DateTime endTime = DateTime.Parse("8:30");
 	//
 	private string roomName = "";
+	private string moviesName = "";
 
 	private int? duration = null;
 	//
@@ -687,44 +703,29 @@ else
 			}
 		}
 	}
-
+	private string messageUpdate = null;
 	private async Task EditScreening()
 	{
 		IsLoadingAct = true; //animation loading
 		try
 		{
-			if (updateScr.Status != ScreeningStatus.InActive ||!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))) || !checkCDate || !ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+			if (await _scrSv.UpdateScreeningAsync(updateScr))
 			{
-				messageString = "Faild";
-				return;
+				CloseModal();
+				date = DateTime.Now;
+				startTime = DateTime.Parse("8:30");
+				endTime = DateTime.Parse("8:30");
+				messageString = "Success";
+
+				await LoadShowTimeFil();
 			}
 			else
 			{
-				updateScr.ShowDate = date;
-				updateScr.ShowTime.StartTime = TimeSpan.Parse(startTime.ToString("HH:mm"));
-				updateScr.ShowTime.EndTime = TimeSpan.Parse(endTime.ToString("HH:mm"));
-
-				if (await _scrSv.UpdateScreeningAsync(updateScr))
-				{
-					CloseModal();
-					date = DateTime.Now;
-					startTime = DateTime.Parse("8:30");
-					endTime = DateTime.Parse("8:30");
-					messageString = "Success";
-
-					await LoadShowTimeFil();
-				}
-				else
-				{
-					messageString = "Faild";
-
-				}
-
+				messageString = "Faild";
+				messageUpdate = "Lịch chiếu này đã có người đặt vé không thể sửa";
 			}
-
-
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
 			throw new Exception(ex.Message);
 			messageString = "Faild";
@@ -754,13 +755,13 @@ else
 			else
 			{
 				messageString = "Faild";
-				messageStringDel = "Lịch đã có người đặt chỉ được phép sửa";
+				messageStringDel = "Lịch chiếu này đã có người đặt không thể xóa";
 				delScrId = Guid.Empty;
 			}
 		}
 		catch
 		{
-			messageStringDel = "Lịch đã có người đặt chỉ được phép sửa";
+			messageStringDel = "Lịch chiếu này đã có người đặt không thể xóa";
 			messageString = "Faild";
 		}
 		finally
@@ -831,7 +832,20 @@ else
 		}
 		await LoadShowTimeFil();
 	}
+	Guid moviesId;
+	private async Task MovieUpdate(ChangeEventArgs e)
+	{
+		moviesId = Guid.Parse(e.Value.ToString());
 
+		foreach (var item in movies.Data)
+		{
+			if (item.ID == moviesId)
+			{
+				moviesName = item.Name;
+			}
+		}
+		await LoadShowTimeFil();
+	}
 	private async Task OnInputChangedDate(ChangeEventArgs e)
 	{
 		date = DateTime.Parse(e.Value.ToString());
@@ -874,7 +888,7 @@ else
 
 	private bool ValidateST2(TimeSpan startTime, TimeSpan endTime)
 	{
-		if(startTime < TimeSpan.Parse("8:30") || startTime > TimeSpan.Parse("23:45"))
+		if (startTime < TimeSpan.Parse("8:30") || startTime > TimeSpan.Parse("23:45"))
 		{
 			return false;
 		}
@@ -884,7 +898,7 @@ else
 	//validate ngày phát hành
 	private void ValidateComingDate(DateTime comingdate) //cần sửa vì dữ liệu chưa kịp cập nhật đã validate
 	{
-		if(date < comingdate || date < DateTime.Now)
+		if (date < comingdate || date < DateTime.Now)
 		{
 			checkCDate = false;
 			comingDate = comingdate.ToShortDateString();
@@ -893,7 +907,7 @@ else
 		{
 			checkCDate = true;
 		}
-		
+
 	}
 
 

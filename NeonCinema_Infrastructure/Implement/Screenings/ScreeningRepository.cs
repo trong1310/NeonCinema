@@ -42,13 +42,42 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 
 		public async Task<HttpResponseMessage> UpdateScreening(ScreeningUpdateRequest screeningRequest, CancellationToken cancellationToken)
 		{
-			var screening = await _context.Screening.FindAsync(screeningRequest.ID, cancellationToken);
-			if (screening == null) return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+			try
+			{
+				var screening = await _context!.Screening
+					.Include(x => x.ShowTime)
+					.Include(x => x.Rooms)
+						.ThenInclude(r => r.Seats)
+							.ThenInclude(s => s.SeatTypes)
+					.FirstOrDefaultAsync(x => x.ID == screeningRequest.ID && x.Deleted == false);
 
-			_mapper.Map(screeningRequest, screening);
-			_context.Screening.Update(screening);
-			await _context.SaveChangesAsync(cancellationToken);
-			return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+				if (screening == null)
+				{
+					return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+				}
+				var seatShowTimeStatuses = await _context.SeatShowTimeStatuss
+						.Where(x => x.ShowtimeId == screening.ShowTimeID &&
+									x.RoomID == screening.RoomID &&
+									x.ShowDate == screening.ShowDate)
+						.AsNoTracking()
+						.ToListAsync();
+				if (seatShowTimeStatuses.Any(x => x.seatEnum == seatEnum.Sold))
+				{
+					return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+				}
+				else
+				{
+					screening.RoomID = screeningRequest.RoomID;
+					screening.MovieID = screeningRequest.MovieID;
+					_context.Screening.Update(screening);
+				}
+				_context.SaveChangesAsync();
+				return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+			}
+			catch (Exception ex)
+			{
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
+			}
 		}
 
 		public async Task<HttpResponseMessage> DeleteScreening(Guid id)
@@ -125,7 +154,7 @@ namespace NeonCinema_Infrastructure.Implement.Screenings
 			var result = await query.PaginateAsync<Screening, ScreeningDTO>(request, _mapper, cancellationToken);
 			var data = (from a in result.Data
 						join b in query on a.ID equals b.ID
-						orderby b.ShowTime.StartTime ascending
+						orderby b.CreatedTime descending
 						select new ScreeningDTO
 						{
 							ID = b.ID,

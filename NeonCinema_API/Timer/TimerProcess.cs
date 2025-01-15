@@ -8,7 +8,7 @@ namespace NeonCinema_API.Timer
 	public class TimerProcess : BackgroundService
 	{
 		private readonly ILogger<TimerProcess> _logger;
-		private readonly int TimeLoop = 60000 * 60; // 1 tiếng
+		private readonly int TimeLoop = 300000; // 1 p
 		public TimerProcess(ILogger<TimerProcess> loger)
 		{
 			_logger = loger;
@@ -47,10 +47,8 @@ namespace NeonCinema_API.Timer
 
 							_context.RankMembers.Update(accountBook);
 						}
-						
 					}
-					_logger.LogInformation($"Có {pendingPoints.Count} trận đấu chưa cập nhật");
-
+					_logger.LogInformation($"Có {pendingPoints.Count} tài khoản được cộng điểm");
 					pendingPoints.ForEach(x =>
 					{
 						x.ModifiedTime = DateTime.UtcNow;
