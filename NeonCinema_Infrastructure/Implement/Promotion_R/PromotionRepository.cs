@@ -59,7 +59,8 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
                     };
                 }
 
-                _context.Promotions.Remove(pro);
+                pro.Deleted = true;
+                _context.Entry(pro).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -81,7 +82,7 @@ namespace NeonCinema_Infrastructure.Implement.Promotion_R
         {
             try
             {
-                var lst = await _context.Promotions.ToListAsync();
+                var lst = await _context.Promotions.Where(x => x.Deleted != true).ToListAsync();
 
                 if(lst == null)
                 {

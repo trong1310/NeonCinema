@@ -27,15 +27,42 @@ else
 		<div class="col-12 p-5">
 			<h6 style="display: inline;">Danh sách lịch chiếu</h6>
 			<hr>
+			<div class="row boxfilter p-2">
+				<div class="col-6">
+					<div class="form-group">
+						<label for="Search">Tìm kiếm</label>
+						<InputText class="form-control" style="width: 500px;" @bind-Value="nameMovie" placeholder="Tìm kiếm theo tên phim" @oninput="OnInputSearchScrChanged" />
+					</div>
+					<div class="form-check">
+						<div class="row mt-3">
+							
+						</div>
+					</div>
+				</div>
+				<div class="col-2">
+					<label for="StartDate">Từ ngày</label>
+					<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="fromDate" @oninput="OnInputFromDateChanged" />
+
+				</div>
+				<div class="col-2">
+					<label for="EndDate">Đến ngày</label>
+					<InputDate Type="InputDateType.DateTimeLocal" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" @bind-Value="toDate" @oninput="OnInputToDateChanged" />
+				</div>
+				<div class="col-2">
+					<button class="btn btn-primary" style="margin-top: 23px" @onclick="ResetFilter">Đặt lại</button>
+				</div>
+
+
+			</div>
 			<div class="row mt-5">
 				<div class="col-11"></div>
 				<div class="col-1">
 					<button @onclick="async () => await ToggleCreateForm()" class="btn"><i class="fa-solid fa-square-plus fa-2xl" style="color: #00ff88;"></i></button>
 				</div>
 			</div>
-			<div class="row mt-2 table-promotion">
+			<div class="row mt-2 table-promotion" style="height:500px; overflow-y: auto;">
 				<table class="table">
-					<thead>
+					<thead style="position: sticky; top: 0; background-color: white;">
 						<tr>
 							<th>#</th>
 							<th>Phim</th>
@@ -47,7 +74,7 @@ else
 						</tr>
 					</thead>
 					<tbody>
-						@foreach (var item in screenings.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
+						@foreach (var item in lstFilScreening.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
 						{
 							if (item.value.Status != ScreeningStatus.Ended)
 							{
@@ -457,6 +484,12 @@ else
 									<p align="center" style="color: red">@messageStringDel</p>
 								</div>
 							}
+							@if (messageUpdate != null)
+							{
+								<div class="row">
+									<p align="center" style="color: red">@messageUpdate</p>
+								</div>
+							}
 						</div>
 					</div>
 					<div class="mb-2">
@@ -521,6 +554,7 @@ else
 	private int isModalVisibleConfirm = 0;
 	private string messageString = "";
 	private List<ScreeningDTO> screenings = new List<ScreeningDTO>();
+	private List<ScreeningDTO> lstFilScreening = new List<ScreeningDTO>();
 	private ScreeningCreateRequest newScreening = new ScreeningCreateRequest();
 	private NeonCinema_Domain.Database.Entities.Screening updateScr = new NeonCinema_Domain.Database.Entities.Screening();
 	private ShowTimeCreateRequest newShowTime = new ShowTimeCreateRequest();
@@ -551,8 +585,13 @@ else
 	{
 		await LoadScreening();
 		movies = await _scrSv.GetAllMoviesAsync();
+
+		//lọc trạng thái trước khi load
+		movies.Data = movies.Data.Where(x => x.Status == MovieStatus.isreleasing || x.Status == MovieStatus.upcomingkrelease).ToList();
+
 		rooms = await _scrSv.GetAllRoomsAsync();
 		await LoadShowTimeFil();
+		await LoadFilScreenings();
 	}
 
 	private async Task LoadScreening()
@@ -566,6 +605,10 @@ else
 		catch (Exception ex)
 		{
 			throw new Exception(ex.Message);
+		}
+		finally
+		{
+			await LoadFilScreenings();
 		}
 
 	}
@@ -703,9 +746,13 @@ else
 			}
 		}
 	}
+
+
+	//Edit
 	private string messageUpdate = null;
 	private async Task EditScreening()
 	{
+		messageUpdate = null;
 		IsLoadingAct = true; //animation loading
 		try
 		{
@@ -722,7 +769,7 @@ else
 			else
 			{
 				messageString = "Faild";
-				messageUpdate = "Lịch chiếu này đã có người đặt vé không thể sửa";
+				messageUpdate = "Lịch chiếu này đã có người đặt vé, không thể sửa";
 			}
 		}
 		catch (Exception ex)
@@ -856,7 +903,83 @@ else
 			ValidateComingDate(movie.StarTime);
 		}
 	}
+
+
+	private DateTime? fromDate;
+	private DateTime? toDate;
+
+	private async Task OnInputFromDateChanged(ChangeEventArgs e)
+	{
+		fromDate = DateTime.Parse(e.Value.ToString());
+
+		if (toDate < fromDate)
+		{
+			toDate = fromDate;
+		}
+
+		await LoadFilScreenings();
+	}
+
+
+	private async Task OnInputToDateChanged(ChangeEventArgs e)
+	{
+		toDate = DateTime.Parse(e.Value.ToString());
+
+		if(toDate < fromDate)
+		{
+			toDate = fromDate;
+		}
+
+
+		await LoadFilScreenings();
+	}
+
+	//
+	private string nameMovie = ""; // cái này dùng để lọc thôi khác với moviesName nha
+
+	private async Task OnInputSearchScrChanged(ChangeEventArgs e)
+	{
+		nameMovie = e.Value.ToString();
+
+		await LoadFilScreenings();
+	}
+
 	#endregion
+
+	private async Task LoadFilScreenings()
+	{
+		// Khởi tạo truy vấn cơ bản từ danh sách screenings
+		var query = screenings.AsQueryable();
+
+		// Áp dụng điều kiện lọc theo ngày, nếu fromDate và toDate không null
+		if (fromDate != null && toDate != null)
+		{
+			query = query.Where(x => x.ShowDate >= fromDate && x.ShowDate < toDate);
+		}
+
+		// Áp dụng điều kiện lọc theo tên phim, nếu nameMovie không null
+		if (!string.IsNullOrEmpty(nameMovie))
+		{
+			query = query.Where(x => x.FlimsName.Contains(nameMovie, StringComparison.OrdinalIgnoreCase));
+		}
+
+		// Thực hiện truy vấn và chuyển sang danh sách
+		lstFilScreening = query.ToList();
+	}
+
+	//btn reset filter
+	private async Task ResetFilter()
+	{
+		fromDate = null;
+		toDate = null;
+		nameMovie = "";
+
+		await LoadFilScreenings();
+
+	}
+
+
+
 
 	//Màu trạng thái
 	private string GetStatusClass(ScreeningStatus status)
