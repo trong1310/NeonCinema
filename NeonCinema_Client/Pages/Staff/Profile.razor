@@ -1,6 +1,5 @@
 ﻿@page "/profile-staff/{id:guid}"
 @using NeonCinema_Application.DataTransferObject.User
-@layout LayoutStaff
 @using NeonCinema_Client.Data.IServices.User
 @using System.Globalization
 @using System.Text.Json
@@ -9,6 +8,7 @@
 @using System.Text.RegularExpressions
 @inject IUserServices _service
 @inject HttpClient _http
+@layout LayoutStaff
 @inject NavigationManager _navigation
 @inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin,Staff")]
@@ -163,11 +163,12 @@
 	{
 		user = await _service.GetByIDUser(id, CancellationToken.None);
 		profileFilmsImage = GetImageUrl(user.Images);
+		originalEmail = user.Email; // Lưu lại email gốc
 		if (user.Gender == null)
 		{
 			user.Gender = true; // Mặc định là Nam
 		}
-
+		StateHasChanged();
 	}
 	private async Task HandleSelected(InputFileChangeEventArgs e)
 	{
@@ -218,6 +219,19 @@
 		var phoneExists = _context.Users.Any(x => x.PhoneNumber == user.PhoneNumber && x.ID != user.ID);
 		var emailExists = _context.Users.Any(x => x.Email == user.Email && x.ID != user.ID);
 
+		//Ngày sinh
+		if (user.DateOrBriht == null ||
+			user.DateOrBriht.Year < 1900 ||
+			user.DateOrBriht > DateTime.Now.AddYears(-18))
+		{
+			errorYear = "Bạn phải từ 18 trở lên.";
+			isValid = false;
+			isSubmitting = false;
+		}
+		else
+		{
+			errorYear = null;
+		}
 		// Kiểm tra họ và tên
 		if (string.IsNullOrWhiteSpace(user.FullName))
 		{
@@ -267,6 +281,7 @@
 		}
 
 
+
 		// SDT
 		if (string.IsNullOrWhiteSpace(user.PhoneNumber))
 		{
@@ -274,9 +289,9 @@
 			isValid = false;
 			isSubmitting = false;
 		}
-		else if (!Regex.IsMatch(user.PhoneNumber, @"^0\d{9}$"))
+		else if (!Regex.IsMatch(user.PhoneNumber, @"^(03|08|09)\d{8}$"))
 		{
-			errorPhone = "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại gồm 10 chữ số và bắt đầu bằng 0.";
+			errorPhone = "Số điện thoại phải bắt đầu bằng 03, 08, 09 và có 10 chữ số.";
 			isValid = false;
 			isSubmitting = false;
 		}
@@ -351,8 +366,10 @@
 			{
 				ShowSnackbar("Cập nhật thông tin cá nhân thành công.", Severity.Success);
 				isSubmitting = false;
-				await Task.Delay(2000);
+				await Task.Delay(4000);
+
 				CloseModal();
+				_navigation.NavigateTo(_navigation.Uri, forceLoad: true);
 			}
 			else
 			{

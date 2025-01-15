@@ -19,7 +19,7 @@
 }
 else
 {
-    <EditForm Model="ticketPriceSetting" OnValidSubmit="HandleValidSubmit">
+    <EditForm EditContext="editContext">
         <DataAnnotationsValidator />
         <h3 class="text-center text-secondary-emphasis mt-3">Quản lý giá vé</h3>
         <div class="card" style="border: none">
@@ -102,8 +102,8 @@ else
                                            @bind="FormattedSurcharge4D" />
                                     <span class="currency-unit">VND</span>
                                 </div>
+                                <ValidationMessage For="@(() => ticketPriceSetting.Surcharge4D)" />
                             </td>
-                            <ValidationMessage For="@(() => ticketPriceSetting.Surcharge4D)" />
                         </tr>
                        @*  <tr>
                             <td class="text-center align-middle" style="font-weight:bold">IMAX</td>
@@ -142,7 +142,39 @@ else
                 </table>
             </div>
             <div class="card-footer text-end">
-                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="button" class="btn btn-primary" @onclick="HandleSaveClick" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span> Đang lưu...</span>
+                    }
+                    else
+                    {
+                        <span>Lưu</span>
+                    }
+                </button>
+                @if (showConfirmDialog)
+                {
+                    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5); margin-top: 30px">
+                        <div class="modal-dialog modal-dialog-top">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Xác nhận</h5>
+                                    <button type="button" class="btn-close" @onclick="CloseConfirmDialog"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <p>Bạn có chắc chắn muốn lưu các thay đổi?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" @onclick="CloseConfirmDialog">Hủy</button>
+                                    <button type="button" class="btn btn-primary" @onclick="ConfirmSave">Xác nhận</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade show"></div>
+                }
+
             </div>
         </div>
     </EditForm>
@@ -156,6 +188,8 @@ else
     private string successMessage;
     private string errorMessage;
     private bool isLoading = true;
+    private bool isFormValid = false; // Trạng thái xác định form có hợp lệ hay không
+    private EditContext editContext;
     private string FormattedSurchargePriceBeforeWeekday
     {
         get => ticketPriceSetting.PriceBefore17hWeekDay.ToString("N0");
@@ -268,29 +302,65 @@ else
          isLoading = true;
         // Load the existing ticket price setting based on the Id parameter
         ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(Guid.Parse("F45B65A9-F32D-4F95-A211-75A7AF545F46"));
+        editContext = new EditContext(ticketPriceSetting);
         StateHasChanged(); // Cập nhật giao diện để hiển thị loading
         await Task.Delay(2000); // Tạm dừng trong 2 giây
         isLoading = false; // Kết thúc trạng thái đang tải
     }
+    private bool showConfirmDialog = false; // Hiển thị dialog xác nhận
+    private bool isSubmitting = false; // Trạng thái đang xử lý
 
-    private async Task HandleValidSubmit()
+    private void ShowConfirmDialog()
     {
+        showConfirmDialog = true; // Hiển thị hộp thoại xác nhận
+    }
+
+    private void CloseConfirmDialog()
+    {
+        showConfirmDialog = false; // Đóng hộp thoại xác nhận
+    }
+    private void HandleSaveClick()
+    {
+        // Kiểm tra tính hợp lệ của form
+        isFormValid = editContext.Validate();
+
+        if (isFormValid)
+        {
+            // Nếu hợp lệ, hiển thị dialog xác nhận
+            ShowConfirmDialog();
+        }
+        else
+        {
+            // Nếu không hợp lệ, hiển thị ValidationMessage
+            Console.WriteLine("Vui lòng điền đầy đủ thông tin trước khi lưu!");
+        }
+    }
+    private async Task ConfirmSave()
+    {
+        CloseConfirmDialog(); // Đóng dialog xác nhận
+        isSubmitting = true; // Bắt đầu hiển thị spinner trên nút "Lưu"
+
+        await Task.Delay(1000); // Chờ 2 giây để hiển thị spinner
+
+        // Thực hiện lưu dữ liệu
         var response = await TicketPriceSettingService.Update(ticketPriceSetting);
+
+        isSubmitting = false; // Kết thúc trạng thái xử lý
 
         if (response.IsSuccessStatusCode)
         {
-            // Cập nhật thành công, làm mới dữ liệu và hiển thị thông báo thành công
             ShowSnackbar("Cập nhật thành công!", Severity.Success);
             ticketPriceSetting = await TicketPriceSettingService.GetByIdAsync(ticketPriceSetting.ID);
             StateHasChanged(); // Refresh the component
         }
         else
         {
-            // Xử lý lỗi nếu có và hiển thị thông báo lỗi
             errorMessage = await response.Content.ReadAsStringAsync();
-            ShowSnackbar($"Cập nhật không thành công: {errorMessage}", Severity.Warning);
+            Console.WriteLine($"Cập nhật không thành công: {errorMessage}");
         }
     }
+
+
 
 }
 <style>
