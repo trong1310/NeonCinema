@@ -70,22 +70,32 @@ public class ScreeningService : IScreeningService
             {
                 try
                 {
-                    var scr = await context.Screening.FindAsync(input.ID);
-                    var showtime = await context.ShowTimes.FindAsync(input.ShowTimeID);
-
-
-                    scr.RoomID = input.RoomID;
-                    scr.ShowTimeID = input.ShowTimeID;
-
-                    showtime.StartTime = input.ShowTime.StartTime;
-                    showtime.EndTime = input.ShowTime.EndTime;
-
-                    context.ShowTimes.Update(showtime);
-
-                    context.Screening.Update(scr);
-
-                    await context.SaveChangesAsync(); 
-
+                    var screening = await context!.Screening
+					.Include(x => x.ShowTime)
+					.Include(x => x.Rooms)
+						.ThenInclude(r => r.Seats)
+							.ThenInclude(s => s.SeatTypes)
+					.FirstOrDefaultAsync(x => x.ID == input.ID && x.Deleted == false);
+					if (screening == null)
+					{
+                        return false;
+					}
+					var seatShowTimeStatuses = await context.SeatShowTimeStatuss
+							.Where(x => x.ShowtimeId == screening.ShowTimeID &&
+										x.RoomID == screening.RoomID &&
+										x.ShowDate == screening.ShowDate)
+							.AsNoTracking()
+							.ToListAsync();
+					if (seatShowTimeStatuses.Any(x => x.seatEnum == seatEnum.Sold))
+					{
+						return false;
+					}
+					else
+					{
+						screening.MovieID = input.MovieID;
+						context.Screening.Update(screening);
+					}
+					await context.SaveChangesAsync();
                     scope.Complete();
 
                     return true;
