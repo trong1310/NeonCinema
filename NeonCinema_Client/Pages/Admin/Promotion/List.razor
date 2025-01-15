@@ -8,6 +8,7 @@
 @using NeonCinema_Domain.Enum
 @using NeonCinema_Infrastructure.Extention.Utili
 @using System.Transactions
+@using System.Globalization
 
 @layout LayoutAdmin
 @inject NavigationManager _nav
@@ -583,11 +584,25 @@ else
 										<td><mark class="p-1 rounded">@item.value.DiscountPercentage%</mark></td>
 									}
 
-									<td><mark class="p-1 rounded">@item.value.AmountMax<text><u>đ</u></text></mark></td>
+									<td><mark class="p-1 rounded">@FormatCurrency(item.value.AmountMax,"vi-VN")</mark></td>
 									<td>@item.value.StartDate</td>
 									<td>@item.value.EndDate</td>
 									<td>@item.value.Description</td>
-									<td><span class="@GetStatusClass(item.value.Status) text-white rounded">@item.value.Status</span></td>
+
+									<td><span class="@GetStatusClass(item.value.Status) text-white rounded">
+										@if(item.value.Status == PromotionStatus.InActive)
+											{
+												<text>Chưa hoạt động</text>
+											}
+											else if(item.value.Status == PromotionStatus.Active)
+											{
+												<text>Đang hoạt động</text>
+											}
+											else if (item.value.Status == PromotionStatus.Expired)
+											{
+												<text>Đã hết hạn</text>
+											}
+										</span></td>
 									<td>
 										<button @onclick="async () => await OpenModal2(item.value.ID)" class="btn"><i class="fa-solid fa-eye" style="color: #74C0FC;"></i></button>
 										<button @onclick="async () => await OpenModal4(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
@@ -1122,6 +1137,15 @@ else
 
 		// Đảm bảo UI được cập nhật
 		await InvokeAsync(StateHasChanged);
+	}
+
+	public static string FormatCurrency(double? amount, string cultureCode = "vi-VN")
+	{
+		// Lấy thông tin văn hóa dựa trên mã (mặc định là Việt Nam)
+		var culture = new CultureInfo(cultureCode);
+
+		// Format tiền tệ theo văn hóa đã chọn
+		return string.Format(culture, "{0:C}", amount); // Sử dụng định dạng tiền tệ
 	}
 
 }

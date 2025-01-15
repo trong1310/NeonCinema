@@ -12,8 +12,9 @@
                     <p>Thông tin tài khoản của bạn:</p>
                     <ul>
                                     <li><strong>Email:</strong> {Email}</li>
-                                    <li><strong>SĐT (Tên đăng nhập):</strong> {phone}</li>
-                                    <li><strong>Mật khẩu:</strong> {Password}</li>
+                                    <li>Email: <strong>{Email}</strong></li>
+                                    <li>Tên đăng nhập: <strong>{phone}</strong></li>
+                                    <li>Mật khẩu: <strong>{Password}</strong></li>
                     </ul>            
                     <p>Cảm ơn bạn đã tin tưởng và lựa chọn rạp chiếu phim NeonCinema. Chúng tôi rất vui mừng được chào đón bạn trở thành một phần của cộng đồng yêu phim tuyệt vời này.</p>
                     <p>Với tài khoản của mình, bạn có thể:</p>
@@ -42,8 +43,9 @@
                     <p>Dưới đây là thông tin tài khoản của bạn:</p>
                     <ul>
                                     <li><strong>Email:</strong> {Email}</li>
-                                    <li><strong>SĐT (Tên đăng nhập):</strong> {phone}</li>
-                                    <li><strong>Mật khẩu:</strong> {Password}</li>
+                                    <li>Email: <strong>{Email}</strong></li>
+                                    <li>Tên đăng nhập: <strong>{phone}</strong></li>
+                                    <li>Mật khẩu: <strong>{Password}</strong></li>
                     </ul>            
                      <p>Với tài khoản này, bạn có thể:</p>
                     <ul>

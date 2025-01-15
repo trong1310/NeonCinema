@@ -58,7 +58,7 @@
 				</div>
 
 				<p class="card-text">
-					<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") : @screenings.ShowTime <br>
+					<strong>Suất chiếu:</strong> @screenings.ShowDate?.ToString("dd/MM/yyyy") - @screenings.ShowTime <br>
 					<strong>Phòng chiếu:</strong> @screenings.RoomName
 				</p>
 			</div>
@@ -187,7 +187,17 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy</button>
-							<button type="button" class="btn btn-primary" @onclick="ProcessPayment">Xác nhận</button>
+							<button type="button" class="btn btn-primary" disabled="@isProcessing" @onclick="ProcessPayment">
+							@if (isProcessing)
+							{
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+								<span class="sr-only">Đang xử lý...</span>
+							}
+							else
+							{
+								<span>Xác nhận</span>
+							}
+					</button>
 						</div>
 					</div>
 				</div>
@@ -219,14 +229,24 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="paymentSuccessLabel">Thanh toán thành công</h5>
-							<button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+							<button type="button" class="btn-close" @onclick="NagationToBookTicket" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
 							<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hóa đơn của bạn đã được xác nhận thành công!</p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" @onclick="CloseModal">Đóng</button>
-							<button type="button" class="btn btn-primary" @onclick="ExportFile">In hóa đơn</button>
+							<button type="button" class="btn btn-primary" @onclick="NagationToBookTicket">Đóng</button>
+							<button type="button" class="btn btn-primary" disabled="@isExporting" @onclick="ExportFile">
+						@if (isExporting)
+						{
+							<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+							<span class="sr-only">Đang xử lý...</span>
+						}
+						else
+						{
+							<span>In hóa đơn</span>
+						}
+					</button>
 						</div>
 					</div>
 				</div>
@@ -1010,8 +1030,12 @@
 		sumPrices = 0;
 		RefreshSeatsAsync();
 	}
+	 private bool isProcessing = false;
 	private async Task ProcessPayment()
 	{
+		isProcessing = true;
+        // Tạm dừng 2 giây để hiển thị spinner
+        await Task.Delay(1000);
 		var validationMessage = ValidateSeats();
 		if (validationMessage != null)
 		{
@@ -1073,7 +1097,8 @@
 						_context.RankMembers.Update(resetPoint);
 						_context.SaveChanges();
 					}
-					_navi.NavigateTo("/book_ticket");
+					ShowSnackbar("Thanh toán thành công!", Severity.Success);
+					// _navi.NavigateTo("/book_ticket");
 				}
 				else
 				{
@@ -1087,14 +1112,21 @@
 				Console.WriteLine($"Có lỗi xảy ra: {ex.Message}");
 			}
 
-			StateHasChanged();
+			finally
+			{
+				isProcessing = false; // Hoàn tất xử lý
+				StateHasChanged();
+			}
 
 		}
 	}
 	public Guid BillTicketId { get; set; }
-
+	private bool isExporting = false;
 	private async Task ExportFile()
 	{
+		 isExporting = true; // Bắt đầu trạng thái xuất file
+        StateHasChanged(); // Cập nhật giao diện
+		await Task.Delay(500);
 		try
 		{
 			BillTicketId = (Guid)billResp.Id;
@@ -1114,6 +1146,11 @@
 			// Xử lý lỗi chung
 			Console.WriteLine($"Lỗi khi gọi API: {ex.Message}");
 		}
+		finally
+        {
+            isExporting = false; // Kết thúc trạng thái xuất file
+            StateHasChanged(); // Cập nhật giao diện
+        }
 	}
 
 	private string GetPaymentMessage(string status)
