@@ -49,7 +49,9 @@ else
 					<tbody>
 						@foreach (var item in screenings.OrderByDescending(x => x.CreatedTime).Select((value, index) => new { value, index }))
 						{
-							<tr>
+							if(item.value.Status != ScreeningStatus.Ended)
+							{
+								<tr>
 								<td>@(item.index + 1)</td>
 								<td>@item.value.FlimsName</td>
 								<td>@item.value.ShowDate?.ToString("dd/MM/yyyy")</td>
@@ -76,10 +78,14 @@ else
 									</span>
 								</td>
 								<td>
-									<button @onclick="() => ToggleEditForm(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
-									<button @onclick="() => OpenModalConfirm2(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
-								</td>
-							</tr>
+									@if(item.value.Status == ScreeningStatus.InActive)
+										{
+											<button @onclick="() => ToggleEditForm(item.value.ID)" class="btn"><i class="fa-solid fa-pen"></i></button>
+											<button @onclick="() => OpenModalConfirm2(item.value.ID)" class="btn"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+										}
+									</td>
+								</tr>								
+							}
 						}
 					</tbody>
 				</table>
@@ -687,7 +693,7 @@ else
 		IsLoadingAct = true; //animation loading
 		try
 		{
-			if (!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))) || !checkCDate || !ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
+			if (updateScr.Status != ScreeningStatus.InActive ||!ValidateST(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))) || !checkCDate || !ValidateST2(TimeSpan.Parse(startTime.ToString("HH:mm")), TimeSpan.Parse(endTime.ToString("HH:mm"))))
 			{
 				messageString = "Faild";
 				return;
