@@ -585,6 +585,10 @@ else
 	{
 		await LoadScreening();
 		movies = await _scrSv.GetAllMoviesAsync();
+
+		//lọc trạng thái trước khi load
+		movies.Data = movies.Data.Where(x => x.Status == MovieStatus.isreleasing || x.Status == MovieStatus.upcomingkrelease).ToList();
+
 		rooms = await _scrSv.GetAllRoomsAsync();
 		await LoadShowTimeFil();
 		await LoadFilScreenings();
