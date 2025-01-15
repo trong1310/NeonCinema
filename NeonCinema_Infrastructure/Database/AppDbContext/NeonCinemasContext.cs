@@ -66,7 +66,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			 optionsBuilder.UseSqlServer("Data Source=vantrong\\SQLEXPRESS;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
+			 optionsBuilder.UseSqlServer("Data Source=MRG;Initial Catalog=NeonCinemas;Integrated Security=True;Encrypt=True;Connect Timeout=120;Trust Server Certificate=True");
 		}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -498,82 +498,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			// Chèn dữ liệu vào database
 			modelBuilder.Entity<Seat>(b => { b.HasData(seatData); });
 
-			var showTimeData = new List<ShowTime>
-{
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(8, 0, 0),   // 08:00 AM
-		EndTime = new TimeSpan(10, 0, 0),    // 10:00 AM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(10, 15, 0), // 10:15 AM
-		EndTime = new TimeSpan(12, 15, 0),   // 12:15 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(12, 30, 0), // 12:30 PM
-		EndTime = new TimeSpan(14, 30, 0),   // 02:30 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(14, 45, 0), // 02:45 PM
-		EndTime = new TimeSpan(16, 45, 0),   // 04:45 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(17, 0, 0),  // 05:00 PM
-		EndTime = new TimeSpan(19, 0, 0),    // 07:00 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(19, 15, 0), // 07:15 PM
-		EndTime = new TimeSpan(21, 15, 0),   // 09:15 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(21, 30, 0), // 09:30 PM
-		EndTime = new TimeSpan(23, 30, 0),   // 11:30 PM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(23, 45, 0), // 11:45 PM
-		EndTime = new TimeSpan(1, 45, 0),    // 01:45 AM (ngày hôm sau)
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(2, 0, 0),   // 02:00 AM
-		EndTime = new TimeSpan(4, 0, 0),     // 04:00 AM
-		Status = EntityStatus.Active
-	},
-	new ShowTime
-	{
-		ID = Guid.NewGuid(),
-		StartTime = new TimeSpan(4, 30, 0),  // 04:30 AM
-		EndTime = new TimeSpan(6, 30, 0),    // 06:30 AM
-		Status = EntityStatus.Active
-	}
-};
-
-			// Thêm dữ liệu vào model
-			modelBuilder.Entity<ShowTime>(b => { b.HasData(showTimeData); });
+		
 
 			var actorData = new List<Actor>
 			{
@@ -904,88 +829,7 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<Show_release>().HasData(showReleaseData);
 
 
-			var screeningData = new List<Screening>
-			{
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[0].ID,
-					ShowDate = DateTime.Now.AddDays(10), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[1].ID,
-					ShowDate = DateTime.Now.AddDays(9), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[2].ID,
-					ShowDate = DateTime.Now.AddDays(8), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[3].ID,
-					ShowDate = DateTime.Now.AddDays(7), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[4].ID,
-					ShowDate = DateTime.Now.AddDays(6), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[5].ID,
-					ShowDate = DateTime.Now.AddDays(5), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				},
-				new Screening
-				{
-					ID = Guid.NewGuid(),
-					Status = ScreeningStatus.InActive,
-					ShowTimeID = showTimeData[6].ID,
-					ShowDate = DateTime.Now.AddDays(4), // Two days from now
-					MovieID = movieData[0].ID,
-					RoomID = roomData[0].ID,
-					CreatedTime = DateTime.Now,
-					Deleted = false
-				}
-
-			};
-			modelBuilder.Entity<Screening>(b => { b.HasData(screeningData); });
+			
 			var ticketSeting = new List<TicketPriceSetting>
 	{
 		new TicketPriceSetting
@@ -1006,13 +850,6 @@ namespace NeonCinema_Infrastructure.Database.AppDbContext
 			modelBuilder.Entity<TicketPriceSetting>().HasData(ticketSeting);
 
 
-			// 23. TicketSeat
-			var ticketPriceData = new List<TicketPrice>
-	{
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID,ShowTimeID = showTimeData[0].ID, SeatTypeID = seatTypeData [0].ID,ScreeningID = screeningData[0].ID, Price = 50000, Status = EntityStatus.Active,  },
-		new TicketPrice { ID = Guid.NewGuid(), TicketPriceSettingID = ticketSeting[0].ID, ShowTimeID = showTimeData[1].ID, SeatTypeID = seatTypeData [1].ID,ScreeningID = screeningData[1].ID, Price = 60000, Status = EntityStatus.Active  }
-	};
-			modelBuilder.Entity<TicketPrice>().HasData(ticketPriceData);
 			// 22. Ticket
 
 			var foodComboData = new List<FoodCombo>

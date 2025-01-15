@@ -31,7 +31,7 @@ else
 				<div class="col-6">
 					<div class="form-group">
 						<label for="Search">Tìm kiếm</label>
-						<InputText class="form-control" style="width: 500px;" @bind-Value="inputSearchPromotion" placeholder="Search by name" @oninput="OnInputSearchProChanged" />
+						<InputText class="form-control" style="width: 500px;" @bind-Value="inputSearchPromotion" placeholder="Tìm kiếm theo tên" @oninput="OnInputSearchProChanged" />
 					</div>
 					<div class="form-check">
 						<div class="row mt-3">
@@ -762,6 +762,8 @@ else
 	private async Task LoadPromotion()
 	{
 		_lstpro = await _prosv.GetPromotionListAsync();
+
+		await FilterRecords();
 		await Task.Delay(2000);
 		IsLoading = false;
 	}
@@ -958,11 +960,11 @@ else
 		{
 			_nav.NavigateTo("/list-promotion-admin");
 			idActive = Guid.Empty;
-			messageString = "Thêm thành công";
+			messageString = "Success";
 		}
 		else
 		{
-			messageString = "Thêm thất bại"; //chỉ là một từ khóa để thông báo
+			messageString = "Faild"; //chỉ là một từ khóa để thông báo
 		}
 
 		isModalVisibleConfirm = 2;
