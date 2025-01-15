@@ -316,7 +316,7 @@
 					<h4>Thông Tin Hóa Đơn</h4>
 					<p><b>Mã Hóa Đơn:</b> @selectedBill.BillCode</p>
 					<p><b>Khách Hàng:</b> @users.FullName</p>
-					<p><b>Nhân viên xử lý:</b></p>
+					<p><b>Nhân viên xử lý:</b>@selectedBill.CreatedBy</p>
 					<p><b>Tên Rạp:</b> @TheaterName</p>
 					<p><b>Địa Chỉ Rạp:</b> @TheaterAddress</p>
 
@@ -812,6 +812,30 @@
 
 
 	private void CloseDetail() => selectedBill = null;
+
+	private async Task<string> GetNameStaff()
+	{
+		if(selectedBill != null)
+		{
+			using(NeonCinemasContext context = new NeonCinemasContext())
+			{
+				var staff = await context.Users.FindAsync(selectedBill.CreatedBy);
+
+				if(staff != null)
+				{
+					return staff.FullName;
+				}
+				else
+				{
+					return "";
+				}
+			}
+		}
+		else
+		{
+			return "";
+		}
+	}
 
 	private async Task DownloadInvoice()
 	{
