@@ -246,18 +246,38 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="width: 15%" @onclick="CloseRegisterForm">Hủy</button>
-                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting" style="width: 15%">
+                        <button type="button" class="btn btn-primary" disabled="@isSubmitting" style="width: 15%" @onclick="ShowConfirmDialog">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: @(isSubmitting ? "inline-block" : "none");"></span>
                             <span>@(isSubmitting ? "Đang xử lý..." : "Đăng ký")</span>
                         </button>
+                        @if (showConfirmDialog)
+                        {
+                            <div class="modal show" tabindex="-1" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Xác nhận đăng ký</h5>
+                                            <button type="button" class="btn-close" aria-label="Close" @onclick="CloseConfirmDialog"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Bạn có chắc chắn muốn đăng ký tài khoản này không?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" @onclick="CloseConfirmDialog">Hủy</button>
+                                            <button type="button" class="btn btn-primary" @onclick="HandleSubmit">Xác nhận</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
 
-                    @if (!string.IsNullOrEmpty(registrationMessage))
+                   @*  @if (!string.IsNullOrEmpty(registrationMessage))
                     {
                         <div class="alert mt-3 alert-@(registrationMessage.Contains("thành công") ? "success" : "danger")">
                             @registrationMessage
                         </div>
-                    }
+                    } *@
                 </div>
             </EditForm>
 
@@ -281,7 +301,7 @@
     HttpClient _http = new HttpClient();
     public async Task LoginAccount()
     {
-        
+
         isProcessing = true;
         errorMessage = null;
 
@@ -505,8 +525,157 @@
     private string errorPasswordMessage = ""; // Thông báo lỗi liên quan đến mật khẩu
     private string errorConfirmPasswordMessage = ""; // Thông báo lỗi liên quan đến nhập lại mật khẩu
     private string errorAddressMessage;
+    private bool showConfirmDialog = false; // Trạng thái hiển thị dialog xác nhận
+
+    // Hiển thị dialog xác nhận
+    private void ShowConfirmDialog()
+    {
+        isValid = true;
+        var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
+        var emailExists = _context.Users.Any(x => x.Email == request.Email);
+        var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
+
+        //Ngày sinh
+        if (request.DateOrBriht == null ||
+            request.DateOrBriht.Year < 1900 ||
+            request.DateOrBriht > DateTime.Now.AddYears(-14))
+        {
+            errorYearMessage = "Khách hàng phải từ 14 trở lên.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorYearMessage = null;
+        }
+
+        // Kiểm tra họ và tên
+        if (string.IsNullOrWhiteSpace(request.FullName))
+        {
+            errorNameMessage = "Họ và tên không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(request.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
+        {
+            errorNameMessage = "Họ và tên không được chứa số và kí tự đặc biệt.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorNameMessage = null;
+        }
+
+        //Email
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            errorEmailMessage = "Email không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(request.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+        {
+            errorEmailMessage = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (emailExists)
+        {
+            errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorEmailMessage = null;
+        }
+
+        //SDT
+        if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+        {
+            errorPhoneMessage = "Số điện thoại không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        // Kiểm tra số điện thoại đã tồn tại
+
+        else if (phoneExists)
+        {
+            errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (!Regex.IsMatch(request.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
+        {
+            errorPhoneMessage = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorPhoneMessage = null;
+        }
+
+
+        //Pass
+        if (string.IsNullOrWhiteSpace(request.PassWord))
+        {
+            errorPasswordMessage = "Mật khẩu không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (!regex.IsMatch(request.PassWord))
+        {
+            errorPasswordMessage = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorPasswordMessage = null;
+        }
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            errorConfirmPasswordMessage = "Nhập lại mật khẩu không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else if (confirmPassword != request.PassWord)
+        {
+            errorConfirmPasswordMessage = "Mật khẩu nhập lại không khớp.";
+            isValid = false;
+            isSubmitting = false;
+        }
+        else
+        {
+            errorConfirmPasswordMessage = null;
+        }
+
+        //Địa chỉ
+        if (string.IsNullOrWhiteSpace(request.Adderss))
+        {
+            errorAddressMessage = "Địa chỉ không được để trống.";
+            isValid = false;
+            isSubmitting = false;
+        }   
+        else
+        {
+            errorAddressMessage = null;
+        }
+        showConfirmDialog = isValid;
+        StateHasChanged();
+    }
+
+    // Đóng dialog xác nhận
+    private void CloseConfirmDialog()
+    {
+        showConfirmDialog = false;
+        StateHasChanged();
+    }
     private async Task HandleSubmit()
     {
+        showConfirmDialog = false;
         isSubmitting = true; // Hiển thị spinner
         registrationMessage = ""; // Xóa thông báo cũ
         errorPasswordMessage = ""; // Xóa thông báo lỗi mật khẩu cũ
@@ -551,139 +720,8 @@
                 }
             }
 
-            var phoneExists = _context.Users.Any(x => x.PhoneNumber == request.PhoneNumber);
-            var emailExists = _context.Users.Any(x => x.Email == request.Email);
-            var regex = new System.Text.RegularExpressions.Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
-
-            //Ngày sinh
-            if (request.DateOrBriht == null ||
-                request.DateOrBriht.Year < 1900 ||
-                request.DateOrBriht > DateTime.Now.AddYears(-14))
-            {
-                errorYearMessage = "Khách hàng phải từ 14 trở lên.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorYearMessage = null;
-            }
-
-            // Kiểm tra họ và tên
-            if (string.IsNullOrWhiteSpace(request.FullName))
-            {
-                errorNameMessage = "Họ và tên không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (!Regex.IsMatch(request.FullName ?? string.Empty, @"^[\p{L}\s]+$"))
-            {
-                errorNameMessage = "Họ và tên không được chứa số và kí tự đặc biệt.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorNameMessage = null;
-            }
-
-            //Email
-            if (string.IsNullOrWhiteSpace(request.Email))
-            {
-                errorEmailMessage = "Email không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (!Regex.IsMatch(request.Email ?? string.Empty, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
-            {
-                errorEmailMessage = "Email không hợp lệ. Vui lòng nhập đúng định dạng.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (emailExists)
-            {
-                errorEmailMessage = "Email này đã tồn tại. Vui lòng chọn email khác.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorEmailMessage = null;
-            }
-
-            //SDT
-            if (string.IsNullOrWhiteSpace(request.PhoneNumber))
-            {
-                errorPhoneMessage = "Số điện thoại không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            // Kiểm tra số điện thoại đã tồn tại
-
-            else if (phoneExists)
-            {
-                errorPhoneMessage = "Số điện thoại này đã tồn tại. Vui lòng chọn số khác.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (!Regex.IsMatch(request.PhoneNumber ?? string.Empty, @"^(03|08|09)\d{8}$"))
-            {
-                errorPhoneMessage = "Số điện thoại không hợp lệ. Vui lòng nhập số bắt đầu bằng 03, 08 hoặc 09 và có 10 chữ số.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorPhoneMessage = null;
-            }
 
 
-            //Pass
-            if (string.IsNullOrWhiteSpace(request.PassWord))
-            {
-                errorPasswordMessage = "Mật khẩu không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (!regex.IsMatch(request.PassWord))
-            {
-                errorPasswordMessage = "Mật khẩu phải có ít nhất 8 ký tự gồm chữ in hoa, chữ thường, số và ký tự đặc biệt.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorPasswordMessage = null;
-            }
-            if (string.IsNullOrWhiteSpace(confirmPassword))
-            {
-                errorConfirmPasswordMessage = "Nhập lại mật khẩu không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else if (confirmPassword != request.PassWord)
-            {
-                errorConfirmPasswordMessage = "Mật khẩu nhập lại không khớp.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorConfirmPasswordMessage = null;
-            }
-
-            //Địa chỉ
-            if (string.IsNullOrWhiteSpace(request.Adderss))
-            {
-                errorAddressMessage = "Địa chỉ không được để trống.";
-                isValid = false;
-                isSubmitting = false;
-            }
-            else
-            {
-                errorAddressMessage = null;
-            }
-           
             if (!isValid)
             {
                 isSubmitting = false;
@@ -692,7 +730,11 @@
             var userResponse = await UserServices.CreateClient(request);
             if (userResponse.IsSuccessStatusCode)
             {
+                await Task.Delay(2000);
                 registrationMessage = "Đăng ký thành công!";
+                isSubmitting = false;
+                ShowSnackbar(registrationMessage, Severity.Success);
+                StateHasChanged();
             }
             else
             {
