@@ -915,7 +915,7 @@
 	{
 		var bill = _context.BillDetails.FirstOrDefault(x => x.ID == billId);
 		// Thiết lập thanh toán
-		PayOS payOS = new PayOS("1ada9cc6-442a-4ab2-be26-3b6c30b083d3", "034d36fc-e272-4e29-9748-ee2e4c568e80", "a5e7d631c3da12d0aae501cdc556aed667d89edeff39cb5e99aac2925b68a461");
+		PayOS payOS = new PayOS("ném key của mn vào đây nhé");
 		ItemData itemData = new ItemData(bill.BillCode.ToString(), 1, Convert.ToInt32(bill.AfterDiscount));
 		List<ItemData> lstItemDatas = new List<ItemData> { itemData };
 		DateTime expirationTime = DateTime.Now.AddMinutes(2);
